@@ -1,0 +1,128 @@
+import matplotlib
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+from matplotlib.gridspec import GridSpec
+from matplotlib.colors import Colormap
+from kale.core.core_imports import *
+from kale.core.tools import *
+from kale.viz import plt
+from kale.viz.kvrc_utils import KvrcColorSchemes
+from kale.viz.kvrc import *
+
+FigureSeqLike = Union[Figure, Iterator[Figure], Iterator[Tup[str, Figure]], Mapping[str, Figure]]
+
+
+class InternalVizTools:
+    @classmethod
+    def preferred_units_per_sec(cls, mark_every_ms: int, total_ms: float) -> Tup[str, float]:
+        if KVRC.trace_force_time_units is not None:
+            return KVRC.trace_force_time_units.abbrev, 1 / KVRC.trace_force_time_units.n_ms
+        if total_ms >= KVRC.trace_min_cutoff and mark_every_ms >= 1000 * 60 * 60:
+            return "hour", 1 / 60 / 60
+        if total_ms >= KVRC.trace_sec_cutoff and mark_every_ms >= 1000 * 60:
+            return "min", 1 / 60
+        elif total_ms >= KVRC.trace_ms_cutoff and mark_every_ms >= 1000:
+            return "s", 1
+        else:
+            return "ms", 1000
+
+    @classmethod
+    def preferred_tick_ms_interval(cls, n_ms_total):
+        alloweds = KVRC.trace_pref_tick_ms_interval
+        n_ms = n_ms_total / KVRC.trace_pref_n_ticks
+        closest_choice, closest_val = None, 100000000000
+        for a in alloweds:
+            e = abs(a - n_ms) / a
+            if e < closest_val:
+                closest_choice, closest_val = a, e
+        return closest_choice
+
+    @classmethod
+    def assign_colors(cls, categories: Sequence[str]) -> Sequence[str]:
+        dct = InternalVizTools.assign_color_dict(categories)
+        return [dct[c] for c in categories]
+
+    @classmethod
+    def assign_colors_x(
+        cls, names: Sequence[str], controls: Sequence[Optional[str]], recycle_ok: bool = False
+    ) -> Sequence[str]:
+        dct = InternalVizTools.assign_color_dict_x(names, controls, recycle_ok=recycle_ok)
+        return [dct[c] for c in names]
+
+    @classmethod
+    def assign_color_dict_x(
+        cls, names: Sequence[str], controls: Sequence[Optional[str]], recycle_ok: bool = False
+    ) -> Mapping[str, str]:
+        dct = {}
+        if len(names) != len(controls):
+            raise LengthMismatchError("{} names but {} controls".format(len(names), len(controls)))
+        pref = iter(KVRC.pref_treatment_colors)
+        control_colors = iter(KVRC.pref_control_colors)
+        for name, control in Tools.zip_list(names, controls):
+            if name in dct:
+                continue
+            if Tools.is_empty(control):
+                try:
+                    dct[name] = next(pref)
+                except StopIteration:
+                    if not recycle_ok:
+                        logger.warning("Not enough treatment names. Recycling.")
+                    pref = iter(KVRC.pref_treatment_colors)
+                    dct[name] = next(pref)
+            elif control in KVRC.pref_control_color_dict:
+                dct[name] = KVRC.pref_control_color_dict[control]
+            else:
+                try:
+                    dct[name] = next(control_colors)
+                except StopIteration:
+                    if not recycle_ok:
+                        logger.warning("Not enough control names. Recycling.")
+                    control_colors = iter(KVRC.pref_control_colors)
+                    dct[name] = next(control_colors)
+        dct.update({k: v for k, v in KVRC.pref_name_color_dict.items() if k in dct})
+        return dct
+
+    @classmethod
+    def assign_color_dict(cls, categories: Sequence[str]) -> Mapping[str, str]:
+        return InternalVizTools.assign(categories, KVRC.pref_treatment_colors)
+
+    @classmethod
+    def assign_markers(cls, categories: Sequence[str]) -> Sequence[str]:
+        dct = InternalVizTools.assign_marker_dict(categories)
+        return [dct[c] for c in categories]
+
+    @classmethod
+    def assign_marker_dict(cls, categories: Sequence[str]) -> Mapping[str, str]:
+        return InternalVizTools.assign(categories, KVRC.pref_markers)
+
+    @classmethod
+    def assign(cls, categories: Sequence[str], available: Sequence[str]) -> Mapping[str, str]:
+        unique = Tools.unique(categories)
+        if len(unique) > len(available):
+            logger.warning(
+                "There are {} categories but only {} choices available".format(
+                    len(unique), len(available)
+                )
+            )
+        z = OrderedDict()
+        for u, m in zip(unique, itertools.cycle(available)):
+            z[u] = m
+        return z
+
+
+class KvrcPlotting:
+    pass
+
+
+__all__ = [
+    "plt",
+    "Axes",
+    "Figure",
+    "GridSpec",
+    "Colormap",
+    "matplotlib",
+    "InternalVizTools",
+    "KVRC",
+    "KvrcPlotting",
+    "FigureSeqLike",
+]

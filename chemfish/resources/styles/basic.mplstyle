@@ -1,0 +1,4 @@
+pdf.fonttype                  : 42
+svg.fonttype                  : none
+ps.fonttype                   : 42
+figure.constrained_layout.use : True

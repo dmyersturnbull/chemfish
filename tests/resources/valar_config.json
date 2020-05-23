@@ -1,0 +1,7 @@
+{
+   "local_bind_port": 3306,
+   "db_username": "kale",
+   "db_password": "kale123",
+   "db_port": 3306,
+   "db_name": "valartest"
+}

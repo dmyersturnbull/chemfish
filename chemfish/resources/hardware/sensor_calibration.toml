@@ -1,0 +1,24 @@
+
+[thor.thermometer.1]
+raw = 700
+real = 22
+units = '°C'
+color = '#000055'
+
+[thor.thermometer.2]
+raw = 710
+real = 28
+units = '°C'
+color = '#000055'
+
+[thor.photometer.1]
+raw = 710
+real = 28
+units = '2 m⁻²sr⁻¹W'
+color = '#000055'
+
+[thor.photometer.2]
+raw = 710
+real = 28
+units = '2 m⁻²sr⁻¹W'
+color = '#000055'
