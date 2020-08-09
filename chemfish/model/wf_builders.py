@@ -1,11 +1,11 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.treatments import Treatments as Treatments
-from kale.model.well_namers import WellNamer, WellNamers
-from kale.model.compound_names import *
-from kale.model.well_frames import *
-from kale.model.features import FeatureType, FeatureTypes
-from kale.model.wf_tools import *
+from chemfish.core.core_imports import *
+from chemfish.model.treatments import Treatments as Treatments
+from chemfish.model.well_names import WellNamer, WellNamers
+from chemfish.model.compound_names import *
+from chemfish.model.well_frames import *
+from chemfish.model.features import FeatureType, FeatureTypes
+from chemfish.model.wf_tools import *
 
 
 class WellFrameBuildError(ConstructionError):

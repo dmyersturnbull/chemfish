@@ -1,10 +1,10 @@
 import matplotlib.ticker as ticker
 import librosa
 import librosa.display as ldisplay
-from kale.core.core_imports import *
-from kale.model.audio import Waveform
-from kale.viz.internal_viz import *
-from kale.viz.figures import *
+from chemfish.core.core_imports import *
+from chemfish.model.audio import Waveform
+from chemfish.viz.internal_viz import *
+from chemfish.viz.figures import *
 
 
 class WaveformPlotter(KvrcPlotting):

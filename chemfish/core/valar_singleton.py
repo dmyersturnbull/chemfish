@@ -6,7 +6,7 @@ import os
 from pathlib import PurePath
 from datetime import datetime
 import numpy as np
-from dscience.core import abcd
+import decorateme as abcd
 from valarpy.Valar import Valar as __Valar
 
 

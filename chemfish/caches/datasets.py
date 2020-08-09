@@ -1,10 +1,10 @@
-from kale.core.core_imports import *
-from kale.model.well_namers import *
-from kale.model.well_frames import *
-from kale.model.compound_names import *
-from kale.model.treat_displayers import *
-from kale.caches.caching_wfs import *
-from kale.caches.wf_caches import *
+from chemfish.core.core_imports import *
+from chemfish.model.well_names import *
+from chemfish.model.well_frames import *
+from chemfish.model.compound_names import *
+from chemfish.model.treatment_names import *
+from chemfish.caches.caching_wfs import *
+from chemfish.caches.wf_caches import *
 
 
 class KaleDatasetTools:

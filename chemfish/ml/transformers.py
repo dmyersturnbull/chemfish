@@ -1,8 +1,8 @@
-from kale.core.core_imports import *
+from chemfish.core.core_imports import *
 from sklearn.base import TransformerMixin
 from sklearn.decomposition import PCA
 from scipy import ndimage
-from kale.model.well_frames import WellFrame
+from chemfish.model.well_frames import WellFrame
 
 from sklearn.manifold import TSNE
 

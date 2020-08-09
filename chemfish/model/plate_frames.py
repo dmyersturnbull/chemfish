@@ -1,6 +1,6 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.features import *
+from chemfish.core.core_imports import *
+from chemfish.model.features import *
 
 
 class PlateFrame(SimpleFrame):

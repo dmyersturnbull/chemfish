@@ -1,9 +1,9 @@
 from natsort import natsorted
-from kale.core.core_imports import *
-from kale.core.tools import *
-from kale.model.responses import DoseResponseFrame2D
-from kale.viz.figures import *
-from kale.viz.internal_viz import *
+from chemfish.core.core_imports import *
+from chemfish.core.tools import *
+from chemfish.model.responses import DoseResponseFrame2D
+from chemfish.viz.figures import *
+from chemfish.viz.internal_viz import *
 
 
 @abcd.status(CodeStatus.Immature)

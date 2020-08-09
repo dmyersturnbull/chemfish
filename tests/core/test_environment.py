@@ -1,5 +1,5 @@
 import pytest
-from kale.core.environment import *
+from chemfish.core.environment import *
 
 
 class TestEnvironmentSetUpRequired:

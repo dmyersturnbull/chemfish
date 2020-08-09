@@ -1,8 +1,8 @@
 from __future__ import annotations
-from kale.core.core_imports import *
+from chemfish.core.core_imports import *
 from cycler import cycler
-from kale.viz import plt
-from kale.viz.kvrc_utils import *
+from chemfish.viz import plt
+from chemfish.viz.kvrc_utils import *
 
 
 @abcd.not_thread_safe
@@ -130,7 +130,7 @@ class KaleRc(KvrcCore):
         self.trace_time_n_decimals = config.new_int("trace_time_n_decimals", 0)
         self.trace_force_time_units = config.new_time_unit("trace_force_time_units", None)
 
-        # reference heights; not used inside kale
+        # reference heights; not used inside chemfish
         # heights are the same as the correspdoning widths, except for the page height
         # the page height is a gross estimation of 11" with a 1" margin at the top and bottom
         self.height_page = config.new_length(
@@ -395,6 +395,6 @@ class KaleRc(KvrcCore):
                 self[z + ".fonttype"] = v
 
 
-KVRC = KaleRc(kale_env.matplotlib_style, kale_env.viz_file)
+KVRC = KaleRc(chemfish_env.matplotlib_style, chemfish_env.viz_file)
 
 __all__ = ["KVRC", "KvrcDefaults", "KaleRc"]

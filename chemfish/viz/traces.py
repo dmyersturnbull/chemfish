@@ -1,13 +1,13 @@
 import matplotlib.ticker as ticker
-from kale.core.core_imports import *
-from kale.model.features import *
-from kale.model.well_frames import *
-from kale.model.stim_frames import *
-from kale.model.assay_frames import *
-from kale.viz.stim_plots import *
-from kale.viz.internal_viz import *
-from kale.viz.figures import FigureTools
-from kale.viz import CakeLayer
+from chemfish.core.core_imports import *
+from chemfish.model.features import *
+from chemfish.model.well_frames import *
+from chemfish.model.stim_frames import *
+from chemfish.model.assay_frames import *
+from chemfish.viz.stim_plots import *
+from chemfish.viz.internal_viz import *
+from chemfish.viz.figures import FigureTools
+from chemfish.viz import CakeLayer
 
 
 @abcd.auto_eq()

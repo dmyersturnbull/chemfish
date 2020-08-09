@@ -1,5 +1,5 @@
-from kale.core.valar_tools import *
-from kale.core.valar_singleton import *
+from chemfish.core.valar_tools import *
+from chemfish.core.valar_singleton import *
 import pytest
 
 

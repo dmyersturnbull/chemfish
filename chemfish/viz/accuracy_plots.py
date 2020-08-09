@@ -1,8 +1,8 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.metrics import *
-from kale.viz.figures import FigureTools
-from kale.viz.internal_viz import *
+from chemfish.core.core_imports import *
+from chemfish.model.metrics import *
+from chemfish.viz.figures import FigureTools
+from chemfish.viz.internal_viz import *
 
 
 class MetricPlotter:
@@ -83,7 +83,7 @@ class AccuracyPlotter(KvrcPlotting):
         If `df` has column 'control', that will be used to inform colors.
         If it has a column 'class', that will be used to group labels and give them the same color.
         Otherwise pretty straightforward.
-        It relies on kale_rc/KVRC params beggining with 'acc_'; ex: `acc_bar_edge_width` and `acc_point_size`.
+        It relies on chemfish_rc/KVRC params beggining with 'acc_'; ex: `acc_bar_edge_width` and `acc_point_size`.
         :param df: Any BaseScoreFrame (DataFrame) with columns (at least) 'label' and 'score'
         :param renamer: Alter the labels for display. Ex, by setting `renamer={'optovin': 'opto'}`.
         :return: The Figure

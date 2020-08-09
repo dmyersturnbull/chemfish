@@ -1,9 +1,9 @@
-from kale.core._imports import *
+from chemfish.core._imports import *
 
-from kale.core.valar_singleton import *
-from kale.core import KaleResources, log_factory
-from dscience.tools.common_tools import CommonTools
-from dscience.tools.filesys_tools import FilesysTools
+from chemfish.core.valar_singleton import *
+from chemfish.core import KaleResources, log_factory
+from pocketutils.tools.common_tools import CommonTools
+from pocketutils.tools.filesys_tools import FilesysTools
 
 # I really don't understand why this is needed here
 for handler in logging.getLogger().handlers:
@@ -12,11 +12,11 @@ for handler in logging.getLogger().handlers:
 # NOTE!!
 # The environment variable used to be 'KALE_CONFIG_PATH'
 # We changed it to 'KALE_CONFIG' in 1.13.0 to prefer not using it, unless it was created by the installer
-MAIN_DIR = Path.home() / ".kale"
-CONFIG_PATH = os.environ.get("KALE_CONFIG", MAIN_DIR / "kale.config")
+MAIN_DIR = Path.home() / ".chemfish"
+CONFIG_PATH = os.environ.get("KALE_CONFIG", MAIN_DIR / "chemfish.config")
 if CONFIG_PATH is None:
     raise FileDoesNotExistError("No config file at {}".format(CONFIG_PATH))
-VIZ_PATH = MAIN_DIR / "kale_viz.properties"
+VIZ_PATH = MAIN_DIR / "chemfish_viz.properties"
 
 
 @abcd.auto_repr_str()
@@ -26,7 +26,7 @@ class KaleEnvironment:
     """
     A collection of settings for Kale.
     Python files in Kale use this singleton class directly.
-    This is loaded from a file in the user's home directory at ~/kale.config.
+    This is loaded from a file in the user's home directory at ~/chemfish.config.
         : username: The username in valar.users; no default
         : cache_dir: The location of the top-level cache path; defaults to ~/valar-cache
         : video_cache_dir:  The location of the cache for videos; defaults to  ~/valar-cache/videos
@@ -37,9 +37,9 @@ class KaleEnvironment:
         : use_multicore_tsne: Enable the multicore_tsne package
         : pickle_protocol: Protocol used in Python pickle; see https://docs.python.org/3/library/pickle.html#pickle.HIGHEST_PROTOCOL; 4 by default
         : joblib_compression_level: Used in joblib.dump compress parameter if the filename ends with one of (‘.z’, ‘.gz’, ‘.bz2’, ‘.xz’ or ‘.lzma’); 3 by default
-        : kale_log_level: The log level recommended to be used for logging statements within Kale; set up by jupyter.py
+        : chemfish_log_level: The log level recommended to be used for logging statements within Kale; set up by jupyter.py
         : global_log_level: The log level recommended to be used for logging statements globally; set up by jupyter.py
-        : viz_file: Path to kale-specific visualization options in the style of Matplotlib RC
+        : viz_file: Path to chemfish-specific visualization options in the style of Matplotlib RC
         : n_cores: Default number of cores for some jobs, including with parallelize()
         : jupyter_template: Path to a Jupyter template text file
         : quiet: Ignore startup messages, etc, for knowledgable users
@@ -60,7 +60,7 @@ class KaleEnvironment:
             raise MissingConfigKeyError("Must specify username in {}".format(self.config_file))
         self.user = Users.fetch(self.username)
         self.user_ref = Refs.fetch("manual:" + self.username)
-        self.kale_log_level = _try("kale_log_level", "INFO")
+        self.chemfish_log_level = _try("chemfish_log_level", "INFO")
         self.global_log_level = _try("global_log_level", "INFO")
         self.cache_dir = _try("cache", Path.home() / "valar-cache")
         self.video_cache_dir = Path(
@@ -88,7 +88,7 @@ class KaleEnvironment:
         self.cache_dir.mkdir(exist_ok=True, parents=True)
         if not self.quiet:
             logger.info(
-                "Set {} kale config items. Run 'print(kale_env.info())' for details.".format(
+                "Set {} chemfish config items. Run 'print(chemfish_env.info())' for details.".format(
                     len(props)
                 )
             )
@@ -100,16 +100,16 @@ class KaleEnvironment:
                 for k, v in FilesysTools.read_properties_file(self.config_file).items()
             }
         except ParsingError as e:
-            raise MissingConfigKeyError("Bad kale config file {}".format(self.config_file)) from e
+            raise MissingConfigKeyError("Bad chemfish config file {}".format(self.config_file)) from e
         return props
 
     def _adjust_logging(self):
-        logger.setLevel(self.kale_log_level)
+        logger.setLevel(self.chemfish_log_level)
         logging.getLogger(self.global_log_level)
         if not self.quiet:
             logger.info(
-                "Set global log level to {} and kale to {}.".format(
-                    self.global_log_level, self.kale_log_level
+                "Set global log level to {} and chemfish to {}.".format(
+                    self.global_log_level, self.chemfish_log_level
                 )
             )
 
@@ -135,6 +135,6 @@ class KaleEnvironment:
                 raise ConfigError("Failed to set ChEMBL settings: Bad variable format") from e
 
 
-kale_env = KaleEnvironment()
+chemfish_env = KaleEnvironment()
 
-__all__ = ["KaleEnvironment", "kale_env"]
+__all__ = ["KaleEnvironment", "chemfish_env"]

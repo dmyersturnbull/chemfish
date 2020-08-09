@@ -7,12 +7,12 @@ from __future__ import annotations
 
 # importing dataclass directly is necessary to fix pycharm warnings
 from dataclasses import dataclass
-from kale.core.core_imports import *
+from chemfish.core.core_imports import *
 from traceback import FrameSummary, StackSummary
-from kale.model.well_frames import *
-from kale.model.features import *
-from kale.model.sensors import *
-from kale.model.cache_interfaces import ASensorCache
+from chemfish.model.well_frames import *
+from chemfish.model.features import *
+from chemfish.model.sensors import *
+from chemfish.model.cache_interfaces import ASensorCache
 
 control_types = {c.name: c for c in ControlTypes.select()}
 TRASH_CONTROLS = {

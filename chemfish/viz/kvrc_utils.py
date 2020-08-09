@@ -6,16 +6,16 @@ from matplotlib.markers import MarkerStyle
 import textwrap
 import matplotlib
 from matplotlib import colors as mcolors
-from dscience.support.time_unit import TimeUnit, TimeUnits
-from kale.core.core_imports import *
-from kale.viz import plt
-from kale.viz.color_schemes import *
-from kale.viz.smart_dimensions import RefDims
+from pocketutils.support.time_unit import TimeUnit, TimeUnits
+from chemfish.core.core_imports import *
+from chemfish.viz import plt
+from chemfish.viz.color_schemes import *
+from chemfish.viz.smart_dimensions import RefDims
 
 
 class KvrcDefaults:
     """
-    Some default and legacy default values for kale_rc.
+    Some default and legacy default values for chemfish_rc.
     """
 
     trace_pref_tick_ms_interval = InternalTools.load_resource("viz", "ms_ticks.ints")
@@ -45,7 +45,7 @@ T = TypeVar("T", covariant=True)
 @abcd.total_ordering
 class Key:
     """
-    A Key is an available setting in kale_rc.
+    A Key is an available setting in chemfish_rc.
     It may be 'resolved' -- has a fixed `value` -- or not.
     If `is_resolved`, `value` is the ultimate value after reading the config file.
     Otherwise, `value` will be None.
@@ -117,7 +117,7 @@ class Key:
 @abcd.auto_str()
 class KvrcConfig:
     """
-    The collection of resolved (fixed; set from config file) kale_rc `Key`s.
+    The collection of resolved (fixed; set from config file) chemfish_rc `Key`s.
     It contains `KaleConfig.collection`, which is a dict mapping key strings to resolved `Key`s.
     For ex, `collection` might contain:
     ```
@@ -434,7 +434,7 @@ class KvrcCore:
         """
         Does two things:
         - Sets the matplotlib style (`plt.style.use`) if it's not None
-        - Reloads the kale_rc settings from `kvrc_style_path` if it's not None
+        - Reloads the chemfish_rc settings from `kvrc_style_path` if it's not None
         Also sets the attributes `matplotlib_style_path` and `kvrc_style_path`, only when they're not None.
         """
         self.load(self._matplotlib_style_path, self._kvrc_style_path)
@@ -443,7 +443,7 @@ class KvrcCore:
         self, matplotlib_style_path: Optional[PLike], kvrc_style_path: Optional[PLike]
     ) -> None:
         """
-        Reads and loads the matplotlib and kale_rc style file, if they're not `None`.
+        Reads and loads the matplotlib and chemfish_rc style file, if they're not `None`.
         """
         if matplotlib_style_path is not None:
             self._load_mpl(matplotlib_style_path)
@@ -460,7 +460,7 @@ class KvrcCore:
             if matplotlib_style_path is None
             else Tools.read_lines_file(matplotlib_style_path, ignore_comments=True)
         )
-        if not kale_env.quiet:
+        if not chemfish_env.quiet:
             logger.info(
                 "Loaded {} matplotlib RC settings from {}".format(
                     len(mpl_read), matplotlib_style_path
@@ -473,7 +473,7 @@ class KvrcCore:
         try:
             viz_params = Tools.read_properties_file(str(kvrc_style_path))
         except ParsingError as e:
-            raise ConfigError("Bad kale_rc file {}".format(kvrc_style_path)) from e
+            raise ConfigError("Bad chemfish_rc file {}".format(kvrc_style_path)) from e
         config = KvrcConfig(viz_params)
         # set everything in subclass
         self._load_settings(config)
@@ -505,7 +505,7 @@ class KvrcCore:
             ):
                 raise UnrecognizedKeyError("Viz key '{}' was not recognized".format(k))
         # log important info
-        if not kale_env.quiet:
+        if not chemfish_env.quiet:
             logger.info(
                 "Loaded {} Kale viz settings from {}".format(len(config.passed), kvrc_style_path)
             )
@@ -520,7 +520,7 @@ class KvrcCore:
                 )
             else:
                 logger.info("No reference widths or heights set.")
-            logger.debug("Set kale_rc settings {}".format(viz_params))
+            logger.debug("Set chemfish_rc settings {}".format(viz_params))
 
     def _load_settings(self, config: KvrcConfig):
         """
@@ -538,7 +538,7 @@ class KvrcCore:
         """
         if self.feature_names is None:
             self.feature_names = {}
-            from kale.model.features import FeatureTypes
+            from chemfish.model.features import FeatureTypes
 
             for f in FeatureTypes.known:
                 if f.internal_name not in self._feature_names:
@@ -627,7 +627,7 @@ class KvrcCore:
 
     @width.setter
     def width(self, value):
-        raise UnsupportedOpError("Cannot modify width. Use kale_rc['width']")
+        raise UnsupportedOpError("Cannot modify width. Use chemfish_rc['width']")
 
     @property
     def height(self):
@@ -635,7 +635,7 @@ class KvrcCore:
 
     @height.setter
     def height(self, value):
-        raise UnsupportedOpError("Cannot modify height. Use kale_rc['height']")
+        raise UnsupportedOpError("Cannot modify height. Use chemfish_rc['height']")
 
     @property
     def figsize(self):
@@ -652,7 +652,7 @@ class KvrcCore:
         :return: A Python context manager with these options set
         Example 1:
         ```
-        with kale_rc.using(trace_legend_n_cols=2, axes_prop_cycle=kbgrcmy):
+        with chemfish_rc.using(trace_legend_n_cols=2, axes_prop_cycle=kbgrcmy):
             quick.trace(5)
         ```
         Example 2:
@@ -661,7 +661,7 @@ class KvrcCore:
             kv['trace_legend_n_cols'] = 2
             kv['axes.prop_cycle'] = 'kbgrcmy'
             kv['stamp_on'] = False
-        with kale_rc.using(my_common_styler):
+        with chemfish_rc.using(my_common_styler):
             quck.trace(5)
         ```
         You can of course combine these two types of arguments (functions and keyword arguments).
@@ -671,11 +671,11 @@ class KvrcCore:
         """
         if not all((callable(a) for a in args)):
             raise XTypeError(
-                "Non-keyword arguments to `kale_rc.using` (if present), must be functions of the KaleEnv that modify its settings."
+                "Non-keyword arguments to `chemfish_rc.using` (if present), must be functions of the KaleEnv that modify its settings."
             )
         if not all((isinstance(k, str) for k, v in kwargs.items())):
             raise XTypeError(
-                "Keyword arguments to `kale_rc.using` (if present), must map names of matplotlib or kale viz settings to their values."
+                "Keyword arguments to `chemfish_rc.using` (if present), must map names of matplotlib or chemfish viz settings to their values."
             )
         mplstuff = deepcopy(plt.rcParams)
         prev = deepcopy(self.__dict__)
@@ -691,8 +691,8 @@ class KvrcCore:
 
     def __setitem__(self, item: str, value: Any):
         """
-        Modifies kale or matplotlib settings in place. Looks up:
-            1. `item` in the available kale_rc keys
+        Modifies chemfish or matplotlib settings in place. Looks up:
+            1. `item` in the available chemfish_rc keys
             2. `item` in maptlotlib rcParams
             3. `item.replace('_', '.', 1)`  in matplotlib rcParams
         However, has special behavior for figsize-related arguments:
@@ -731,7 +731,7 @@ class KvrcCore:
     def __getitem__(self, item: str) -> Any:
         """
         Looks up:
-            1. `item` in the available kale_rc keys
+            1. `item` in the available chemfish_rc keys
             2. `item` in maptlotlib rcParams
             3. `item.replace('_', '.', 1)`  in matplotlib rcParams
         """
@@ -753,8 +753,8 @@ class KvrcCore:
         elif item.replace("_", ".") in plt.rcParams:
             return plt.rcParams[item.replace("_", ".")]
         elif item == "__module__":
-            logger.error("kale_rc might be reloading")
-            return "kale.viz.kvrc"  # 'No visualization setting __module__'
+            logger.error("chemfish_rc might be reloading")
+            return "chemfish.viz.kvrc"  # 'No visualization setting __module__'
         else:
             raise UnrecognizedKeyError("No visualization setting {}".format(item))
 
@@ -773,7 +773,7 @@ class KvrcCore:
     def plot_palette(self, values: Union[Sequence[str], str]) -> Figure:
         """
         Plots a color palette.
-        :param values: A string of a color (starting with #), a sequence of colors (each starting with #), or the name of the kale_rc setting (ex: pref_treatment_colors).
+        :param values: A string of a color (starting with #), a sequence of colors (each starting with #), or the name of the chemfish_rc setting (ex: pref_treatment_colors).
         :return:
         """
         if isinstance(values, str) and not values.startswith("#"):

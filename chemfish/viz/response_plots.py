@@ -1,8 +1,8 @@
-from kale.core.core_imports import *
-from kale.viz.internal_viz import *
-from kale.viz.figures import FigureTools
+from chemfish.core.core_imports import *
+from chemfish.viz.internal_viz import *
+from chemfish.viz.figures import FigureTools
 import matplotlib.ticker as ticker
-from kale.model.responses import *
+from chemfish.model.responses import *
 
 
 class UnsupportedPlotOption(UnsupportedOpError):

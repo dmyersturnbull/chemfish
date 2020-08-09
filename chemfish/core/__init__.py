@@ -11,9 +11,9 @@ from datetime import datetime
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Union, Mapping, Generator
-from dscience.support.fancy_logger import *
-from dscience.support.log_format import *
-from kale import __version__ as kale_version
+from pocketutils.logging.fancy_logger import *
+from pocketutils.logging.log_format import *
+from chemfish import __version__ as chemfish_version
 
 warnings.filterwarnings(
     action="ignore",
@@ -36,17 +36,17 @@ class KaleResources:
 
 
 LogLevel.initalize()
-logger = AdvancedLogger.create("kale")
+logger = AdvancedLogger.create("chemfish")
 log_factory = PrettyRecordFactory(7, 13, 5).modifying(logger)
 logger.setLevel("INFO")  # good start; can be changed
 
-kale_start_time = datetime.now()
-kale_start_clock = time.monotonic()
+chemfish_start_time = datetime.now()
+chemfish_start_clock = time.monotonic()
 
 __all__ = [
-    "kale_version",
-    "kale_start_time",
-    "kale_start_clock",
+    "chemfish_version",
+    "chemfish_start_time",
+    "chemfish_start_clock",
     "LogLevel",
     "KaleResources",
     "logger",

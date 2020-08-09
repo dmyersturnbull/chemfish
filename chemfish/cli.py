@@ -6,11 +6,11 @@ import logging
 from typing import Optional
 from pathlib import Path
 from datetime import datetime
-from kale.core import KaleResources, logger, log_factory
-from dscience.tools.string_tools import StringTools
-from dscience.core import SmartEnum
-from dscience.tools.call_tools import CallTools
-from dscience.tools.filesys_tools import FilesysTools
+from chemfish.core import KaleResources, logger, log_factory
+from pocketutils.tools.string_tools import StringTools
+from pocketutils.core import SmartEnum
+from pocketutils.tools.call_tools import CallTools
+from pocketutils.tools.filesys_tools import FilesysTools
 
 ch = logging.StreamHandler()
 logger.addHandler(ch)
@@ -45,26 +45,26 @@ class KaleProcessor:
 
     # noinspection PyTypeChecker
     def init(self) -> None:
-        logger.notice("Setting up kale configuration...")
+        logger.notice("Setting up chemfish configuration...")
         n_created = sum(
             [
                 self._copy_if(
-                    Path.home() / ".kale" / "valar_config.json",
+                    Path.home() / ".chemfish" / "valar_config.json",
                     KaleResources.path("example_valar_config.json"),
                 ),
                 self._copy_if(
-                    Path.home() / ".kale" / "kale.config", KaleResources.path("example.kale.config")
+                    Path.home() / ".chemfish" / "chemfish.config", KaleResources.path("example.chemfish.config")
                 ),
                 self._copy_if(
-                    Path.home() / ".kale" / "jupyter_template.txt",
+                    Path.home() / ".chemfish" / "jupyter_template.txt",
                     KaleResources.path("jupyter_template.txt"),
                 ),
                 self._copy_if(
-                    Path.home() / ".kale" / "kale.mplstyle",
+                    Path.home() / ".chemfish" / "chemfish.mplstyle",
                     KaleResources.path("styles/basic.mplstyle"),
                 ),
                 self._copy_if(
-                    Path.home() / ".kale" / "kale_viz.properties",
+                    Path.home() / ".chemfish" / "chemfish_viz.properties",
                     KaleResources.path("styles/basic.viz.properties"),
                 ),
             ]
@@ -75,7 +75,7 @@ class KaleProcessor:
             logger.notice("Finished. You already have all required config files.")
 
     def download_video(self, args):
-        from kale.caches.video_cache import VideoCache
+        from chemfish.caches.video_cache import VideoCache
 
         cache = VideoCache()
         n_exists = sum([not cache.has_video(v) for v in args])

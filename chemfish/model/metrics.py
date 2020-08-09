@@ -1,7 +1,7 @@
 from __future__ import annotations
-from kale.core.core_imports import *
+from chemfish.core.core_imports import *
 import sklearn.metrics as skmetrics
-from dscience.analysis.stats import *
+from pocketutils.analysis.stats import *
 
 
 @abcd.auto_repr_str()

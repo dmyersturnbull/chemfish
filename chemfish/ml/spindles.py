@@ -1,9 +1,9 @@
 from __future__ import annotations
 from matplotlib.figure import Figure
-from kale.core.core_imports import *
-from kale.model.metrics import *
-from kale.model.responses import *
-from kale.viz.accuracy_plots import *
+from chemfish.core.core_imports import *
+from chemfish.model.metrics import *
+from chemfish.model.responses import *
+from chemfish.viz.accuracy_plots import *
 
 
 class SummarizedSpindleFrame(BaseScoreFrame):

@@ -1,8 +1,8 @@
 from __future__ import annotations
-from kale.core.valar_singleton import *
+from chemfish.core.valar_singleton import *
 from PIL import Image, ImageDraw
-from kale.core.core_imports import *
-from kale.model.audio import *
+from chemfish.core.core_imports import *
+from chemfish.model.audio import *
 import io
 import numpy as np
 

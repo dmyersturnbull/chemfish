@@ -4,15 +4,15 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.font_manager
 import matplotlib.legend as mlegend
 import matplotlib.backends.backend_pdf
-from kale.core.core_imports import *
+from chemfish.core.core_imports import *
 
 # noinspection PyProtectedMember
-from kale.core._tools import *
+from chemfish.core._tools import *
 
 # noinspection PyProtectedMember
-from kale.viz.kvrc_utils import KvrcColorSchemes as _iku
-from kale.viz.internal_viz import *
-from kale.viz.fig_savers import *
+from chemfish.viz.kvrc_utils import KvrcColorSchemes as _iku
+from chemfish.viz.internal_viz import *
+from chemfish.viz.fig_savers import *
 
 
 class Corner:
@@ -112,9 +112,9 @@ class FigureTools:
     @contextmanager
     def using(cls, *args, **kwargs) -> Generator[None, None, None]:
         """
-        Provided for convenience as a shorthand to using both kale_rc.using, Figs.hiding, and Figs.clearing.
-        :param args: Passed to kale_rc.using
-        :param kwargs: Passed to kale_rc.using, except for 'path', 'hide', and 'clear'
+        Provided for convenience as a shorthand to using both chemfish_rc.using, Figs.hiding, and Figs.clearing.
+        :param args: Passed to chemfish_rc.using
+        :param kwargs: Passed to chemfish_rc.using, except for 'path', 'hide', and 'clear'
         :return: A context manager
         """
         path, hide, clear, reload = (
@@ -168,9 +168,9 @@ class FigureTools:
     ):
         """
         Creates a colorbar on the right side of `ax`.
-        A padding of kale_rc.general_colorbar_left_pad will be applied between `ax` and the colorbar.
+        A padding of chemfish_rc.general_colorbar_left_pad will be applied between `ax` and the colorbar.
         Technically description: Adds a new `Axes` on the right side with width `size`%.
-        If kale_rc.general_colorbar_on is False, will add the colorbar and make it invisible.
+        If chemfish_rc.general_colorbar_on is False, will add the colorbar and make it invisible.
         (This is weirdly necessary to work around a matplotlib bug.)
         :param ax: The Axes, modified in-place
         :param mat: This must be the return value from `matshow` or `imshow`
@@ -240,7 +240,7 @@ class FigureTools:
         """
         Creates legend handles manually and adds them as the legend on the Axes.
         This is unfortunately necessary in cases where, for ex, only a handle per color is wanted -- not a handle per color and marker shape.
-        Applies `FigureTools.fix_labels` and applies kale_rc defaults unless they're overridden in kwargs.
+        Applies `FigureTools.fix_labels` and applies chemfish_rc defaults unless they're overridden in kwargs.
         """
         labels, colors = list(labels), list(colors)
         kwargs = copy(kwargs)
@@ -427,7 +427,7 @@ class FigureTools:
     @classmethod
     def add_note_01_coords(cls, ax: Axes, x: float, y: float, s: str, **kwargs) -> Axes:
         """
-        Adds text without a box, using kale_rc['general_note_font_size'] (unless overridden in kwargs).
+        Adds text without a box, using chemfish_rc['general_note_font_size'] (unless overridden in kwargs).
         `x` and `y` are in coordinates (0, 1).
         """
         fontsize, kwargs = InternalTools.from_kwargs(
@@ -440,7 +440,7 @@ class FigureTools:
     @classmethod
     def add_note_data_coords(cls, ax: Axes, x: float, y: float, s: str, **kwargs) -> Axes:
         """
-        Adds text without a box, using kale_rc['general_note_font_size'] (unless overridden in kwargs).
+        Adds text without a box, using chemfish_rc['general_note_font_size'] (unless overridden in kwargs).
         `x` and `y` are in data coordinates.
         """
         fontsize, kwargs = InternalTools.from_kwargs(
@@ -464,7 +464,7 @@ class FigureTools:
     def stamp_runs(cls, ax: Axes, run_ids: Iterable[int]) -> Axes:
         """
         Stamps the run ID(s) in the upper-left corner.
-        Only shows if kale_rc.stamp_on is True AND len(run_ids) <= kale_rc.stamp_max_runs.
+        Only shows if chemfish_rc.stamp_on is True AND len(run_ids) <= chemfish_rc.stamp_max_runs.
         """
         if KVRC.stamp_on:
             run_ids = InternalTools.fetch_all_ids_unchecked(Runs, run_ids)
@@ -476,7 +476,7 @@ class FigureTools:
     @classmethod
     def stamp_time(cls, ax: Axes) -> Axes:
         """
-        If kale_rc.stamp_on is on, stamps the datetime to the top right corner.
+        If chemfish_rc.stamp_on is on, stamps the datetime to the top right corner.
         """
         if KVRC.stamp_on:
             text = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -503,12 +503,12 @@ class _Pub:
         self, width: str, height: str, save_under: PLike = "", *args, **kwargs
     ) -> Generator[FigureSaver, None, None]:
         """
-        A context manager with a `FigureSaver`, non-interactive, auto-clearing, and optional kale_rc params.
-        :param width: A string passed to `kale_rc`; ex: `1/2 2_col` (defined in kale_rc params file)
-        :param height: A string passed to `kale_rc`; ex: `1/2 2_col` (defined in kale_rc params file)
+        A context manager with a `FigureSaver`, non-interactive, auto-clearing, and optional chemfish_rc params.
+        :param width: A string passed to `chemfish_rc`; ex: `1/2 2_col` (defined in chemfish_rc params file)
+        :param height: A string passed to `chemfish_rc`; ex: `1/2 2_col` (defined in chemfish_rc params file)
         :param save_under: Save everything under this directory (but passing absolute paths will invalidate this)
-        :param args: Functions of kale_rc passed to `kale_rc.using`
-        :param kwargs: Kwargs of kale_rc and matplotlib params passed to `kale_rc.using`.
+        :param args: Functions of chemfish_rc passed to `chemfish_rc.using`
+        :param kwargs: Kwargs of chemfish_rc and matplotlib params passed to `chemfish_rc.using`.
         :return:
         """
         save_under = str(save_under).replace("/", os.sep)

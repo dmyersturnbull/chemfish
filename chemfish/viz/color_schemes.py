@@ -3,14 +3,14 @@ import colorsys
 from matplotlib.colors import Colormap
 from matplotlib import colors as mcolors
 from matplotlib.colors import LinearSegmentedColormap
-from kale.core.core_imports import *
+from chemfish.core.core_imports import *
 
 
 class KvrcColorSchemes:
     """
     Color schemes that can be used.
     Each is a list of hex color codes.
-    Most are not used directly in kale, but are here for convenience.
+    Most are not used directly in chemfish, but are here for convenience.
     The "tol" palettes (ex `qualitative_tol_vibrant_7`) are safe for red-green color blindness.
     """
 

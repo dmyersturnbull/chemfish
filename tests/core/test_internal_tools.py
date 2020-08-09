@@ -2,7 +2,7 @@ import pytest
 from typing import Iterator, Sequence, Set
 
 # noinspection PyProtectedMember
-from kale.core._tools import *
+from chemfish.core._tools import *
 
 
 class TestValarToolsMethodSetUpRequired:

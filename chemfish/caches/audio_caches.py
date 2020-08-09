@@ -1,12 +1,12 @@
 import pydub
 from moviepy.audio.io.AudioFileClip import AudioFileClip, AudioClip
 
-from kale.core.core_imports import *
-from kale.core.environment import kale_env
-from kale.model.audio import *
-from kale.model.cache_interfaces import AnAudioStimulusCache, StimulusWaveform
+from chemfish.core.core_imports import *
+from chemfish.core.environment import chemfish_env
+from chemfish.model.audio import *
+from chemfish.model.cache_interfaces import AnAudioStimulusCache, StimulusWaveform
 
-DEFAULT_CACHE_DIR = kale_env.cache_dir / "stimuli"
+DEFAULT_CACHE_DIR = chemfish_env.cache_dir / "stimuli"
 
 
 @abcd.auto_eq()

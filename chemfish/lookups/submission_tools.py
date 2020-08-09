@@ -1,5 +1,5 @@
-from kale.core.core_imports import *
-from kale.lookups import *
+from chemfish.core.core_imports import *
+from chemfish.lookups import *
 
 
 @abcd.external

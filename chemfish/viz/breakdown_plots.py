@@ -3,9 +3,9 @@ Plotting code for distributions by class,
 especially for info from Mandos.
 """
 
-from kale.core.core_imports import *
-from kale.viz.internal_viz import *
-from kale.viz.figures import *
+from chemfish.core.core_imports import *
+from chemfish.viz.internal_viz import *
+from chemfish.viz.figures import *
 
 
 class BarSlicer(KvrcPlotting):

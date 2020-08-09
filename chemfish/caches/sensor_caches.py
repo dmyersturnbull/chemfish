@@ -1,9 +1,9 @@
 import soundfile
-from kale.core.core_imports import *
-from kale.model.sensors import *
-from kale.model.cache_interfaces import ASensorCache
+from chemfish.core.core_imports import *
+from chemfish.model.sensors import *
+from chemfish.model.cache_interfaces import ASensorCache
 
-DEFAULT_CACHE_DIR = kale_env.cache_dir / "sensors"
+DEFAULT_CACHE_DIR = chemfish_env.cache_dir / "sensors"
 bdata_names = {"sauronx-microphone-wav", "preview", "webcam"}
 
 

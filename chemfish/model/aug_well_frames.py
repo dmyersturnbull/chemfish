@@ -2,10 +2,10 @@
 Can depend on all model objects.
 """
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.well_frames import *
-from kale.model.app_frames import *
-from kale.model.assay_frames import *
+from chemfish.core.core_imports import *
+from chemfish.model.well_frames import *
+from chemfish.model.app_frames import *
+from chemfish.model.assay_frames import *
 
 
 @abcd.status(CodeStatus.Immature)

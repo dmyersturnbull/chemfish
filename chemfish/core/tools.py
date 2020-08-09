@@ -1,15 +1,15 @@
 from __future__ import annotations
 import struct
 import joblib, dill
-from dscience.core import *
-from kale.core._imports import *
-from kale.core.environment import kale_env
-from dscience.core.hasher import FileHasher
-from dscience.full import Tools as _Tools
-from dscience.core.iterators import *
-from dscience.core.chars import *
-from dscience.biochem.multiwell_plates import WB1
-from kale.core.valar_singleton import *
+from pocketutils.core import *
+from chemfish.core._imports import *
+from chemfish.core.environment import chemfish_env
+from pocketutils.core.hasher import FileHasher
+from pocketutils.full import Tools as _Tools
+from pocketutils.core.iterators import *
+from pocketutils.core.chars import *
+from pocketutils.biochem.multiwell_plates import WB1
+from chemfish.core.valar_singleton import *
 
 
 class IncomptabileNumpyArrayDataType(XTypeError):
@@ -231,7 +231,7 @@ class KaleValarTools:
 class Tools(_Tools, KaleValarTools):
     @classmethod
     def parallel(
-        cls, things, function, n_jobs: Optional[int] = kale_env.n_cores, verbosity: int = 1
+        cls, things, function, n_jobs: Optional[int] = chemfish_env.n_cores, verbosity: int = 1
     ):
         return joblib.Parallel(n_jobs=n_jobs, verbose=verbosity)(
             joblib.delayed(function)(i) for i in things

@@ -3,11 +3,11 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.gridspec import GridSpec
 from matplotlib.colors import Colormap
-from kale.core.core_imports import *
-from kale.core.tools import *
-from kale.viz import plt
-from kale.viz.kvrc_utils import KvrcColorSchemes
-from kale.viz.kvrc import *
+from chemfish.core.core_imports import *
+from chemfish.core.tools import *
+from chemfish.viz import plt
+from chemfish.viz.kvrc_utils import KvrcColorSchemes
+from chemfish.viz.kvrc import *
 
 FigureSeqLike = Union[Figure, Iterator[Figure], Iterator[Tup[str, Figure]], Mapping[str, Figure]]
 

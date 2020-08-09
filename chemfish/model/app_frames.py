@@ -1,6 +1,6 @@
 from __future__ import annotations
 from binascii import hexlify
-from kale.core.core_imports import *
+from chemfish.core.core_imports import *
 
 
 class InsightFrame(OrganizingFrame):

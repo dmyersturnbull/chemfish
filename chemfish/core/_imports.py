@@ -1,7 +1,7 @@
 """
 Standard imports for internal code inside core.
-Can depend on very common Python packages, and limited functions in dscience.core
-Should only be used in modules that are strictly tied to kale (will always be specific to kale).
+Can depend on very common Python packages, and limited functions in pocketutils.core
+Should only be used in modules that are strictly tied to chemfish (will always be specific to chemfish).
 """
 
 from __future__ import annotations
@@ -58,15 +58,16 @@ from abc import ABCMeta
 import numpy as np
 import pandas as pd
 
-from dscience.tools.common_tools import CommonTools
-from dscience.core import abcd, SmartEnum
-from dscience.core.exceptions import *
+import decorateme as abcd
+from pocketutils.tools.common_tools import CommonTools
+from pocketutils.core import SmartEnum
+from pocketutils.core.exceptions import *
 
-from kale.core import (
+from chemfish.core import (
     KaleResources,
-    kale_version,
-    kale_start_time,
-    kale_start_clock,
+    chemfish_version,
+    chemfish_start_time,
+    chemfish_start_clock,
     logger,
 )
 
@@ -83,7 +84,7 @@ def get2nd(it: Iterable[Collection[Any]]):
     return [i[1] for i in it]
 
 
-from dscience.core.exceptions import *
+from pocketutils.core.exceptions import *
 
 
 class NoFeaturesError(MissingResourceError):

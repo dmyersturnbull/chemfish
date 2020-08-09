@@ -3,13 +3,13 @@
 
 import argparse
 import traceback
-from kale.core.core_imports import *
-from kale.viz.figures import *
-from kale.model.well_namers import *
-from kale.model.sensors import *
-from kale.model.well_frames import *
-from kale.model.concerns import *
-from kale.quick import *
+from chemfish.core.core_imports import *
+from chemfish.viz.figures import *
+from chemfish.model.well_names import *
+from chemfish.model.sensors import *
+from chemfish.model.well_frames import *
+from chemfish.model.concerns import *
+from chemfish.quick import *
 
 
 @abcd.auto_repr_str()
@@ -188,8 +188,8 @@ class AutoScreenTracer:
             # we're done with plots
             Tools.write_properties_file(
                 {
-                    "kale_version": kale_version,
-                    "kale_startup_time": kale_start_time.isoformat(),
+                    "chemfish_version": chemfish_version,
+                    "chemfish_startup_time": chemfish_start_time.isoformat(),
                     "current_time": datetime.now().isoformat(),
                 },
                 done_path,

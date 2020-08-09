@@ -1,5 +1,5 @@
-from kale.core.core_imports import *
-from kale.model.audio import Waveform
+from chemfish.core.core_imports import *
+from chemfish.model.audio import Waveform
 
 
 class AudioExpansion:

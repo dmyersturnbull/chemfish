@@ -1,8 +1,8 @@
 from matplotlib import dates as mdates
-from kale.core.core_imports import *
-from kale.viz.internal_viz import *
-from kale.model.metrics import *
-from kale.viz.figures import *
+from chemfish.core.core_imports import *
+from chemfish.viz.internal_viz import *
+from chemfish.model.metrics import *
+from chemfish.viz.figures import *
 
 
 class TimelineLabelType(SmartEnum):

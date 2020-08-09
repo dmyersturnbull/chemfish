@@ -1,6 +1,6 @@
-from kale.core._imports import *
-from kale.core.valar_singleton import *
-from kale.core.tools import *
+from chemfish.core._imports import *
+from chemfish.core.valar_singleton import *
+from chemfish.core.tools import *
 
 T = TypeVar("T")
 

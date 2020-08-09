@@ -22,7 +22,7 @@ from tensorflow.keras.losses import mse, binary_crossentropy
 from tensorflow.keras.optimizers import Adam, RMSprop
 from tensorflow.keras.regularizers import l2
 from tensorflow.python.client import device_lib
-from kale.core import logger
+from chemfish.core import logger
 
 devices = device_lib.list_local_devices()
 

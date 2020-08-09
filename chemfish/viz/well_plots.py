@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from kale.viz.internal_viz import *
-from kale.viz.figures import *
-from kale.core.core_imports import *
-from kale.model.well_frames import WellFrame
+from chemfish.viz.internal_viz import *
+from chemfish.viz.figures import *
+from chemfish.core.core_imports import *
+from chemfish.model.well_frames import WellFrame
 
 
 class WellPlotter(KvrcPlotting):

@@ -1,13 +1,13 @@
-from kale.core._imports import *
+from chemfish.core._imports import *
 import ast, shutil
 import subprocess
 from natsort import natsorted
 import tomlkit
-from dscience.support.toml_data import TomlData
-from kale.core._tools import *
-from kale.core.tools import *
-from kale.core.valar_singleton import *
-from kale.core.data_generations import DataGeneration
+from pocketutils.support.toml_data import TomlData
+from chemfish.core._tools import *
+from chemfish.core.tools import *
+from chemfish.core.valar_singleton import *
+from chemfish.core.data_generations import DataGeneration
 
 
 def _build_stim_colors():

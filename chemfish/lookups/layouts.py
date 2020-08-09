@@ -1,8 +1,8 @@
-from kale.core.core_imports import *
-from kale.model.wf_builders import *
-from kale.model.treatments import Treatment, Treatments
-from kale.model.well_namers import *
-from kale.model.compound_names import *
+from chemfish.core.core_imports import *
+from chemfish.model.wf_builders import *
+from chemfish.model.treatments import Treatment, Treatments
+from chemfish.model.well_names import *
+from chemfish.model.compound_names import *
 
 
 class Layout(SimpleFrame):

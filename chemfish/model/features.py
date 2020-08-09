@@ -1,5 +1,5 @@
-from kale.core.core_imports import *
-from kale.calc.interpolation import *
+from chemfish.core.core_imports import *
+from chemfish.calc.interpolation import *
 
 
 class FeatureType:

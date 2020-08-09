@@ -1,11 +1,11 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.well_frames import *
-from kale.model.comp_iters import *
-from kale.ml.spindles import SpindleFrame
-from kale.ml.classifiers import *
-from kale.ml import ClassifierPath
-from kale.ml.decision_frames import *
+from chemfish.core.core_imports import *
+from chemfish.model.well_frames import *
+from chemfish.model.comp_iters import *
+from chemfish.ml.spindles import SpindleFrame
+from chemfish.ml.classifiers import *
+from chemfish.ml import ClassifierPath
+from chemfish.ml.decision_frames import *
 
 
 class MultiTrainerUtils:

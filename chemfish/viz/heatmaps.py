@@ -1,12 +1,12 @@
 from matplotlib import gridspec
-from kale.core.core_imports import *
-from kale.viz.figures import *
-from kale.model.well_frames import WellFrame
-from kale.model.stim_frames import StimFrame
-from kale.viz.figures import FigureTools
-from kale.viz.stim_plots import *
-from kale.viz.internal_viz import *
-from kale.viz import CakeComponent
+from chemfish.core.core_imports import *
+from chemfish.viz.figures import *
+from chemfish.model.well_frames import WellFrame
+from chemfish.model.stim_frames import StimFrame
+from chemfish.viz.figures import FigureTools
+from chemfish.viz.stim_plots import *
+from chemfish.viz.internal_viz import *
+from chemfish.viz import CakeComponent
 
 
 @abcd.auto_eq()

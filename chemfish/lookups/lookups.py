@@ -1,7 +1,7 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.compound_names import TieredCompoundNamer
-from kale.lookups import *
+from chemfish.core.core_imports import *
+from chemfish.model.compound_names import TieredCompoundNamer
+from chemfish.lookups import *
 
 look = Tools.look
 _users = {u.id: u.username for u in Users.select()}

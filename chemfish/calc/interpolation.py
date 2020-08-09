@@ -1,5 +1,5 @@
 import scipy.interpolate as interp
-from kale.core.core_imports import *
+from chemfish.core.core_imports import *
 
 
 class InterpolationFailedError(AlgorithmError):

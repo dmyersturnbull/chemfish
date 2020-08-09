@@ -4,13 +4,13 @@ from moviepy.video.io.html_tools import ipython_display
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from moviepy.audio.AudioClip import CompositeAudioClip
 from moviepy.audio.io.AudioFileClip import AudioFileClip, AudioClip
-from dscience.core.exceptions import RefusingRequestError
-from kale.core.core_imports import *
-from kale.core.video_core import *
-from kale.model.app_frames import *
-from kale.model.wf_builders import *
-from kale.model.roi_tools import *
-from kale.viz.kvrc import *
+from pocketutils.core.exceptions import RefusingRequestError
+from chemfish.core.core_imports import *
+from chemfish.core.video_core import *
+from chemfish.model.app_frames import *
+from chemfish.model.wf_builders import *
+from chemfish.model.roi_tools import *
+from chemfish.viz.kvrc import *
 from matplotlib.colors import to_rgb
 
 stim_colors = {s.name: "#" + s.default_color for s in Stimuli.select()}
@@ -67,7 +67,7 @@ class SauronxVideo:
             - SauronxVideo.close(), or
             - del sauronx_video (preferred)
 
-    You should build these using a VideoCache (see kale.caches.video_cache),
+    You should build these using a VideoCache (see chemfish.caches.video_cache),
     or, if necessary, with SauronxVideos.of.
 
     Here are the features...

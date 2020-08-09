@@ -1,12 +1,12 @@
 from __future__ import annotations
 from scipy.spatial import distance
-from kale.core.core_imports import *
-from kale.model.features import *
-from kale.model.app_frames import *
-from kale.model.wf_builders import *
-from kale.model.well_namers import *
-from kale.model.stim_frames import *
-from kale.model.compound_names import *
+from chemfish.core.core_imports import *
+from chemfish.model.features import *
+from chemfish.model.app_frames import *
+from chemfish.model.wf_builders import *
+from chemfish.model.well_names import *
+from chemfish.model.stim_frames import *
+from chemfish.model.compound_names import *
 
 
 class HitFrame(OrganizingFrame):

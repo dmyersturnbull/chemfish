@@ -1,6 +1,6 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.compound_names import *
+from chemfish.core.core_imports import *
+from chemfish.model.compound_names import *
 from ipywidgets import Output
 from IPython.display import display
 import colorsys

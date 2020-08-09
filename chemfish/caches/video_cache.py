@@ -1,9 +1,9 @@
-from kale.core.core_imports import *
-from kale.core.video_core import *
-from kale.model.videos import *
-from kale.model.cache_interfaces import AVideoCache
+from chemfish.core.core_imports import *
+from chemfish.core.video_core import *
+from chemfish.model.videos import *
+from chemfish.model.cache_interfaces import AVideoCache
 
-DEFAULT_SHIRE_STORE = PurePath(kale_env.shire_path) / "store"
+DEFAULT_SHIRE_STORE = PurePath(chemfish_env.shire_path) / "store"
 
 
 class VideoDownloadError(DownloadError):
@@ -19,7 +19,7 @@ class VideoCache(AVideoCache):
     """
 
     def __init__(
-        self, cache_dir: PLike = kale_env.video_cache_dir, shire_store: PLike = DEFAULT_SHIRE_STORE
+        self, cache_dir: PLike = chemfish_env.video_cache_dir, shire_store: PLike = DEFAULT_SHIRE_STORE
     ):
         """
         :param cache_dir: The directory to save video files under.

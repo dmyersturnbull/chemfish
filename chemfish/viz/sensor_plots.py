@@ -1,10 +1,10 @@
-from kale.core.core_imports import *
-from kale.model.stim_frames import *
-from kale.model.sensors import *
-from kale.viz.stim_plots import StimframesPlotter
-from kale.viz import CakeComponent
-from kale.viz.internal_viz import *
-from kale.viz.figures import *
+from chemfish.core.core_imports import *
+from chemfish.model.stim_frames import *
+from chemfish.model.sensors import *
+from chemfish.viz.stim_plots import StimframesPlotter
+from chemfish.viz import CakeComponent
+from chemfish.viz.internal_viz import *
+from chemfish.viz.figures import *
 
 
 @abcd.auto_eq()

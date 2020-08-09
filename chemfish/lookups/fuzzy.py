@@ -1,10 +1,10 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.compound_names import TieredCompoundNamer
+from chemfish.core.core_imports import *
+from chemfish.model.compound_names import TieredCompoundNamer
 from fuzzywuzzy import fuzz, process
-from kale.lookups import *
-from kale.lookups.lookups import *
-from kale.lookups.mandos import *
+from chemfish.lookups import *
+from chemfish.lookups.lookups import *
+from chemfish.lookups.mandos import *
 
 look = Tools.look
 _users = {u.id: u.username for u in Users.select()}

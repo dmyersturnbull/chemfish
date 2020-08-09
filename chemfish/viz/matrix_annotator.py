@@ -1,6 +1,6 @@
-from kale.core.core_imports import *
-from kale.viz.internal_viz import *
-from kale.viz.color_schemes import KvrcColorSchemes
+from chemfish.core.core_imports import *
+from chemfish.viz.internal_viz import *
+from chemfish.viz.color_schemes import KvrcColorSchemes
 
 
 class MatrixAnnotator:

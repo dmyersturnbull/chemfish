@@ -1,10 +1,10 @@
 import IPython
 from IPython.display import display, Markdown, HTML
 from pandas.plotting import register_matplotlib_converters
-from dscience.j import J, JFonts
-from kale.core.core_imports import *
-from kale.core.magics import *
-from kale.startup import *
+from pocketutils.j import J, JFonts
+from chemfish.core.core_imports import *
+from chemfish.core.magics import *
+from chemfish.startup import *
 
 pd.Series.reverse = pd.DataFrame.reverse = lambda self: self[::-1]
 

@@ -1,8 +1,8 @@
 from __future__ import annotations
 from binascii import hexlify
-from kale.core.core_imports import *
-from kale.calc.audio_expansion import *
-from kale.model.audio import Waveform
+from chemfish.core.core_imports import *
+from chemfish.calc.audio_expansion import *
+from chemfish.model.audio import Waveform
 
 
 class StimFrame(OrganizingFrame, metaclass=abc.ABCMeta):

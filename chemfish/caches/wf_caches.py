@@ -1,15 +1,15 @@
 from __future__ import annotations
 import warnings
-from dscience.support.df_mem_cache import *
-from kale.core.core_imports import *
-from kale.model.features import FeatureType, FeatureTypes
-from kale.model.wf_builders import *
-from kale.model.well_namers import WellNamers
-from kale.model.cache_interfaces import AWellCache
+from pocketutils.support.df_mem_cache import *
+from chemfish.core.core_imports import *
+from chemfish.model.features import FeatureType, FeatureTypes
+from chemfish.model.wf_builders import *
+from chemfish.model.well_names import WellNamers
+from chemfish.model.cache_interfaces import AWellCache
 
 FeatureTypeLike = Union[None, int, str, Features, FeatureType]
 
-DEFAULT_CACHE_DIR = kale_env.cache_dir / "wells"
+DEFAULT_CACHE_DIR = chemfish_env.cache_dir / "wells"
 
 
 @abcd.auto_eq()

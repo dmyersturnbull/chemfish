@@ -4,7 +4,7 @@ Can depend on all other packages, except for extra.
 """
 from __future__ import annotations
 from datetime import date
-from kale.core.core_imports import *
+from chemfish.core.core_imports import *
 
 
 class Lookup(SimpleFrame, metaclass=abc.ABCMeta):

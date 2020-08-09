@@ -1,12 +1,12 @@
 from PIL import Image, ImageDraw
 import skvideo.io
 import cv2
-from kale.core.core_imports import *
-from kale.model.stim_frames import *
-from kale.viz.stim_plots import *
-from kale.caches.audio_caches import *
-from kale.caches.video_cache import *
-from kale.viz.kvrc import *
+from chemfish.core.core_imports import *
+from chemfish.model.stim_frames import *
+from chemfish.viz.stim_plots import *
+from chemfish.caches.audio_caches import *
+from chemfish.caches.video_cache import *
+from chemfish.viz.kvrc import *
 
 
 class IncorrectVidDimensionsError(Exception):

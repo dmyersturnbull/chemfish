@@ -2,7 +2,7 @@ from __future__ import annotations
 import pydub
 import librosa
 import librosa.display as ldisplay
-from kale.core.core_imports import *
+from chemfish.core.core_imports import *
 
 
 class AudioTools:

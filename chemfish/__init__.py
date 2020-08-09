@@ -1,5 +1,5 @@
 """
-Metadata for kale.
+Metadata for chemfish.
 """
 
 from pathlib import Path

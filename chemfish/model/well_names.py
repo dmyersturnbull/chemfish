@@ -1,6 +1,6 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.treat_displayers import *
+from chemfish.core.core_imports import *
+from chemfish.model.treatment_names import *
 
 
 class WellNamer:

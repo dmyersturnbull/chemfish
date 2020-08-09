@@ -1,7 +1,7 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.core.tools import *
-from kale.model.well_frames import *
+from chemfish.core.core_imports import *
+from chemfish.core.tools import *
+from chemfish.model.well_frames import *
 
 
 @abcd.auto_repr_str()

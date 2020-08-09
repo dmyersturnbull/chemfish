@@ -1,11 +1,11 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.stim_frames import BatteryStimFrame
-from kale.model.audio import Waveform
-from kale.model.cache_interfaces import AStimCache
+from chemfish.core.core_imports import *
+from chemfish.model.stim_frames import BatteryStimFrame
+from chemfish.model.audio import Waveform
+from chemfish.model.cache_interfaces import AStimCache
 
-DEFAULT_UNEXPANDED_CACHE_DIR = kale_env.cache_dir / "batteries" / "unexpanded"
-DEFAULT_EXPANDED_CACHE_DIR = kale_env.cache_dir / "batteries" / "expanded"
+DEFAULT_UNEXPANDED_CACHE_DIR = chemfish_env.cache_dir / "batteries" / "unexpanded"
+DEFAULT_EXPANDED_CACHE_DIR = chemfish_env.cache_dir / "batteries" / "expanded"
 
 
 @abcd.auto_repr_str()

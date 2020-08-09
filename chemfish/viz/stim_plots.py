@@ -1,10 +1,10 @@
 import matplotlib.ticker as ticker
-from kale.core.core_imports import *
-from kale.viz.internal_viz import *
-from kale.core.valar_tools import *
-from kale.model.stim_frames import *
-from kale.model.assay_frames import *
-from kale.viz import *
+from chemfish.core.core_imports import *
+from chemfish.viz.internal_viz import *
+from chemfish.core.valar_tools import *
+from chemfish.model.stim_frames import *
+from chemfish.model.assay_frames import *
+from chemfish.viz import *
 
 
 @abcd.auto_eq()
@@ -86,7 +86,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
             self._plot_assays(assays, starts_at_ms, n_ms, ax)
         # set the axis labels and legend
         self._axis_labels(stimframes, ax, starts_at_ms=starts_at_ms, total_ms=n_ms)
-        from kale.viz.figures import FigureTools
+        from chemfish.viz.figures import FigureTools
 
         if KVRC.stimplot_legend_on:
             ordered_names, ordered_colors = [k[1] for k in ordered], [k[2] for k in ordered]

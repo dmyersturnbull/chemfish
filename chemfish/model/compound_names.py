@@ -1,4 +1,4 @@
-from kale.core.core_imports import *
+from chemfish.core.core_imports import *
 
 
 @abcd.auto_repr_str()

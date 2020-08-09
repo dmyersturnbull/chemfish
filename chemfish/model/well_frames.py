@@ -1,9 +1,9 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.treatments import *
-from kale.model.well_namers import WellNamer
-from kale.model.compound_names import *
-from kale.model.wf_tools import *
+from chemfish.core.core_imports import *
+from chemfish.model.treatments import *
+from chemfish.model.well_names import WellNamer
+from chemfish.model.compound_names import *
+from chemfish.model.wf_tools import *
 
 
 class InvalidWellFrameError(ConstructionError):

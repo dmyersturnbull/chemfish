@@ -1,13 +1,13 @@
 import pytest
 
-from kale.core.tools import *
-from kale.model.compound_names import *
-from kale.model.treat_displayers import *
-from kale.model.well_namers import *
-from kale.model.wf_builders import *
-from kale.core import *
-from kale.core.valar_singleton import *
-from dscience.core.exceptions import *
+from chemfish.core.tools import *
+from chemfish.model.compound_names import *
+from chemfish.model.treatment_names import *
+from chemfish.model.well_names import *
+from chemfish.model.wf_builders import *
+from chemfish.core import *
+from chemfish.core.valar_singleton import *
+from pocketutils.core.exceptions import *
 from datetime import timedelta
 
 
@@ -94,11 +94,11 @@ class TestWellFrameBuilderSetUpRequired:
         with pytest.raises(ValarLookupError):
             WellFrameBuilder.runs(100000)  # Nonexistent Run ID
         with pytest.raises(XTypeError):
-            WellFrameBuilder.runs(self.fake_well)  # Well instance that is not in kaletest db
+            WellFrameBuilder.runs(self.fake_well)  # Well instance that is not in chemfishtest db
         with pytest.raises(ValarTableTypeError):
             WellFrameBuilder.runs([self.fake_well, self.fake_well])  # List of well Instances
         with pytest.raises(ValarLookupError):
-            WellFrameBuilder.runs(self.fake_run).build()  # Run instance that is not in kaletest db
+            WellFrameBuilder.runs(self.fake_run).build()  # Run instance that is not in chemfishtest db
         rl = [Runs.select().where(Runs.id == 1).first(), 3]
         one_run_wells = {
             w.id for w in Wells.select().where(Wells.run == 1)
@@ -308,7 +308,7 @@ class TestWellFrameBuilderNoSetUp:
         """
         no_nan_wfs = WellFrameBuilder.runs(
             1
-        ).build()  # Should not contain any NaNs as all fields are populated correctly in kaletest for Run 1.
+        ).build()  # Should not contain any NaNs as all fields are populated correctly in chemfishtest for Run 1.
         nan_val = float("nan")
         for i in no_nan_wfs.index.names:
             assert nan_val not in no_nan_wfs[i]

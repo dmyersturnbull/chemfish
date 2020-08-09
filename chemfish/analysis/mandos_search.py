@@ -1,7 +1,7 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.compound_names import *
-from kale.viz.breakdown_plots import BarSlicer, PieSlicer
+from chemfish.core.core_imports import *
+from chemfish.model.compound_names import *
+from chemfish.viz.breakdown_plots import BarSlicer, PieSlicer
 
 
 class MandosFrame(BaseFrame):

@@ -1,14 +1,14 @@
 """
-A better and simpler implementation of well classifiers introduced in kale 1.13.0.
+A better and simpler implementation of well classifiers introduced in chemfish 1.13.0.
 """
 
-from kale.core.core_imports import *
+from chemfish.core.core_imports import *
 import joblib
 from sklearn.ensemble import RandomForestClassifier
-from kale.model.wf_builders import *
-from kale.ml.decision_frames import *
-from kale.ml import ClassifierPath
-from kale.viz.figures import *
+from chemfish.model.wf_builders import *
+from chemfish.ml.decision_frames import *
+from chemfish.ml import ClassifierPath
+from chemfish.viz.figures import *
 
 
 class ClassifierFailedError(AlgorithmError):
@@ -242,7 +242,7 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
         except Exception:
             raise LoadError("Failed to save model metadata to {}".format(path.info_json))
         try:
-            joblib.dump(self.model, str(path.model_pkl), protocol=kale_env.pickle_protocol)
+            joblib.dump(self.model, str(path.model_pkl), protocol=chemfish_env.pickle_protocol)
         except Exception:
             raise LoadError("Failed to save model to {}".format(path.model_pkl))
         logger.debug("Saved model to {}".format(path.model_pkl))
@@ -331,7 +331,7 @@ class SklearnWfClassifierWithOob(
         runs: Optional[Sequence[int]] = None,
         label_colors: Optional[Mapping[str, str]] = None,
     ):
-        from kale.viz.figures import FigureSaver
+        from chemfish.viz.figures import FigureSaver
 
         path = Tools.prepped_dir(path, exist_ok=exist_ok)
         path = ClassifierPath(path)

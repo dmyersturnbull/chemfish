@@ -1,6 +1,6 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.treatments import Treatment
+from chemfish.core.core_imports import *
+from chemfish.model.treatments import Treatment
 
 
 class UnknownVariableError(UnrecognizedKeyError):

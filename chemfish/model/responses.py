@@ -1,6 +1,6 @@
 from __future__ import annotations
-from kale.core.core_imports import *
-from kale.model.metrics import *
+from chemfish.core.core_imports import *
+from chemfish.model.metrics import *
 
 
 class DoseResponseFrame(OrganizingFrame):

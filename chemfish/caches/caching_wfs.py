@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from kale.core.valar_singleton import *
-from kale.core.core_imports import *
-from kale.model.wf_builders import *
-from kale.caches.wf_caches import *
-from kale.model.features import *
+from chemfish.core.valar_singleton import *
+from chemfish.core.core_imports import *
+from chemfish.model.wf_builders import *
+from chemfish.caches.wf_caches import *
+from chemfish.model.features import *
 
 
 @abcd.auto_eq()

@@ -1,13 +1,13 @@
 from __future__ import annotations
 import pydub
 from moviepy.audio.io.AudioFileClip import AudioFileClip, AudioClip
-from kale.core.valar_singleton import *
-from kale.core.core_imports import *
-from kale.model.well_frames import *
-from kale.model.videos import *
-from kale.model.sensors import *
-from kale.model.audio import *
-from kale.model.stim_frames import BatteryStimFrame
+from chemfish.core.valar_singleton import *
+from chemfish.core.core_imports import *
+from chemfish.model.well_frames import *
+from chemfish.model.videos import *
+from chemfish.model.sensors import *
+from chemfish.model.audio import *
+from chemfish.model.stim_frames import BatteryStimFrame
 from abc import ABCMeta
 
 KEY = TypeVar("KEY")
