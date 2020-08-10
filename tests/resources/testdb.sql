@@ -1,26 +1,25 @@
+/*
+Sample Insertion SQL Queries to populate test db. Make sure unique keys are different for the VALUES.
+*/
 
 
 -- Host: 127.0.0.1    Database: valartest
 -- ------------------------------------------------------
--- Server version    10.3.20-MariaDB-0ubuntu0.19.04.1
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+SET FOREIGN_KEY_CHECKS=0;
+
+DROP DATABASE IF EXISTS valartest;
+CREATE DATABASE valartest CHARACTER SET = 'utf8mb4' COLLATE 'utf8mb4_unicode_520_ci';
+DROP USER IF EXISTS 'kaletest'@'localhost';
+USE valartest;
+CREATE USER 'kaletest'@'localhost' IDENTIFIED BY 'kale123';
+GRANT SELECT,INSERT,UPDATE,DELETE ON valartest.* TO 'kaletest'@'localhost';
+
 
 --
 -- Table structure for table `annotations`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `annotations` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -34,42 +33,38 @@ CREATE TABLE `annotations` (
   `description` mediumtext DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `concern_to_run` (`run_id`),
-  KEY `concern_to_well` (`well_id`),
-  KEY `concern_to_assay` (`assay_id`),
-  KEY `concern_to_person` (`annotator_id`),
+  KEY `annotation_to_run` (`run_id`),
+  KEY `annotation_to_well` (`well_id`),
+  KEY `annotation_to_assay` (`assay_id`),
+  KEY `annotation_to_person` (`annotator_id`),
   KEY `level` (`level`),
   KEY `name` (`name`),
-  KEY `concern_to_submission` (`submission_id`),
+  KEY `annotation_to_submission` (`submission_id`),
   KEY `value` (`value`),
   CONSTRAINT `annotation_to_run` FOREIGN KEY (`run_id`) REFERENCES `runs` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `concern_to_assay` FOREIGN KEY (`assay_id`) REFERENCES `assays` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `concern_to_person` FOREIGN KEY (`annotator_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `concern_to_submission` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `concern_to_well` FOREIGN KEY (`well_id`) REFERENCES `wells` (`id`) ON DELETE CASCADE
+  CONSTRAINT `annotation_to_assay` FOREIGN KEY (`assay_id`) REFERENCES `assays` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `annotation_to_person` FOREIGN KEY (`annotator_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `annotation_to_submission` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `annotation_to_well` FOREIGN KEY (`well_id`) REFERENCES `wells` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `api_keys`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `api_keys` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `value` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `assay_params`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `assay_params` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `assay_id` smallint(5) unsigned NOT NULL,
@@ -81,35 +76,31 @@ CREATE TABLE `assay_params` (
   KEY `value` (`value`),
   CONSTRAINT `assay_param_to_assay` FOREIGN KEY (`assay_id`) REFERENCES `assays` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `assay_positions`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `assay_positions` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `battery_id` smallint(5) unsigned NOT NULL,
   `assay_id` smallint(5) unsigned NOT NULL,
   `start` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `protocol_assay_start_unique` (`battery_id`,`assay_id`,`start`),
-  KEY `protocol_id` (`battery_id`),
+  UNIQUE KEY `battery_assay_start_unique` (`battery_id`,`assay_id`,`start`),
+  KEY `battery_id` (`battery_id`),
   KEY `assay_id` (`assay_id`),
   KEY `start` (`start`),
-  CONSTRAINT `assay_in_protocol_to_assay` FOREIGN KEY (`assay_id`) REFERENCES `assays` (`id`),
-  CONSTRAINT `assay_in_protocol_to_protocol` FOREIGN KEY (`battery_id`) REFERENCES `batteries` (`id`) ON DELETE CASCADE
+  CONSTRAINT `assay_in_battery_to_assay` FOREIGN KEY (`assay_id`) REFERENCES `assays` (`id`),
+  CONSTRAINT `assay_in_battery_to_battery` FOREIGN KEY (`battery_id`) REFERENCES `batteries` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `assays`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `assays` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(250) NOT NULL,
@@ -127,14 +118,12 @@ CREATE TABLE `assays` (
   KEY `assay_to_template_assay` (`template_assay_id`),
   CONSTRAINT `assay_to_template_assay` FOREIGN KEY (`template_assay_id`) REFERENCES `template_assays` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `audio_files`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `audio_files` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `filename` varchar(100) NOT NULL,
@@ -150,14 +139,12 @@ CREATE TABLE `audio_files` (
   KEY `creator_id` (`creator_id`),
   CONSTRAINT `audio_file_to_user` FOREIGN KEY (`creator_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `batch_annotations`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `batch_annotations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `batch_id` mediumint(8) unsigned NOT NULL,
@@ -168,22 +155,20 @@ CREATE TABLE `batch_annotations` (
   `annotator_id` smallint(5) unsigned NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `batch_concern_to_batch` (`batch_id`),
-  KEY `batch_concern_to_user` (`annotator_id`),
+  KEY `batch_annotation_to_batch` (`batch_id`),
+  KEY `batch_annotation_to_user` (`annotator_id`),
   KEY `level` (`level`),
   KEY `name` (`name`),
   KEY `value` (`value`),
-  CONSTRAINT `batch_concern_to_batch` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `batch_concern_to_user` FOREIGN KEY (`annotator_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `batch_annotation_to_batch` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `batch_annotation_to_user` FOREIGN KEY (`annotator_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `batch_labels`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `batch_labels` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `batch_id` mediumint(8) unsigned NOT NULL,
@@ -191,20 +176,18 @@ CREATE TABLE `batch_labels` (
   `name` varchar(250) NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `external_id` (`name`),
-  KEY `data_source_id_2` (`ref_id`),
-  KEY `ordered_compound_id_2` (`batch_id`),
-  CONSTRAINT `id_to_ordered_compound` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `oc_id_to_data_source` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`)
+  KEY `batch_name` (`name`),
+  KEY `batch_ref` (`ref_id`),
+  KEY `batch_id` (`batch_id`),
+  CONSTRAINT `batch_id_to_batch` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `batch_label_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `batches`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `batches` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `lookup_hash` varchar(14) NOT NULL,
@@ -226,7 +209,6 @@ CREATE TABLE `batches` (
   `person_ordered` smallint(5) unsigned DEFAULT NULL,
   `date_ordered` date DEFAULT NULL,
   `notes` text DEFAULT NULL,
-  `suspicious` tinyint(1) NOT NULL DEFAULT 0,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_hash` (`lookup_hash`),
@@ -235,9 +217,9 @@ CREATE TABLE `batches` (
   KEY `compound_id` (`compound_id`),
   KEY `solvent_id` (`solvent_id`),
   KEY `internal_id` (`legacy_internal_id`) USING BTREE,
-  KEY `ordered_compound_to_external_source` (`ref_id`),
-  KEY `ordered_compound_to_user` (`person_ordered`),
-  KEY `ordered_compound_to_compound_source` (`supplier_id`),
+  KEY `batch_to_ref` (`ref_id`),
+  KEY `batch_to_user` (`person_ordered`),
+  KEY `batch_to_supplier` (`supplier_id`),
   KEY `date_ordered` (`date_ordered`),
   KEY `box_number` (`box_number`),
   KEY `well_number` (`well_number`),
@@ -246,19 +228,17 @@ CREATE TABLE `batches` (
   CONSTRAINT `batch_to_batch` FOREIGN KEY (`made_from_id`) REFERENCES `batches` (`id`),
   CONSTRAINT `batch_to_location` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id`),
   CONSTRAINT `batch_to_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`),
-  CONSTRAINT `ordered_compound_to_external_source` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`),
-  CONSTRAINT `ordered_compound_to_solvent` FOREIGN KEY (`solvent_id`) REFERENCES `compounds` (`id`),
-  CONSTRAINT `ordered_compound_to_user` FOREIGN KEY (`person_ordered`) REFERENCES `users` (`id`),
-  CONSTRAINT `ordered_compounds_to_compound` FOREIGN KEY (`compound_id`) REFERENCES `compounds` (`id`)
+  CONSTRAINT `batch_to_external_source` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`),
+  CONSTRAINT `batch_to_solvent` FOREIGN KEY (`solvent_id`) REFERENCES `compounds` (`id`),
+  CONSTRAINT `batch_to_user` FOREIGN KEY (`person_ordered`) REFERENCES `users` (`id`),
+  CONSTRAINT `batch_to_compound` FOREIGN KEY (`compound_id`) REFERENCES `compounds` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `batteries`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `batteries` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -273,129 +253,17 @@ CREATE TABLE `batteries` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_unique` (`name`),
   KEY `creator_id` (`author_id`),
-  KEY `protocol_to_template` (`template_id`),
+  KEY `battery_to_template` (`template_id`),
   KEY `length` (`length`),
   KEY `assays_sha1` (`assays_sha1`),
-  CONSTRAINT `protocol_to_user` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `battery_to_user` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `biomarker_experiments`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `biomarker_experiments` (
-  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `tag` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `kind` enum('ms','rna-seq','imaging','other') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `experimentalist_id` smallint(5) unsigned NOT NULL,
-  `ref_id` smallint(5) unsigned NOT NULL,
-  `datetime_prepared` datetime NOT NULL,
-  `datetime_collected` datetime NOT NULL,
-  `created` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `tag_unique` (`tag`),
-  KEY `biomarker_experiment_to_user` (`experimentalist_id`),
-  KEY `biomarker_experiment_to_ref` (`ref_id`),
-  CONSTRAINT `biomarker_experiment_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`),
-  CONSTRAINT `biomarker_experiment_to_user` FOREIGN KEY (`experimentalist_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `biomarker_levels`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `biomarker_levels` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `sample_id` smallint(5) unsigned NOT NULL,
-  `biomarker_id` int(10) unsigned NOT NULL,
-  `tissue_id` smallint(5) unsigned DEFAULT NULL,
-  `fold_change` double unsigned DEFAULT NULL,
-  `full_value` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `biomarker_level_to_biomarker` (`biomarker_id`),
-  KEY `biomarker_level_to_sample` (`sample_id`),
-  CONSTRAINT `biomarker_level_to_biomarker` FOREIGN KEY (`biomarker_id`) REFERENCES `biomarkers` (`id`),
-  CONSTRAINT `biomarker_level_to_sample` FOREIGN KEY (`sample_id`) REFERENCES `biomarker_samples` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `biomarker_samples`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `biomarker_samples` (
-  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `experiment_id` smallint(5) unsigned NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `control_type_id` tinyint(3) unsigned NOT NULL,
-  `from_well_id` mediumint(8) unsigned DEFAULT NULL,
-  `created` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name_experiment_unique` (`name`,`experiment_id`),
-  KEY `biomarker_sample_to_biomarker_experiment` (`experiment_id`),
-  KEY `biomarker_sample_to_well` (`from_well_id`),
-  KEY `biomarker_sample_to_control_type` (`control_type_id`),
-  CONSTRAINT `biomarker_sample_to_biomarker_experiment` FOREIGN KEY (`experiment_id`) REFERENCES `biomarker_experiments` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `biomarker_sample_to_control_type` FOREIGN KEY (`control_type_id`) REFERENCES `control_types` (`id`),
-  CONSTRAINT `biomarker_sample_to_well` FOREIGN KEY (`from_well_id`) REFERENCES `wells` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `biomarker_treatments`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `biomarker_treatments` (
-  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `sample_id` smallint(5) unsigned NOT NULL,
-  `batch_id` mediumint(8) unsigned NOT NULL,
-  `micromolar_dose` double unsigned NOT NULL,
-  `created` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `sample_batch_unique` (`sample_id`,`batch_id`),
-  KEY `biomarker_treatment_to_batch` (`batch_id`),
-  CONSTRAINT `biomarker_treatment_to_batch` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`id`),
-  CONSTRAINT `biomarker_treatment_to_sample` FOREIGN KEY (`sample_id`) REFERENCES `biomarker_samples` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `biomarkers`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `biomarkers` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `is_gene_id` mediumint(8) unsigned DEFAULT NULL,
-  `ref_id` smallint(5) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `biomarker_to_gene` (`is_gene_id`),
-  KEY `biomarker_to_ref` (`ref_id`),
-  CONSTRAINT `biomarker_to_gene` FOREIGN KEY (`is_gene_id`) REFERENCES `genes` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `biomarker_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `compound_labels`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `compound_labels` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `compound_id` mediumint(8) unsigned NOT NULL,
@@ -404,41 +272,16 @@ CREATE TABLE `compound_labels` (
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `compound_id` (`compound_id`),
-  KEY `compound_name_to_external_source` (`ref_id`),
+  KEY `compound_name_to_ref` (`ref_id`),
   CONSTRAINT `compound_name_to_compound` FOREIGN KEY (`compound_id`) REFERENCES `compounds` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `compound_name_to_external_source` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`)
+  CONSTRAINT `compound_name_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `compound_links`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `compound_links` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `child_id` mediumint(8) unsigned NOT NULL,
-  `parent_id` mediumint(8) unsigned NOT NULL,
-  `kind` enum('salt','stero','both','neither') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ref_id` smallint(5) unsigned NOT NULL DEFAULT 1,
-  `created` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `child_parent_kind_unique` (`child_id`,`parent_id`,`kind`),
-  KEY `compound_link_to_parent` (`parent_id`),
-  KEY `compound_link_to_ref` (`ref_id`),
-  CONSTRAINT `compound_link_to_child` FOREIGN KEY (`child_id`) REFERENCES `compounds` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `compound_link_to_parent` FOREIGN KEY (`parent_id`) REFERENCES `compounds` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `compound_link_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `compounds`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `compounds` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `inchi` varchar(2000) NOT NULL,
@@ -453,14 +296,12 @@ CREATE TABLE `compounds` (
   KEY `inchikey_connectivity` (`inchikey_connectivity`),
   KEY `chembl_id` (`chembl_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `config_files`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `config_files` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `toml_text` mediumtext NOT NULL,
@@ -470,14 +311,12 @@ CREATE TABLE `config_files` (
   UNIQUE KEY `text_sha1_unique` (`text_sha1`),
   KEY `text_sha1` (`text_sha1`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `control_types`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `control_types` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -492,33 +331,12 @@ CREATE TABLE `control_types` (
   KEY `drug_related` (`drug_related`),
   KEY `genetics_related` (`genetics_related`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `dags_to_create`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `dags_to_create` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `submission_hash` char(12) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-  `dag_created` tinyint(1) NOT NULL DEFAULT 0,
-  `created` timestamp NOT NULL DEFAULT current_timestamp(),
-  `feature_type` tinyint(3) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id_hash_hex_feature` (`submission_hash`,`feature_type`),
-  KEY `feature_type` (`feature_type`),
-  CONSTRAINT `dags_to_create_ibfk_1` FOREIGN KEY (`feature_type`) REFERENCES `features` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `experiment_tags`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `experiment_tags` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `experiment_id` smallint(5) unsigned NOT NULL,
@@ -532,14 +350,12 @@ CREATE TABLE `experiment_tags` (
   CONSTRAINT `experiment_tag_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`),
   CONSTRAINT `tag_to_experiment` FOREIGN KEY (`experiment_id`) REFERENCES `experiments` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `experiments`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `experiments` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
@@ -555,25 +371,23 @@ CREATE TABLE `experiments` (
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_unique` (`name`),
-  KEY `protocol_id` (`battery_id`),
+  KEY `battery_id` (`battery_id`),
   KEY `project_to_superproject` (`project_id`),
   KEY `project_to_template_plate` (`template_plate_id`),
   KEY `experiment_to_transfer_plate` (`transfer_plate_id`),
   KEY `experiment_to_user` (`creator_id`),
   CONSTRAINT `experiment_to_transfer_plate` FOREIGN KEY (`transfer_plate_id`) REFERENCES `transfer_plates` (`id`),
   CONSTRAINT `experiment_to_user` FOREIGN KEY (`creator_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `project_to_protocol` FOREIGN KEY (`battery_id`) REFERENCES `batteries` (`id`),
-  CONSTRAINT `project_to_superproject` FOREIGN KEY (`project_id`) REFERENCES `superprojects` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `project_to_battery` FOREIGN KEY (`battery_id`) REFERENCES `batteries` (`id`),
+  CONSTRAINT `project_to_project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
   CONSTRAINT `project_to_template_plate` FOREIGN KEY (`template_plate_id`) REFERENCES `template_plates` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `features`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `features` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
@@ -584,184 +398,12 @@ CREATE TABLE `features` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_unique` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `gene_labels`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `gene_labels` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `gene_id` mediumint(8) unsigned NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `ref_id` smallint(5) unsigned NOT NULL,
-  `created` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name_gene_source_unique` (`gene_id`,`name`,`ref_id`),
-  KEY `gene` (`gene_id`),
-  KEY `name` (`name`),
-  KEY `ref` (`ref_id`),
-  CONSTRAINT `gene_name_to_gene` FOREIGN KEY (`gene_id`) REFERENCES `genes` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `gene_name_to_source` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`)
-) ENGINE=InnoDBDEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `genes`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `genes` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(30) DEFAULT NULL,
-  `pub_link` varchar(255) DEFAULT NULL,
-  `description` varchar(250) DEFAULT NULL,
-  `ref_id` smallint(5) unsigned NOT NULL,
-  `user_id` smallint(5) unsigned NOT NULL,
-  `raw_file` blob DEFAULT NULL,
-  `raw_file_sha1` binary(20) DEFAULT NULL,
-  `created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `name` (`name`),
-  KEY `pub_link` (`pub_link`),
-  KEY `gene_to_ref` (`ref_id`),
-  KEY `gene_to_user` (`user_id`),
-  CONSTRAINT `gene_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`),
-  CONSTRAINT `gene_to_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `genetic_construct_features`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `genetic_construct_features` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `kind` varchar(50) NOT NULL,
-  `name` varchar(250) NOT NULL,
-  `gene_id` mediumint(8) unsigned DEFAULT NULL,
-  `construct_id` smallint(5) unsigned NOT NULL,
-  `start` bigint(20) DEFAULT NULL,
-  `end` bigint(20) DEFAULT NULL,
-  `is_complement` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `gene_construct_unique` (`gene_id`,`construct_id`),
-  KEY `to_construct` (`construct_id`),
-  CONSTRAINT `to_construct` FOREIGN KEY (`construct_id`) REFERENCES `genetic_constructs` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `to_gene` FOREIGN KEY (`gene_id`) REFERENCES `genes` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `genetic_constructs`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `genetic_constructs` (
-  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `kind` enum('plasmid','guide','morpholino','other') NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `location_id` smallint(5) unsigned DEFAULT NULL,
-  `box_number` smallint(5) unsigned NOT NULL,
-  `tube_number` smallint(5) unsigned NOT NULL,
-  `description` varchar(250) NOT NULL,
-  `supplier_id` smallint(5) unsigned DEFAULT NULL,
-  `ref_id` smallint(5) unsigned NOT NULL,
-  `pmid` varchar(30) DEFAULT NULL,
-  `pub_link` varchar(150) DEFAULT NULL,
-  `creator_id` smallint(5) unsigned NOT NULL,
-  `date_made` datetime DEFAULT NULL,
-  `selection_marker` varchar(50) DEFAULT NULL,
-  `bacterial_strain` varchar(50) DEFAULT NULL,
-  `vector` varchar(50) DEFAULT NULL,
-  `raw_file` blob DEFAULT NULL,
-  `raw_file_sha1` binary(20) DEFAULT NULL,
-  `notes` text DEFAULT NULL,
-  `created` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `box_tube_unique` (`box_number`,`tube_number`),
-  UNIQUE KEY `name_unique` (`name`),
-  UNIQUE KEY `ape_file_sha1_unique` (`raw_file_sha1`),
-  KEY `plasmid_to_user` (`creator_id`),
-  KEY `genetic_construct_to_location` (`location_id`),
-  KEY `box_number` (`box_number`),
-  KEY `tube_number` (`tube_number`),
-  KEY `bacterial_strain` (`bacterial_strain`),
-  KEY `raw_file_sha1` (`raw_file_sha1`),
-  KEY `date_made` (`date_made`),
-  KEY `kind` (`kind`),
-  KEY `vector` (`vector`),
-  KEY `pmid` (`pmid`),
-  KEY `construct_to_supplier` (`supplier_id`),
-  KEY `genetic_construct_to_ref` (`ref_id`),
-  CONSTRAINT `construct_to_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`),
-  CONSTRAINT `genetic_construct_to_location` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id`),
-  CONSTRAINT `genetic_construct_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`),
-  CONSTRAINT `plasmid_to_user` FOREIGN KEY (`creator_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `genetic_events`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `genetic_events` (
-  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `variant_id` mediumint(8) unsigned DEFAULT NULL,
-  `gene_id` mediumint(8) unsigned DEFAULT NULL,
-  `description` varchar(250) DEFAULT NULL,
-  `injection_mix` varchar(100) DEFAULT NULL,
-  `user_id` smallint(5) unsigned NOT NULL,
-  `notes` mediumtext DEFAULT NULL,
-  `construct_id` smallint(5) unsigned DEFAULT NULL,
-  `created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `mutation_to_fish_variant` (`variant_id`),
-  KEY `mutation_to_endogenous_gene` (`gene_id`),
-  KEY `mutation_to_user` (`user_id`),
-  KEY `construct_to_event` (`construct_id`),
-  CONSTRAINT `construct_to_event` FOREIGN KEY (`construct_id`) REFERENCES `genetic_constructs` (`id`),
-  CONSTRAINT `mutation_to_endogenous_gene` FOREIGN KEY (`gene_id`) REFERENCES `genes` (`id`),
-  CONSTRAINT `mutation_to_fish_variant` FOREIGN KEY (`variant_id`) REFERENCES `genetic_variants` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `mutation_to_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `genetic_knockins`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `genetic_knockins` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `gene_id` mediumint(8) unsigned NOT NULL,
-  `event_id` smallint(5) unsigned NOT NULL,
-  `construct_id` smallint(5) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `gene_mutation_unique` (`gene_id`,`event_id`),
-  KEY `genes_in_mutations_to_mutation` (`event_id`),
-  KEY `knockin_to_construct` (`construct_id`),
-  CONSTRAINT `genes_in_mutations_to_gene` FOREIGN KEY (`gene_id`) REFERENCES `genes` (`id`),
-  CONSTRAINT `genes_in_mutations_to_mutation` FOREIGN KEY (`event_id`) REFERENCES `genetic_events` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `knockin_to_construct` FOREIGN KEY (`construct_id`) REFERENCES `genetic_constructs` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `genetic_variants`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `genetic_variants` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(250) NOT NULL,
@@ -775,22 +417,20 @@ CREATE TABLE `genetic_variants` (
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_unique` (`name`),
-  KEY `mother_fish_variant_id` (`mother_id`),
-  KEY `father_fish_variant_id` (`father_id`),
+  KEY `mother_variant_id` (`mother_id`),
+  KEY `father_variant_id` (`father_id`),
   KEY `creator_id` (`creator_id`),
   KEY `lineage_type` (`lineage_type`),
-  CONSTRAINT `fish_variant_to_father` FOREIGN KEY (`father_id`) REFERENCES `genetic_variants` (`id`),
-  CONSTRAINT `fish_variant_to_mother` FOREIGN KEY (`mother_id`) REFERENCES `genetic_variants` (`id`),
-  CONSTRAINT `fish_variant_to_user` FOREIGN KEY (`creator_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `variant_to_father` FOREIGN KEY (`father_id`) REFERENCES `genetic_variants` (`id`),
+  CONSTRAINT `variant_to_mother` FOREIGN KEY (`mother_id`) REFERENCES `genetic_variants` (`id`),
+  CONSTRAINT `variant_to_user` FOREIGN KEY (`creator_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `locations`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `locations` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -805,14 +445,12 @@ CREATE TABLE `locations` (
   KEY `location_to_location` (`part_of`),
   CONSTRAINT `location_to_location` FOREIGN KEY (`part_of`) REFERENCES `locations` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `log_files`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `log_files` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `run_id` mediumint(8) unsigned NOT NULL,
@@ -824,42 +462,12 @@ CREATE TABLE `log_files` (
   KEY `log_file_to_run` (`run_id`),
   CONSTRAINT `log_file_to_run` FOREIGN KEY (`run_id`) REFERENCES `runs` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `mandos_expression`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `mandos_expression` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `gene_id` mediumint(8) unsigned NOT NULL,
-  `tissue_id` smallint(5) unsigned NOT NULL,
-  `developmental_stage` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `level` double NOT NULL,
-  `confidence` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `external_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ref_id` smallint(5) unsigned NOT NULL,
-  `created` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `gene_tissue_stage_ref_unique` (`gene_id`,`tissue_id`,`developmental_stage`,`ref_id`),
-  UNIQUE KEY `external_id_ref_unique` (`external_id`,`ref_id`),
-  KEY `expression_to_ref` (`ref_id`),
-  KEY `expression_to_tissue` (`tissue_id`),
-  KEY `confidence` (`confidence`),
-  CONSTRAINT `expression_to_gene` FOREIGN KEY (`gene_id`) REFERENCES `genes` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `expression_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`),
-  CONSTRAINT `expression_to_tissue` FOREIGN KEY (`tissue_id`) REFERENCES `tissues` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `mandos_info`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mandos_info` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `compound_id` mediumint(8) unsigned NOT NULL,
@@ -876,14 +484,12 @@ CREATE TABLE `mandos_info` (
   CONSTRAINT `mandos_chem_info_to_data_source` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`),
   CONSTRAINT `mandos_info_to_compound` FOREIGN KEY (`compound_id`) REFERENCES `compounds` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `mandos_object_links`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mandos_object_links` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `parent_id` mediumint(8) unsigned NOT NULL,
@@ -893,18 +499,16 @@ CREATE TABLE `mandos_object_links` (
   KEY `parent_id` (`parent_id`),
   KEY `child_id` (`child_id`),
   KEY `ref_id` (`ref_id`),
-  CONSTRAINT `mandos_object_links_ibfk_1` FOREIGN KEY (`child_id`) REFERENCES `mandos_objects` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `mandos_object_links_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `mandos_objects` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `mandos_object_links_ibfk_3` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`)
+  CONSTRAINT `mandos_object_link_to_child` FOREIGN KEY (`child_id`) REFERENCES `mandos_objects` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `mandos_object_link_to_parent` FOREIGN KEY (`parent_id`) REFERENCES `mandos_objects` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `mandos_object_link_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `mandos_object_tags`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mandos_object_tags` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `object` mediumint(8) unsigned NOT NULL,
@@ -920,14 +524,12 @@ CREATE TABLE `mandos_object_tags` (
   CONSTRAINT `mandos_object_tag_to_object` FOREIGN KEY (`object`) REFERENCES `mandos_objects` (`id`) ON DELETE CASCADE,
   CONSTRAINT `mandos_object_tag_to_ref` FOREIGN KEY (`ref`) REFERENCES `refs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `mandos_objects`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mandos_objects` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` smallint(5) unsigned NOT NULL,
@@ -940,14 +542,12 @@ CREATE TABLE `mandos_objects` (
   KEY `external_id` (`external_id`),
   CONSTRAINT `mandos_key_to_data_source` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `mandos_predicates`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mandos_predicates` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` smallint(5) unsigned NOT NULL,
@@ -963,14 +563,12 @@ CREATE TABLE `mandos_predicates` (
   KEY `external_id` (`external_id`),
   CONSTRAINT `mandos_mode_to_source` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `mandos_rule_tags`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mandos_rule_tags` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `rule` int(10) unsigned NOT NULL,
@@ -986,14 +584,12 @@ CREATE TABLE `mandos_rule_tags` (
   CONSTRAINT `mandos_rule_tag_to_object` FOREIGN KEY (`rule`) REFERENCES `mandos_rules` (`id`) ON DELETE CASCADE,
   CONSTRAINT `mandos_rule_tag_to_ref` FOREIGN KEY (`ref`) REFERENCES `refs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `mandos_rules`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mandos_rules` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ref_id` smallint(5) unsigned NOT NULL,
@@ -1014,14 +610,12 @@ CREATE TABLE `mandos_rules` (
   CONSTRAINT `mandos_association_to_key` FOREIGN KEY (`object_id`) REFERENCES `mandos_objects` (`id`) ON DELETE CASCADE,
   CONSTRAINT `mandos_association_to_mode` FOREIGN KEY (`predicate_id`) REFERENCES `mandos_predicates` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `plate_types`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `plate_types` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) DEFAULT NULL,
@@ -1037,14 +631,12 @@ CREATE TABLE `plate_types` (
   KEY `plate_type_to_supplier` (`supplier_id`),
   CONSTRAINT `plate_type_to_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `plates`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `plates` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `plate_type_id` tinyint(3) unsigned DEFAULT NULL,
@@ -1058,14 +650,12 @@ CREATE TABLE `plates` (
   CONSTRAINT `plate_to_plate_type` FOREIGN KEY (`plate_type_id`) REFERENCES `plate_types` (`id`),
   CONSTRAINT `plate_to_user` FOREIGN KEY (`person_plated_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `project_tags`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `project_tags` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `project_id` smallint(5) unsigned NOT NULL,
@@ -1077,16 +667,14 @@ CREATE TABLE `project_tags` (
   UNIQUE KEY `project_tag_unique` (`project_id`,`name`),
   KEY `project_tag_to_ref` (`ref_id`),
   CONSTRAINT `project_tag_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`),
-  CONSTRAINT `tag_to_project` FOREIGN KEY (`project_id`) REFERENCES `superprojects` (`id`) ON DELETE CASCADE
+  CONSTRAINT `tag_to_project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `project_types`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `project_types` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
@@ -1094,14 +682,12 @@ CREATE TABLE `project_types` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_unique` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `refs`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `refs` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
@@ -1116,14 +702,12 @@ CREATE TABLE `refs` (
   KEY `name` (`name`),
   KEY `external_version` (`external_version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `rois`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `rois` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `well_id` mediumint(8) unsigned NOT NULL,
@@ -1134,35 +718,31 @@ CREATE TABLE `rois` (
   `ref_id` smallint(5) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `well_id` (`well_id`),
-  KEY `lorien_config` (`ref_id`),
+  KEY `ref_id` (`ref_id`),
   CONSTRAINT `roi_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`),
   CONSTRAINT `roi_to_well` FOREIGN KEY (`well_id`) REFERENCES `wells` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `run_tags`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `run_tags` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `run_id` mediumint(8) unsigned NOT NULL,
   `name` varchar(100) NOT NULL,
   `value` varchar(10000) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `plate_run_name_unique` (`run_id`,`name`),
+  UNIQUE KEY `run_name_unique` (`run_id`,`name`),
   CONSTRAINT `run_tag_to_run` FOREIGN KEY (`run_id`) REFERENCES `runs` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `runs`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `runs` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `experiment_id` smallint(5) unsigned NOT NULL,
@@ -1188,30 +768,28 @@ CREATE TABLE `runs` (
   KEY `datetime_run` (`datetime_run`),
   KEY `projectalist_id` (`experimentalist_id`),
   KEY `plate_id` (`plate_id`),
-  KEY `plate_run_to_sauronx_submission` (`submission_id`),
-  KEY `plate_run_to_sauronx_toml` (`config_file_id`),
-  KEY `sauronx_submission_id` (`submission_id`),
+  KEY `run_to_submission` (`submission_id`),
+  KEY `run_to_sauronx_toml` (`config_file_id`),
+  KEY `submission_id` (`submission_id`),
   KEY `legacy_name` (`name`),
   KEY `dark_adaptation_seconds` (`acclimation_sec`),
   KEY `legacy_incubation_minutes` (`incubation_min`),
   KEY `sauronx_toml_id` (`config_file_id`),
   KEY `sauron_config_id` (`sauron_config_id`),
-  KEY `plate_run_to_project` (`experiment_id`),
-  CONSTRAINT `plate_run_to_plate` FOREIGN KEY (`plate_id`) REFERENCES `plates` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `plate_run_to_project` FOREIGN KEY (`experiment_id`) REFERENCES `experiments` (`id`),
-  CONSTRAINT `plate_run_to_sauron_config` FOREIGN KEY (`sauron_config_id`) REFERENCES `sauron_configs` (`id`),
-  CONSTRAINT `plate_run_to_sauronx_submission` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`),
-  CONSTRAINT `plate_run_to_sauronx_toml` FOREIGN KEY (`config_file_id`) REFERENCES `config_files` (`id`),
-  CONSTRAINT `plate_run_to_user` FOREIGN KEY (`experimentalist_id`) REFERENCES `users` (`id`)
+  KEY `run_to_project` (`experiment_id`),
+  CONSTRAINT `run_to_plate` FOREIGN KEY (`plate_id`) REFERENCES `plates` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `run_to_project` FOREIGN KEY (`experiment_id`) REFERENCES `experiments` (`id`),
+  CONSTRAINT `run_to_sauron_config` FOREIGN KEY (`sauron_config_id`) REFERENCES `sauron_configs` (`id`),
+  CONSTRAINT `run_to_submission` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`),
+  CONSTRAINT `run_to_sauronx_toml` FOREIGN KEY (`config_file_id`) REFERENCES `config_files` (`id`),
+  CONSTRAINT `run_to_user` FOREIGN KEY (`experimentalist_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `sauron_configs`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sauron_configs` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `sauron_id` tinyint(3) unsigned NOT NULL,
@@ -1223,14 +801,12 @@ CREATE TABLE `sauron_configs` (
   KEY `sauron_id` (`sauron_id`),
   CONSTRAINT `sauron_config_to_sauron` FOREIGN KEY (`sauron_id`) REFERENCES `saurons` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `sauron_settings`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sauron_settings` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `sauron_config_id` smallint(5) unsigned NOT NULL,
@@ -1243,14 +819,12 @@ CREATE TABLE `sauron_settings` (
   KEY `sauron` (`sauron_config_id`),
   CONSTRAINT `sauron_setting_to_sauron_config` FOREIGN KEY (`sauron_config_id`) REFERENCES `sauron_configs` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `saurons`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `saurons` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
@@ -1261,14 +835,12 @@ CREATE TABLE `saurons` (
   KEY `number` (`name`),
   KEY `current` (`active`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `sensor_data`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sensor_data` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `run_id` mediumint(8) unsigned NOT NULL,
@@ -1276,39 +848,35 @@ CREATE TABLE `sensor_data` (
   `floats` longblob NOT NULL,
   `floats_sha1` binary(20) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `plate_run_id` (`run_id`),
+  KEY `run_id` (`run_id`),
   KEY `sensor_id` (`sensor_id`),
   KEY `floats_sha1` (`floats_sha1`),
-  CONSTRAINT `sensor_data_to_plate_run` FOREIGN KEY (`run_id`) REFERENCES `runs` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `sensor_data_to_run` FOREIGN KEY (`run_id`) REFERENCES `runs` (`id`) ON DELETE CASCADE,
   CONSTRAINT `sensor_data_to_sensor` FOREIGN KEY (`sensor_id`) REFERENCES `sensors` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `sensors`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sensors` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `description` varchar(250) DEFAULT NULL,
   `data_type` enum('byte','short','int','float','double','unsigned_byte','unsigned_short','unsigned_int','unsigned_float','unsigned_double','utf8_char','long','unsigned_long','other') NOT NULL,
-  `blob_type` enum('assay_start','protocol_start','every_n_milliseconds','every_n_frames','arbitrary') DEFAULT NULL,
+  `blob_type` enum('assay_start','battery_start','every_n_milliseconds','every_n_frames','arbitrary') DEFAULT NULL,
   `n_between` int(10) unsigned DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `stimuli`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `stimuli` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
@@ -1324,14 +892,12 @@ CREATE TABLE `stimuli` (
   UNIQUE KEY `audio_file_id_unique` (`audio_file_id`),
   CONSTRAINT `stimulus_to_audio_file` FOREIGN KEY (`audio_file_id`) REFERENCES `audio_files` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `stimulus_frames`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `stimulus_frames` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `assay_id` smallint(5) unsigned NOT NULL,
@@ -1346,14 +912,12 @@ CREATE TABLE `stimulus_frames` (
   CONSTRAINT `stimulus_frames_to_assay` FOREIGN KEY (`assay_id`) REFERENCES `assays` (`id`) ON DELETE CASCADE,
   CONSTRAINT `stimulus_frames_to_stimulus` FOREIGN KEY (`stimulus_id`) REFERENCES `stimuli` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `submission_params`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `submission_params` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `submission_id` mediumint(8) unsigned NOT NULL,
@@ -1361,17 +925,15 @@ CREATE TABLE `submission_params` (
   `param_type` enum('n_fish','compound','dose','variant','dpf','group') NOT NULL,
   `value` varchar(4000) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `sauronx_submission_name_unique` (`submission_id`,`name`),
-  CONSTRAINT `sauronx_submission_parameter_to_sauronx_submission` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`) ON DELETE CASCADE
+  UNIQUE KEY `submission_name_unique` (`submission_id`,`name`),
+  CONSTRAINT `submission_parameter_to_submission` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `submission_records`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `submission_records` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `submission_id` mediumint(8) unsigned NOT NULL,
@@ -1380,19 +942,17 @@ CREATE TABLE `submission_records` (
   `datetime_modified` datetime NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `sauronx_submission_history_to_sauron` (`sauron_id`),
-  KEY `sauronx_submission_history_to_submission` (`submission_id`),
-  CONSTRAINT `sauronx_submission_history_to_sauron` FOREIGN KEY (`sauron_id`) REFERENCES `saurons` (`id`),
-  CONSTRAINT `sauronx_submission_history_to_submission` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`) ON DELETE CASCADE
+  KEY `submission_history_to_sauron` (`sauron_id`),
+  KEY `submission_history_to_submission` (`submission_id`),
+  CONSTRAINT `submission_history_to_sauron` FOREIGN KEY (`sauron_id`) REFERENCES `saurons` (`id`),
+  CONSTRAINT `submission_history_to_submission` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `submissions`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `submissions` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `lookup_hash` char(12) NOT NULL,
@@ -1408,24 +968,22 @@ CREATE TABLE `submissions` (
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_hash_hex` (`lookup_hash`),
-  KEY `sauronx_submission_to_project` (`experiment_id`),
-  KEY `sauronx_submission_to_user` (`user_id`),
-  KEY `sauronx_submission_to_plate` (`continuing_id`),
-  KEY `sauronx_submission_to_person_plated` (`person_plated_id`),
+  KEY `submission_to_project` (`experiment_id`),
+  KEY `submission_to_user` (`user_id`),
+  KEY `submission_to_plate` (`continuing_id`),
+  KEY `submission_to_person_plated` (`person_plated_id`),
   CONSTRAINT `matched_submission` FOREIGN KEY (`continuing_id`) REFERENCES `submissions` (`id`),
-  CONSTRAINT `sauronx_submission_to_person_plated` FOREIGN KEY (`person_plated_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `sauronx_submission_to_project` FOREIGN KEY (`experiment_id`) REFERENCES `experiments` (`id`),
-  CONSTRAINT `sauronx_submission_to_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `submission_to_person_plated` FOREIGN KEY (`person_plated_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `submission_to_project` FOREIGN KEY (`experiment_id`) REFERENCES `experiments` (`id`),
+  CONSTRAINT `submission_to_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
--- Table structure for table `superprojects`
+-- Table structure for table `projects`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `superprojects` (
+CREATE TABLE `projects` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `type_id` tinyint(3) unsigned DEFAULT NULL,
@@ -1440,16 +998,14 @@ CREATE TABLE `superprojects` (
   KEY `primary_author_id` (`creator_id`),
   KEY `project_to_project_type` (`type_id`),
   CONSTRAINT `project_to_project_type` FOREIGN KEY (`type_id`) REFERENCES `project_types` (`id`),
-  CONSTRAINT `superproject_to_user` FOREIGN KEY (`creator_id`) REFERENCES `users` (`id`)
+  CONSTRAINT `project_to_user` FOREIGN KEY (`creator_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `suppliers`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `suppliers` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
@@ -1458,14 +1014,12 @@ CREATE TABLE `suppliers` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `template_assays`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `template_assays` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -1476,18 +1030,16 @@ CREATE TABLE `template_assays` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_unique` (`name`),
   KEY `author_index` (`author_id`),
-  KEY `template_protocol_specialization` (`specializes`),
+  KEY `template_battery_specialization` (`specializes`),
   CONSTRAINT `template_assay_specialization` FOREIGN KEY (`specializes`) REFERENCES `template_assays` (`id`) ON DELETE SET NULL,
   CONSTRAINT `template_assay_to_user` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `template_plates`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `template_plates` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -1506,14 +1058,12 @@ CREATE TABLE `template_plates` (
   CONSTRAINT `template_plate_to_plate_type` FOREIGN KEY (`plate_type_id`) REFERENCES `plate_types` (`id`),
   CONSTRAINT `template_plate_to_user` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `template_stimulus_frames`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `template_stimulus_frames` (
   `id` mediumint(6) unsigned NOT NULL AUTO_INCREMENT,
   `template_assay_id` smallint(5) unsigned NOT NULL,
@@ -1522,18 +1072,16 @@ CREATE TABLE `template_stimulus_frames` (
   `value_expression` varchar(250) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `stimulus_index` (`stimulus_id`),
-  KEY `template_protocol` (`template_assay_id`),
+  KEY `template_battery` (`template_assay_id`),
   CONSTRAINT `template_frames_to_template_assay` FOREIGN KEY (`template_assay_id`) REFERENCES `template_assays` (`id`) ON DELETE CASCADE,
   CONSTRAINT `template_stimulus_frames_to_stimulus` FOREIGN KEY (`stimulus_id`) REFERENCES `stimuli` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `template_treatments`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `template_treatments` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `template_plate_id` smallint(5) unsigned NOT NULL,
@@ -1544,14 +1092,12 @@ CREATE TABLE `template_treatments` (
   KEY `template_plate_id` (`template_plate_id`),
   CONSTRAINT `template_well_to_template_plate` FOREIGN KEY (`template_plate_id`) REFERENCES `template_plates` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `template_wells`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `template_wells` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `template_plate_id` smallint(5) unsigned NOT NULL,
@@ -1567,34 +1113,13 @@ CREATE TABLE `template_wells` (
   CONSTRAINT `template_well_to_control_type` FOREIGN KEY (`control_type`) REFERENCES `control_types` (`id`),
   CONSTRAINT `tw_to_tp` FOREIGN KEY (`template_plate_id`) REFERENCES `template_plates` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `tissues`
---
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `tissues` (
-  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `external_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ref_id` smallint(5) unsigned NOT NULL,
-  `created` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `external_id_ref_unique` (`external_id`,`ref_id`),
-  KEY `tissue_to_ref` (`ref_id`),
-  KEY `name` (`name`),
-  CONSTRAINT `tissue_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `transfer_plates`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `transfer_plates` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -1618,14 +1143,12 @@ CREATE TABLE `transfer_plates` (
   CONSTRAINT `transfer_plate_to_plate_type` FOREIGN KEY (`plate_type_id`) REFERENCES `plate_types` (`id`),
   CONSTRAINT `transfer_plate_to_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `users`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(20) NOT NULL,
@@ -1641,14 +1164,12 @@ CREATE TABLE `users` (
   KEY `last_name` (`last_name`),
   KEY `write_access` (`write_access`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `well_features`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `well_features` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `well_id` mediumint(8) unsigned NOT NULL,
@@ -1662,34 +1183,30 @@ CREATE TABLE `well_features` (
   CONSTRAINT `well_feature_to_type` FOREIGN KEY (`type_id`) REFERENCES `features` (`id`),
   CONSTRAINT `well_feature_to_well` FOREIGN KEY (`well_id`) REFERENCES `wells` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `well_treatments`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `well_treatments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `well_id` mediumint(8) unsigned NOT NULL,
   `batch_id` mediumint(8) unsigned NOT NULL,
   `micromolar_dose` double unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `well_id` (`well_id`,`batch_id`),
+  UNIQUE KEY `well_batch` (`well_id`,`batch_id`),
   KEY `compound_id` (`batch_id`),
-  KEY `well_id_2` (`well_id`),
-  CONSTRAINT `well_treatment_to_ordered_compound` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`id`),
+  KEY `well_id` (`well_id`),
+  CONSTRAINT `well_treatment_to_batch` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`id`),
   CONSTRAINT `well_treatment_to_well` FOREIGN KEY (`well_id`) REFERENCES `wells` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `wells`
 --
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wells` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `run_id` mediumint(8) unsigned NOT NULL,
@@ -1703,13 +1220,218 @@ CREATE TABLE `wells` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `plate_well_index_unique` (`run_id`,`well_index`),
   KEY `plate_id` (`run_id`),
-  KEY `fish_variant_id` (`variant_id`),
+  KEY `variant_id` (`variant_id`),
   KEY `well_group` (`well_group`),
   KEY `well_to_control_type` (`control_type_id`),
   KEY `approx_n_fish` (`n`),
   KEY `well_index` (`well_index`),
   CONSTRAINT `well_to_control_type` FOREIGN KEY (`control_type_id`) REFERENCES `control_types` (`id`),
-  CONSTRAINT `well_to_fish_variant` FOREIGN KEY (`variant_id`) REFERENCES `genetic_variants` (`id`),
+  CONSTRAINT `well_to_variant` FOREIGN KEY (`variant_id`) REFERENCES `genetic_variants` (`id`),
   CONSTRAINT `well_to_run` FOREIGN KEY (`run_id`) REFERENCES `runs` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+INSERT INTO users(
+    id, username, first_name, last_name, write_access, bcrypt_hash
+) VALUES (
+    4,'test_user7', 'test', 'UserBser', 0, 'jfEHa6wjtC6Fyx95F8miqtgZCSG0V35ZE82EGY3BS5kccr80Y8g3tbTWOzf7'
+);
+
+INSERT INTO submissions(
+    id, lookup_hash, experiment_id, user_id, person_plated_id, continuing_id, datetime_plated, datetime_dosed,
+    acclimation_sec, description, notes, created
+) VALUES (
+    25, '9p0MKHbf5P3m', 3, 2, 1, 1, '2019-01-26 10:11:12', '2019-01-26 11:11:12', 50, 'this is submission 25', NULL,
+    now()
+);
+
+INSERT INTO runs(
+    id, experiment_id, plate_id, description, experimentalist_id, submission_id, datetime_run, datetime_dosed, name,
+    tag, sauron_config_id, config_file_id, incubation_min, acclimation_sec, notes
+) VALUES (
+    4,2, 1, 'run number four', 1, 25, '2019-01-28 10:11:12', '2019-01-28 10:42:12', 'run_number_four', 'tag_four', 3, 1,
+    20, 50, 'hi there r no notes here'
+);
+
+INSERT INTO run_tags(
+    id,run_id, name, value
+) VALUES(3,1, 'second run tag', '0abcdefghijklmnop');
+
+INSERT INTO run_tags(
+    id,run_id, name, value
+) VALUES(4,1, 'sauronx_version', '54554512asofja109');
+
+INSERT INTO submission_params(
+    id, submission_id, name, param_type, value
+) VALUES (
+    5, 2, '$...BC123', 'compound', '\["AB0124403","AB0124404"\]'
+);
+
+INSERT INTO submission_params(
+    id, submission_id, name, param_type, value
+) VALUES (
+    4,1, 'sp_1_7', 'dose', 100
+);
+
+INSERT INTO compounds(
+    id, inchi, inchikey, inchikey_connectivity, chembl_id, chemspider_id, smiles
+) VALUES (
+    3, 'inchi_foo_bar', 'AQWEFNOQVPJJNP-UHFFFAOYSA-N', 'q42345ghijklbs', '113109-290-1', 1101145, 'C=C-B=C-H'
+);
+
+INSERT INTO locations(
+    id, name, description, purpose, part_of, temporary
+) VALUES(4, 'location_three', 'hello this is location three', 'purpose three', 2, 0);
+
+INSERT INTO batches(
+    id, lookup_hash, tag, compound_id, made_from_id, supplier_id, ref_id, legacy_internal_id, location_id, box_number,
+    well_number, location_note, amount, concentration_millimolar, solvent_id, molecular_weight, supplier_catalog_number,
+    person_ordered, date_ordered, notes
+) VALUES (
+    4, '124bff34abagzf', 'wrong_legacy_id_format', 1, NULL,1,1,'BC000040201', 2, 5, 2, 'location three', '200ul', 100,
+    2, 25.0, 1, 1, now(), 'hello this is notes_six'
+);
+
+INSERT INTO genetic_variants (
+    id, name, mother_id, father_id, lineage_type, date_created, notes, creator_id, fully_annotated
+) VALUES (
+    4, 'genetic variant four', 7, 5, 'cross', now(), 'notes for gene four', 1, 0
+);
+
+INSERT INTO refs(
+    id,name, datetime_downloaded, external_version, description, url
+) VALUES (
+    4,'ref_four', '2019-01-29 12:48:12', 'ref_four_external_version', 'this is ref four',
+    'https://www.nonexistentreffour.com'
+);
+
+INSERT INTO sensors(
+    id, name, description, data_type, blob_type, n_between
+) VALUES (
+    4, 'sensor_four', 'this is sensor four.', 'long', 'assay_start', 10
+);
+
+INSERT INTO sensor_data (
+    id, run_id, sensor_id, floats, floats_sha1
+) VALUES (
+    5, 2, 3,
+    1234134093401234987234980721384712934324913448123098409185908135981039581958112379573578136793134696676741671761515747642724576,
+    cast(2819 as Binary(20))
+);
+
+INSERT INTO control_types (
+    id, name, description, positive, drug_related, genetics_related
+) VALUES (
+    3,'control type three', 'this is control type three', 1, 1, 1
+);
+
+INSERT INTO wells(
+    id,run_id, well_index, control_type_id, variant_id, well_group, n, age
+) VALUES (
+    9,1, 7, 2,5, 'well group one', 6, 15
+);
+
+INSERT INTO well_features (
+    id, well_id, type_id, floats, sha1
+) VALUES (
+    6, 2, 2, 1929014393149134898314981349831498134981341311234143, cast(2111 as Binary(20))
+);
+
+INSERT INTO stimuli(
+    id, name, default_color, description, analog, rgb, wavelength_nm, audio_file_id
+) VALUES (
+    3, 'none', 'ffffff', NULL, 1, NULL, NULL, NULL
+);
+
+INSERT INTO stimulus_frames (
+    id, assay_id, stimulus_id, frames, frames_sha1
+) VALUES (
+    7, 5, 1, '78654131412341132413409876341324329048132984901238490821394081239080913859018340981349921384',
+    cast(101109 as Binary(20))
+);
+
+INSERT INTO assays(
+    id, name, description, length, hidden, template_assay_id, frames_sha1
+) VALUES (
+    5, 'assay_five', 'this is assay five', 100, 0, 2, cast(122333 as Binary(20))
+);
+
+INSERT INTO well_treatments (
+    id, well_id, batch_id, micromolar_dose
+) VALUES (
+    1, 1, 1,100
+);
+
+INSERT INTO suppliers(
+    id, name, description
+) VALUES (
+    4, 'supplier_guy_three', 'decent supplier'
+);
+
+INSERT INTO plates(
+    id, plate_type_id, person_plated_id, datetime_plated
+) VALUES (
+    5, 3, 1, '2019-04-10 13:18:20'
+);
+
+INSERT INTO plate_types(
+    id, name, supplier_id, part_number,n_rows,n_columns, well_shape, opacity
+) VALUES (
+    4, 'plate_four', 3, NULL, 8, 12, 'round', 'transparent'
+);
+
+INSERT INTO submission_records (
+id, submission_id, status, sauron_id, datetime_modified
+) VALUES (
+    2,1,'uploaded', 1, now()
+);
+
+INSERT INTO sauron_configs (
+    id, sauron_id, datetime_changed, description
+) VALUES (
+    4, 2, '2019-04-11 11:11:11', 'hello'
+);
+
+INSERT INTO saurons(
+    id, name, active
+) VALUES (
+    5, 'sauron5', '1'
+);
+
+INSERT INTO experiments(
+    id, name, description, creator_id, project_id, battery_id, template_plate_id, transfer_plate_id,
+    default_acclimation_sec,notes, active
+) VALUES (
+    5, 'exp 5', 'this is exp 5', 4, 1, 2, 3, 3, 100, 'hi this notes for exp 5', 1
+);
+
+INSERT INTO project_types (
+    id, name, description
+) VALUES (
+    4, 'project_four', 'this is project four '
+);
+
+INSERT INTO batteries(
+    id, name, description, length, author_id, template_id,hidden, notes, assays_sha1
+) VALUES (
+    4, 'battery_four', 'this is battery four', 1000, 4, 3, 0, 'interesting stuff', cast('assay_four' as binary(20))
+);
+
+INSERT INTO template_plates (
+    id,name,description, plate_type_id, author_id, hidden,created,specializes
+) VALUES (
+    5, 'template_plate_five', 'this is the fifth tempPlate', 3, 4, 0, now(),NULL
+);
+
+INSERT INTO transfer_plates (
+    id, name, description, plate_type_id,supplier_id,parent_id, dilution_factor_from_parent, initial_ul_per_well,
+    creator_id, datetime_created
+) VALUES (
+    4, 'transfer_plate_four', 'this is the fourth template plate', 4, NULL, NULL, NULL, 10, 4, now()
+);
+
+INSERT INTO compound_labels (
+    id, compound_id, name, ref_id
+) VALUES (
+    3, 3, 'compound_three',3
+);

@@ -157,6 +157,7 @@ soundfile                      = ">=0.10, <1.0"
 decorateme                     = ">=0.1, <1.0"
 typeddfs                       = ">=0.2, <1.0"
 pocketutils                    = ">=0.1, <1.0"
+valarpy = { git = "https://github.com/dmyersturnbull/valarpy.git" }
 
 [tool.poetry.dev-dependencies]
 pre-commit               = "^2"
