@@ -2,7 +2,9 @@
 Non-changing settings tied to SauronX and the Shire.
 """
 import hashlib
+
 from pocketutils.core.hasher import FileHasher
+
 from chemfish.core.valar_singleton import *
 
 video_hasher = FileHasher(algorithm=hashlib.sha256, extension=".sha256sum")

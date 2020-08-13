@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from matplotlib.figure import Figure
+
 from chemfish.core.core_imports import *
 from chemfish.model.metrics import *
 from chemfish.viz.accuracy_plots import *

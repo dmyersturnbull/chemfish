@@ -1,8 +1,10 @@
 from __future__ import annotations
+
 import colorsys
-from matplotlib.colors import Colormap
+
 from matplotlib import colors as mcolors
-from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.colors import Colormap, LinearSegmentedColormap
+
 from chemfish.core.core_imports import *
 
 

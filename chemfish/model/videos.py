@@ -1,17 +1,19 @@
 from __future__ import annotations
+
 import moviepy.video.fx.crop as crop_fx
+from matplotlib.colors import to_rgb
+from moviepy.audio.AudioClip import CompositeAudioClip
+from moviepy.audio.io.AudioFileClip import AudioClip, AudioFileClip
 from moviepy.video.io.html_tools import ipython_display
 from moviepy.video.io.VideoFileClip import VideoFileClip
-from moviepy.audio.AudioClip import CompositeAudioClip
-from moviepy.audio.io.AudioFileClip import AudioFileClip, AudioClip
 from pocketutils.core.exceptions import RefusingRequestError
+
 from chemfish.core.core_imports import *
 from chemfish.core.video_core import *
 from chemfish.model.app_frames import *
-from chemfish.model.wf_builders import *
 from chemfish.model.roi_tools import *
+from chemfish.model.wf_builders import *
 from chemfish.viz.kvrc import *
-from matplotlib.colors import to_rgb
 
 stim_colors = {s.name: "#" + s.default_color for s in Stimuli.select()}
 

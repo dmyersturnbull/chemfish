@@ -1,10 +1,12 @@
 from __future__ import annotations
-from chemfish.core.core_imports import *
-from chemfish.model.compound_names import TieredCompoundNamer
+
 from fuzzywuzzy import fuzz, process
+
+from chemfish.core.core_imports import *
 from chemfish.lookups import *
 from chemfish.lookups.lookups import *
 from chemfish.lookups.mandos import *
+from chemfish.model.compound_names import TieredCompoundNamer
 
 look = Tools.look
 _users = {u.id: u.username for u in Users.select()}

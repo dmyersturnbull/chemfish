@@ -1,14 +1,16 @@
 from __future__ import annotations
-from chemfish.core.core_imports import *
+
 from cycler import cycler
+
+from chemfish.core.core_imports import *
 from chemfish.viz import plt
-from chemfish.viz.kvrc_utils import *
+from chemfish.viz._kvrc_utils import *
 
 
 @abcd.not_thread_safe
 @abcd.auto_repr_str()
 @abcd.auto_info()
-class KaleRc(KvrcCore):
+class ChemfishRc(KvrcCore):
     """
     A container for important matplotlib style settings, which can be referenced by plotters.
     """
@@ -395,6 +397,6 @@ class KaleRc(KvrcCore):
                 self[z + ".fonttype"] = v
 
 
-KVRC = KaleRc(chemfish_env.matplotlib_style, chemfish_env.viz_file)
+KVRC = ChemfishRc(chemfish_env.matplotlib_style, chemfish_env.viz_file)
 
-__all__ = ["KVRC", "KvrcDefaults", "KaleRc"]
+__all__ = ["KVRC", "KvrcDefaults", "ChemfishRc"]

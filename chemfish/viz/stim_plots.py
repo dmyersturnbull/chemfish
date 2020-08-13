@@ -1,10 +1,11 @@
 import matplotlib.ticker as ticker
+
 from chemfish.core.core_imports import *
-from chemfish.viz.internal_viz import *
 from chemfish.core.valar_tools import *
-from chemfish.model.stim_frames import *
 from chemfish.model.assay_frames import *
+from chemfish.model.stim_frames import *
 from chemfish.viz import *
+from chemfish.viz._internal_viz import *
 
 
 @abcd.auto_eq()

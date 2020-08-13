@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 from chemfish.core.core_imports import *
+from chemfish.model.compound_names import *
 from chemfish.model.treatments import *
 from chemfish.model.well_names import WellNamer
-from chemfish.model.compound_names import *
 from chemfish.model.wf_tools import *
 
 
@@ -10,7 +11,7 @@ class InvalidWellFrameError(ConstructionError):
     pass
 
 
-class WellFrame(OrganizingFrame):
+class WellFrame(TypedDf):
     """
     A DataFrame where each row is a well.
     Implements OrganizingFrame.
@@ -426,18 +427,6 @@ class WellFrame(OrganizingFrame):
     def with_pack(self, pack: Union[Sequence[str], Set[str], str]) -> WellFrame:
         pack = Tools.to_true_iterable(pack)
         return self.__class__.retype(self[self.packs().isin(pack)])
-
-    def with_issue(self, key: str) -> WellFrame:
-        if "issues" not in self.index.names:
-            raise MissingColumnError("No issues column")
-        return self.__class__.retype(
-            self[self["issues"].map(partial(WellIssues.contains, key=key))]
-        )
-
-    def without_issue(self, key: str) -> WellFrame:
-        if "issues" not in self.index.names:
-            raise MissingColumnError("No issues column")
-        return self.__class__.retype(self[self["issues"].map(partial(WellIssues.dne, key=key))])
 
     def apply_by_name(self, function) -> WellFrame:
         return self.__class__.of(self.group_by(level="name", sort=False).apply(function))

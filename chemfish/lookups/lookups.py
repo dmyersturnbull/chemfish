@@ -1,7 +1,8 @@
 from __future__ import annotations
+
 from chemfish.core.core_imports import *
-from chemfish.model.compound_names import TieredCompoundNamer
 from chemfish.lookups import *
+from chemfish.model.compound_names import TieredCompoundNamer
 
 look = Tools.look
 _users = {u.id: u.username for u in Users.select()}

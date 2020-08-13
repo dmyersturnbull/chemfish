@@ -1,5 +1,4 @@
 """
 Code implementing standard data types.
-Can depend on core and calc, and no other Kale packages.
+Can depend on core and calc, and no other Chemfish packages.
 """
-from __future__ import annotations

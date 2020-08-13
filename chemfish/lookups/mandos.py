@@ -3,6 +3,7 @@ Code for working with the Mandos sub-database.
 Can depend on core, calc, and model.
 """
 from __future__ import annotations
+
 from chemfish.core.core_imports import *
 from chemfish.lookups import *
 

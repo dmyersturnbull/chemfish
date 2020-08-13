@@ -1,13 +1,13 @@
-from chemfish.core.core_imports import *
-from chemfish.model.well_names import *
-from chemfish.model.well_frames import *
-from chemfish.model.compound_names import *
-from chemfish.model.treatment_names import *
 from chemfish.caches.caching_wfs import *
 from chemfish.caches.wf_caches import *
+from chemfish.core.core_imports import *
+from chemfish.model.compound_names import *
+from chemfish.model.treatment_names import *
+from chemfish.model.well_frames import *
+from chemfish.model.well_names import *
 
 
-class KaleDatasetTools:
+class ChemfishDatasetTools:
     @classmethod
     def filter_fewer(cls, df: WellFrame, cutoff: int) -> WellFrame:
         """
@@ -62,7 +62,7 @@ class KaleDatasetTools:
         return (
             WellNamerBuilder()
             .column("control_type", transform=lambda s: "" if s == "low drug transfer" else s)
-            .treatments(StringTreatmentDisplayer("${cid}"), ignore_cids={1, 2, 13576})
+            .treatments(StringTreatmentNamer("${cid}"), ignore_cids={1, 2, 13576})
             .build()
         )
 
@@ -72,7 +72,7 @@ class KaleDatasetTools:
 
     @classmethod
     def dmt_simple_namer(cls, today: datetime) -> WellNamer:
-        displayer = StringTreatmentDisplayer("${tag}")
+        displayer = StringTreatmentNamer("${tag}")
         return (
             WellNamerBuilder()
             .column("control_type", transform=lambda s: s.replace("solvent (-)", "vehicle"))
@@ -85,7 +85,7 @@ class KaleDatasetTools:
         )
 
 
-class KaleDataset(metaclass=abc.ABCMeta):
+class ChemfishDataset(metaclass=abc.ABCMeta):
     def __call__(self):
         logger.info("Downloading {}...".format(self.name))
         df = self._download()
@@ -108,7 +108,7 @@ class KaleDataset(metaclass=abc.ABCMeta):
 @abcd.auto_eq()
 @abcd.auto_hash()
 @abcd.auto_repr_str()
-class OptisepDataset(KaleDataset, metaclass=abc.ABCMeta):
+class OptisepDataset(ChemfishDataset, metaclass=abc.ABCMeta):
     def __init__(self, training_experiment: int, is_test_set: bool):
         self.training_experiment = training_experiment
         self.is_test_set = is_test_set
@@ -123,8 +123,8 @@ class OptisepDataset(KaleDataset, metaclass=abc.ABCMeta):
             CachingWellFrameBuilder(WellCache("cd(10)"), today)
             .with_feature("cd(10)")
             .where(where)
-            .with_compound_names(KaleDatasetTools.qc_compound_namer(today))
-            .with_names(KaleDatasetTools.qc_namer(today))
+            .with_compound_names(ChemfishDatasetTools.qc_compound_namer(today))
+            .with_names(ChemfishDatasetTools.qc_namer(today))
         )
         if self.is_test_set:
             query = query.where(Runs.datetime_run > sep)
@@ -134,7 +134,7 @@ class OptisepDataset(KaleDataset, metaclass=abc.ABCMeta):
         return df.before_first_nan().slice_ms(0, 1000000).sort_by()
 
 
-class LeoDataset1(KaleDataset):
+class LeoDataset1(ChemfishDataset):
     def _download(self):
         today = datetime(2019, 6, 17)
         n_replicates = 5
@@ -151,12 +151,12 @@ class LeoDataset1(KaleDataset):
         df = df.sort_values(["datetime_run", "well_index"])
         df = df.groupby("experiment_id").head(n_replicates * 96)
         treatments = df.without_controls().groupby("c_ids").head(n_replicates)
-        treatments = KaleDatasetTools.filter_fewer(treatments, n_replicates)
+        treatments = ChemfishDatasetTools.filter_fewer(treatments, n_replicates)
         df = WellFrame.concat(df.with_controls("solvent (-)"), treatments)
         return df.sort_values(["run", "well_index"])
 
 
-class LeoDataset2(KaleDataset):
+class LeoDataset2(ChemfishDataset):
     def _download(self):
         pattern = re.compile(r".*BM ([0-9]{1,2})\.([1-9]{1,2}).*")
         today = datetime(2019, 10, 30)
@@ -184,9 +184,9 @@ class LeoDataset2(KaleDataset):
                     }
                 )
             )
-            .with_compound_names(KaleDatasetTools.biomol_compound_namer(today))
-            .with_names(KaleDatasetTools.biomol_namer(today))
-            .with_display_names(KaleDatasetTools.biomol_display_namer(today))
+            .with_compound_names(ChemfishDatasetTools.biomol_compound_namer(today))
+            .with_names(ChemfishDatasetTools.biomol_namer(today))
+            .with_display_names(ChemfishDatasetTools.biomol_display_namer(today))
             .build()
         )
         original_length = df.feature_length()
@@ -215,7 +215,7 @@ class LeoDataset2(KaleDataset):
         )
 
 
-class _SimpleFlamesDataset(KaleDataset):
+class _SimpleFlamesDataset(ChemfishDataset):
     """
     Any simple dataset for the flames battery on pointgrey.
     FYI:
@@ -246,7 +246,7 @@ class _SimpleFlamesDataset(KaleDataset):
         return query.build().subset(1, 101998)
 
 
-class KaleDatasets:
+class ChemfishDatasets:
     @classmethod
     @abcd.copy_docstring(LeoDataset1)
     def leo_biomol(cls) -> WellFrame:
@@ -277,8 +277,8 @@ class KaleDatasets:
     def qc_opt_full(cls) -> WellFrame:
         today = datetime(2019, 9, 1)
         namer, compound_namer = (
-            KaleDatasetTools.qc_namer(today),
-            KaleDatasetTools.qc_compound_namer(today),
+            ChemfishDatasetTools.qc_namer(today),
+            ChemfishDatasetTools.qc_compound_namer(today),
         )
         return _SimpleFlamesDataset(
             "QC-OPT",
@@ -291,8 +291,8 @@ class KaleDatasets:
     def qc_dr_full(cls) -> WellFrame:
         today = datetime(2019, 9, 1)
         namer, compound_namer = (
-            KaleDatasetTools.qc_dr_namer(today),
-            KaleDatasetTools.qc_compound_namer(today),
+            ChemfishDatasetTools.qc_dr_namer(today),
+            ChemfishDatasetTools.qc_compound_namer(today),
         )
         return _SimpleFlamesDataset(
             "QC-DR", [Experiments.id == 1575, Runs.id != 7034], namer, compound_namer
@@ -303,7 +303,7 @@ class KaleDatasets:
         """Experiment 1744 with all concentrations excluding empty wells.."""
         today = datetime(2019, 1, 1)
         compound_namer = CompoundNamers.tiered(as_of=today)
-        displayer = StringTreatmentDisplayer("${tag} ${um}")
+        displayer = StringTreatmentNamer("${tag} ${um}")
         namer = (
             WellNamerBuilder()
             .control_type()
@@ -325,7 +325,7 @@ class KaleDatasets:
         """
         today = datetime(2019, 1, 1)
         compound_namer = CompoundNamers.tiered(as_of=today)
-        namer = KaleDatasetTools.dmt_simple_namer(today)
+        namer = ChemfishDatasetTools.dmt_simple_namer(today)
         wheres = [
             Experiments.id == 1744,
             Runs.id != 7887,
@@ -343,7 +343,7 @@ class KaleDatasets:
         """
         today = datetime(2019, 1, 1)
         compound_namer = CompoundNamers.tiered(as_of=today)
-        namer = KaleDatasetTools.dmt_simple_namer(today)
+        namer = ChemfishDatasetTools.dmt_simple_namer(today)
         wheres = [Experiments.id == 1744, Runs.id != 7887, Compounds.id != 34261]
         df = _SimpleFlamesDataset("DMT-PAPER1", wheres, namer, compound_namer)()
         df["control_type"] = df["control_type"].map(
@@ -355,4 +355,4 @@ class KaleDatasets:
         return df
 
 
-__all__ = ["KaleDatasets", "KaleDatasetTools"]
+__all__ = ["ChemfishDatasets", "ChemfishDatasetTools"]

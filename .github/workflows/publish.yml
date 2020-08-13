@@ -29,10 +29,6 @@ jobs:
                     poetry build
                     poetry install
             -
-                name: Build the Docker image
-                run: |
-                    docker build .
-            -
                 name: Upload the artifacts
                 uses: skx/github-action-publish-binaries@master
                 with:

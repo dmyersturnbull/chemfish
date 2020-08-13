@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from chemfish.viz.internal_viz import *
-from chemfish.viz.figures import *
 from chemfish.core.core_imports import *
 from chemfish.model.well_frames import WellFrame
+from chemfish.viz._internal_viz import *
+from chemfish.viz.figures import *
 
 
 class WellPlotter(KvrcPlotting):

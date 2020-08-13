@@ -1,12 +1,13 @@
 from matplotlib import gridspec
+
 from chemfish.core.core_imports import *
-from chemfish.viz.figures import *
-from chemfish.model.well_frames import WellFrame
 from chemfish.model.stim_frames import StimFrame
+from chemfish.model.well_frames import WellFrame
+from chemfish.viz import CakeComponent
+from chemfish.viz._internal_viz import *
+from chemfish.viz.figures import *
 from chemfish.viz.figures import FigureTools
 from chemfish.viz.stim_plots import *
-from chemfish.viz.internal_viz import *
-from chemfish.viz import CakeComponent
 
 
 @abcd.auto_eq()

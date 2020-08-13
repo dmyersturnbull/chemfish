@@ -1,7 +1,9 @@
 from __future__ import annotations
-import pydub
+
 import librosa
 import librosa.display as ldisplay
+import pydub
+
 from chemfish.core.core_imports import *
 
 
@@ -68,22 +70,30 @@ class Waveform:
         self.n_ms = len(self.data) / self.sampling_rate * 1000
 
     def standardize_sauronx(self, minimum: float = 0, maximum: float = 255) -> Waveform:
-        return self._standardize(minimum, maximum)
-
-    def standardize_legacy(self, minimum: float = 0, maximum: float = 255) -> Waveform:
-        return self._standardize(minimum, maximum, ms_freq=25)
-
-    def _standardize(
-        self, minimum: float = 0, maximum: float = 255, ms_freq: int = 1000
-    ) -> Waveform:
         """
-        Downsamples to 1000Hz and normalizes to between 0 and 255.
-        This is useful for various purposes in Kale, such as embedding into plots.
+        Downsamples to **1000 Hz** and normalizes to between 0 and 255.
+        This is useful for various purposes in Chemfish, such as embedding into plots.
         :param minimum: Normally 0
         :param maximum: Normally 255
         :return: The same Waveform as a copy
         :param ms_freq: Normally 1000, though possibly 25 or 50 for legacy data
         """
+        return self._standardize(minimum, maximum)
+
+    def standardize_legacy(self, minimum: float = 0, maximum: float = 255) -> Waveform:
+        """
+        Downsamples to **25 Hz** and normalizes to between 0 and 255.
+        This is useful for various purposes in Chemfish, such as embedding into plots.
+        :param minimum: Normally 0
+        :param maximum: Normally 255
+        :return: The same Waveform as a copy
+        :param ms_freq: Normally 1000, though possibly 25 or 50 for legacy data
+        """
+        return self._standardize(minimum, maximum, ms_freq=25)
+
+    def _standardize(
+        self, minimum: float = 0, maximum: float = 255, ms_freq: int = 1000
+    ) -> Waveform:
         if minimum < 0 or maximum > 255:
             raise OutOfRangeError("Must be between 0 and 255")
         y = self.downsample(ms_freq).data
@@ -111,7 +121,7 @@ class Waveform:
         """
         Alternative to downsampling. Splits data into discrete chunks and then calculates mean for those chunks.
         :param a: Numpy array of data that you wish to reduce the size of
-        :param chunk_size: Size of Window/chunk
+        :param new_sampling_hertz: rate of sampling
         :return: numpy array of orr
         """
         if new_sampling_hertz > self.sampling_rate:

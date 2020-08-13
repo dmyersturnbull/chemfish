@@ -16,16 +16,24 @@ jobs:
                     - 3.8
         services:
             mysql:
-                image: mariadb:10.5
+                image: mariadb:latest
                 env:
                     MYSQL_ROOT_PASSWORD: root
                 ports:
-                - 3306:3306
+                    - 3306
                 options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
         steps:
             -
                 name: Checkout
                 uses: actions/checkout@v2
+            -
+                name: Verify MariaDB connection
+                env:
+                  PORT: ${{ job.services.mariadb.ports[3306] }}
+                run: |
+                  while ! mysqladmin ping -h"127.0.0.1" -P"${PORT}" --silent; do
+                    sleep 1
+                  done
             -
                 name: 'Set up Python ${{ matrix.python-version }}'
                 uses: actions/setup-python@v2
@@ -40,10 +48,6 @@ jobs:
                 name: Test with tox
                 run: |
                     tox -v
-            -
-                name: Build the Docker image
-                run: |
-                    docker build .
             -
                 name: Run coveralls
                 # the || true is because coveralls returns a nonzero exit code on warnings, etc.

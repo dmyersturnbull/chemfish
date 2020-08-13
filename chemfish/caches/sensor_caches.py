@@ -1,7 +1,8 @@
 import soundfile
+
 from chemfish.core.core_imports import *
-from chemfish.model.sensors import *
 from chemfish.model.cache_interfaces import ASensorCache
+from chemfish.model.sensors import *
 
 DEFAULT_CACHE_DIR = chemfish_env.cache_dir / "sensors"
 bdata_names = {"sauronx-microphone-wav", "preview", "webcam"}
@@ -49,7 +50,6 @@ class SensorCache(ASensorCache):
         sensor_name, run = tup
         sensor_name = SensorNames.of(sensor_name)
         run = ValarTools.run(run)
-        generation = ValarTools.generation_of(run)
         if sensor_name == SensorNames.PHOTORESISTOR:
             return PhotoresistorSensor(
                 run,

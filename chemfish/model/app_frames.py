@@ -1,5 +1,10 @@
+"""
+Data frames describing the application of stimuli in assays.
+"""
 from __future__ import annotations
+
 from binascii import hexlify
+
 from chemfish.core.core_imports import *
 
 

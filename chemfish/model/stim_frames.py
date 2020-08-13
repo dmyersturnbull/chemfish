@@ -1,11 +1,13 @@
 from __future__ import annotations
+
 from binascii import hexlify
-from chemfish.core.core_imports import *
+
 from chemfish.calc.audio_expansion import *
+from chemfish.core.core_imports import *
 from chemfish.model.audio import Waveform
 
 
-class StimFrame(OrganizingFrame, metaclass=abc.ABCMeta):
+class StimFrame(TypedDf, metaclass=abc.ABCMeta):
     """
     A DataFrame where the rows are milliseconds (or 'stimulus frames') and the columns are stimuli.
     A couple of properties:
@@ -16,7 +18,7 @@ class StimFrame(OrganizingFrame, metaclass=abc.ABCMeta):
             b)  More than one nonzero value in a row, indicating that the playback will start at the first nonzero position and end at the last.
                 This means that the audio will be repeated and truncated as necessary to fill that number of milliseconds.
             c)  A waveform embedded centered around 127.5 with maximum of 255 and minimum of 0.
-                This will be used if expand_audio_inplace is called, or Kale is set to store waveforms.
+                This will be used if expand_audio_inplace is called, or Chemfish is set to store waveforms.
             In the first two cases, the first nonzero value dictates the volume, where 255 is the max volume allowed by SauronX,
             which is in turn determined by the audio card, the amplifier setting, and the settings configured in the Toml
     """
@@ -198,27 +200,6 @@ class BatteryStimFrame(StimFrame):
         # noinspection PyTypeChecker,PyUnresolvedReferences
         df = (self.diff() > 0).astype(np.float32).fillna(0)
         return BatteryStimFrame(df)
-
-    def triangles(self, win_size: int = 1000) -> BatteryStimFrame:
-        """
-        Computes a left triangle sliding window of the deltas (see `BatteryStimFrame.deltas()`).
-        Each triangle starts at value 255 at the start of a change in value at ms t
-        and slopes linearally down to 0 by time `t + win_size`.
-        Note that it's 0 until the exact moment when the stimulus occurred.
-        Useful for weighting distance metrics, etc.
-        :param win_size: The number of stimulus values for the sliding window (ms for new sauronx batteries)
-        :return: A BatteryStimFrame of triangled deltas as a copy
-        """
-
-        def fix(r):
-            values = np.zeros((len(r),))
-            for epicenter in r[r > 0].index:
-                for i in range(epicenter, min(len(r), epicenter + win_size)):
-                    values[i] = win_size - i + epicenter
-            return 255 * values / values.max()
-
-        rolled = self.deltas().apply(fix, axis=0)
-        return BatteryStimFrame(rolled)
 
     @classmethod
     def of(

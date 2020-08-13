@@ -3,13 +3,14 @@
 
 import argparse
 import traceback
+
 from chemfish.core.core_imports import *
-from chemfish.viz.figures import *
-from chemfish.model.well_names import *
+from chemfish.model.concerns import *
 from chemfish.model.sensors import *
 from chemfish.model.well_frames import *
-from chemfish.model.concerns import *
+from chemfish.model.well_names import *
 from chemfish.quick import *
+from chemfish.viz.figures import *
 
 
 @abcd.auto_repr_str()
@@ -178,11 +179,11 @@ class AutoScreenTracer:
                 except:
                     logger.minor("No webcam snapshot")
                 # additional info
-                #logger.debug("Saving structures...")
-                #try:
+                # logger.debug("Saving structures...")
+                # try:
                 #    img = q0.structures_on_plate(run)
                 #    img.save(path / "structures.png", "png")
-                #except Exception:
+                # except Exception:
                 #    logger.error("Failed to plot structures", exc_info=True)
             ########################
             # we're done with plots

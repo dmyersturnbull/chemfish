@@ -1,5 +1,5 @@
-from chemfish.core.core_imports import *
 from chemfish.calc.interpolation import *
+from chemfish.core.core_imports import *
 
 
 class FeatureType:

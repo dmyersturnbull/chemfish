@@ -45,7 +45,7 @@ class CompoundNamer(metaclass=abc.ABCMeta):
         self, compounds: Iterable[Iterable[Optional[CompoundLike]]]
     ) -> Sequence[Sequence[Optional[str]]]:
         """
-        Maps a singly list of compounds.
+        Maps a list of lists/tuples of compounds.
         This is notably useful for processing wells on a plate, where each well has a list of compounds.
         Ex:
         ```

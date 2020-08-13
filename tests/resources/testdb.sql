@@ -10,10 +10,10 @@ SET FOREIGN_KEY_CHECKS=0;
 
 DROP DATABASE IF EXISTS valartest;
 CREATE DATABASE valartest CHARACTER SET = 'utf8mb4' COLLATE 'utf8mb4_unicode_520_ci';
-DROP USER IF EXISTS 'kaletest'@'localhost';
+DROP USER IF EXISTS 'chemfishtest'@'localhost';
 USE valartest;
-CREATE USER 'kaletest'@'localhost' IDENTIFIED BY 'kale123';
-GRANT SELECT,INSERT,UPDATE,DELETE ON valartest.* TO 'kaletest'@'localhost';
+CREATE USER 'chemfishtest'@'localhost' IDENTIFIED BY 'chemfish123';
+GRANT SELECT, INSERT, UPDATE, DELETE ON valartest.* TO 'chemfishtest'@'localhost';
 
 
 --
@@ -24,7 +24,7 @@ CREATE TABLE `annotations` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
-  `level` enum('0:good','1:note','2:caution','3:warning','4:danger','9:deleted','to_fix','fixed') NOT NULL DEFAULT '1:note',
+  `level` enum('0:good', '1:note', '2:caution', '3:warning', '4:danger', '9:deleted', 'to_fix', 'fixed') NOT NULL DEFAULT '1:note',
   `run_id` mediumint(8) unsigned DEFAULT NULL,
   `submission_id` mediumint(8) unsigned DEFAULT NULL,
   `well_id` mediumint(8) unsigned DEFAULT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE `assay_params` (
   `name` varchar(30) CHARACTER SET latin1 NOT NULL,
   `value` double NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `assay_and_name_unique` (`name`,`assay_id`),
+  UNIQUE KEY `assay_and_name_unique` (`name`, `assay_id`),
   KEY `assay_param_to_assay` (`assay_id`),
   KEY `value` (`value`),
   CONSTRAINT `assay_param_to_assay` FOREIGN KEY (`assay_id`) REFERENCES `assays` (`id`) ON DELETE CASCADE
@@ -88,7 +88,7 @@ CREATE TABLE `assay_positions` (
   `assay_id` smallint(5) unsigned NOT NULL,
   `start` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `battery_assay_start_unique` (`battery_id`,`assay_id`,`start`),
+  UNIQUE KEY `battery_assay_start_unique` (`battery_id`, `assay_id`, `start`),
   KEY `battery_id` (`battery_id`),
   KEY `assay_id` (`assay_id`),
   KEY `start` (`start`),
@@ -111,7 +111,7 @@ CREATE TABLE `assays` (
   `frames_sha1` binary(20) NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name_frames_sha1_unique` (`name`,`frames_sha1`),
+  UNIQUE KEY `name_frames_sha1_unique` (`name`, `frames_sha1`),
   UNIQUE KEY `name_unique` (`name`),
   KEY `name` (`name`),
   KEY `hash` (`frames_sha1`) USING BTREE,
@@ -148,7 +148,7 @@ CREATE TABLE `audio_files` (
 CREATE TABLE `batch_annotations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `batch_id` mediumint(8) unsigned NOT NULL,
-  `level` enum('0:good','1:note','2:caution','3:warning','4:danger','9:deleted') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:note',
+  `level` enum('0:good', '1:note', '2:caution', '3:warning', '4:danger', '9:deleted') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1:note',
   `name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `value` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `description` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -212,7 +212,7 @@ CREATE TABLE `batches` (
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_hash` (`lookup_hash`),
-  UNIQUE KEY `box_number_well_number` (`box_number`,`well_number`),
+  UNIQUE KEY `box_number_well_number` (`box_number`, `well_number`),
   UNIQUE KEY `tag_unique` (`tag`),
   KEY `compound_id` (`compound_id`),
   KEY `solvent_id` (`solvent_id`),
@@ -345,7 +345,7 @@ CREATE TABLE `experiment_tags` (
   `ref_id` smallint(5) unsigned NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `exp_tag_unique` (`experiment_id`,`name`),
+  UNIQUE KEY `exp_tag_unique` (`experiment_id`, `name`),
   KEY `experiment_tag_to_ref` (`ref_id`),
   CONSTRAINT `experiment_tag_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`),
   CONSTRAINT `tag_to_experiment` FOREIGN KEY (`experiment_id`) REFERENCES `experiments` (`id`) ON DELETE CASCADE
@@ -393,7 +393,7 @@ CREATE TABLE `features` (
   `name` varchar(50) NOT NULL,
   `description` varchar(250) NOT NULL,
   `dimensions` varchar(20) NOT NULL,
-  `data_type` enum('byte','short','int','float','double','unsigned_byte','unsigned_short','unsigned_int','unsigned_float','unsigned_double','utf8_char') NOT NULL DEFAULT 'float',
+  `data_type` enum('byte', 'short', 'int', 'float', 'double', 'unsigned_byte', 'unsigned_short', 'unsigned_int', 'unsigned_float', 'unsigned_double', 'utf8_char') NOT NULL DEFAULT 'float',
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_unique` (`name`)
@@ -409,7 +409,7 @@ CREATE TABLE `genetic_variants` (
   `name` varchar(250) NOT NULL,
   `mother_id` mediumint(8) unsigned DEFAULT NULL,
   `father_id` mediumint(8) unsigned DEFAULT NULL,
-  `lineage_type` enum('injection','cross','selection','wild-type') DEFAULT NULL,
+  `lineage_type` enum('injection', 'cross', 'selection', 'wild-type') DEFAULT NULL,
   `date_created` date DEFAULT NULL,
   `notes` text DEFAULT NULL,
   `creator_id` smallint(5) unsigned NOT NULL,
@@ -476,7 +476,7 @@ CREATE TABLE `mandos_info` (
   `ref_id` smallint(5) unsigned NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `mandos_chem_info_name_source_compound_unique` (`name`,`ref_id`,`compound_id`),
+  UNIQUE KEY `mandos_chem_info_name_source_compound_unique` (`name`, `ref_id`, `compound_id`),
   KEY `mandos_chem_info_to_data_source` (`ref_id`),
   KEY `name` (`name`),
   KEY `value` (`value`),
@@ -517,7 +517,7 @@ CREATE TABLE `mandos_object_tags` (
   `value` varchar(250) NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `object_ref_name_value_unique` (`object`,`ref`,`name`,`value`),
+  UNIQUE KEY `object_ref_name_value_unique` (`object`, `ref`, `name`, `value`),
   KEY `object` (`object`),
   KEY `ref` (`ref`),
   KEY `label` (`value`),
@@ -537,7 +537,7 @@ CREATE TABLE `mandos_objects` (
   `name` varchar(250) DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `data_source_external_id_unique` (`ref_id`,`external_id`),
+  UNIQUE KEY `data_source_external_id_unique` (`ref_id`, `external_id`),
   KEY `data_source_id` (`ref_id`),
   KEY `external_id` (`external_id`),
   CONSTRAINT `mandos_key_to_data_source` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`) ON DELETE CASCADE
@@ -553,11 +553,11 @@ CREATE TABLE `mandos_predicates` (
   `ref_id` smallint(5) unsigned NOT NULL,
   `external_id` varchar(250) DEFAULT NULL,
   `name` varchar(250) NOT NULL,
-  `kind` enum('target','class','indication','other') NOT NULL,
+  `kind` enum('target', 'class', 'indication', 'other') NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name_source_unique` (`name`,`ref_id`),
-  UNIQUE KEY `external_id_source_unique` (`external_id`,`ref_id`),
+  UNIQUE KEY `name_source_unique` (`name`, `ref_id`),
+  UNIQUE KEY `external_id_source_unique` (`external_id`, `ref_id`),
   KEY `mandos_mode_to_source` (`ref_id`),
   KEY `name` (`name`),
   KEY `external_id` (`external_id`),
@@ -577,7 +577,7 @@ CREATE TABLE `mandos_rule_tags` (
   `value` varchar(250) NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `rule_ref_name_value_unique` (`rule`,`ref`,`name`,`value`),
+  UNIQUE KEY `rule_ref_name_value_unique` (`rule`, `ref`, `name`, `value`),
   KEY `rule` (`rule`),
   KEY `label` (`value`),
   KEY `ref` (`ref`),
@@ -599,7 +599,7 @@ CREATE TABLE `mandos_rules` (
   `predicate_id` tinyint(3) unsigned NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `data_source_compound_mode_unique` (`ref_id`,`compound_id`,`object_id`,`predicate_id`),
+  UNIQUE KEY `data_source_compound_mode_unique` (`ref_id`, `compound_id`, `object_id`, `predicate_id`),
   KEY `data_source_id` (`ref_id`),
   KEY `compound_id` (`compound_id`),
   KEY `external_id` (`external_id`),
@@ -623,10 +623,10 @@ CREATE TABLE `plate_types` (
   `part_number` varchar(100) DEFAULT NULL,
   `n_rows` smallint(5) unsigned NOT NULL,
   `n_columns` smallint(5) unsigned NOT NULL,
-  `well_shape` enum('round','square','rectangular') NOT NULL,
-  `opacity` enum('opaque','transparent') NOT NULL,
+  `well_shape` enum('round', 'square', 'rectangular') NOT NULL,
+  `opacity` enum('opaque', 'transparent') NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `n_rows` (`n_rows`,`n_columns`),
+  KEY `n_rows` (`n_rows`, `n_columns`),
   KEY `manufacturer` (`part_number`),
   KEY `plate_type_to_supplier` (`supplier_id`),
   CONSTRAINT `plate_type_to_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`)
@@ -664,7 +664,7 @@ CREATE TABLE `project_tags` (
   `ref_id` smallint(5) unsigned NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `project_tag_unique` (`project_id`,`name`),
+  UNIQUE KEY `project_tag_unique` (`project_id`, `name`),
   KEY `project_tag_to_ref` (`ref_id`),
   CONSTRAINT `project_tag_to_ref` FOREIGN KEY (`ref_id`) REFERENCES `refs` (`id`),
   CONSTRAINT `tag_to_project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
@@ -734,7 +734,7 @@ CREATE TABLE `run_tags` (
   `name` varchar(100) NOT NULL,
   `value` varchar(10000) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `run_name_unique` (`run_id`,`name`),
+  UNIQUE KEY `run_name_unique` (`run_id`, `name`),
   CONSTRAINT `run_tag_to_run` FOREIGN KEY (`run_id`) REFERENCES `runs` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
@@ -797,7 +797,7 @@ CREATE TABLE `sauron_configs` (
   `description` text NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `sauron_datetime_changed_unique` (`sauron_id`,`datetime_changed`),
+  UNIQUE KEY `sauron_datetime_changed_unique` (`sauron_id`, `datetime_changed`),
   KEY `sauron_id` (`sauron_id`),
   CONSTRAINT `sauron_config_to_sauron` FOREIGN KEY (`sauron_id`) REFERENCES `saurons` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
@@ -814,7 +814,7 @@ CREATE TABLE `sauron_settings` (
   `value` varchar(255) NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `sauron_name_unique` (`sauron_config_id`,`name`),
+  UNIQUE KEY `sauron_name_unique` (`sauron_config_id`, `name`),
   KEY `sauron_setting_name` (`name`),
   KEY `sauron` (`sauron_config_id`),
   CONSTRAINT `sauron_setting_to_sauron_config` FOREIGN KEY (`sauron_config_id`) REFERENCES `sauron_configs` (`id`)
@@ -864,8 +864,8 @@ CREATE TABLE `sensors` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `description` varchar(250) DEFAULT NULL,
-  `data_type` enum('byte','short','int','float','double','unsigned_byte','unsigned_short','unsigned_int','unsigned_float','unsigned_double','utf8_char','long','unsigned_long','other') NOT NULL,
-  `blob_type` enum('assay_start','battery_start','every_n_milliseconds','every_n_frames','arbitrary') DEFAULT NULL,
+  `data_type` enum('byte', 'short', 'int', 'float', 'double', 'unsigned_byte', 'unsigned_short', 'unsigned_int', 'unsigned_float', 'unsigned_double', 'utf8_char', 'long', 'unsigned_long', 'other') NOT NULL,
+  `blob_type` enum('assay_start', 'battery_start', 'every_n_milliseconds', 'every_n_frames', 'arbitrary') DEFAULT NULL,
   `n_between` int(10) unsigned DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
@@ -905,7 +905,7 @@ CREATE TABLE `stimulus_frames` (
   `frames` longblob NOT NULL,
   `frames_sha1` binary(20) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `assay_id_stimulus_id` (`assay_id`,`stimulus_id`),
+  UNIQUE KEY `assay_id_stimulus_id` (`assay_id`, `stimulus_id`),
   KEY `assay_id` (`assay_id`),
   KEY `stimulus_id` (`stimulus_id`),
   KEY `frames_sha1` (`frames_sha1`),
@@ -922,10 +922,10 @@ CREATE TABLE `submission_params` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `submission_id` mediumint(8) unsigned NOT NULL,
   `name` varchar(250) NOT NULL,
-  `param_type` enum('n_fish','compound','dose','variant','dpf','group') NOT NULL,
+  `param_type` enum('n_fish', 'compound', 'dose', 'variant', 'dpf', 'group') NOT NULL,
   `value` varchar(4000) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `submission_name_unique` (`submission_id`,`name`),
+  UNIQUE KEY `submission_name_unique` (`submission_id`, `name`),
   CONSTRAINT `submission_parameter_to_submission` FOREIGN KEY (`submission_id`) REFERENCES `submissions` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
@@ -937,7 +937,7 @@ CREATE TABLE `submission_params` (
 CREATE TABLE `submission_records` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `submission_id` mediumint(8) unsigned NOT NULL,
-  `status` enum('starting','capturing','failed','cancelled','extracting','extracted','compressing','compressed','uploading','uploaded','inserting','inserted run','inserting features','inserted features','inserting sensors','inserted sensors','insert failed','archiving','archived','available','failed_during_initialization','failed_during_capture','failed_during_postprocessing','failed_during_upload','cancelled_during_capture','finished_capture') DEFAULT NULL,
+  `status` enum('starting', 'capturing', 'failed', 'cancelled', 'extracting', 'extracted', 'compressing', 'compressed', 'uploading', 'uploaded', 'inserting', 'inserted run', 'inserting features', 'inserted features', 'inserting sensors', 'inserted sensors', 'insert failed', 'archiving', 'archived', 'available', 'failed_during_initialization', 'failed_during_capture', 'failed_during_postprocessing', 'failed_during_upload', 'cancelled_during_capture', 'finished_capture') DEFAULT NULL,
   `sauron_id` tinyint(3) unsigned NOT NULL,
   `datetime_modified` datetime NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -1195,7 +1195,7 @@ CREATE TABLE `well_treatments` (
   `batch_id` mediumint(8) unsigned NOT NULL,
   `micromolar_dose` double unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `well_batch` (`well_id`,`batch_id`),
+  UNIQUE KEY `well_batch` (`well_id`, `batch_id`),
   KEY `compound_id` (`batch_id`),
   KEY `well_id` (`well_id`),
   CONSTRAINT `well_treatment_to_batch` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`id`),
@@ -1218,7 +1218,7 @@ CREATE TABLE `wells` (
   `age` mediumint(8) unsigned DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `plate_well_index_unique` (`run_id`,`well_index`),
+  UNIQUE KEY `plate_well_index_unique` (`run_id`, `well_index`),
   KEY `plate_id` (`run_id`),
   KEY `variant_id` (`variant_id`),
   KEY `well_group` (`well_group`),
@@ -1234,7 +1234,7 @@ CREATE TABLE `wells` (
 INSERT INTO users(
     id, username, first_name, last_name, write_access, bcrypt_hash
 ) VALUES (
-    4,'test_user7', 'test', 'UserBser', 0, 'jfEHa6wjtC6Fyx95F8miqtgZCSG0V35ZE82EGY3BS5kccr80Y8g3tbTWOzf7'
+    4, 'test_user7', 'test', 'UserBser', 0, 'jfEHa6wjtC6Fyx95F8miqtgZCSG0V35ZE82EGY3BS5kccr80Y8g3tbTWOzf7'
 );
 
 INSERT INTO submissions(
@@ -1249,28 +1249,28 @@ INSERT INTO runs(
     id, experiment_id, plate_id, description, experimentalist_id, submission_id, datetime_run, datetime_dosed, name,
     tag, sauron_config_id, config_file_id, incubation_min, acclimation_sec, notes
 ) VALUES (
-    4,2, 1, 'run number four', 1, 25, '2019-01-28 10:11:12', '2019-01-28 10:42:12', 'run_number_four', 'tag_four', 3, 1,
+    4, 2, 1, 'run number four', 1, 25, '2019-01-28 10:11:12', '2019-01-28 10:42:12', 'run_number_four', 'tag_four', 3, 1,
     20, 50, 'hi there r no notes here'
 );
 
 INSERT INTO run_tags(
-    id,run_id, name, value
-) VALUES(3,1, 'second run tag', '0abcdefghijklmnop');
+    id, run_id, name, value
+) VALUES(3, 1, 'second run tag', '0abcdefghijklmnop');
 
 INSERT INTO run_tags(
-    id,run_id, name, value
-) VALUES(4,1, 'sauronx_version', '54554512asofja109');
+    id, run_id, name, value
+) VALUES(4, 1, 'sauronx_version', '54554512asofja109');
 
 INSERT INTO submission_params(
     id, submission_id, name, param_type, value
 ) VALUES (
-    5, 2, '$...BC123', 'compound', '\["AB0124403","AB0124404"\]'
+    5, 2, '$...BC123', 'compound', '\["AB0124403", "AB0124404"\]'
 );
 
 INSERT INTO submission_params(
     id, submission_id, name, param_type, value
 ) VALUES (
-    4,1, 'sp_1_7', 'dose', 100
+    4, 1, 'sp_1_7', 'dose', 100
 );
 
 INSERT INTO compounds(
@@ -1288,7 +1288,7 @@ INSERT INTO batches(
     well_number, location_note, amount, concentration_millimolar, solvent_id, molecular_weight, supplier_catalog_number,
     person_ordered, date_ordered, notes
 ) VALUES (
-    4, '124bff34abagzf', 'wrong_legacy_id_format', 1, NULL,1,1,'BC000040201', 2, 5, 2, 'location three', '200ul', 100,
+    4, '124bff34abagzf', 'wrong_legacy_id_format', 1, NULL, 1, 1, 'BC000040201', 2, 5, 2, 'location three', '200ul', 100,
     2, 25.0, 1, 1, now(), 'hello this is notes_six'
 );
 
@@ -1299,9 +1299,9 @@ INSERT INTO genetic_variants (
 );
 
 INSERT INTO refs(
-    id,name, datetime_downloaded, external_version, description, url
+    id, name, datetime_downloaded, external_version, description, url
 ) VALUES (
-    4,'ref_four', '2019-01-29 12:48:12', 'ref_four_external_version', 'this is ref four',
+    4, 'ref_four', '2019-01-29 12:48:12', 'ref_four_external_version', 'this is ref four',
     'https://www.nonexistentreffour.com'
 );
 
@@ -1322,13 +1322,13 @@ INSERT INTO sensor_data (
 INSERT INTO control_types (
     id, name, description, positive, drug_related, genetics_related
 ) VALUES (
-    3,'control type three', 'this is control type three', 1, 1, 1
+    3, 'control type three', 'this is control type three', 1, 1, 1
 );
 
 INSERT INTO wells(
-    id,run_id, well_index, control_type_id, variant_id, well_group, n, age
+    id, run_id, well_index, control_type_id, variant_id, well_group, n, age
 ) VALUES (
-    9,1, 7, 2,5, 'well group one', 6, 15
+    9, 1, 7, 2, 5, 'well group one', 6, 15
 );
 
 INSERT INTO well_features (
@@ -1359,7 +1359,7 @@ INSERT INTO assays(
 INSERT INTO well_treatments (
     id, well_id, batch_id, micromolar_dose
 ) VALUES (
-    1, 1, 1,100
+    1, 1, 1, 100
 );
 
 INSERT INTO suppliers(
@@ -1375,7 +1375,7 @@ INSERT INTO plates(
 );
 
 INSERT INTO plate_types(
-    id, name, supplier_id, part_number,n_rows,n_columns, well_shape, opacity
+    id, name, supplier_id, part_number, n_rows, n_columns, well_shape, opacity
 ) VALUES (
     4, 'plate_four', 3, NULL, 8, 12, 'round', 'transparent'
 );
@@ -1383,7 +1383,7 @@ INSERT INTO plate_types(
 INSERT INTO submission_records (
 id, submission_id, status, sauron_id, datetime_modified
 ) VALUES (
-    2,1,'uploaded', 1, now()
+    2, 1, 'uploaded', 1, now()
 );
 
 INSERT INTO sauron_configs (
@@ -1400,7 +1400,7 @@ INSERT INTO saurons(
 
 INSERT INTO experiments(
     id, name, description, creator_id, project_id, battery_id, template_plate_id, transfer_plate_id,
-    default_acclimation_sec,notes, active
+    default_acclimation_sec, notes, active
 ) VALUES (
     5, 'exp 5', 'this is exp 5', 4, 1, 2, 3, 3, 100, 'hi this notes for exp 5', 1
 );
@@ -1412,19 +1412,25 @@ INSERT INTO project_types (
 );
 
 INSERT INTO batteries(
-    id, name, description, length, author_id, template_id,hidden, notes, assays_sha1
+    id, name, description, length, author_id, template_id, hidden, notes, assays_sha1
 ) VALUES (
     4, 'battery_four', 'this is battery four', 1000, 4, 3, 0, 'interesting stuff', cast('assay_four' as binary(20))
 );
 
+INSERT INTO assay_positions(
+    id, assay_id, battery_id, start
+) VALUES(
+    4, 5, 4, 0
+);
+
 INSERT INTO template_plates (
-    id,name,description, plate_type_id, author_id, hidden,created,specializes
+    id, name, description, plate_type_id, author_id, hidden, created, specializes
 ) VALUES (
-    5, 'template_plate_five', 'this is the fifth tempPlate', 3, 4, 0, now(),NULL
+    5, 'template_plate_five', 'this is the fifth tempPlate', 3, 4, 0, now(), NULL
 );
 
 INSERT INTO transfer_plates (
-    id, name, description, plate_type_id,supplier_id,parent_id, dilution_factor_from_parent, initial_ul_per_well,
+    id, name, description, plate_type_id, supplier_id, parent_id, dilution_factor_from_parent, initial_ul_per_well,
     creator_id, datetime_created
 ) VALUES (
     4, 'transfer_plate_four', 'this is the fourth template plate', 4, NULL, NULL, NULL, 10, 4, now()
@@ -1433,5 +1439,5 @@ INSERT INTO transfer_plates (
 INSERT INTO compound_labels (
     id, compound_id, name, ref_id
 ) VALUES (
-    3, 3, 'compound_three',3
+    3, 3, 'compound_three', 3
 );

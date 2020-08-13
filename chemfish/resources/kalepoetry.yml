@@ -1,6 +1,0 @@
-name: kalepoetry
-channels:
-    - conda-forge
-
-dependencies:
-    - rdkit>=2020.03

@@ -1,10 +1,13 @@
 from __future__ import annotations
-from chemfish.core.valar_singleton import *
-from PIL import Image, ImageDraw
-from chemfish.core.core_imports import *
-from chemfish.model.audio import *
+
 import io
+
 import numpy as np
+from PIL import Image, ImageDraw
+
+from chemfish.core.core_imports import *
+from chemfish.core.valar_singleton import *
+from chemfish.model.audio import *
 
 
 @enum.unique
@@ -54,7 +57,7 @@ class BatteryTimeData:
         return len(self.data)
 
 
-class KaleSensor:
+class ChemfishSensor:
     def __init__(self, run: RunLike, sensor_data: SensorDataLike):
         """
         Sensor wrapper object that holds converted sensor_data for a given run.
@@ -97,7 +100,7 @@ class KaleSensor:
         )
 
 
-class TimeData(KaleSensor, metaclass=abc.ABCMeta):
+class TimeData(ChemfishSensor, metaclass=abc.ABCMeta):
     """
     BatteryTimeData object (contains start/end timestamps, length of battery, etc.) for a given run.
     These are the emperical values, not the expected ones!
@@ -123,6 +126,7 @@ class TimeData(KaleSensor, metaclass=abc.ABCMeta):
 
     @property
     def n_ms(self) -> float:
+        # noinspection PyUnresolvedReferences
         return (self._sensor_data[1] - self._sensor_data[0]).total_seconds() * 1000
 
     @property
@@ -153,7 +157,7 @@ class CameraTimeData(TimeData):
         return "🎥"
 
 
-class ImageSensor(KaleSensor):
+class ImageSensor(ChemfishSensor):
     def __init__(self, run: RunLike, sensor_data: SensorDataLike):
         """
         Sensor that holds Image sensor data (Webcam and Preview). Applies grid if it holds preview data.
@@ -165,7 +169,7 @@ class ImageSensor(KaleSensor):
 
     def draw_roi_grid(
         self, color: str = "black", roi_ref: Union[int, str, Refs] = 63
-    ) -> KaleSensor:
+    ) -> ChemfishSensor:
         """
         Draws a grid, returing a new ImageSensor.
         :param color: A color code recognized by PIL (Python Imaging Library), such as a hex code starting with #
@@ -197,7 +201,7 @@ class ImageSensor(KaleSensor):
         return "📷"
 
 
-class TimeDepKaleSensor(KaleSensor, metaclass=abc.ABCMeta):
+class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
     def __init__(
         self,
         run: RunLike,
@@ -235,7 +239,7 @@ class TimeDepKaleSensor(KaleSensor, metaclass=abc.ABCMeta):
     def bt_data(self) -> BatteryTimeData:
         return self._bt_data
 
-    def slice_ms(self, start_ms: Optional[int], end_ms: Optional[int]) -> TimeDepKaleSensor:
+    def slice_ms(self, start_ms: Optional[int], end_ms: Optional[int]) -> TimeDepChemfishSensor:
         """
         Slices Sensor data
         :param start_ms:
@@ -285,7 +289,7 @@ class TimeDepKaleSensor(KaleSensor, metaclass=abc.ABCMeta):
         return len(self.data)
 
 
-class PhotoresistorSensor(TimeDepKaleSensor):
+class PhotoresistorSensor(TimeDepChemfishSensor):
     @property
     def abbrev(self) -> str:
         return "photo"
@@ -299,7 +303,7 @@ class PhotoresistorSensor(TimeDepKaleSensor):
         return 1
 
 
-class ThermistorSensor(TimeDepKaleSensor):
+class ThermistorSensor(TimeDepChemfishSensor):
     @property
     def abbrev(self) -> str:
         return "therm"
@@ -313,7 +317,7 @@ class ThermistorSensor(TimeDepKaleSensor):
         return 1
 
 
-class MicrophoneWaveFormSensor(TimeDepKaleSensor):
+class MicrophoneWaveFormSensor(TimeDepChemfishSensor):
     # TODO: Not sure if this is right... Don't know what it's supposed to be doing either...
     def __init__(
         self,
@@ -347,7 +351,7 @@ class MicrophoneWaveFormSensor(TimeDepKaleSensor):
         return self.samples_per_sec / 1000
 
 
-class MicrophoneRawSensor(TimeDepKaleSensor):
+class MicrophoneRawSensor(TimeDepChemfishSensor):
     @property
     def abbrev(self) -> str:
         return "mic"
@@ -376,8 +380,8 @@ class MicrophoneRawSensor(TimeDepKaleSensor):
 
 __all__ = [
     "SensorNames",
-    "KaleSensor",
-    "TimeDepKaleSensor",
+    "ChemfishSensor",
+    "TimeDepChemfishSensor",
     "PhotoresistorSensor",
     "MicrophoneRawSensor",
     "MicrophoneWaveFormSensor",

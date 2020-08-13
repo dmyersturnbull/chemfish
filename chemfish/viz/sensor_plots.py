@@ -1,10 +1,10 @@
 from chemfish.core.core_imports import *
-from chemfish.model.stim_frames import *
 from chemfish.model.sensors import *
-from chemfish.viz.stim_plots import StimframesPlotter
+from chemfish.model.stim_frames import *
 from chemfish.viz import CakeComponent
-from chemfish.viz.internal_viz import *
+from chemfish.viz._internal_viz import *
 from chemfish.viz.figures import *
+from chemfish.viz.stim_plots import StimframesPlotter
 
 
 @abcd.auto_eq()
@@ -18,7 +18,7 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
         self,
         run,
         stimframes: StimFrame,
-        sensors: Sequence[TimeDepKaleSensor],
+        sensors: Sequence[TimeDepChemfishSensor],
         start_ms: Optional[int] = None,
     ) -> Figure:
         run = Tools.run(run, join=True)

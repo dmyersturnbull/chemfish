@@ -1,38 +1,11 @@
+"""
+Ways to build iterators over comparisons between cases and controls.
+"""
 from __future__ import annotations
+
 from chemfish.core.core_imports import *
 from chemfish.core.tools import *
 from chemfish.model.well_frames import *
-
-
-@abcd.auto_repr_str()
-class SameRestriction:
-    def __init__(self, column: str, is_same_fn: Callable[[str, str], bool]):
-        self.column = column
-        self._is_same_fn = is_same_fn
-
-    def __call__(self, a: str, b: str):
-        return self._is_same_fn(a, b)
-
-    @classmethod
-    def or_null(cls, column: str):
-        def same_or_null(a: str, b: str):
-            return not Tools.is_null(a) and not Tools.is_null(a) and a == b
-
-        return SameRestriction(column, same_or_null)
-
-    @classmethod
-    def never_null(cls, column: str):
-        def same_never_null(a: str, b: str):
-            return not Tools.is_null(a) and not Tools.is_null(a) and a == b
-
-        return SameRestriction(column, same_never_null)
-
-    @classmethod
-    def whether_null(cls, column: str):
-        def same_whether_null(a: str, b: str):
-            return a == b
-
-        return SameRestriction(column, same_whether_null)
 
 
 @abcd.auto_eq()

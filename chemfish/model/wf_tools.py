@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from chemfish.core.core_imports import *
+
 from .treatments import Treatment, Treatments
 
 
@@ -9,53 +11,6 @@ def _w(attrs: str):
 
 def _r(attrs: str):
     return lambda w, ts: Tools.look(w, "run." + attrs)
-
-
-class WellIssues:
-    def __init__(self, keys: Sequence[str]):
-        self.keys = tuple(keys)
-        bad = [k for k in self.keys if not isinstance(k, str)]
-        if len(bad) > 0:
-            raise TypeError("Wrong type(s) for key(s) {}".format(bad))
-
-    def __repr__(self) -> str:
-        return ",".join(self.keys)
-
-    def __str__(self) -> str:
-        return ",".join(self.keys)
-
-    def __add__(self, key: str) -> WellIssues:
-        return WellIssues(tuple(list(self.keys) + [key]))
-
-    def __sub__(self, key: str) -> WellIssues:
-        if key not in set(self.keys):
-            raise KeyError("{} not in issues")
-        return WellIssues(tuple([k for k in self.keys if k != key]))
-
-    def __contains__(self, key: str) -> bool:
-        if not isinstance(key, str):
-            raise TypeError("Wrong type {} for key {}".format(type(key), key))
-        return key in set(self.keys)
-
-    def contains(self, key: str) -> bool:
-        return key in self
-
-    def dne(self, key: str) -> bool:
-        """Does not contain."""
-        return key not in self
-
-    def __hash__(self):
-        return hash(self.keys)
-
-    def __getitem__(self, i: int) -> str:
-        return self.keys[i]
-
-    def __eq__(self, other):
-        return self.keys == other.keys
-
-    # unfortunate workaround for https://github.com/pandas-dev/pandas/issues/17695
-    def len(self) -> int:
-        return len(self.keys)
 
 
 class WellFrameColumns:
@@ -279,4 +234,4 @@ class WellFrameColumnTools:
         return df
 
 
-__all__ = ["WellFrameColumnTools", "WellFrameColumns", "WellIssues"]
+__all__ = ["WellFrameColumnTools", "WellFrameColumns"]

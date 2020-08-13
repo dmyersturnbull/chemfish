@@ -1,12 +1,15 @@
 from __future__ import annotations
-from chemfish.core.core_imports import *
-from chemfish.model.compound_names import *
-from ipywidgets import Output
-from IPython.display import display
+
 import colorsys
 import numbers
-import pandas as pd
+
 import ipywidgets as widgets
+import pandas as pd
+from IPython.display import display
+from ipywidgets import Output
+
+from chemfish.core.core_imports import *
+from chemfish.model.compound_names import *
 
 
 class LayoutFrame(SimpleFrame):

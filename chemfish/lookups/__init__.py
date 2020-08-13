@@ -1,9 +1,11 @@
 """
-Code only to be used by users, outside Kale, for returning Pandas DataFrames of queries from Valar.
+Code only to be used by users, outside Chemfish, for returning Pandas DataFrames of queries from Valar.
 Can depend on all other packages, except for extra.
 """
 from __future__ import annotations
+
 from datetime import date
+
 from chemfish.core.core_imports import *
 
 

@@ -4,11 +4,11 @@ especially for info from Mandos.
 """
 
 from chemfish.core.core_imports import *
-from chemfish.viz.internal_viz import *
+from chemfish.viz._internal_viz import *
 from chemfish.viz.figures import *
 
 
-class BarSlicer(KvrcPlotting):
+class BreakdownBarPlotter(KvrcPlotting):
     def __init__(self, bar_width: float = KVRC.acc_bar_width_fraction, kwargs=None):
         self.bar_width = bar_width
         self.kwargs = {} if kwargs is None else kwargs
@@ -40,7 +40,7 @@ class BarSlicer(KvrcPlotting):
 
 @abcd.auto_eq()
 @abcd.auto_repr_str()
-class PieSlicer(KvrcPlotting):
+class BreakdownPiePlotter(KvrcPlotting):
     """
     Code to make pretty pie charts with holes in the center.
     """
@@ -94,4 +94,4 @@ class PieSlicer(KvrcPlotting):
         return ax.get_figure()
 
 
-__all__ = ["PieSlicer", "BarSlicer"]
+__all__ = ["BreakdownPiePlotter", "BreakdownBarPlotter"]

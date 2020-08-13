@@ -1,13 +1,16 @@
-from chemfish.core._imports import *
-import ast, shutil
+import ast
+import shutil
 import subprocess
-from natsort import natsorted
+
 import tomlkit
+from natsort import natsorted
 from pocketutils.support.toml_data import TomlData
+
+from chemfish.core._imports import *
 from chemfish.core._tools import *
+from chemfish.core.data_generations import DataGeneration
 from chemfish.core.tools import *
 from chemfish.core.valar_singleton import *
-from chemfish.core.data_generations import DataGeneration
 
 
 def _build_stim_colors():
@@ -38,8 +41,6 @@ def _build_stim_names():
 
 _stimulus_replace = _build_stim_names()
 
-_control_replace = {"killed (+)": "lethal (+)"}
-
 _pointgrey_sensors = set(Sensors.list_where((Sensors.id > 2) & (Sensors.id != 7)))
 _sauronx_sensors = set(Sensors.list_where((Sensors.id > 2) & (Sensors.id != 7)))
 _required_sauronx_sensors = set(Sensors.list_where((Sensors.id > 2) & (Sensors.id < 7)))
@@ -53,12 +54,6 @@ class StimulusType(SmartEnum):
     SOLENOID = 3
     NONE = 4
     IR = 5
-
-
-class DataLocation(SmartEnum):
-    SHIRE = 1
-    UPLOADS = 2
-    NEITHER = 3
 
 
 _saurons = list(Saurons.select())
@@ -135,11 +130,7 @@ class ValarTools:
                 key=lambda c: -c.positive,
             )
         )
-        controls = list(
-            Tools.unique(
-                InternalTools.flatten([(c.name, ValarTools.control_display_name(c)) for c in query])
-            )
-        )
+        controls = list(Tools.unique(InternalTools.flatten([(c.name, c) for c in query])))
         if more_controls is not None:
             controls.extend(more_controls)
         new_names = [c for c in controls if c in names]
@@ -157,7 +148,7 @@ class ValarTools:
             return StimulusType.LED
         elif stimulus.name == "none":
             return StimulusType.NONE
-        elif stimulus.name in ["IR", "IR array"]:
+        elif stimulus.name == "IR array":
             return StimulusType.IR
         assert False, "No type for stimulus {} found!".format(stimulus.name)
 
@@ -281,10 +272,6 @@ class ValarTools:
     @classmethod
     def _download(cls, remote_path: str, path: PLike, is_dir: bool, overwrite: bool) -> None:
         path = str(path)
-        if "10.36.0.20" in path or path.startswith("Z:") or "shire" in path or "ind" in path:
-            raise RefusingRequestError(
-                "For safety will not copy data to a path containing '10.36.0.20' or starting with 'Z:' or containing 'shire' or 'ind'"
-            )
         # TODO check overwrite and prep
         logger.debug("Downloading {} -> {}".format(remote_path, path))
         Tools.prep_file(path, exist_ok=overwrite)
@@ -440,29 +427,14 @@ class ValarTools:
         #     1–9   ⇒ Pike
         #     10–19 ⇒ PointGrey
         #     20–29 ⇒ specialized
-        if sauron_name == "MGH":
-            return DataGeneration.PIKE_MGH
-        elif sauron_name in {"2"} and not has_sub:
-            return DataGeneration.PIKE_LEGACY_MATT
-        elif sauron_name in {"1", "3"} and not has_sub:
-            return DataGeneration.PIKE_LEGACY
-        elif sauron_name in {"1", "2", "3"} and has_sub:
-            return DataGeneration.PIKE_SAURONX
-        elif sauron_name in {"4"}:
-            return DataGeneration.POINTGREY_ALPHA
-        elif 10 <= sauron_id <= 19:
-            # Thor(ondor), Smaug, Drake
-            return DataGeneration.POINTGREY
-        elif sauron_name == "Puff" and has_sub:
-            return DataGeneration.HIGHSPEED_SAURONX
-        elif sauron_name == "Puff":
-            return DataGeneration.HIGHSPEED_LEGACY
-        elif sauron_name.startswith("EC") and sauron_name.endswith("1"):
-            return DataGeneration.POINTGREY_ALPHA
-        elif sauron_name.startswith("EC"):
-            return DataGeneration.POINTGREY
-        else:
+        df: pd.DataFrame = InternalTools.load_resource("core", "sauron_generations.csv")
+        df = df[df["has_sub"] == "yes" if has_sub else "no"]
+        df = df[df["name"] == sauron_name]
+        if len(df) == 0:
             raise ValueError("Did not detect a generation for Sauron {}".format(sauron_name))
+        elif len(df) > 1:
+            raise ValueError("Multiple generation matches for Sauron {}".format(sauron_name))
+        return DataGeneration.of(df["generation"][0])
 
     @classmethod
     def features_on(cls, run: RunLike) -> Set[str]:
@@ -657,27 +629,6 @@ class ValarTools:
         return _stimulus_replace[stimulus]
 
     @classmethod
-    def display_name(cls, name: str) -> str:
-        """
-        Gets a publication-ready name for label.
-        Replaces control names with display names (substrings of `name`).
-        """
-        for k, v in _control_replace.items():
-            name = name.replace(k, v)
-        return name
-
-    @classmethod
-    def control_display_name(cls, control: Union[int, str, ControlTypes]) -> str:
-        """
-        Gets a publication-ready name for a control type.
-        """
-        control = ControlTypes.fetch(control)
-        for k, v in _control_replace.items():
-            if control.name == k:
-                return v
-        return control.name
-
-    @classmethod
     def datetime_capture_finished(cls, run) -> datetime:
         """Only works for SauronX runs."""
         run = Tools.run(run)
@@ -734,10 +685,7 @@ class ValarTools:
             user.first_name = user.first_name.capitalize()
         if user.last_name.islower():
             user.last_name = user.last_name.capitalize()
-        for i, c in enumerate(user.first_name + " " + user.last_name):
-            if c == c.upper() and c != c.lower():
-                s += c
-        return s
+        return "".join([c for c in user.first_name + " " + user.last_name if c.isupper()])
 
     @classmethod
     def users_to_initials(cls) -> Mapping[Users, str]:
@@ -1061,11 +1009,6 @@ class ValarTools:
             s = _qualifier.sub("", _end.sub("", name))
             for k, v in prefixes.items():
                 s = s.replace(k, v)
-            if s.endswith(", 30s"):
-                s = s[:-5]
-            if s.endswith(" 255"):
-                s = s[:-4]
-            s = s.replace("uv", "UV")
             return s
 
         return _simplify_name

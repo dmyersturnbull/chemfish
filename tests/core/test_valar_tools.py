@@ -1,14 +1,12 @@
-from chemfish.core.valar_tools import *
-from chemfish.core.valar_singleton import *
 import pytest
+
+from chemfish.core.valar_singleton import *
+from chemfish.core.valar_tools import *
 
 
 class TestValarTools:
     """
     Tests for ValarTools.
-    When running from PyCharm, set the environment variable VALARPY_CONFIG to one for the test database.
-    VALARPY_CONFIG=VALARPY_TESTDB_CONFIG
-    You can do that in Run...Edit Configuration.
     """
 
     def __init__(self):

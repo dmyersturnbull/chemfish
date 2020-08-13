@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from matplotlib.backends.backend_pdf import PdfPages
+
 from chemfish.core.core_imports import *
-from chemfish.viz.internal_viz import *
+from chemfish.viz._internal_viz import *
 
 KNOWN_EXTENSIONS = ["jpg", "png", "pdf", "svg", "eps", "ps"]
 

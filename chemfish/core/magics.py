@@ -1,10 +1,10 @@
 """
 Magic functions for Jupyter.
 """
-from chemfish.core.tools import *
+from pocketutils.notebooks.magic_template import *
+
 from chemfish import __version__
 from chemfish.core.environment import chemfish_env
-from pocketutils.support.magic_template import *
 
 (
     MagicTemplate.from_path(chemfish_env.jupyter_template)

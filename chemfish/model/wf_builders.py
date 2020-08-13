@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 from chemfish.core.core_imports import *
-from chemfish.model.treatments import Treatments as Treatments
-from chemfish.model.well_names import WellNamer, WellNamers
 from chemfish.model.compound_names import *
-from chemfish.model.well_frames import *
 from chemfish.model.features import FeatureType, FeatureTypes
+from chemfish.model.treatments import Treatments as Treatments
+from chemfish.model.well_frames import *
+from chemfish.model.well_names import WellNamer, WellNamers
 from chemfish.model.wf_tools import *
 
 
@@ -167,21 +168,6 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
             self._wheres.extend(where)
         else:
             raise XTypeError("Strange WHERE type {}".format(type(where)))
-        return self
-
-    def with_generation(self, generation: DataGeneration) -> WellFrameBuilder:
-        # I consider this currently slightly unsafe because the logic could change
-        if self._generation is not None:
-            raise ContradictoryRequestError("Generation {} already set".format(self._generation))
-        if generation is not None:
-            wheres = InternalValarTools.generation_wheres(generation)
-            self._wheres.extend(wheres)
-            logger.warning(
-                "Restricting to generation {} with {} new WHEREs. This may not always work.".format(
-                    generation, len(wheres)
-                )
-            )
-            self._generation = generation
         return self
 
     def limit_to(self, limit: Optional[int]) -> WellFrameBuilder:

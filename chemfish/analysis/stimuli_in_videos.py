@@ -1,12 +1,13 @@
-from PIL import Image, ImageDraw
-import skvideo.io
 import cv2
+import skvideo.io
+from PIL import Image, ImageDraw
+
+from chemfish.caches.audio_caches import *
+from chemfish.caches.video_caches import *
 from chemfish.core.core_imports import *
 from chemfish.model.stim_frames import *
-from chemfish.viz.stim_plots import *
-from chemfish.caches.audio_caches import *
-from chemfish.caches.video_cache import *
 from chemfish.viz.kvrc import *
+from chemfish.viz.stim_plots import *
 
 
 class IncorrectVidDimensionsError(Exception):

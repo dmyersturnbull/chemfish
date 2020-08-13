@@ -1,6 +1,6 @@
 from chemfish.core._imports import *
-from chemfish.core.valar_singleton import *
 from chemfish.core.tools import *
+from chemfish.core.valar_singleton import *
 
 T = TypeVar("T")
 
@@ -8,7 +8,7 @@ T = TypeVar("T")
 @abcd.internal
 class InternalTools:
     """
-    A collection of utility functions for internal use in Kale.
+    A collection of utility functions for internal use in Chemfish.
     Equivalents of some of these functions are in the external-use Tools class, which delegates to this class.
     These functions do NOT depend on the Kokel Lab's specific structure of data in Valar.
     The most useful functions are:
@@ -55,7 +55,7 @@ class InternalTools:
         Sequence[str],
         Mapping[str, str],
     ]:
-        path = KaleResources.path(*parts)
+        path = ChemfishResources.path(*parts)
         return Tools.read_any(path)
 
     @classmethod

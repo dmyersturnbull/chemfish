@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 from pocketutils.ml.decision_frame import DecisionFrame as _DF
+
 from chemfish.ml.accuracy_frames import AccuracyFrame
 from chemfish.ml.confusion_matrices import ConfusionMatrix
-
 
 
 class DecisionFrame(OrganizingFrame):

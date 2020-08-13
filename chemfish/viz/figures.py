@@ -1,17 +1,18 @@
 from __future__ import annotations
-from matplotlib import patches
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+import matplotlib.backends.backend_pdf
 import matplotlib.font_manager
 import matplotlib.legend as mlegend
-import matplotlib.backends.backend_pdf
-from chemfish.core.core_imports import *
+from matplotlib import patches
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 # noinspection PyProtectedMember
 from chemfish.core._tools import *
+from chemfish.core.core_imports import *
+from chemfish.viz._internal_viz import *
 
 # noinspection PyProtectedMember
-from chemfish.viz.kvrc_utils import KvrcColorSchemes as _iku
-from chemfish.viz.internal_viz import *
+from chemfish.viz._kvrc_utils import KvrcColorSchemes as _iku
 from chemfish.viz.fig_savers import *
 
 

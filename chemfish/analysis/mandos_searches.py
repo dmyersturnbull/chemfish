@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 from chemfish.core.core_imports import *
 from chemfish.model.compound_names import *
-from chemfish.viz.breakdown_plots import BarSlicer, PieSlicer
+from chemfish.viz.breakdown_plots import BreakdownBarPlotter, BreakdownPiePlotter
 
 
-class MandosFrame(BaseFrame):
+class MandosFrame(UntypedDf):
     @classmethod
     def required_columns(cls) -> Sequence[str]:
         return [
@@ -42,14 +43,14 @@ class MandosFrame(BaseFrame):
         counts = self.counts_by_object()
         labels = counts["object_name"].values
         values = counts["count"].values
-        return BarSlicer().plot(labels, values, colors, ax=ax)
+        return BreakdownBarPlotter().plot(labels, values, colors, ax=ax)
 
     def pie(self, colors: Union[None, bool, Sequence[str]] = None, ax=None):
         counts = self.counts_by_object()
-        counts = FinalFrame(counts.iloc[::-1]).reset_index()  # reverse so we sort clockwise
+        counts = UntypedDf(counts.iloc[::-1]).reset_index()  # reverse so we sort clockwise
         labels = counts["object_name"].values
         values = counts["count"].values
-        return PieSlicer().plot(labels, values, colors, ax=ax)
+        return BreakdownPiePlotter().plot(labels, values, colors, ax=ax)
 
     def counts_by_object(self, multi_count: bool = False):
         return self.counts_by_col("object_name", multi_count=multi_count)
@@ -69,17 +70,17 @@ class MandosFrame(BaseFrame):
                 .rename(columns=dict(compound_id="count"))
             )
         counts["__sort"] = counts[col].str.lower()
-        counts = FinalFrame(counts).sort_natural("__sort")
+        counts = UntypedDf(counts).sort_natural("__sort")
         return counts
 
 
-class ChemInfoFrame(OrganizingFrame):
+class ChemInfoFrame(TypedDf):
     @classmethod
     def required_columns(cls) -> Sequence[str]:
         return ["compound", "name", "value", "ref"]
 
 
-class GoTermFrame(OrganizingFrame):
+class GoTermFrame(TypedDf):
     @classmethod
     def required_columns(cls) -> Sequence[str]:
         return ["compound", "term"]

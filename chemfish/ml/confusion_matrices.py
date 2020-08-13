@@ -1,17 +1,17 @@
 from __future__ import annotations
-from matplotlib.figure import Figure
-from chemfish.core.core_imports import *
-from chemfish.viz.confusion_plots import *
-from pocketutils.ml.confusion_matrix import ConfusionMatrix as _CM
-
 
 import logging
-from typing import Set, Sequence, Union, Callable, Mapping
 from copy import deepcopy
+from typing import Callable, Mapping, Sequence, Set, Union
 
 import numpy as np
 import pandas as pd
 from clana.visualize_cm import simulated_annealing
+from matplotlib.figure import Figure
+from pocketutils.ml.confusion_matrix import ConfusionMatrix as _CM
+
+from chemfish.core.core_imports import *
+from chemfish.viz.confusion_plots import *
 
 logger = logging.getLogger("dscience")
 
@@ -331,8 +331,6 @@ class ConfusionMatrices:
                 ]
             ).set_index("class")
         )
-
-
 
 
 __all__ = ["ConfusionMatrix", "ConfusionMatrices"]

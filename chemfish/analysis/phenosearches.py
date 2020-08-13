@@ -1,15 +1,17 @@
 from __future__ import annotations
+
 from scipy.spatial import distance
+
 from chemfish.core.core_imports import *
-from chemfish.model.features import *
 from chemfish.model.app_frames import *
-from chemfish.model.wf_builders import *
-from chemfish.model.well_names import *
-from chemfish.model.stim_frames import *
 from chemfish.model.compound_names import *
+from chemfish.model.features import *
+from chemfish.model.stim_frames import *
+from chemfish.model.well_names import *
+from chemfish.model.wf_builders import *
 
 
-class HitFrame(OrganizingFrame):
+class HitFrame(TypedDf):
     @classmethod
     def reserved_columns(cls):
         return ["run_name", "run_id", "well_id", "well_label", "score"]

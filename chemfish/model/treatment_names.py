@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from chemfish.core.core_imports import *
 from chemfish.model.treatments import Treatment
 
@@ -7,7 +8,7 @@ class UnknownVariableError(UnrecognizedKeyError):
     pass
 
 
-class TreatmentDisplayer:
+class TreatmentNamer:
     """
     A way to format a Treatment.
     """
@@ -55,19 +56,19 @@ rdose = re.compile(r"\${?dose(?:([:.])([0-9]+))?\}")
 rwrong = re.compile(r"\${[^\}]*\}")
 
 
-class StringTreatmentDisplayer(TreatmentDisplayer):
+class StringTreatmentNamer(TreatmentNamer):
     """
     A displayer built from a formatting expression with variables ${um}, ${bid}, etc.
     The result of display() will be the literal expression, but with certain fields substituted.
     Example usage:
         >>> # example 1
-        >>> displayer = StringTreatmentDisplayer('${id} (${dose.2})') # '.2'  means 2 decimal places
+        >>> displayer = StringTreatmentNamer('${id} (${dose.2})') # '.2'  means 2 decimal places
         >>> displayer(Treatment.from_info(4, 5048.6))  # returns 'c13 (5.05mM)'
         >>> # example 2
-        >>> displayer = StringTreatmentDisplayer('${name} (${id} @ ${dose:1})')  # ':1' means 1 sigfig
+        >>> displayer = StringTreatmentNamer('${name} (${id} @ ${dose:1})')  # ':1' means 1 sigfig
         >>> displayer(Treatment.from_info(4, 5048.6), 'ethanol')  # returns 'ethanol (c4 @ 5mM)'
         >>> # example 3
-        >>> displayer = StringTreatmentDisplayer('compound ID = ${cid} @ ${um} [µM'])  # 'um' means micromolar
+        >>> displayer = StringTreatmentNamer('compound ID = ${cid} @ ${um} [µM'])  # 'um' means micromolar
         >>> displayer(Treatment.from_info(4, 5048.6), 'ethanol')  # returns 'compound ID = 4 @ 5048.6 [µM]'
     The recognized placeholders are:
         - ${treatment}        The value of str(treatment)
@@ -268,38 +269,38 @@ class StringTreatmentDisplayer(TreatmentDisplayer):
         return repr(self)
 
 
-class TreatmentDisplayers:
+class TreatmentNamers:
     @classmethod
     def of(cls, s: str):
-        return StringTreatmentDisplayer(s)
+        return StringTreatmentNamer(s)
 
     @classmethod
     def id(cls):
-        return StringTreatmentDisplayer("${id}")
+        return StringTreatmentNamer("${id}")
 
     @classmethod
     def id_with_dose(cls):
-        return StringTreatmentDisplayer("${id} (${dose})")
+        return StringTreatmentNamer("${id} (${dose})")
 
     @classmethod
     def name_with_dose(cls):
-        return StringTreatmentDisplayer("${id|name} (${dose})")
+        return StringTreatmentNamer("${id|name} (${dose})")
 
     @classmethod
     def name(cls):
-        return StringTreatmentDisplayer("${id|name}")
+        return StringTreatmentNamer("${id|name}")
 
     @classmethod
     def name_with_id(cls):
-        return StringTreatmentDisplayer("${name} [${id}]")
+        return StringTreatmentNamer("${name} [${id}]")
 
     @classmethod
     def name_with_id_with_dose(cls):
-        return StringTreatmentDisplayer("${name} [${id}] (${dose})")
+        return StringTreatmentNamer("${name} [${id}] (${dose})")
 
     @classmethod
     def chembl(cls):
-        return StringTreatmentDisplayer("${id|chembl}")
+        return StringTreatmentNamer("${id|chembl}")
 
 
-__all__ = ["TreatmentDisplayer", "TreatmentDisplayers", "StringTreatmentDisplayer"]
+__all__ = ["TreatmentNamer", "TreatmentNamers", "StringTreatmentNamer"]

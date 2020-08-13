@@ -1,5 +1,5 @@
 import pydub
-from moviepy.audio.io.AudioFileClip import AudioFileClip, AudioClip
+from moviepy.audio.io.AudioFileClip import AudioClip, AudioFileClip
 
 from chemfish.core.core_imports import *
 from chemfish.core.environment import chemfish_env
@@ -52,10 +52,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
                 raise DataIntegrityError(
                     "Audio file for stimulus {} has no data".format(stimulus.name)
                 )
-            if audio_file.filename.endswith("mp3"):
-                fmt_str = "mp3"
-            else:
-                fmt_str = "wav"
+            fmt_str = Path(audio_file.filename).suffix.lstrip(".")
             try:
                 song = pydub.AudioSegment(
                     data=audio_file.data, sample_width=2, frame_rate=44100, channels=1

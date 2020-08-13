@@ -2,12 +2,13 @@
 A better and simpler implementation of well classifiers introduced in chemfish 1.13.0.
 """
 
-from chemfish.core.core_imports import *
 import joblib
 from sklearn.ensemble import RandomForestClassifier
-from chemfish.model.wf_builders import *
-from chemfish.ml.decision_frames import *
+
+from chemfish.core.core_imports import *
 from chemfish.ml import ClassifierPath
+from chemfish.ml.decision_frames import *
+from chemfish.model.wf_builders import *
 from chemfish.viz.figures import *
 
 

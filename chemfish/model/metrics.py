@@ -1,7 +1,26 @@
 from __future__ import annotations
-from chemfish.core.core_imports import *
+
 import sklearn.metrics as skmetrics
-from pocketutils.analysis.stats import *
+from statsmodels.nonparametric.kde import KDEUnivariate
+
+from chemfish.core.core_imports import *
+
+
+class StatTools:
+    @classmethod
+    def kde(
+        cls, a: np.array, kernel: str = "gau", bw: str = "normal_reference"
+    ) -> Tup[np.array, np.array]:
+        """
+        Calculates univariate KDE with statsmodel.
+        (This function turned into a thin wrapper around statsmodel.)
+        Note that scipy uses statsmodel for KDE if it's available. Otherwise, it silently falls back to scipy. That's clearly hazardous.
+        """
+        if isinstance(a, pd.Series):
+            a = a.values
+        dens = KDEUnivariate(a)
+        dens.fit(kernel=kernel, bw=bw)
+        return dens.support, dens.density
 
 
 @abcd.auto_repr_str()
@@ -74,7 +93,7 @@ class MetricData:
         return MetricData(label, control, score * 100.0, precision * 100.0, recall * 100.0)
 
 
-class BaseScoreFrame(OrganizingFrame):
+class BaseScoreFrame(TypedDf):
     """
     Something that has a label and some kind of score(s).
     Requires at least a column called 'label'.
@@ -304,8 +323,8 @@ class KdeData:
 
     def density_df(
         self, support_start: Optional[float] = None, support_end: Optional[float] = None
-    ) -> FinalFrame:
-        df = FinalFrame({"support": self.support, "density": self.density})
+    ) -> UntypedDf:
+        df = UntypedDf({"support": self.support, "density": self.density})
         if support_start is not None:
             df = df[df["support"] >= support_start]
         if support_end is not None:

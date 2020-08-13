@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 from chemfish.core.core_imports import *
-from chemfish.model.well_frames import *
-from chemfish.model.comp_iters import *
-from chemfish.ml.spindles import SpindleFrame
-from chemfish.ml.classifiers import *
 from chemfish.ml import ClassifierPath
+from chemfish.ml.classifiers import *
 from chemfish.ml.decision_frames import *
+from chemfish.ml.spindles import SpindleFrame
+from chemfish.model.case_control_comparisons import *
+from chemfish.model.well_frames import *
 
 
 class MultiTrainerUtils:

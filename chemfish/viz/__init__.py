@@ -2,9 +2,9 @@
 Visualization code.
 Can depend on core, calc, and model.
 """
+import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 
 from chemfish.core.core_imports import *
 

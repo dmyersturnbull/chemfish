@@ -6,37 +6,9 @@ from chemfish.core.valar_singleton import *
 @abcd.internal
 class InternalValarTools:
     """
-    A collection of utility functions for internal use in Kale that are specific to the data in Valar.
+    A collection of utility functions for internal use in Chemfish that are specific to the data in Valar.
     Equivalents of some of these functions are in the external-use ValarTools class, which delegates to this class.
     """
-
-    # noinspection PyComparisonWithNone
-    @classmethod
-    def generation_wheres(cls, generation: DataGeneration) -> Sequence[ExpressionLike]:
-        """
-        Returns a list of WHEREs in terms of Runs and Saurons that
-        for a LIBERAL THRESHOLD to include runs of that generation AND SOME OTHERS.
-        In practice, this will usually be exact.
-        However, to filter completely, you will then need to apply `ValarTools.generation_of`.
-        """
-        wheres = []
-        if generation is DataGeneration.PIKE_MGH:
-            wheres.append(Saurons.name == "MGH")
-        elif generation is DataGeneration.PIKE_LEGACY_MATT:
-            wheres.append(Saurons.id == 2)
-        elif generation is DataGeneration.PIKE_LEGACY:
-            wheres.append(Saurons.id << [1, 3])
-        elif generation is DataGeneration.POINTGREY_ALPHA:
-            wheres.append(Saurons.id == 4)
-        elif generation.is_pointgrey():
-            wheres.append((Saurons.id >= 10) & (Saurons.id <= 19))
-        elif generation.is_highspeed():
-            wheres.append(Saurons.id == 20)
-        if generation.is_sauronx():
-            wheres.append(Runs.submission != None)
-        else:
-            wheres.append(Runs.submission == None)
-        return wheres
 
     @classmethod
     def download_frame_timestamps(cls, run_id: int) -> np.array:

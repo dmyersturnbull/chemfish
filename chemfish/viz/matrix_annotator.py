@@ -1,5 +1,5 @@
 from chemfish.core.core_imports import *
-from chemfish.viz.internal_viz import *
+from chemfish.viz._internal_viz import *
 from chemfish.viz.color_schemes import KvrcColorSchemes
 
 

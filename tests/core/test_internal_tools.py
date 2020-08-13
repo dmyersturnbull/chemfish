@@ -1,18 +1,12 @@
-import pytest
 from typing import Iterator, Sequence, Set
+
+import pytest
 
 # noinspection PyProtectedMember
 from chemfish.core._tools import *
 
 
-class TestValarToolsMethodSetUpRequired:
-    """
-    Tests for InternalTools.
-    When running from PyCharm, set the environment variable VALARPY_CONFIG to one for the test database.
-    VALARPY_CONFIG=VALARPY_TESTDB_CONFIG
-    You can do that in Run...Edit Configuration.
-    """
-
+class TestValarTools:
     def test_all_or_none_are_none(self):
         assert not InternalTools.all_or_none_are_none([1, 1], None)
         assert InternalTools.all_or_none_are_none([None, None], None)
@@ -22,6 +16,7 @@ class TestValarToolsMethodSetUpRequired:
         assert InternalTools.all_or_none_are_true([1, 1], None)
         assert not InternalTools.all_or_none_are_true([0, 0], None)
         assert InternalTools.all_or_none_are_true([0, 1], None) is None
+
 
 if __name__ == "__main__":
     pytest.main()

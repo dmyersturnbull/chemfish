@@ -1,17 +1,17 @@
+from datetime import timedelta
+
 import pytest
+from pocketutils.core.exceptions import *
 
 from chemfish.core.tools import *
+from chemfish.core.valar_singleton import *
 from chemfish.model.compound_names import *
 from chemfish.model.treatment_names import *
 from chemfish.model.well_names import *
 from chemfish.model.wf_builders import *
-from chemfish.core import *
-from chemfish.core.valar_singleton import *
-from pocketutils.core.exceptions import *
-from datetime import timedelta
 
 
-class TestWellFrameBuilderSetUpRequired:
+class TestWellFrameBuilder:
     """
     Tests for WellFrameBuilder.
     """
@@ -20,7 +20,7 @@ class TestWellFrameBuilderSetUpRequired:
         self.fake_run = None
         self.fake_well = None
 
-    @pytest.fixture()
+    @pytest.fixture(scope="class")
     def setup(self) -> None:
         """
         Set-up method that initializes a fake_run and fake_well for the following two tests cases.
@@ -98,7 +98,9 @@ class TestWellFrameBuilderSetUpRequired:
         with pytest.raises(ValarTableTypeError):
             WellFrameBuilder.runs([self.fake_well, self.fake_well])  # List of well Instances
         with pytest.raises(ValarLookupError):
-            WellFrameBuilder.runs(self.fake_run).build()  # Run instance that is not in chemfishtest db
+            WellFrameBuilder.runs(
+                self.fake_run
+            ).build()  # Run instance that is not in chemfishtest db
         rl = [Runs.select().where(Runs.id == 1).first(), 3]
         one_run_wells = {
             w.id for w in Wells.select().where(Wells.run == 1)
@@ -237,7 +239,7 @@ class TestWellFrameBuilderNoSetUp:
             WellNamerBuilder()
             .text("be warned! ", if_missing_col="control_type")
             .column("control_type", suffix="; ")
-            .treatments(displayer=StringTreatmentDisplayer("c${cid} (${um}µM)"))
+            .treatments(displayer=StringTreatmentNamer("c${cid} (${um}µM)"))
             .build()
         )
         named_wf = WellFrameBuilder.wells(1).with_names(namer).build()
@@ -252,7 +254,7 @@ class TestWellFrameBuilderNoSetUp:
             WellNamerBuilder()
             .text("be warned! ", if_missing_col="control_type")
             .column("control_type", suffix="; ")
-            .treatments(displayer=StringTreatmentDisplayer("c${cid} (${um}µM)"))
+            .treatments(displayer=StringTreatmentNamer("c${cid} (${um}µM)"))
             .build()
         )
         named_wf = WellFrameBuilder.wells(1).with_names(namer).build()
@@ -270,7 +272,7 @@ class TestWellFrameBuilderNoSetUp:
             WellNamerBuilder()
             .text("be warned! ", if_missing_col="control_type")
             .column("control_type", suffix="; ")
-            .treatments(displayer=StringTreatmentDisplayer("c${cid} (${um}µM)"))
+            .treatments(displayer=StringTreatmentNamer("c${cid} (${um}µM)"))
             .build()
         )
         named_wf = WellFrameBuilder.wells(1).with_display_names(namer).build()

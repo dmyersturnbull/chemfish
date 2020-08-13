@@ -1,13 +1,14 @@
 import matplotlib.ticker as ticker
+
 from chemfish.core.core_imports import *
-from chemfish.model.features import *
-from chemfish.model.well_frames import *
-from chemfish.model.stim_frames import *
 from chemfish.model.assay_frames import *
-from chemfish.viz.stim_plots import *
-from chemfish.viz.internal_viz import *
-from chemfish.viz.figures import FigureTools
+from chemfish.model.features import *
+from chemfish.model.stim_frames import *
+from chemfish.model.well_frames import *
 from chemfish.viz import CakeLayer
+from chemfish.viz._internal_viz import *
+from chemfish.viz.figures import FigureTools
+from chemfish.viz.stim_plots import *
 
 
 @abcd.auto_eq()

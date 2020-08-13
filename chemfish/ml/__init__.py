@@ -3,21 +3,22 @@ Code for machine learning, most noteably including classifiers of wells.
 Can depend on core, model, viz, and calc.
 """
 from __future__ import annotations
-from chemfish.core.core_imports import *
-from pathlib import Path
-from pocketutils.core import PathLike
-from pocketutils.core.exceptions import PathError
-from pocketutils.tools.filesys_tools import FilesysTools
-from pocketutils.tools.path_tools import PathTools
 
 import abc
 from datetime import datetime
 from pathlib import Path
 from typing import Type
+
 import numpy as np
 import pandas as pd
-from dscience.tools.filesys_tools import FilesysTools
 from dscience.core import PathLike
+from dscience.tools.filesys_tools import FilesysTools
+from pocketutils.core import PathLike
+from pocketutils.core.exceptions import PathError
+from pocketutils.tools.filesys_tools import FilesysTools
+from pocketutils.tools.path_tools import PathTools
+
+from chemfish.core.core_imports import *
 
 
 class ErrorBehavior(SmartEnum):
@@ -26,7 +27,6 @@ class ErrorBehavior(SmartEnum):
     LOG_WARNING = 3
     LOG_CAUTION = 4
     IGNORE = 5
-
 
 
 class AbstractSaveLoad(metaclass=abc.ABCMeta):
@@ -247,5 +247,11 @@ class ClassifierPath:
         return hash(self.path)
 
 
-__all__ = ["AbstractSaveLoad", "SaveableTrainable", "SaveableTrainableCsv", "SaveLoadCsv", "ErrorBehavior", "ClassifierPath"]
-
+__all__ = [
+    "AbstractSaveLoad",
+    "SaveableTrainable",
+    "SaveableTrainableCsv",
+    "SaveLoadCsv",
+    "ErrorBehavior",
+    "ClassifierPath",
+]

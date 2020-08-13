@@ -1,7 +1,8 @@
 from matplotlib import dates as mdates
+
 from chemfish.core.core_imports import *
-from chemfish.viz.internal_viz import *
 from chemfish.model.metrics import *
+from chemfish.viz._internal_viz import *
 from chemfish.viz.figures import *
 
 

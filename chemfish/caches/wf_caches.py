@@ -1,11 +1,14 @@
 from __future__ import annotations
+
 import warnings
+
 from pocketutils.support.df_mem_cache import *
+
 from chemfish.core.core_imports import *
-from chemfish.model.features import FeatureType, FeatureTypes
-from chemfish.model.wf_builders import *
-from chemfish.model.well_names import WellNamers
 from chemfish.model.cache_interfaces import AWellCache
+from chemfish.model.features import FeatureType, FeatureTypes
+from chemfish.model.well_names import WellNamers
+from chemfish.model.wf_builders import *
 
 FeatureTypeLike = Union[None, int, str, Features, FeatureType]
 
@@ -118,24 +121,4 @@ class WellCache(AWellCache):
                     )
 
 
-@abcd.auto_repr_str()
-@abcd.auto_eq()
-class WellMemoryCache(DfMemCache):
-    """
-    An in-memory cache for WellFrames. Backed by a klgists DfFacade.
-    """
-
-    def __init__(
-        self,
-        cache: WellCache,
-        policy: MemCachePolicy = MemoryLruPolicy(max_fraction_available_bytes=0.5),
-    ):
-        self.cache = cache
-
-        def loader(run: int):
-            return cache.load(run)
-
-        super().__init__(loader, policy)
-
-
-__all__ = ["WellCache", "WellMemoryCache"]
+__all__ = ["WellCache"]

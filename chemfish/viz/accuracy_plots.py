@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 from chemfish.core.core_imports import *
 from chemfish.model.metrics import *
+from chemfish.viz._internal_viz import *
 from chemfish.viz.figures import FigureTools
-from chemfish.viz.internal_viz import *
 
 
 class MetricPlotter:
@@ -68,7 +69,6 @@ class AccuracyPlotter(KvrcPlotting):
         See `AccuracyPlotter.plot?` for more info.
         :param style: Can be 'swarm', 'violin', or 'bar'
         """
-        # TODO allow horizontal
         self._style = AccuracyPlotStyle.of(style)
         self._y_bounds = y_bounds
         self._y_label = y_label
@@ -76,6 +76,7 @@ class AccuracyPlotter(KvrcPlotting):
 
     def plot(self, df: BaseScoreFrame, renamer: Optional[Callable[[str], str]] = None) -> Figure:
         """
+        TODO This is way too complex
         Note that `df` should have replicate rows (with the same label but different scores) to plot a violin or swarm.
         But for barplots, it should have columns 'upper' and 'lower' for upper and lower bounds if you want error bars.
         If those columns are not present, no error bars will be shown.

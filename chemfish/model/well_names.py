@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from chemfish.core.core_imports import *
 from chemfish.model.treatment_names import *
 
@@ -85,7 +86,7 @@ class WellNamerBuilder(BuiltWellNamer):
         >>> namer = WellNamerBuilder()\
         >>>     .text('be warned! ', if_missing_col='control_type')\
         >>>     .column('control_type', suffix='; ')\
-        >>>     .treatments(displayer=StringTreatmentDisplayer('c${cid} (${um}µM)'))\
+        >>>     .treatments(displayer=StringTreatmentNamer('c${cid} (${um}µM)'))\
         >>>     .build()
         >>> namer(df)  # something like ['solvent (-)', 'be warned! c55 (55.23µM)']
     """
@@ -137,7 +138,7 @@ class WellNamerBuilder(BuiltWellNamer):
         return self
 
     def important_columns(
-        self, displayer: TreatmentDisplayer, variant_and_treatments_for_controls: bool = False
+        self, displayer: TreatmentNamer, variant_and_treatments_for_controls: bool = False
     ) -> WellNamerBuilder:
         """
         Convenience function that adds control_type, variant_name, age, n_fish, and well_group as necessary, using nice delimiters.
@@ -209,7 +210,7 @@ class WellNamerBuilder(BuiltWellNamer):
 
     def treatments(
         self,
-        displayer: Union[str, TreatmentDisplayer] = TreatmentDisplayers.name_with_id(),
+        displayer: Union[str, TreatmentNamer] = TreatmentNamers.name_with_id(),
         prefix: str = "",
         suffix: str = "",
         or_null: str = "",
@@ -235,7 +236,7 @@ class WellNamerBuilder(BuiltWellNamer):
         :param ignore_bids: Ignore batches with these IDs
         """
         if isinstance(displayer, str):
-            displayer = StringTreatmentDisplayer(displayer)
+            displayer = StringTreatmentNamer(displayer)
         # in case they're iterators
         if ignore_bids is not None:
             ignore_bids = set(ignore_bids)
@@ -342,14 +343,12 @@ class WellNamers:
         return WellNamerBuilder()
 
     @classmethod
-    def general(
-        cls, displayer: TreatmentDisplayer = TreatmentDisplayers.id_with_dose()
-    ) -> WellNamer:
+    def general(cls, displayer: TreatmentNamer = TreatmentNamers.id_with_dose()) -> WellNamer:
         return WellNamerBuilder().run().important_columns(displayer).build()
 
     @classmethod
     def elegant(
-        cls, displayer: TreatmentDisplayer = TreatmentDisplayers.name_with_id_with_dose()
+        cls, displayer: TreatmentNamer = TreatmentNamers.name_with_id_with_dose()
     ) -> WellNamer:
         return WellNamerBuilder().important_columns(displayer).build()
 
@@ -360,7 +359,7 @@ class WellNamers:
     @classmethod
     def screening_plate(
         cls,
-        displayer: TreatmentDisplayer = TreatmentDisplayers.id(),
+        displayer: TreatmentNamer = TreatmentNamers.id(),
         ignore_batch_ids: Iterable[int] = None,
     ):
         return (

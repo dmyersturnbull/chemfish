@@ -1,37 +1,41 @@
 from __future__ import annotations
+
 import traceback
+
 from PIL.Image import Image
-#from chemfish.calc.chem import ChemSimplifer
-#from chemfish.calc.chem_graphics import ChemGraphicsKit
+
+from chemfish.caches.audio_caches import *
+from chemfish.caches.caching_wfs import *
+from chemfish.caches.sensor_caches import *
+from chemfish.caches.stim_caches import *
+from chemfish.caches.video_caches import *
+from chemfish.caches.wf_caches import *
+
+# from chemfish.calc.chem import ChemSimplifer
+# from chemfish.calc.chem_graphics import ChemGraphicsKit
 from chemfish.core.core_imports import *
-from chemfish.model.wf_builders import *
-from chemfish.model.assay_frames import *
-from chemfish.model.stim_frames import *
+from chemfish.ml import *
+from chemfish.ml.classifiers import *
+from chemfish.ml.transformers import *
 from chemfish.model.app_frames import *
-from chemfish.model.well_names import *
-from chemfish.model.videos import *
+from chemfish.model.assay_frames import *
+from chemfish.model.compound_names import *
+from chemfish.model.concerns import *
 from chemfish.model.features import *
 from chemfish.model.sensors import *
-from chemfish.model.compound_names import *
-from chemfish.ml.transformers import *
-from chemfish.ml import *
-from chemfish.caches.sensor_caches import *
-from chemfish.caches.caching_wfs import *
-from chemfish.caches.video_cache import *
-from chemfish.caches.wf_caches import *
-from chemfish.caches.stim_caches import *
-from chemfish.caches.audio_caches import *
-from chemfish.ml.classifiers import *
+from chemfish.model.stim_frames import *
+from chemfish.model.videos import *
+from chemfish.model.well_names import *
+from chemfish.model.wf_builders import *
+from chemfish.viz._internal_viz import *
 from chemfish.viz.figures import *
-from chemfish.viz.traces import *
-from chemfish.viz.stim_plots import *
-from chemfish.viz.importance_plots import *
-from chemfish.viz.well_plots import *
 from chemfish.viz.heatmaps import *
-from chemfish.model.concerns import *
+from chemfish.viz.importance_plots import *
 from chemfish.viz.sensor_plots import *
-from chemfish.viz.internal_viz import *
-from chemfish.viz.timelines import *
+from chemfish.viz.stim_plots import *
+from chemfish.viz.timeline_plots import *
+from chemfish.viz.trace_plots import *
+from chemfish.viz.well_plots import *
 
 QLike = Union[ExpressionLike, pd.DataFrame, str, int, float, Runs, Submissions]
 QsLike = Union[

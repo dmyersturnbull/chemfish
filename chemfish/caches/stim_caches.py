@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 from chemfish.core.core_imports import *
-from chemfish.model.stim_frames import BatteryStimFrame
 from chemfish.model.audio import Waveform
 from chemfish.model.cache_interfaces import AStimCache
+from chemfish.model.stim_frames import BatteryStimFrame
 
 DEFAULT_UNEXPANDED_CACHE_DIR = chemfish_env.cache_dir / "batteries" / "unexpanded"
 DEFAULT_EXPANDED_CACHE_DIR = chemfish_env.cache_dir / "batteries" / "expanded"

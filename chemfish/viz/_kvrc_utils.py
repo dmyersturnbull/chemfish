@@ -1,12 +1,15 @@
 from __future__ import annotations
+
 import ast
-from matplotlib.figure import Figure
-import matplotlib.cm as cmaps
-from matplotlib.markers import MarkerStyle
 import textwrap
+
 import matplotlib
+import matplotlib.cm as cmaps
 from matplotlib import colors as mcolors
+from matplotlib.figure import Figure
+from matplotlib.markers import MarkerStyle
 from pocketutils.support.time_unit import TimeUnit, TimeUnits
+
 from chemfish.core.core_imports import *
 from chemfish.viz import plt
 from chemfish.viz.color_schemes import *
@@ -118,7 +121,7 @@ class Key:
 class KvrcConfig:
     """
     The collection of resolved (fixed; set from config file) chemfish_rc `Key`s.
-    It contains `KaleConfig.collection`, which is a dict mapping key strings to resolved `Key`s.
+    It contains `ChemfishConfig.collection`, which is a dict mapping key strings to resolved `Key`s.
     For ex, `collection` might contain:
     ```
     {
@@ -507,7 +510,9 @@ class KvrcCore:
         # log important info
         if not chemfish_env.quiet:
             logger.info(
-                "Loaded {} Kale viz settings from {}".format(len(config.passed), kvrc_style_path)
+                "Loaded {} Chemfish viz settings from {}".format(
+                    len(config.passed), kvrc_style_path
+                )
             )
             if len(self.widths) + len(self.heights) > 0:
                 logger.info(
@@ -644,9 +649,9 @@ class KvrcCore:
     @contextmanager
     def using(self, *args, **kwargs: Mapping[str, Any]):
         """
-        Temporarily sets Kale-specific or matplotlib settings.
-        :param args: If present, these are functions that accept *this* KaleRc, modifies it, and returns nothing
-        :param kwargs: If present, these are key-value pairs where the keys are of KaleRc settings or matplotlib RC params,
+        Temporarily sets Chemfish-specific or matplotlib settings.
+        :param args: If present, these are functions that accept *this* ChemfishRc, modifies it, and returns nothing
+        :param kwargs: If present, these are key-value pairs where the keys are of ChemfishRc settings or matplotlib RC params,
                         and the values are the new values.
                         Periods (.) are automatically converted to underscores.
         :return: A Python context manager with these options set
@@ -671,7 +676,7 @@ class KvrcCore:
         """
         if not all((callable(a) for a in args)):
             raise XTypeError(
-                "Non-keyword arguments to `chemfish_rc.using` (if present), must be functions of the KaleEnv that modify its settings."
+                "Non-keyword arguments to `chemfish_rc.using` (if present), must be functions of the ChemfishEnv that modify its settings."
             )
         if not all((isinstance(k, str) for k, v in kwargs.items())):
             raise XTypeError(
@@ -699,7 +704,7 @@ class KvrcCore:
             If `item` is any of `width`, `height`, or `figure.figsize`,
             sets the remaining ones in terms of it.
             Ex: setting `width` will also change `figsize[0]`, and vice versa.
-        :raises KaleKeyError: If the key wasn't found in any of the 3 places
+        :raises ChemfishKeyError: If the key wasn't found in any of the 3 places
         """
         item = item.strip()
         if item in self.__dict__.keys():

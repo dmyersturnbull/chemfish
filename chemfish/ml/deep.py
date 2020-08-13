@@ -1,27 +1,43 @@
-import logging, re, warnings
+import logging
+import re
+import warnings
 
 warnings.filterwarnings(action="ignore", module=".*dtypes.py")
-import tensorflow as tf
-import tensorflow.keras as keras
 import humanfriendly as friendly
 import tensorboard
-import tensorflow.keras.models as models
+import tensorflow as tf
+import tensorflow.keras as keras
+import tensorflow.keras.activations as activations
 import tensorflow.keras.layers as layers
+import tensorflow.keras.losses as losses
+import tensorflow.keras.models as models
 import tensorflow.keras.preprocessing as preprocessing
 import tensorflow.keras.regularizers as regularizers
-import tensorflow.keras.activations as activations
-import tensorflow.keras.losses as losses
+from tensorflow.keras.layers import (
+    ELU,
+    Activation,
+    AveragePooling2D,
+    BatchNormalization,
+    Conv2D,
+    Conv2DTranspose,
+    Conv3D,
+    Dense,
+    Dropout,
+    Embedding,
+    Flatten,
+    Input,
+    Lambda,
+    MaxPooling2D,
+    Permute,
+    Reshape,
+)
+from tensorflow.keras.losses import binary_crossentropy, mse
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Input, BatchNormalization, ELU
-from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, Permute
-from tensorflow.keras.layers import Reshape, Lambda, Embedding
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, Conv2DTranspose, Conv3D
-from tensorflow.keras.optimizers import Adam, SGD
-from tensorflow.keras.utils import Progbar
-from tensorflow.keras.losses import mse, binary_crossentropy
-from tensorflow.keras.optimizers import Adam, RMSprop
+from tensorflow.keras.optimizers import SGD, Adam, RMSprop
 from tensorflow.keras.regularizers import l2
+from tensorflow.keras.utils import Progbar
 from tensorflow.python.client import device_lib
+
 from chemfish.core import logger
 
 devices = device_lib.list_local_devices()

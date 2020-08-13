@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import Union, Set
+
 import enum
+from typing import Set, Union
 
 
 @enum.unique

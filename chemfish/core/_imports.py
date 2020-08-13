@@ -6,68 +6,72 @@ Should only be used in modules that are strictly tied to chemfish (will always b
 
 from __future__ import annotations
 
-import typing
-from typing import (
-    Set,
-    Iterator,
-    Generic,
-    Type,
-    TypeVar,
-    Collection,
-    SupportsFloat,
-    SupportsBytes,
-    SupportsInt,
-    ByteString,
-    Iterable,
-    Any,
-    Sequence,
-    Union,
-    Optional,
-    Callable,
-    Mapping,
-    KeysView,
-    ValuesView,
-    ItemsView,
-    Dict,
-    List,
-    DefaultDict,
-    FrozenSet,
-    Sized,
-    Iterator,
-    Generator,
-)
-from typing import Tuple as Tup
-import operator
+import abc
+import enum
 import functools
-from functools import partial, partialmethod
-from operator import itemgetter, attrgetter, methodcaller
-import enum, string, re, math, time, random, hashlib
-from enum import Enum
-import os, sys, json, itertools
-from copy import copy, deepcopy
-from dataclasses import dataclass
-from datetime import datetime, date, timedelta
-from pathlib import Path, PurePath
+import hashlib
+import itertools
+import json
 import logging
+import math
+import operator
+import os
+import random
+import re
+import string
+import sys
+import time
+import typing
+from abc import ABCMeta
 from collections import OrderedDict, defaultdict
 from contextlib import contextmanager
+from copy import copy, deepcopy
+from dataclasses import dataclass
+from datetime import date, datetime, timedelta
+from enum import Enum
+from functools import partial, partialmethod
+from operator import attrgetter, itemgetter, methodcaller
+from pathlib import Path, PurePath
+from typing import (
+    Any,
+    ByteString,
+    Callable,
+    Collection,
+    DefaultDict,
+    Dict,
+    FrozenSet,
+    Generator,
+    Generic,
+    ItemsView,
+    Iterable,
+    Iterator,
+    KeysView,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Set,
+    Sized,
+    SupportsBytes,
+    SupportsFloat,
+    SupportsInt,
+)
+from typing import Tuple as Tup
+from typing import Type, TypeVar, Union, ValuesView
 from warnings import warn
-import abc
-from abc import ABCMeta
-
-import numpy as np
-import pandas as pd
 
 import decorateme as abcd
-from pocketutils.tools.common_tools import CommonTools
+import numpy as np
+import pandas as pd
 from pocketutils.core import SmartEnum
 from pocketutils.core.exceptions import *
+from pocketutils.tools.common_tools import CommonTools
 
 from chemfish.core import (
-    KaleResources,
-    chemfish_version,
-    chemfish_start_time,
+    ChemfishResources,
     chemfish_start_clock,
+    chemfish_start_time,
+    chemfish_version,
     logger,
 )
 
@@ -107,7 +111,7 @@ class SauronxOnlyError(IncompatibleGenerationError):
     """A function called is available only for SauronX data."""
 
 
-class KaleJsonEncoder(json.JSONEncoder):
+class ChemfishJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         try:
             # noinspection PyUnresolvedReferences

@@ -1,3 +1,7 @@
+"""
+Dataframes listing assays in batteries.
+"""
+
 from __future__ import annotations
 
 from chemfish.core.core_imports import *

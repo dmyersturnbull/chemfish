@@ -1,14 +1,17 @@
 from __future__ import annotations
-import pydub
-from moviepy.audio.io.AudioFileClip import AudioFileClip, AudioClip
-from chemfish.core.valar_singleton import *
-from chemfish.core.core_imports import *
-from chemfish.model.well_frames import *
-from chemfish.model.videos import *
-from chemfish.model.sensors import *
-from chemfish.model.audio import *
-from chemfish.model.stim_frames import BatteryStimFrame
+
 from abc import ABCMeta
+
+import pydub
+from moviepy.audio.io.AudioFileClip import AudioClip, AudioFileClip
+
+from chemfish.core.core_imports import *
+from chemfish.core.valar_singleton import *
+from chemfish.model.audio import *
+from chemfish.model.sensors import *
+from chemfish.model.stim_frames import BatteryStimFrame
+from chemfish.model.videos import *
+from chemfish.model.well_frames import *
 
 KEY = TypeVar("KEY")
 VALUE = TypeVar("VALUE")
@@ -17,7 +20,7 @@ VALUE = TypeVar("VALUE")
 @abcd.auto_repr_str()
 @abcd.auto_hash()
 @abcd.auto_eq()
-class AKaleCache(Generic[KEY, VALUE], metaclass=ABCMeta):
+class AChemfishCache(Generic[KEY, VALUE], metaclass=ABCMeta):
     @property
     def cache_dir(self) -> Path:
         raise NotImplementedError()
@@ -62,7 +65,7 @@ class AKaleCache(Generic[KEY, VALUE], metaclass=ABCMeta):
         return self.load(key)
 
 
-class AWellCache(AKaleCache[RunLike, WellFrame], metaclass=ABCMeta):
+class AWellCache(AChemfishCache[RunLike, WellFrame], metaclass=ABCMeta):
     def __init__(self, feature, cache_dir: PLike, dtype):
         raise NotImplementedError()
 
@@ -73,12 +76,12 @@ class AWellCache(AKaleCache[RunLike, WellFrame], metaclass=ABCMeta):
         raise NotImplementedError()
 
 
-class ASensorCache(AKaleCache[Tup[SensorNames, RunLike], SensorDataLike], metaclass=ABCMeta):
+class ASensorCache(AChemfishCache[Tup[SensorNames, RunLike], SensorDataLike], metaclass=ABCMeta):
     def __init__(self, cache_dir: PLike):
         raise NotImplementedError()
 
 
-class AStimCache(AKaleCache[BatteryLike, BatteryStimFrame], metaclass=ABCMeta):
+class AStimCache(AChemfishCache[BatteryLike, BatteryStimFrame], metaclass=ABCMeta):
     def __init__(self, cache_dir: PLike, dtype, loader):
         raise NotImplementedError()
 
@@ -91,12 +94,12 @@ class StimulusWaveform(Waveform):
     pass
 
 
-class AVideoCache(AKaleCache[RunLike, SauronxVideo], metaclass=ABCMeta):
+class AVideoCache(AChemfishCache[RunLike, SauronxVideo], metaclass=ABCMeta):
     def __init__(self, cache_dir: PLike, shire_store: PLike):
         raise NotImplementedError()
 
 
-class AnAudioStimulusCache(AKaleCache[StimulusLike, Path], metaclass=ABCMeta):
+class AnAudioStimulusCache(AChemfishCache[StimulusLike, Path], metaclass=ABCMeta):
     def __init__(self, cache_dir: PLike):
         raise NotImplementedError()
 
@@ -111,7 +114,7 @@ class AnAudioStimulusCache(AKaleCache[StimulusLike, Path], metaclass=ABCMeta):
 
 
 __all__ = [
-    "AKaleCache",
+    "AChemfishCache",
     "ASensorCache",
     "AWellCache",
     "AStimCache",

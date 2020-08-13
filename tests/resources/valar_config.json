@@ -1,7 +1,7 @@
 {
-   "local_bind_port": 3306,
-   "db_username": "kale",
-   "db_password": "kale123",
-   "db_port": 3306,
-   "db_name": "valartest"
+  "local_bind_port": 3306,
+  "ssh_port": 22,
+  "db_username": "root",
+  "db_password": "root",
+  "db_name": "valartest"
 }

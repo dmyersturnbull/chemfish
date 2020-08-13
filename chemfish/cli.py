@@ -3,14 +3,16 @@
 
 import enum
 import logging
-from typing import Optional
-from pathlib import Path
 from datetime import datetime
-from chemfish.core import KaleResources, logger, log_factory
-from pocketutils.tools.string_tools import StringTools
+from pathlib import Path
+from typing import Optional
+
 from pocketutils.core import SmartEnum
 from pocketutils.tools.call_tools import CallTools
 from pocketutils.tools.filesys_tools import FilesysTools
+from pocketutils.tools.string_tools import StringTools
+
+from chemfish.core import ChemfishResources, log_factory, logger
 
 ch = logging.StreamHandler()
 logger.addHandler(ch)
@@ -18,30 +20,30 @@ ch.setFormatter(log_factory.formatter)
 logger.setLevel(logging.INFO)
 
 
-class KaleCmd(SmartEnum):
+class ChemfishCmd(SmartEnum):
     init = enum.auto()
     parrot = enum.auto()
     video = enum.auto()
 
 
-class KaleProcessor:
+class ChemfishProcessor:
     def run(self, args) -> None:
         import argparse
 
-        parser = argparse.ArgumentParser("""Install, update, or initialize Kale""")
+        parser = argparse.ArgumentParser("""Install, update, or initialize Chemfish""")
         # noinspection PyTypeChecker
-        parser.add_argument("cmd", type=KaleCmd.of, choices=[s for s in KaleCmd])
+        parser.add_argument("cmd", type=ChemfishCmd.of, choices=[s for s in ChemfishCmd])
         parser.add_argument("args", nargs="*")
         opts = parser.parse_args(args)
         self.process(opts.cmd, opts.args)
 
-    def process(self, cmd: KaleCmd, args) -> None:
-        if cmd is KaleCmd.init:
+    def process(self, cmd: ChemfishCmd, args) -> None:
+        if cmd is ChemfishCmd.init:
             self.init()
-        elif cmd is KaleCmd.video:
+        elif cmd is ChemfishCmd.video:
             self.download_video(args)
         else:
-            print(KaleResources.text("art", cmd.name + ".txt"))
+            print(ChemfishResources.text("art", cmd.name + ".txt"))
 
     # noinspection PyTypeChecker
     def init(self) -> None:
@@ -50,22 +52,23 @@ class KaleProcessor:
             [
                 self._copy_if(
                     Path.home() / ".chemfish" / "valar_config.json",
-                    KaleResources.path("example_valar_config.json"),
+                    ChemfishResources.path("example_valar_config.json"),
                 ),
                 self._copy_if(
-                    Path.home() / ".chemfish" / "chemfish.config", KaleResources.path("example.chemfish.config")
+                    Path.home() / ".chemfish" / "chemfish.config",
+                    ChemfishResources.path("example.chemfish.config"),
                 ),
                 self._copy_if(
                     Path.home() / ".chemfish" / "jupyter_template.txt",
-                    KaleResources.path("jupyter_template.txt"),
+                    ChemfishResources.path("jupyter_template.txt"),
                 ),
                 self._copy_if(
                     Path.home() / ".chemfish" / "chemfish.mplstyle",
-                    KaleResources.path("styles/basic.mplstyle"),
+                    ChemfishResources.path("styles/basic.mplstyle"),
                 ),
                 self._copy_if(
                     Path.home() / ".chemfish" / "chemfish_viz.properties",
-                    KaleResources.path("styles/basic.viz.properties"),
+                    ChemfishResources.path("styles/basic.viz.properties"),
                 ),
             ]
         )
@@ -75,7 +78,7 @@ class KaleProcessor:
             logger.notice("Finished. You already have all required config files.")
 
     def download_video(self, args):
-        from chemfish.caches.video_cache import VideoCache
+        from chemfish.caches.video_caches import VideoCache
 
         cache = VideoCache()
         n_exists = sum([not cache.has_video(v) for v in args])
@@ -101,7 +104,7 @@ class KaleProcessor:
 def main():
     # noinspection PyBroadException
     try:
-        KaleProcessor().run(None)
+        ChemfishProcessor().run(None)
     except Exception:
         logger.fatal("Failed while running command.", exc_info=True)
 
@@ -109,4 +112,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-__all__ = ["KaleProcessor", "KaleCmd"]
+__all__ = ["ChemfishProcessor", "ChemfishCmd"]

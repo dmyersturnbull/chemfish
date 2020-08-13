@@ -3,6 +3,7 @@ Metadata for chemfish.
 """
 
 from pathlib import Path
+
 from importlib_metadata import metadata as __load
 
 metadata = __load(Path(__file__).parent.name)

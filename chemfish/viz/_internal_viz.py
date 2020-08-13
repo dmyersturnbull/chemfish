@@ -1,12 +1,13 @@
 import matplotlib
 from matplotlib.axes import Axes
+from matplotlib.colors import Colormap
 from matplotlib.figure import Figure
 from matplotlib.gridspec import GridSpec
-from matplotlib.colors import Colormap
+
 from chemfish.core.core_imports import *
 from chemfish.core.tools import *
 from chemfish.viz import plt
-from chemfish.viz.kvrc_utils import KvrcColorSchemes
+from chemfish.viz._kvrc_utils import KvrcColorSchemes
 from chemfish.viz.kvrc import *
 
 FigureSeqLike = Union[Figure, Iterator[Figure], Iterator[Tup[str, Figure]], Mapping[str, Figure]]

@@ -1,8 +1,9 @@
 import subprocess
 from pathlib import Path
-from sklearn.tree import DecisionTreeClassifier, export_graphviz
-from dscience.core import PathLike
 from typing import Sequence
+
+from dscience.core import PathLike
+from sklearn.tree import DecisionTreeClassifier, export_graphviz
 
 
 class ClassificationUtils:

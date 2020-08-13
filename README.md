@@ -1,8 +1,8 @@
 # ChemFish
 
 **⚠ Please note:**
-This is an unfinished fork of Kale under heavy development.
-Most tests are missing. Do not use it.
+This is an unfinished fork of Chemfish under heavy development.
+It is being heavily refactored, and most tests are missing. Do not use it.
 
 
 ### contributing

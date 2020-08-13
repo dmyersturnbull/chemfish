@@ -1,14 +1,17 @@
 from __future__ import annotations
+
 import struct
-import joblib, dill
+
+import joblib
+from pocketutils.biochem.multiwell_plates import WB1
 from pocketutils.core import *
+from pocketutils.core.chars import *
+from pocketutils.core.hasher import FileHasher
+from pocketutils.core.iterators import *
+from pocketutils.full import Tools as _Tools
+
 from chemfish.core._imports import *
 from chemfish.core.environment import chemfish_env
-from pocketutils.core.hasher import FileHasher
-from pocketutils.full import Tools as _Tools
-from pocketutils.core.iterators import *
-from pocketutils.core.chars import *
-from pocketutils.biochem.multiwell_plates import WB1
 from chemfish.core.valar_singleton import *
 
 
@@ -19,7 +22,7 @@ class IncomptabileNumpyArrayDataType(XTypeError):
 _hash_regex = re.compile("[0-9a-f]{12}$")
 
 
-class KaleValarTools:
+class ChemfishValarTools:
     @classmethod
     def query(cls, query: peewee.BaseQuery) -> pd.DataFrame:
         return pd.DataFrame([pd.Series(row.get_data()) for row in query])
@@ -38,7 +41,7 @@ class KaleValarTools:
 
     @classmethod
     def signed_floats_to_blob(cls, data: np.array) -> bytes:
-        return KaleValarTools.array_to_blob(data, np.float32)
+        return ChemfishValarTools.array_to_blob(data, np.float32)
 
     @classmethod
     def blob_to_signed_floats(cls, data: bytes) -> np.array:
@@ -179,7 +182,7 @@ class KaleValarTools:
         if (
             isinstance(run, Submissions)
             or isinstance(run, str)
-            and KaleValarTools.looks_like_submission_hash(run)
+            and ChemfishValarTools.looks_like_submission_hash(run)
         ):
             sub = Submissions.fetch_or_none(run)
             if sub is None:
@@ -228,7 +231,7 @@ class KaleValarTools:
         return database.get_tables()
 
 
-class Tools(_Tools, KaleValarTools):
+class Tools(_Tools, ChemfishValarTools):
     @classmethod
     def parallel(
         cls, things, function, n_jobs: Optional[int] = chemfish_env.n_cores, verbosity: int = 1
