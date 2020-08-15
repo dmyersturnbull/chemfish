@@ -137,8 +137,8 @@ class TimelinePlotter(KvrcPlotting):
             ax.scatter(
                 idate,
                 y_val,
-                marker=KVRC.timeline_marker_shape,
-                s=KVRC.timeline_marker_size,
+                marker=chemfish_rc.timeline_marker_shape,
+                s=chemfish_rc.timeline_marker_size,
                 c=icolor,
                 alpha=1,
             )
@@ -146,7 +146,7 @@ class TimelinePlotter(KvrcPlotting):
             ax.plot((idate, idate), (0, y_val), alpha=0)
             # show text
             horizontalalignment = "left" if idate < halfway else "right"
-            xpos_offset = int(KVRC.timeline_marker_size / 10)  # about right emperically
+            xpos_offset = int(chemfish_rc.timeline_marker_size / 10)  # about right emperically
             xpos = idate + timedelta(
                 hours=(xpos_offset if horizontalalignment == "left" else -xpos_offset)
             )

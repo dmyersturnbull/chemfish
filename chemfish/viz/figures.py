@@ -125,7 +125,7 @@ class FigureTools:
             bool(kwargs.get("reload")),
         )
         kwargs = {k: v for k, v in kwargs.items() if k not in {"path", "hide", "clear"}}
-        with KVRC.using(*args, **kwargs):
+        with chemfish_rc.using(*args, **kwargs):
             with FigureTools.clearing(clear):
                 with FigureTools.hiding(hide):
                     yield
@@ -186,14 +186,14 @@ class FigureTools:
         # BUT! We can't remove the cax, so we'll decrease its size
         # This is really important because if we skip the cbar, it's likely to save valuable space
         divider = make_axes_locatable(ax)
-        if KVRC.general_colorbar_on:
-            pad = KVRC.general_colorbar_left_pad
+        if chemfish_rc.general_colorbar_on:
+            pad = chemfish_rc.general_colorbar_left_pad
         else:
             size = "0%"
             pad = 0
         cax = divider.append_axes("right", size=size, pad=pad)
         cbar = ax.figure.colorbar(mat, cax=cax, format=number_format)
-        if not KVRC.general_colorbar_on:
+        if not chemfish_rc.general_colorbar_on:
             cbar.remove()
         return cbar
 
@@ -234,7 +234,7 @@ class FigureTools:
         ax: Axes,
         labels: Sequence[str],
         colors: Sequence[str],
-        patch_size: float = KVRC.legend_marker_size,
+        patch_size: float = chemfish_rc.legend_marker_size,
         patch_alpha=1.0,
         **kwargs,
     ) -> mlegend.Legend:
@@ -245,9 +245,9 @@ class FigureTools:
         """
         labels, colors = list(labels), list(colors)
         kwargs = copy(kwargs)
-        kwargs["ncol"] = kwargs.get("ncol", KVRC.legend_n_cols)
-        kwargs["bbox_to_anchor"] = kwargs.get("bbox_to_anchor", KVRC.legend_bbox)
-        kwargs["mode"] = "expand" if KVRC.legend_expand else None
+        kwargs["ncol"] = kwargs.get("ncol", chemfish_rc.legend_n_cols)
+        kwargs["bbox_to_anchor"] = kwargs.get("bbox_to_anchor", chemfish_rc.legend_bbox)
+        kwargs["mode"] = "expand" if chemfish_rc.legend_expand else None
         kwargs["loc"] = kwargs.get("loc")
         if "patch_size" in kwargs:
             raise XValueError("patch_size cannot be passed as an argument and kwargs")
@@ -263,7 +263,7 @@ class FigureTools:
         cls,
         labels: Sequence[str],
         colors: Sequence[str],
-        patch_size: float = KVRC.legend_marker_size,
+        patch_size: float = chemfish_rc.legend_marker_size,
         patch_alpha=1.0,
         **patch_properties,
     ) -> Sequence[patches.Patch]:
@@ -348,10 +348,10 @@ class FigureTools:
         def choose_fix(s: str) -> str:
             if not plt.rcParams["text.usetex"]:
                 return fix_u(s)
-            elif KVRC.label_force_text_mode or not KVRC.label_force_math_mode and "$" not in s:
+            elif chemfish_rc.label_force_text_mode or not chemfish_rc.label_force_math_mode and "$" not in s:
                 return fix_ltext(s)
             elif (
-                KVRC.label_force_math_mode
+                chemfish_rc.label_force_math_mode
                 or s.startswith("$")
                 and s.endswith("$")
                 and s.count("$") == 2
@@ -371,9 +371,9 @@ class FigureTools:
                 s = s0
             else:
                 s = s0
-            s = KVRC.label_replace_dict.get(s, s)
-            r = choose_fix(s) if KVRC.label_fix else s
-            r = KVRC.label_replace_dict.get(r, r)
+            s = chemfish_rc.label_replace_dict.get(s, s)
+            r = choose_fix(s) if chemfish_rc.label_fix else s
+            r = chemfish_rc.label_replace_dict.get(r, r)
             if inplace and is_label:
                 # noinspection PyUnresolvedReferences
                 s0.set_text(r)
@@ -432,7 +432,7 @@ class FigureTools:
         `x` and `y` are in coordinates (0, 1).
         """
         fontsize, kwargs = InternalTools.from_kwargs(
-            kwargs, "fontsize", KVRC.general_note_font_size
+            kwargs, "fontsize", chemfish_rc.general_note_font_size
         )
         t = ax.text(x, y, s=s, fontsize=fontsize, transform=ax.transAxes, **kwargs)
         t.set_bbox(dict(alpha=0.0))
@@ -445,7 +445,7 @@ class FigureTools:
         `x` and `y` are in data coordinates.
         """
         fontsize, kwargs = InternalTools.from_kwargs(
-            kwargs, "fontsize", KVRC.general_note_font_size
+            kwargs, "fontsize", chemfish_rc.general_note_font_size
         )
         t = ax.text(x, y, s=s, fontsize=fontsize, **kwargs)
         t.set_bbox(dict(alpha=0.0))
@@ -467,10 +467,10 @@ class FigureTools:
         Stamps the run ID(s) in the upper-left corner.
         Only shows if chemfish_rc.stamp_on is True AND len(run_ids) <= chemfish_rc.stamp_max_runs.
         """
-        if KVRC.stamp_on:
+        if chemfish_rc.stamp_on:
             run_ids = InternalTools.fetch_all_ids_unchecked(Runs, run_ids)
             run_ids = Tools.unique(run_ids)
-            if len(run_ids) <= KVRC.stamp_max_runs:
+            if len(run_ids) <= chemfish_rc.stamp_max_runs:
                 text = Tools.join(run_ids, sep=", ", prefix="r")
                 return FigureTools._text(ax, text, Corners.TOP_LEFT)
 
@@ -479,13 +479,13 @@ class FigureTools:
         """
         If chemfish_rc.stamp_on is on, stamps the datetime to the top right corner.
         """
-        if KVRC.stamp_on:
+        if chemfish_rc.stamp_on:
             text = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             return FigureTools._text(ax, text, Corners.TOP_RIGHT)
 
     @classmethod
     def _text(cls, ax: Axes, text: str, corner: Corner, **kwargs) -> Axes:
-        fontsize, kwargs = InternalTools.from_kwargs(kwargs, "fontsize", KVRC.stamp_font_size)
+        fontsize, kwargs = InternalTools.from_kwargs(kwargs, "fontsize", chemfish_rc.stamp_font_size)
         t = ax.text(s=text, **corner.params(), fontsize=fontsize, transform=ax.transAxes, **kwargs)
         t.set_bbox(dict(alpha=0.0))
         return ax
@@ -523,7 +523,7 @@ class _Pub:
         FigureTools.clear()
         saver = FigureSaver(save_under=save_under, clear=lambda fig: FigureTools.clear())
         with FigureTools.hiding():
-            with KVRC.using(width=width, height=height, *args, savefig_format="pdf", **kwargs):
+            with chemfish_rc.using(width=width, height=height, *args, savefig_format="pdf", **kwargs):
                 yield saver
         logger.debug(
             "::Left:: saving environment {} under {}".format(kwargs.get("scale", ""), pretty_dir)

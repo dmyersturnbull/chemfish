@@ -167,21 +167,21 @@ class SauronxVideo:
 
     def highlight_by(self, well_frame_fn: Callable[[WellFrame], WellFrame]) -> SauronxVideo:
         wells = WellFrame.of(well_frame_fn(self.wf))["well_label"].unique().tolist()
-        return self.highlight_wells(wells, color=KVRC.video_plain_color)
+        return self.highlight_wells(wells, color=chemfish_rc.video_plain_color)
 
     def highlight_controls_matching(self, **kwargs) -> SauronxVideo:
         wells = self.wf.with_controls(**kwargs)["well_label"].unique().tolist()
-        return self.highlight_wells(wells, color=KVRC.video_negative_control_color)
+        return self.highlight_wells(wells, color=chemfish_rc.video_negative_control_color)
 
     def highlight_controls(self) -> SauronxVideo:
         wells = self.wf.with_controls(positive=True)["well_label"].unique().tolist()
-        cp = self.highlight_wells(wells, color=KVRC.video_positive_control_color)
+        cp = self.highlight_wells(wells, color=chemfish_rc.video_positive_control_color)
         wells = self.wf.with_controls(positive=False)["well_label"].unique().tolist()
-        return cp.highlight_wells(wells, color=KVRC.video_negative_control_color)
+        return cp.highlight_wells(wells, color=chemfish_rc.video_negative_control_color)
 
     def highlight_with_all_compounds(self, compounds) -> SauronxVideo:
         wells = self.wf.with_all_compounds(compounds)["well_label"].unique().tolist()
-        return self.highlight_wells(wells, color=KVRC.video_plain_color)
+        return self.highlight_wells(wells, color=chemfish_rc.video_plain_color)
 
     def highlight_bound(
         self,
@@ -189,7 +189,7 @@ class SauronxVideo:
         well2: str,
         start_ms: int = 0,
         end_ms: Optional[int] = None,
-        color=KVRC.video_plain_color,
+        color=chemfish_rc.video_plain_color,
     ) -> SauronxVideo:
         a = self.roi_from_label(well1)
         b = self.roi_from_label(well2)
@@ -202,7 +202,7 @@ class SauronxVideo:
         labels: Union[str, Iterable[str]],
         start_ms: int = None,
         end_ms: Optional[int] = None,
-        color=KVRC.video_plain_color,
+        color=chemfish_rc.video_plain_color,
     ) -> SauronxVideo:
         if not Tools.is_true_iterable(labels):
             labels = [labels]
@@ -220,7 +220,7 @@ class SauronxVideo:
         y0: int = None,
         x1: int = None,
         y1: int = None,
-        color=KVRC.video_plain_color,
+        color=chemfish_rc.video_plain_color,
         start_ms=None,
         end_ms=None,
     ) -> SauronxVideo:
@@ -240,7 +240,7 @@ class SauronxVideo:
         coords = dict(x0=x0 - self.x0, y0=y0 - self.y0, x1=x1 - self.x0, y1=y1 - self.y0)
         if start_ms is None and end_ms is None:
             clip = self.video.copy().fl_image(
-                partial(_draw_rectangle, **coords, color=color, thickness=KVRC.video_roi_line_width)
+                partial(_draw_rectangle, **coords, color=color, thickness=chemfish_rc.video_roi_line_width)
             )
         else:
             start_ms, end_ms = (
@@ -250,7 +250,7 @@ class SauronxVideo:
             clip = self.video.copy().subfx(
                 lambda v: v.fl_image(
                     partial(
-                        _draw_rectangle, **coords, color=color, thickness=KVRC.video_roi_line_width
+                        _draw_rectangle, **coords, color=color, thickness=chemfish_rc.video_roi_line_width
                     )
                 ),
                 start_ms,
@@ -273,8 +273,8 @@ class SauronxVideo:
                 roi.y0,
                 roi.x1,
                 roi.y1,
-                KVRC.video_roi_color,
-                KVRC.video_roi_line_width,
+                chemfish_rc.video_roi_color,
+                chemfish_rc.video_roi_line_width,
                 start_ms,
                 end_ms,
             )

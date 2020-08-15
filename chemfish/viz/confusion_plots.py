@@ -29,7 +29,7 @@ class ConfusionPlotter(KvrcPlotting):
         extent = (0, data.shape[1], data.shape[0], 0)
         mat = ax.imshow(
             data * 100,
-            cmap=KVRC.confusion_cmap,
+            cmap=chemfish_rc.confusion_cmap,
             vmin=100 * self._vmin,
             vmax=100 * self._vmax,
             interpolation="none",
@@ -105,8 +105,8 @@ class ConfusionPlots:
         elif label_colors is True:
 
             def label_color_fn(s):
-                return KVRC.pref_control_color_dict.get(
-                    s, KVRC.pref_name_color_dict.get(s, "black")
+                return chemfish_rc.pref_control_color_dict.get(
+                    s, chemfish_rc.pref_name_color_dict.get(s, "black")
                 )
 
         elif isinstance(label_colors, Mapping):

@@ -14,7 +14,7 @@ class InvalidWellFrameError(ConstructionError):
 class WellFrame(TypedDf):
     """
     A DataFrame where each row is a well.
-    Implements OrganizingFrame.
+    Implements TypedDf.
     Has a number of required index columns. Some additional columns are reserved (have special meaning) but are not required.
     The index names ("meta columns") contain metadata for the well,
     and the columns, if any, contain the features and are named 0, 1, ... with int32 types.
@@ -76,7 +76,7 @@ class WellFrame(TypedDf):
                             This sort order is generally useful for displaying figures, etc.
         - sort_values       Sorts by a single column or list of columns. Delegates to pd.DataFrame.sort_values.
         - sort_by           Sorts by a function of rows.
-        - sort_natural        Applies a natural sort using `natsort` to a column. (Inherited from OrganizingFrame.)
+        - sort_natural        Applies a natural sort using `natsort` to a column. (Inherited from TypedDf.)
 
     There are five functions that group rows and apply a reduction / aggregation function to rows (potentially resulting in fewer rows):
         - agg_by_name:      Aggregates rows with the same 'name' column

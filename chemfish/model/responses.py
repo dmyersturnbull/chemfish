@@ -4,7 +4,7 @@ from chemfish.core.core_imports import *
 from chemfish.model.metrics import *
 
 
-class DoseResponseFrame(OrganizingFrame):
+class DoseResponseFrame(TypedDf):
     def without_controls(self):
         return self.__class__(self[self["control"].isna()])
 

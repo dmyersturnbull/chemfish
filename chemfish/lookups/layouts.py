@@ -5,7 +5,7 @@ from chemfish.model.well_names import *
 from chemfish.model.wf_builders import *
 
 
-class Layout(SimpleFrame):
+class Layout(UntypedDf):
     pass
 
 

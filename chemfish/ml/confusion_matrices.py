@@ -16,7 +16,7 @@ from chemfish.viz.confusion_plots import *
 logger = logging.getLogger("dscience")
 
 
-class ConfusionMatrix(SimpleFrame):
+class ConfusionMatrix(UntypedDf):
     """
     A wrapper around a confusion matrix as a Pandas DataFrame.
     The rows are the correct labels, and the columns are the predicted labels.

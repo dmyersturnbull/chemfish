@@ -7,7 +7,6 @@ from matplotlib.gridspec import GridSpec
 from chemfish.core.core_imports import *
 from chemfish.core.tools import *
 from chemfish.viz import plt
-from chemfish.viz._kvrc_utils import KvrcColorSchemes
 from chemfish.viz.kvrc import *
 
 FigureSeqLike = Union[Figure, Iterator[Figure], Iterator[Tup[str, Figure]], Mapping[str, Figure]]
@@ -16,21 +15,21 @@ FigureSeqLike = Union[Figure, Iterator[Figure], Iterator[Tup[str, Figure]], Mapp
 class InternalVizTools:
     @classmethod
     def preferred_units_per_sec(cls, mark_every_ms: int, total_ms: float) -> Tup[str, float]:
-        if KVRC.trace_force_time_units is not None:
-            return KVRC.trace_force_time_units.abbrev, 1 / KVRC.trace_force_time_units.n_ms
-        if total_ms >= KVRC.trace_min_cutoff and mark_every_ms >= 1000 * 60 * 60:
+        if chemfish_rc.trace_force_time_units is not None:
+            return chemfish_rc.trace_force_time_units.abbrev, 1 / chemfish_rc.trace_force_time_units.n_ms
+        if total_ms >= chemfish_rc.trace_min_cutoff and mark_every_ms >= 1000 * 60 * 60:
             return "hour", 1 / 60 / 60
-        if total_ms >= KVRC.trace_sec_cutoff and mark_every_ms >= 1000 * 60:
+        if total_ms >= chemfish_rc.trace_sec_cutoff and mark_every_ms >= 1000 * 60:
             return "min", 1 / 60
-        elif total_ms >= KVRC.trace_ms_cutoff and mark_every_ms >= 1000:
+        elif total_ms >= chemfish_rc.trace_ms_cutoff and mark_every_ms >= 1000:
             return "s", 1
         else:
             return "ms", 1000
 
     @classmethod
     def preferred_tick_ms_interval(cls, n_ms_total):
-        alloweds = KVRC.trace_pref_tick_ms_interval
-        n_ms = n_ms_total / KVRC.trace_pref_n_ticks
+        alloweds = chemfish_rc.trace_pref_tick_ms_interval
+        n_ms = n_ms_total / chemfish_rc.trace_pref_n_ticks
         closest_choice, closest_val = None, 100000000000
         for a in alloweds:
             e = abs(a - n_ms) / a
@@ -57,8 +56,8 @@ class InternalVizTools:
         dct = {}
         if len(names) != len(controls):
             raise LengthMismatchError("{} names but {} controls".format(len(names), len(controls)))
-        pref = iter(KVRC.pref_treatment_colors)
-        control_colors = iter(KVRC.pref_control_colors)
+        pref = iter(chemfish_rc.pref_treatment_colors)
+        control_colors = iter(chemfish_rc.pref_control_colors)
         for name, control in Tools.zip_list(names, controls):
             if name in dct:
                 continue
@@ -68,24 +67,24 @@ class InternalVizTools:
                 except StopIteration:
                     if not recycle_ok:
                         logger.warning("Not enough treatment names. Recycling.")
-                    pref = iter(KVRC.pref_treatment_colors)
+                    pref = iter(chemfish_rc.pref_treatment_colors)
                     dct[name] = next(pref)
-            elif control in KVRC.pref_control_color_dict:
-                dct[name] = KVRC.pref_control_color_dict[control]
+            elif control in chemfish_rc.pref_control_color_dict:
+                dct[name] = chemfish_rc.pref_control_color_dict[control]
             else:
                 try:
                     dct[name] = next(control_colors)
                 except StopIteration:
                     if not recycle_ok:
                         logger.warning("Not enough control names. Recycling.")
-                    control_colors = iter(KVRC.pref_control_colors)
+                    control_colors = iter(chemfish_rc.pref_control_colors)
                     dct[name] = next(control_colors)
-        dct.update({k: v for k, v in KVRC.pref_name_color_dict.items() if k in dct})
+        dct.update({k: v for k, v in chemfish_rc.pref_name_color_dict.items() if k in dct})
         return dct
 
     @classmethod
     def assign_color_dict(cls, categories: Sequence[str]) -> Mapping[str, str]:
-        return InternalVizTools.assign(categories, KVRC.pref_treatment_colors)
+        return InternalVizTools.assign(categories, chemfish_rc.pref_treatment_colors)
 
     @classmethod
     def assign_markers(cls, categories: Sequence[str]) -> Sequence[str]:
@@ -94,7 +93,7 @@ class InternalVizTools:
 
     @classmethod
     def assign_marker_dict(cls, categories: Sequence[str]) -> Mapping[str, str]:
-        return InternalVizTools.assign(categories, KVRC.pref_markers)
+        return InternalVizTools.assign(categories, chemfish_rc.pref_markers)
 
     @classmethod
     def assign(cls, categories: Sequence[str], available: Sequence[str]) -> Mapping[str, str]:
@@ -123,7 +122,7 @@ __all__ = [
     "Colormap",
     "matplotlib",
     "InternalVizTools",
-    "KVRC",
+    "chemfish_rc",
     "KvrcPlotting",
     "FigureSeqLike",
 ]

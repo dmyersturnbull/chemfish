@@ -21,6 +21,12 @@
             "@type":"Person",
             "givenName":"Chris S",
             "familyName":"Ki"
+        },
+        {
+            "@type":"Person",
+            "givenName":"Cole C",
+            "familyName":"Helsell",
+            "@id": "0000-0002-8869-3125"
         }
     ],
     "maintainer":{

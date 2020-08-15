@@ -21,6 +21,7 @@ from chemfish.model.app_frames import *
 from chemfish.model.assay_frames import *
 from chemfish.model.compound_names import *
 from chemfish.model.concerns import *
+from chemfish.model.concern_rules import *
 from chemfish.model.features import *
 from chemfish.model.sensors import *
 from chemfish.model.stim_frames import *
@@ -127,7 +128,6 @@ class Quick:
         generation: Union[str, DataGeneration],
         as_of: datetime,
         cache: WellCache,
-        facade: Optional[WellMemoryCache],
         stim_cache: StimframeCache,
         audio_stimulus_cache: AudioStimulusCache,
         sensor_cache: SensorCache,
@@ -136,7 +136,7 @@ class Quick:
         auto_fix: bool = True,
         discard_trash: Union[bool, Set[ControlLike]] = False,
         compound_namer: CompoundNamer = CompoundNamers.tiered(),
-        default_namer: Optional[WellNamer] = DEFAULT_NAMER,
+        well_namer: Optional[WellNamer] = DEFAULT_NAMER,
         quantile: Optional[float] = 0.95,
         trace_ymax: Optional[float] = None,
         zscore_min_max: Optional[float] = None,
@@ -172,18 +172,13 @@ class Quick:
                     Tools.delta_time_to_str((as_of - datetime.now()).total_seconds())
                 )
             )
-        if cache is not None and facade is not None:
-            raise ContradictoryRequestError(
-                "Must specify either cache or facade, or none. This is because a facade is already backed by its own cache."
-            )
         self.feature = FeatureTypes.of(feature)
         self.generation = DataGeneration.of(generation)
         self.as_of = as_of
-        self.default_namer = default_namer
+        self.well_namer = well_namer
         self.compound_namer = copy(compound_namer)
         self.compound_namer.as_of = as_of
-        self.facade = facade
-        self.well_cache = facade.cache if facade is not None else cache
+        self.well_cache = cache
         self.stim_cache = stim_cache
         # TODO this ignores the cache dir
         self.expanded_stim_cache = StimframeCache(
@@ -494,7 +489,7 @@ class Quick:
         )
         for name, figure in traces:
             figure.axes[0].set_ylabel(
-                "Z-score [{}]".format(KVRC.feature_names[self.feature.internal_name])
+                "Z-score [{}]".format(chemfish_rc.feature_names[self.feature.internal_name])
             )
             yield name, figure
 
@@ -1095,15 +1090,13 @@ class Quick:
             )
         elif is_expression:
             df = CachingWellFrameBuilder(self.well_cache, self.as_of).where(run).build()
-        elif self.facade is not None:
-            df = self.facade(run)
         elif self.well_cache is not None:
             df = self.well_cache.load(run)
         else:
             df = WellFrameBuilder.runs(run).with_feature(self.feature).build()
         # instead, we'll build the names in Quick.df()
-        df = df.with_new_names(self.default_namer)
-        df = df.with_new_display_names(self.default_namer)
+        df = df.with_new_names(self.well_namer)
+        df = df.with_new_display_names(self.well_namer)
         return df.sort_std(), True
 
     def _everything(
@@ -1208,9 +1201,6 @@ class Quick:
         if not all([isinstance(r, Runs) for r in runs]):
             raise XTypeError("Bad query type")
         for run in runs:
-            if self.facade is not None:
-                # TODO does this work?
-                self.facade.delete(run)
             if self.well_cache is not None:
                 self.well_cache.delete(run)
         logger.notice("Deleted {} run(s) from the cache(s)".format(len(runs)))
@@ -1253,8 +1243,8 @@ class Quicks:
         feature, kwargs = InternalTools.from_kwargs(
             kwargs, "feature", generation_feature_preferences[generation]
         )
-        if "namer" in kwargs and "default_namer" not in kwargs:
-            kwargs["default_namer"] = kwargs["namer"]
+        if "namer" in kwargs and "well_namer" not in kwargs:
+            kwargs["well_namer"] = kwargs["namer"]
             del kwargs["namer"]  # it's ok -- this is already a copy
         audio_stimulus_cache = AudioStimulusCache()
         return Quick(
@@ -1262,7 +1252,6 @@ class Quicks:
             generation,
             as_of,
             cache=WellCache(feature),
-            facade=None,
             stim_cache=StimframeCache(),
             sensor_cache=SensorCache(),
             video_cache=VideoCache(),

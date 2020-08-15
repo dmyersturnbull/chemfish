@@ -73,7 +73,7 @@ authors = ["Douglas Myers-Turnbull"]
 maintainers = ["Douglas Myers-Turnbull"]
 license = "Apache-2.0"
 readme = "README.md"
-keywords = ['zebrafish', 'behavior', 'data science', 'bioinformatics', 'cheminformatics']
+keywords = ["zebrafish", "behavior", "data science", "bioinformatics", "cheminformatics"]
 homepage = "https://github.com/dmyersturnbull/chemfish"
 repository = "https://github.com/dmyersturnbull/chemfish"
 documentation = "https://chemfish.readthedocs.io"
@@ -107,17 +107,14 @@ chemfish = "chemfish.cli:cli"
 
 [tool.poetry.dependencies]
 python                         = ">=3.7, <4"
-importlib-metadata             = "^1"
 typer                          = ">=0.3, <1.0"
 requests                       = "^2"
-urllib3                        = {extras = ["secure"], version = "^1"}
-
-cryptography                   = "^3"
 cycler                         = ">=0.10, <1.0"
 dill                           = "^0.3"
 jsonpickle                     = "^1.4"
 h5py                           = "^2.10"
 imageio                        = "^2.9"
+ipywidgets                     = "^7"
 joblib                         = "^0.16"
 matplotlib                     = ">=3.3, <4.0"
 natsort                        = "^7"
@@ -125,12 +122,10 @@ numpy                          = "^1.18"
 pandas                         = ">=1.1, <2.0"
 pillow                         = "^7"
 psutil                         = "^5"
-PyMySQL                        = ">=0.10, <1.0"
 scipy                          = ">=1.4, <2.0"
 scikit-image                   = ">=0.17, <1.0"
 scikit-learn                   = "^0.23"
 seaborn                        = ">=0.10, <1.0"
-cairosvg                       = "^2"
 fuzzywuzzy                     = ">=0.18, <1.0"
 humanfriendly                  = "^8"
 tables                         = "^3"
@@ -142,6 +137,7 @@ librosa                        = "^0.8"
 clana                          = "^0.4"
 peewee                         = "^3"
 soundfile                      = ">=0.10, <1.0"
+cairosvg                       = "^2"
 #graphviz                       = ">=0.14, <1.0"
 #ChemSpiPy                      = "^2.0"
 #moviepy                        = "^1.0"
@@ -157,7 +153,7 @@ soundfile                      = ">=0.10, <1.0"
 decorateme                     = ">=0.1, <1.0"
 typeddfs                       = ">=0.2, <1.0"
 pocketutils                    = ">=0.1, <1.0"
-valarpy = { git = "https://github.com/dmyersturnbull/valarpy.git", tag = "v2.0.0" }
+valarpy                        = "^2"
 
 [tool.poetry.dev-dependencies]
 pre-commit               = "^2"
@@ -209,6 +205,7 @@ target-version = ["py38"]
 
 [tool.isort]
 line_length = 100
+
 [mypy]
 check_untyped_defs = true
 strict_optional = true

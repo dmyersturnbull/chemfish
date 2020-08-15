@@ -35,7 +35,7 @@ class TraceBase(CakeLayer, KvrcPlotting):
         self._with_bar = with_bar
         self._feature = feature
         self._y_label = (
-            KVRC.get_feature_names()[feature.internal_name] + " " + feature.recommended_unit
+            chemfish_rc.get_feature_names()[feature.internal_name] + " " + feature.recommended_unit
         )
         self._y_axis_formatter = ticker.FuncFormatter(
             lambda x, pos: "{0:g}".format(round(x / feature.recommended_scale), 0)
@@ -65,8 +65,8 @@ class TraceBase(CakeLayer, KvrcPlotting):
             ordered_names.append(mininame)
             ordered_colors.append(color)
             self._plot_single(group, mininame, color, alpha, ax1, y_bounds)
-        if KVRC.trace_legend_on:
-            if KVRC.trace_legend_ignore_controls:
+        if chemfish_rc.trace_legend_on:
+            if chemfish_rc.trace_legend_ignore_controls:
                 legend_labels, legend_colors = [], []
                 for i, s in enumerate(ordered_names):
                     if s not in control_names:
@@ -78,9 +78,9 @@ class TraceBase(CakeLayer, KvrcPlotting):
                 ax1,
                 legend_labels,
                 legend_colors,
-                bbox_to_anchor=KVRC.trace_legend_bbox,
-                ncol=KVRC.trace_legend_n_cols,
-                loc=KVRC.trace_legend_loc,
+                bbox_to_anchor=chemfish_rc.trace_legend_bbox,
+                ncol=chemfish_rc.trace_legend_n_cols,
+                loc=chemfish_rc.trace_legend_loc,
             )
         ax1.set_ylabel(self._y_label)
         ax1.yaxis.set_major_formatter(self._y_axis_formatter)
@@ -89,10 +89,10 @@ class TraceBase(CakeLayer, KvrcPlotting):
                 0,
                 0,
                 len(subdf.columns),
-                c=KVRC.trace_bar_color,
-                linestyle=KVRC.trace_bar_style,
-                linewidth=KVRC.trace_bar_width,
-                alpha=KVRC.trace_bar_alpha,
+                c=chemfish_rc.trace_bar_color,
+                linestyle=chemfish_rc.trace_bar_style,
+                linewidth=chemfish_rc.trace_bar_width,
+                alpha=chemfish_rc.trace_bar_alpha,
             )
         if run_dict is not None:
             FigureTools.stamp_runs(ax1, run_dict[s])
@@ -111,8 +111,8 @@ class TraceBase(CakeLayer, KvrcPlotting):
                     color=color,
                     label=viz_name,
                     zorder=0,
-                    linewidth=KVRC.trace_line_width,
-                    rasterized=KVRC.rasterize_traces,
+                    linewidth=chemfish_rc.trace_line_width,
+                    rasterized=chemfish_rc.rasterize_traces,
                 )
             else:
                 mean_band = self._mean_bander(group).iloc[0, :].values
@@ -123,8 +123,8 @@ class TraceBase(CakeLayer, KvrcPlotting):
                     color=mbc,
                     label=viz_name,
                     zorder=0,
-                    linewidth=KVRC.trace_line_width,
-                    rasterized=KVRC.rasterize_traces,
+                    linewidth=chemfish_rc.trace_line_width,
+                    rasterized=chemfish_rc.rasterize_traces,
                 )
             if len(group) > 1:
                 top_band = self._top_bander(group).iloc[0, :].values
@@ -145,8 +145,8 @@ class TraceBase(CakeLayer, KvrcPlotting):
                 color=color,
                 label=viz_name,
                 zorder=0,
-                linewidth=KVRC.trace_line_width,
-                rasterized=KVRC.rasterize_traces,
+                linewidth=chemfish_rc.trace_line_width,
+                rasterized=chemfish_rc.rasterize_traces,
             )
         if y_bounds is not None:
             ax1.set_ylim(y_bounds[0], y_bounds[1])
@@ -274,10 +274,10 @@ class TracePlotter(KvrcPlotting):
 
     def _assign_sizes(self, n_extra_slots: int) -> Tup[Tup[float, float], float, float]:
         trace_height, stim_height = (
-            KVRC.trace_height,
-            KVRC.trace_layer_const_height + KVRC.trace_layer_height * n_extra_slots,
+            chemfish_rc.trace_height,
+            chemfish_rc.trace_layer_const_height + chemfish_rc.trace_layer_height * n_extra_slots,
         )
-        figsize = KVRC.trace_width, trace_height + stim_height
+        figsize = chemfish_rc.trace_width, trace_height + stim_height
         return figsize, trace_height, stim_height
 
     def _plot_single(
@@ -305,7 +305,7 @@ class TracePlotter(KvrcPlotting):
         n_gridspec_slots = 2 + len(self._extra_gridspec_slots)
         height_ratios = [trace_height] + self._extra_gridspec_slots + [stim_height]
         gs = GridSpec(n_gridspec_slots, 1, height_ratios=height_ratios, figure=figure)
-        gs.update(hspace=KVRC.trace_hspace)
+        gs.update(hspace=chemfish_rc.trace_hspace)
         ax1 = figure.add_subplot(gs[0])
         if extra is not None:
             extra(figure, gs, name)
@@ -346,10 +346,10 @@ class TracePlotter(KvrcPlotting):
     def _assign_alphas(self, control_names: Sequence[str], name: str) -> Dict[str, float]:
         return {
             **{
-                control_name: KVRC.band_control_alpha if self._banded else KVRC.trace_control_alpha
+                control_name: chemfish_rc.band_control_alpha if self._banded else chemfish_rc.trace_control_alpha
                 for control_name in control_names
             },
-            name: KVRC.band_treatment_alpha if self._banded else KVRC.trace_treatment_alpha,
+            name: chemfish_rc.band_treatment_alpha if self._banded else chemfish_rc.trace_treatment_alpha,
         }
 
 

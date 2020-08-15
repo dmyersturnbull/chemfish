@@ -6,7 +6,7 @@ from chemfish.ml.accuracy_frames import AccuracyFrame
 from chemfish.ml.confusion_matrices import ConfusionMatrix
 
 
-class DecisionFrame(OrganizingFrame):
+class DecisionFrame(TypedDf):
     """
     An n × m matrix of probabilities (or scores) from a classifier.
     The n rows are samples, and the m columns are predictions. The values are the confidence or pobability of prediction.

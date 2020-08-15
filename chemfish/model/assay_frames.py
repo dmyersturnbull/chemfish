@@ -7,7 +7,7 @@ from __future__ import annotations
 from chemfish.core.core_imports import *
 
 
-class AssayFrame(OrganizingFrame):
+class AssayFrame(TypedDf):
     """
     A Pandas DataFrame that has one row per assay in a battery.
     Each row has the assay_positions ID, the assay name and simplified_name, and the start and end times.

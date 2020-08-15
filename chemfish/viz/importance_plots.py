@@ -38,7 +38,7 @@ class ImportancePlotter(CakeComponent, KvrcPlotting):
         if vmax is None:
             vmax = np.quantile(weights, self._vmax_quantile)
         if ax is None:
-            figure = plt.figure(figsize=(KVRC.trace_width, KVRC.trace_layer_height))
+            figure = plt.figure(figsize=(chemfish_rc.trace_width, chemfish_rc.trace_layer_height))
             ax = figure.add_subplot(111)
         ax.set_xticks([])
         ax.set_yticks([])
@@ -46,12 +46,12 @@ class ImportancePlotter(CakeComponent, KvrcPlotting):
         ax.set_ylabel("weight")
         if self._scatter:
             if isinstance(weights, tuple):
-                ax.scatter(weights[0], weights[1], c=KVRC.weight_scatter_color, rasterized=False)
+                ax.scatter(weights[0], weights[1], c=chemfish_rc.weight_scatter_color, rasterized=False)
             else:
                 ax.scatter(
                     np.arange(0, len(weights)),
                     weights,
-                    c=KVRC.weight_scatter_color,
+                    c=chemfish_rc.weight_scatter_color,
                     rasterized=False,
                 )
             ax.set_ylim(vmin, vmax)
@@ -62,7 +62,7 @@ class ImportancePlotter(CakeComponent, KvrcPlotting):
                 aspect="auto",
                 vmin=vmin,
                 vmax=vmax,
-                rasterized=KVRC.rasterize_traces,
+                rasterized=chemfish_rc.rasterize_traces,
             )
         return ax.get_figure()
 

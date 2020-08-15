@@ -9,7 +9,7 @@ from datetime import date
 from chemfish.core.core_imports import *
 
 
-class Lookup(SimpleFrame, metaclass=abc.ABCMeta):
+class Lookup(UntypedDf, metaclass=abc.ABCMeta):
     """
     A Pandas DataFrame from a simple Valar lookup.
     """

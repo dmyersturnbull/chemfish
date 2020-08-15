@@ -50,26 +50,26 @@ class TwoDWellPlotter(WellPlotter):
                         ax.scatter(
                             df_by_size[0],
                             df_by_size[1],
-                            s=KVRC.tsne_marker_size * s,
+                            s=chemfish_rc.tsne_marker_size * s,
                             c=color,
                             marker=marker,
                             label=name,
-                            edgecolor=KVRC.tsne_marker_edge_color,
-                            linewidths=KVRC.tsne_marker_edge_width,
-                            rasterized=KVRC.rasterize_scatter,
+                            edgecolor=chemfish_rc.tsne_marker_edge_color,
+                            linewidths=chemfish_rc.tsne_marker_edge_width,
+                            rasterized=chemfish_rc.rasterize_scatter,
                             alpha=self.alpha,
                         )
         ax.set_xticks([])
         ax.set_yticks([])
         ordered_names = df["name"].unique().tolist()
         ordered_colors = df["color"].unique().tolist()
-        kwargs = dict(ncol=KVRC.tsne_legend_n_cols) if KVRC.tsne_legend_n_cols is not None else {}
+        kwargs = dict(ncol=chemfish_rc.tsne_legend_n_cols) if chemfish_rc.tsne_legend_n_cols is not None else {}
         FigureTools.manual_legend(
             ax,
             ordered_names,
             ordered_colors,
-            bbox_to_anchor=KVRC.tsne_legend_bbox,
-            loc=KVRC.tsne_legend_loc,
+            bbox_to_anchor=chemfish_rc.tsne_legend_bbox,
+            loc=chemfish_rc.tsne_legend_loc,
             **kwargs,
         )
         FigureTools.stamp_runs(ax, df["run"])

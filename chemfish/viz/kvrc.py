@@ -397,6 +397,6 @@ class ChemfishRc(KvrcCore):
                 self[z + ".fonttype"] = v
 
 
-KVRC = ChemfishRc(chemfish_env.matplotlib_style, chemfish_env.viz_file)
+chemfish_rc = ChemfishRc(chemfish_env.matplotlib_style, chemfish_env.viz_file)
 
-__all__ = ["KVRC", "KvrcDefaults", "ChemfishRc"]
+__all__ = ["chemfish_rc", "KvrcDefaults", "ChemfishRc"]

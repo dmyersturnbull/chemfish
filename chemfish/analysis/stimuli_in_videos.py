@@ -33,7 +33,7 @@ class VideoStimFrameDisplayer:
             AudioStimulusCache().load_waveform, ValarTools.battery_is_legacy(self.b_id)
         )
         # Plot stimframeplot
-        with KVRC.using(
+        with chemfish_rc.using(
             rasterize_traces=True, trace_width=8, trace_height=1,
         ):
             fig_axes = StimframesPlotter().plot(starts_at_ms=start_ms, stimframes=bsf)

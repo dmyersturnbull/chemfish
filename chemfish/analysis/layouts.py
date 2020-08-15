@@ -12,7 +12,7 @@ from chemfish.core.core_imports import *
 from chemfish.model.compound_names import *
 
 
-class LayoutFrame(SimpleFrame):
+class LayoutFrame(UntypedDf):
     def drug_cols(self):
         ii = 1
         while "batch_{}".format(ii) in self.columns:

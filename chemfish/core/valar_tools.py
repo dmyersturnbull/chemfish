@@ -4,7 +4,7 @@ import subprocess
 
 import tomlkit
 from natsort import natsorted
-from pocketutils.support.toml_data import TomlData
+from pocketutils.core.toml_data import TomlData
 
 from chemfish.core._imports import *
 from chemfish.core._tools import *

@@ -8,7 +8,7 @@ from binascii import hexlify
 from chemfish.core.core_imports import *
 
 
-class InsightFrame(OrganizingFrame):
+class InsightFrame(TypedDf):
     """
     A Pandas DataFrame that with one row per change to a stimulus over time.
     """
@@ -22,7 +22,7 @@ class InsightFrame(OrganizingFrame):
         return ["index"]
 
 
-class AppFrame(OrganizingFrame):
+class AppFrame(TypedDf):
     """
     A DataFrame that stores the intersection of a stimulus and an assay as rows.
     For example, imagine a battery with two assays:
@@ -190,7 +190,7 @@ class AppFrame(OrganizingFrame):
         df = pd.DataFrame(
             [pd.Series({"start_ms": int(i / framerate), "value": v}) for i, v in changes]
         )
-        return FinalFrame(df).cfirst(["start_ms", "value"])
+        return UntypedDf(df).cfirst(["start_ms", "value"])
 
     @classmethod
     def _frame_df(cls, battery: Union[int, str, Batteries]) -> pd.DataFrame:

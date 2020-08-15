@@ -9,7 +9,7 @@ from chemfish.viz.figures import *
 
 
 class BreakdownBarPlotter(KvrcPlotting):
-    def __init__(self, bar_width: float = KVRC.acc_bar_width_fraction, kwargs=None):
+    def __init__(self, bar_width: float = chemfish_rc.acc_bar_width_fraction, kwargs=None):
         self.bar_width = bar_width
         self.kwargs = {} if kwargs is None else kwargs
 
@@ -46,7 +46,7 @@ class BreakdownPiePlotter(KvrcPlotting):
     """
 
     def __init__(self, figsize=None, radius: float = 1.0, kwargs=None):
-        self._figsize = (KVRC.width, KVRC.width) if figsize is None else figsize
+        self._figsize = (chemfish_rc.width, chemfish_rc.width) if figsize is None else figsize
         self._radius = radius
         self._kwargs = {} if kwargs is None else kwargs
 
@@ -64,15 +64,15 @@ class BreakdownPiePlotter(KvrcPlotting):
             labels=labels,
             autopct=None,
             startangle=90,
-            pctdistance=KVRC.mandos_pie_pct_distance,
+            pctdistance=chemfish_rc.mandos_pie_pct_distance,
             explode=explode,
             wedgeprops={
                 "edgecolor": "black",
-                "linewidth": KVRC.mandos_pie_outline_width,
+                "linewidth": chemfish_rc.mandos_pie_outline_width,
                 "linestyle": "-",
                 "antialiased": True,
             },
-            textprops={"linespacing": KVRC.general_linespacing},
+            textprops={"linespacing": chemfish_rc.general_linespacing},
             radius=self._radius,
             **self._kwargs,
         )
@@ -81,8 +81,8 @@ class BreakdownPiePlotter(KvrcPlotting):
         # draw circle
         centre_circle = plt.Circle(
             (0, 0),
-            KVRC.mandos_pie_center_circle_fraction,
-            lw=KVRC.mandos_pie_outline_width,
+            chemfish_rc.mandos_pie_center_circle_fraction,
+            lw=chemfish_rc.mandos_pie_outline_width,
             fc="white",
             edgecolor="black",
         )

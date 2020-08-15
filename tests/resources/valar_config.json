@@ -1,7 +1,0 @@
-{
-  "local_bind_port": 3306,
-  "ssh_port": 22,
-  "db_username": "root",
-  "db_password": "root",
-  "db_name": "valartest"
-}

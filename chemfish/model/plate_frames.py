@@ -4,7 +4,7 @@ from chemfish.core.core_imports import *
 from chemfish.model.features import *
 
 
-class PlateFrame(SimpleFrame):
+class PlateFrame(UntypedDf):
     """
     A row-by-column DataFrame representing some value in a multiwell plate.
     """

@@ -58,7 +58,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
             starts_at_ms = 0
         n_ms = len(stimframes) * 1000 / self._fps
         if ax is None:
-            figure = plt.figure(figsize=(KVRC.trace_width, KVRC.trace_height))
+            figure = plt.figure(figsize=(chemfish_rc.trace_width, chemfish_rc.trace_height))
             ax = figure.add_subplot(111)
         # the figure should always have a white background
         ax.set_facecolor("white")
@@ -89,24 +89,24 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         self._axis_labels(stimframes, ax, starts_at_ms=starts_at_ms, total_ms=n_ms)
         from chemfish.viz.figures import FigureTools
 
-        if KVRC.stimplot_legend_on:
+        if chemfish_rc.stimplot_legend_on:
             ordered_names, ordered_colors = [k[1] for k in ordered], [k[2] for k in ordered]
             FigureTools.manual_legend(
                 ax,
                 ordered_names,
                 ordered_colors,
-                bbox_to_anchor=KVRC.stimplot_legend_bbox,
-                ncol=KVRC.stimplot_legend_n_cols,
-                loc=KVRC.stimplot_legend_loc,
+                bbox_to_anchor=chemfish_rc.stimplot_legend_bbox,
+                ncol=chemfish_rc.stimplot_legend_n_cols,
+                loc=chemfish_rc.stimplot_legend_loc,
             )
         # cover up line at y=0:
-        if KVRC.stimplot_cover_width > 0:
+        if chemfish_rc.stimplot_cover_width > 0:
             ax.hlines(
                 y=0,
                 xmin=0,
                 xmax=len(stimframes),
-                color=KVRC.stimplot_cover_color,
-                linewidth=KVRC.stimplot_cover_width,
+                color=chemfish_rc.stimplot_cover_color,
+                linewidth=chemfish_rc.stimplot_cover_width,
                 zorder=20,
                 alpha=1,
             )
@@ -126,42 +126,42 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
             ax.scatter(
                 x,
                 y,
-                alpha=KVRC.stimplot_audio_line_alpha,
+                alpha=chemfish_rc.stimplot_audio_line_alpha,
                 label=c,
-                s=KVRC.stimplot_audio_line_width,
-                clip_on=KVRC.stimplot_clip,
-                rasterized=KVRC.rasterize_traces,
+                s=chemfish_rc.stimplot_audio_line_width,
+                clip_on=chemfish_rc.stimplot_clip,
+                rasterized=chemfish_rc.rasterize_traces,
                 marker=".",
-                facecolors=KVRC.stimplot_audio_linecolor,
+                facecolors=chemfish_rc.stimplot_audio_linecolor,
                 edgecolors="none",
             )
-            return ax, ValarTools.stimulus_display_name(c), KVRC.stimplot_audio_linecolor
-        if KVRC.stimplot_line_alpha > 0:
+            return ax, ValarTools.stimulus_display_name(c), chemfish_rc.stimplot_audio_linecolor
+        if chemfish_rc.stimplot_line_alpha > 0:
             ax.plot(
                 r,
-                color=KVRC.get_stimulus_colors()[stim.name],
-                alpha=KVRC.stimplot_line_alpha,
+                color=chemfish_rc.get_stimulus_colors()[stim.name],
+                alpha=chemfish_rc.stimplot_line_alpha,
                 label=c,
-                linewidth=KVRC.stimplot_line_width,
-                clip_on=KVRC.stimplot_clip,
-                rasterized=KVRC.rasterize_traces,
+                linewidth=chemfish_rc.stimplot_line_width,
+                clip_on=chemfish_rc.stimplot_clip,
+                rasterized=chemfish_rc.rasterize_traces,
             )
-        if KVRC.stimplot_fill_alpha > 0:
+        if chemfish_rc.stimplot_fill_alpha > 0:
             ax.fill_between(
                 range(0, n_stimframes),
                 r,
                 0,
-                alpha=KVRC.stimplot_fill_alpha,
-                facecolor=KVRC.get_stimulus_colors()[c],
+                alpha=chemfish_rc.stimplot_fill_alpha,
+                facecolor=chemfish_rc.get_stimulus_colors()[c],
                 edgecolor="none",
                 linewidth=0,
-                clip_on=KVRC.stimplot_clip,
-                rasterized=KVRC.rasterize_traces,
+                clip_on=chemfish_rc.stimplot_clip,
+                rasterized=chemfish_rc.rasterize_traces,
             )
-        return ax, ValarTools.stimulus_display_name(c), KVRC.get_stimulus_colors()[stim.name]
+        return ax, ValarTools.stimulus_display_name(c), chemfish_rc.get_stimulus_colors()[stim.name]
 
     def _plot_assays(self, assays, starts_at_ms, n_ms, ax):
-        if not self._assay_labels and not KVRC.assay_lines_without_text:
+        if not self._assay_labels and not chemfish_rc.assay_lines_without_text:
             return
         for a in assays.itertuples():
             start = (a.start_ms - starts_at_ms) * self._fps / 1000
@@ -174,13 +174,13 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
                 continue
             # STIMPLOT_ASSAY_LINE_HEIGHT should depend on the height and the font size
             # for some reason, setting alpha= here doesn't work
-            width = KVRC.assay_line_width
-            color = KVRC.assay_line_color
-            alpha = KVRC.assay_line_alpha
+            width = chemfish_rc.assay_line_width
+            color = chemfish_rc.assay_line_color
+            alpha = chemfish_rc.assay_line_alpha
             height = (
-                KVRC.assay_line_with_text_height
+                chemfish_rc.assay_line_with_text_height
                 if self._assay_labels
-                else KVRC.assay_line_without_text_height
+                else chemfish_rc.assay_line_without_text_height
             )
             lines = ax.vlines(
                 start, -height, 0, lw=width, colors=color, clip_on=False, alpha=0.0, zorder=1
@@ -198,7 +198,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
                 minsec = a.start
                 text = (
                     a.simplified_name + " (" + minsec + ")"
-                    if KVRC.assay_start_times
+                    if chemfish_rc.assay_start_times
                     else a.simplified_name
                 )
                 ax.annotate(
@@ -206,16 +206,16 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
                     (0.5 * start + 0.5 * end, -0.5),
                     horizontalalignment="center",
                     rotation=90,
-                    color=KVRC.assay_text_color,
+                    color=chemfish_rc.assay_text_color,
                     annotation_clip=False,
-                    alpha=KVRC.assay_text_alpha,
+                    alpha=chemfish_rc.assay_text_alpha,
                 )
 
     def _axis_labels(self, stimframes, ax, starts_at_ms, total_ms):
         if self._should_label:
             self._label_x(stimframes, ax, starts_at_ms, total_ms)
             ax.grid(False)
-            ax.set_ylabel(KVRC.stimplot_y_label)
+            ax.set_ylabel(chemfish_rc.stimplot_y_label)
         else:
             ax.set_xticks([])
         ax.get_yaxis().set_ticks([])
@@ -233,7 +233,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
             ticker.FuncFormatter(
                 lambda frame, pos: "{0:g}".format(
                     round((frame / self._fps + starts_at_ms / 1000) * units_per_sec),
-                    KVRC.trace_time_n_decimals,
+                    chemfish_rc.trace_time_n_decimals,
                 )
             )
         )

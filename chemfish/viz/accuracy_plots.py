@@ -29,7 +29,7 @@ class MetricPlotter:
         pad = 0
         ax.set_xlim(-pad, 100)
         # scale to get a similar % of padding per axis, rather than raw amount
-        ax.set_ylim(0, 100 + pad * KVRC.width / KVRC.height)
+        ax.set_ylim(0, 100 + pad * chemfish_rc.width / chemfish_rc.height)
         # we already know we won't use the lower right
         FigureTools.manual_legend(ax, [d.label for d in data], colors)
         ax.set_aspect("equal", adjustable="box")
@@ -107,7 +107,7 @@ class AccuracyPlotter(KvrcPlotting):
         # IT'S __NOT__ A BARPLOT
         ################################################################################################################
         if self._style is not AccuracyPlotStyle.BAR:
-            color = KVRC.acc_point_color
+            color = chemfish_rc.acc_point_color
             if self._style is AccuracyPlotStyle.SWARM:
                 # seaborn sets s=5 instead of lines.markersize
                 # AND it expects the sqrt
@@ -117,7 +117,7 @@ class AccuracyPlotter(KvrcPlotting):
                     x_labels,
                     scores,
                     color=color,
-                    s=np.sqrt(KVRC.acc_point_size),
+                    s=np.sqrt(chemfish_rc.acc_point_size),
                     dodge=True,
                     ax=ax,
                     **self._extra_params,
@@ -139,9 +139,9 @@ class AccuracyPlotter(KvrcPlotting):
         ################################################################################################################
         elif self._style is AccuracyPlotStyle.BAR:
             fill_color, edge_color, err_color = (
-                KVRC.acc_bar_color,
-                KVRC.acc_bar_edge_color,
-                KVRC.acc_error_color,
+                chemfish_rc.acc_bar_color,
+                chemfish_rc.acc_bar_edge_color,
+                chemfish_rc.acc_error_color,
             )
             bars = ax.bar(
                 x_labels,
@@ -149,8 +149,8 @@ class AccuracyPlotter(KvrcPlotting):
                 yerr=(scores - lower, upper - scores),
                 color=fill_color,
                 edgecolor=edge_color,
-                lw=KVRC.acc_bar_edge_width,
-                error_kw=KVRC.acc_error_kwargs,
+                lw=chemfish_rc.acc_bar_edge_width,
+                error_kw=chemfish_rc.acc_error_kwargs,
                 **self._extra_params,
             )
             # And now correct the colors, sizes, and bounds
@@ -163,7 +163,7 @@ class AccuracyPlotter(KvrcPlotting):
                     bar.set_color(color)
             ax.set_xticklabels(FigureTools.fix_labels(labels))
             ax.set_xlim(-0.5, len(set(labels)) - 0.5)
-            self._change_width(ax, KVRC.acc_bar_width_fraction)
+            self._change_width(ax, chemfish_rc.acc_bar_width_fraction)
         return self._fix(x_labels, ax)
 
     def _change_width(self, ax, new_value):
@@ -176,7 +176,7 @@ class AccuracyPlotter(KvrcPlotting):
     def _fix(self, x_labels, ax):
         ax.set_ylabel(FigureTools.fix_labels(self._y_label))
         ax.set_xticklabels(
-            FigureTools.fix_labels(ax.get_xticklabels()), rotation=KVRC.acc_x_tick_rotation
+            FigureTools.fix_labels(ax.get_xticklabels()), rotation=chemfish_rc.acc_x_tick_rotation
         )
         ax.set_ylim(*self._y_bounds)
         ax.set_ylabel(ax.get_ylabel())
@@ -225,23 +225,23 @@ class AccuracyDistPlotter(KvrcPlotting):
             ax.plot(
                 negatives.support,
                 negatives.density,
-                alpha=KVRC.dist_control_alpha,
-                color=KVRC.dist_negative_control_color,
+                alpha=chemfish_rc.dist_control_alpha,
+                color=chemfish_rc.dist_negative_control_color,
                 label=FigureTools.fix_labels(self.negative_label),
             )
         if positives is not None:
             ax.plot(
                 positives.support,
                 positives.density,
-                alpha=KVRC.dist_control_alpha,
-                color=KVRC.dist_positive_control_color,
+                alpha=chemfish_rc.dist_control_alpha,
+                color=chemfish_rc.dist_positive_control_color,
                 label=FigureTools.fix_labels(self.positive_label),
             )
         ax.plot(
             treatments.support,
             treatments.density,
-            alpha=KVRC.dist_treatment_alpha,
-            color=KVRC.dist_treatment_color,
+            alpha=chemfish_rc.dist_treatment_alpha,
+            color=chemfish_rc.dist_treatment_color,
             label=FigureTools.fix_labels(self.treatment_label),
         )
         # TODO this shouldn't be needed! why does matplotlib truncate?
@@ -271,9 +271,9 @@ class AccuracyDistPlotter(KvrcPlotting):
         """
         ax.axvline(
             x=x,
-            c=KVRC.dist_sig_line_color,
-            lw=KVRC.dist_sig_line_width,
-            linestyle=KVRC.dist_sig_line_style,
+            c=chemfish_rc.dist_sig_line_color,
+            lw=chemfish_rc.dist_sig_line_width,
+            linestyle=chemfish_rc.dist_sig_line_style,
         )
         if label is not None:
             text_kwargs = {} if text_kwargs is None else text_kwargs

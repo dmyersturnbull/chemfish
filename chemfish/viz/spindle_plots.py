@@ -35,7 +35,7 @@ class SpindlePlotter:
             df["size"] = (
                 (df["x_value"] - df["x_value"].mean() + 1)
                 / df["x_value"].std()
-                * KVRC["lines.markersize"]
+                * chemfish_rc["lines.markersize"]
             )
         if "color" not in df.columns:
             df["color"] = InternalVizTools.assign_colors_x(df["label"], df["control"])
@@ -48,15 +48,15 @@ class SpindlePlotter:
                 dfx["score_2"],
                 label=FigureTools.fix_labels(label),
                 c=dfx["color"],
-                edgecolor=KVRC.tsne_marker_edge_color,
-                linewidths=KVRC.tsne_marker_edge_width,
+                edgecolor=chemfish_rc.tsne_marker_edge_color,
+                linewidths=chemfish_rc.tsne_marker_edge_width,
                 alpha=0.8,
                 s=dfx["size"],
             )
             yyy.append(label)
             zzz.append(Tools.only(dfx["color"]))
-        x0, x1 = worst_negative - KVRC.spindle_jitter, 100 + KVRC.spindle_jitter
-        y0, y1 = worst_positive - KVRC.spindle_jitter, 100 + KVRC.spindle_jitter
+        x0, x1 = worst_negative - chemfish_rc.spindle_jitter, 100 + chemfish_rc.spindle_jitter
+        y0, y1 = worst_positive - chemfish_rc.spindle_jitter, 100 + chemfish_rc.spindle_jitter
         ax.set_xlim(x0, x1)
         ax.set_ylim(y0, y1)
         ax.set_xticks(np.arange(worst_negative, 101, 10))
@@ -68,11 +68,11 @@ class SpindlePlotter:
 
         if self.x_thresh is not None:
             val, txt = self._line(self.x_thresh)
-            ax.axvline(val, linestyle=KVRC.spindle_sig_line_style)
+            ax.axvline(val, linestyle=chemfish_rc.spindle_sig_line_style)
             if txt is not None:
                 ax.text(
                     val,
-                    100 + KVRC.spindle_jitter,
+                    100 + chemfish_rc.spindle_jitter,
                     txt,
                     rotation=90,
                     verticalalignment="top",
@@ -80,10 +80,10 @@ class SpindlePlotter:
                 )
         if self.y_thresh is not None:
             val, txt = self._line(self.y_thresh)
-            ax.axhline(val, linestyle=KVRC.spindle_sig_line_style)
+            ax.axhline(val, linestyle=chemfish_rc.spindle_sig_line_style)
             if txt is not None:
                 ax.text(
-                    100 + KVRC.spindle_jitter,
+                    100 + chemfish_rc.spindle_jitter,
                     val,
                     txt,
                     horizontalalignment="right",

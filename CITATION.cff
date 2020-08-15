@@ -7,16 +7,11 @@ authors:
     -
         family-names: Myers-Turnbull
         given-names: Douglas
-    -
-        family-names: Ki
-        given-names: Chris S
-	-
-		family-names: Helsell
-		given-names: Cole
+        orcid: 0000-0003-3610-4808
 keywords:
     - zebrafish
     - behavior
     - data science
     - bioinformatics
     - cheminformatics
-date-released: 2020-05-23T20:00:00.000Z
+date-released: 2020-05-23

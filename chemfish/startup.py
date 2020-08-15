@@ -80,8 +80,8 @@ from chemfish.lookups.fuzzy import *
 from chemfish.lookups.layouts import *
 from chemfish.lookups.lookups import *
 from chemfish.lookups.mandos import *
-from chemfish.lookups.submission_tools import *
-from chemfish.lookups.template_tools import *
+from chemfish.lookups.submissions import *
+from chemfish.lookups.templates import *
 
 # ml
 from chemfish.ml import ClassifierPath
@@ -98,7 +98,6 @@ from chemfish.model import *
 from chemfish.model.app_frames import *
 from chemfish.model.assay_frames import *
 from chemfish.model.audio import *
-from chemfish.model.aug_well_frames import *
 from chemfish.model.case_control_comparisons import *
 from chemfish.model.compound_names import *
 from chemfish.model.concerns import *
@@ -128,7 +127,7 @@ from chemfish.viz.figures import *
 # viz
 from chemfish.viz.heatmaps import *
 from chemfish.viz.importance_plots import *
-from chemfish.viz.kvrc import KVRC as chemfish_rc
+from chemfish.viz.kvrc import chemfish_rc
 from chemfish.viz.kvrc import KvrcDefaults
 from chemfish.viz.response_plots import *
 from chemfish.viz.stim_plots import *

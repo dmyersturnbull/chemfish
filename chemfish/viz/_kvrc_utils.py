@@ -8,12 +8,48 @@ import matplotlib.cm as cmaps
 from matplotlib import colors as mcolors
 from matplotlib.figure import Figure
 from matplotlib.markers import MarkerStyle
-from pocketutils.support.time_unit import TimeUnit, TimeUnits
 
 from chemfish.core.core_imports import *
 from chemfish.viz import plt
 from chemfish.viz.color_schemes import *
 from chemfish.viz.smart_dimensions import RefDims
+
+from functools import total_ordering
+from typing import Union
+
+
+@total_ordering
+class TimeUnit:
+    def __init__(self, unit: str, abbrev: str, singlular: str, n_ms: int):
+        self.unit, self.abbrev, self.singular, self.plural, self.n_ms = unit, abbrev, singlular, singlular + 's', n_ms
+    def to_ms(self, n: int): return n * self.n_ms
+    def __eq__(self, other): return self.n_ms == other.n_ms
+    def __lt__(self, other): return self.n_ms < other.n_ms
+    def __repr__(self): return '⟨'+self.abbrev+'⟩'
+    def __str__(self): return '⟨'+self.abbrev+'⟩'
+
+
+class TimeUnits:
+    MS = TimeUnit('ms', 'ms', 'millisecond', 1)
+    SEC = TimeUnit('s', 'sec', 'second',   1000)
+    MIN = TimeUnit('min', 'min', 'minute', 1000 * 60)
+    HOUR = TimeUnit('hr', 'hour', 'hour',  1000 * 60 * 60)
+    DAY = TimeUnit('day', 'day', 'day',    1000 * 60 * 60 * 24)
+    WEEK = TimeUnit('wk', 'week', 'week',  1000 * 60 * 60 * 24 * 7)
+
+    @classmethod
+    def values(cls):
+        return [TimeUnits.MS, TimeUnits.SEC, TimeUnits.MIN, TimeUnits.HOUR, TimeUnits.DAY, TimeUnits.WEEK]
+
+    @classmethod
+    def of(cls, s: Union[TimeUnit, str]) -> TimeUnit:
+        if isinstance(s, TimeUnit):
+            return s
+        s = s.lower().strip()
+        for u in TimeUnits.values():
+            if s in [u.abbrev, u.plural, u.singular, u.unit]:
+                return u
+        raise LookupError("Unit type {} not found".format(s))
 
 
 class KvrcDefaults:
@@ -498,7 +534,6 @@ class KvrcCore:
         self.get_stimulus_names()
         self.get_stimulus_colors()
         self.get_feature_names()
-        self.get_control_names()
         # find keys that don't exist to complain
         for k, v in viz_params.items():
             if (
@@ -557,28 +592,6 @@ class KvrcCore:
         Note: Does not modify `_feature_names` (passed in the config file).
         """
         self.feature_names.update(dct)
-
-    # noinspection PyAttributeOutsideInit
-    def get_control_names(self) -> Dict[str, str]:
-        """
-        Returns `control_names` if it's already built (not None).
-        If `control_names` is None, sets it in terms of `_control_names` from the config file.
-        The dict maps control_type names (`ControlTypes.name`) to display names.
-        If not set in `_control_names`, the display name will be `ValarTools.control_display_name(control.name)`.
-        """
-        if self.control_names is None:
-            self.control_names = {}
-            for s in ControlTypes.select():
-                if s.name not in self._control_names:
-                    self.control_names[s.name] = ValarTools.control_display_name(s.name)
-        return self.control_names
-
-    def set_control_names(self, **dct):
-        """
-        Updates items in the `control_names` dictionary, replacing them if they already exist.
-        Note: Does not modify `_control_names` (passed in the config file).
-        """
-        self.control_names.update(dct)
 
     # noinspection PyAttributeOutsideInit
     def get_stimulus_names(self) -> Dict[str, str]:

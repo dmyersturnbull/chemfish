@@ -67,7 +67,7 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
         logger.info("Plotting heatmap with {} rows...".format(n_plots))
         vmin, vmax = self._vmin_max(df)
         figure, ax1, ax2 = self._figure(len(df), stimframes is not None)
-        if KVRC.rasterize_heatmaps:
+        if chemfish_rc.rasterize_heatmaps:
             ax1.imshow(df, aspect="auto", vmin=vmin, vmax=vmax, cmap=self._cmap)
         else:
             ax1.pcolormesh(df, vmin=vmin, vmax=vmax, cmap=self._cmap)
@@ -85,17 +85,17 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
         return figure
 
     def _figure(self, n_rows: int, with_stimframes: bool):
-        figure = plt.figure(figsize=(KVRC.heatmap_width, KVRC.heatmap_row_height * n_rows))
+        figure = plt.figure(figsize=(chemfish_rc.heatmap_width, chemfish_rc.heatmap_row_height * n_rows))
         if with_stimframes:
             gs = gridspec.GridSpec(
                 2,
                 1,
-                height_ratios=[n_rows * KVRC.heatmap_row_height, KVRC.heatmap_stimplot_height],
+                height_ratios=[n_rows * chemfish_rc.heatmap_row_height, chemfish_rc.heatmap_stimplot_height],
                 figure=figure,
             )
         else:
             gs = gridspec.GridSpec(1, 1, height_ratios=[1], figure=figure)
-        gs.update(hspace=KVRC.heatmap_hspace)
+        gs.update(hspace=chemfish_rc.heatmap_hspace)
         ax1 = figure.add_subplot(gs[0])
         if with_stimframes:
             ax2 = figure.add_subplot(gs[1])
@@ -108,7 +108,7 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
         ax1.xaxis.set_ticklabels([])
         ax1.xaxis.set_ticks([])
         ax1.margins(0, 0)
-        offset = 0.5 if KVRC.rasterize_heatmaps else 0.0
+        offset = 0.5 if chemfish_rc.rasterize_heatmaps else 0.0
         ax1.set_yticks([x - offset for x in range(0, len(df), 1)])
         if self._should_label:
             ax1.set_ylabel("well")
@@ -116,22 +116,22 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
             ax1.set_yticklabels(label_names, va="top")
         if self._name_sep_line:
             params = {
-                "linestyle": KVRC.heatmap_name_sep_style,
-                "lw": KVRC.heatmap_name_sep_width,
-                "alpha": KVRC.heatmap_name_sep_alpha,
-                "color": KVRC.heatmap_name_sep_color_symmetric
+                "linestyle": chemfish_rc.heatmap_name_sep_style,
+                "lw": chemfish_rc.heatmap_name_sep_width,
+                "alpha": chemfish_rc.heatmap_name_sep_alpha,
+                "color": chemfish_rc.heatmap_name_sep_color_symmetric
                 if self._symmetric
-                else KVRC.heatmap_name_sep_color_asymmetric,
+                else chemfish_rc.heatmap_name_sep_color_asymmetric,
             }
             self._add_lines(df.names(), ax1, params)
         if self._control_sep_line:
             params = {
-                "linestyle": KVRC.heatmap_control_sep_style,
-                "lw": KVRC.heatmap_control_sep_width,
-                "alpha": KVRC.heatmap_control_sep_alpha,
-                "color": KVRC.heatmap_control_sep_color_symmetric
+                "linestyle": chemfish_rc.heatmap_control_sep_style,
+                "lw": chemfish_rc.heatmap_control_sep_width,
+                "alpha": chemfish_rc.heatmap_control_sep_alpha,
+                "color": chemfish_rc.heatmap_control_sep_color_symmetric
                 if self._symmetric
-                else KVRC.heatmap_control_sep_color_asymmetric,
+                else chemfish_rc.heatmap_control_sep_color_asymmetric,
             }
             self._add_lines(df["control_type"], ax1, params)
 
@@ -159,7 +159,7 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
         if sep_line is None:
             return
         prev_name = -1
-        offset = 0.5 if KVRC.rasterize_heatmaps else 0.0
+        offset = 0.5 if chemfish_rc.rasterize_heatmaps else 0.0
         for i, name in enumerate(vals):
             # TODO WHAT???
             if str(name) == "nan":

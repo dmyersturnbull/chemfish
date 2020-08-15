@@ -1,7 +1,7 @@
 import IPython
 from IPython.display import HTML, Markdown, display
 from pandas.plotting import register_matplotlib_converters
-from pocketutils.j import J, JFonts
+from pocketutils.notebooks.j import J, JFonts
 
 from chemfish.core.core_imports import *
 from chemfish.core.magics import *
