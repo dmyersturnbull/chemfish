@@ -16,7 +16,10 @@ class InternalVizTools:
     @classmethod
     def preferred_units_per_sec(cls, mark_every_ms: int, total_ms: float) -> Tup[str, float]:
         if chemfish_rc.trace_force_time_units is not None:
-            return chemfish_rc.trace_force_time_units.abbrev, 1 / chemfish_rc.trace_force_time_units.n_ms
+            return (
+                chemfish_rc.trace_force_time_units.abbrev,
+                1 / chemfish_rc.trace_force_time_units.n_ms,
+            )
         if total_ms >= chemfish_rc.trace_min_cutoff and mark_every_ms >= 1000 * 60 * 60:
             return "hour", 1 / 60 / 60
         if total_ms >= chemfish_rc.trace_sec_cutoff and mark_every_ms >= 1000 * 60:
@@ -55,7 +58,7 @@ class InternalVizTools:
     ) -> Mapping[str, str]:
         dct = {}
         if len(names) != len(controls):
-            raise LengthMismatchError("{} names but {} controls".format(len(names), len(controls)))
+            raise LengthMismatchError(f"{len(names)} names but {len(controls)} controls")
         pref = iter(chemfish_rc.pref_treatment_colors)
         control_colors = iter(chemfish_rc.pref_control_colors)
         for name, control in Tools.zip_list(names, controls):
@@ -100,9 +103,7 @@ class InternalVizTools:
         unique = Tools.unique(categories)
         if len(unique) > len(available):
             logger.warning(
-                "There are {} categories but only {} choices available".format(
-                    len(unique), len(available)
-                )
+                f"There are {len(unique)} categories but only {len(available)} choices available"
             )
         z = OrderedDict()
         for u, m in zip(unique, itertools.cycle(available)):

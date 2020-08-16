@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
-# coding=utf-8
-
 import argparse
 import traceback
 
 from chemfish.core.core_imports import *
 from chemfish.model.concerns import *
+from chemfish.model.concern_rules import *
 from chemfish.model.sensors import *
 from chemfish.model.well_frames import *
 from chemfish.model.well_names import *
@@ -18,7 +16,7 @@ class AutoScreenTracer:
     def __init__(
         self,
         quick: Quick,
-        path: PLike = ".",
+        path: PathLike = ".",
         redo: bool = False,
         traces: bool = False,
         plot_sensors: Optional[Union[SensorNames, str]] = None,
@@ -43,7 +41,7 @@ class AutoScreenTracer:
         self.path_fn = path_fn
         deltat = datetime.now() - self.quick.as_of
         if deltat > timedelta(hours=24):
-            logger.caution("Quick is {} earlier than now".format(deltat))
+            logger.caution(f"Quick is {deltat} earlier than now")
         if self.quick.enable_checks:
             logger.caution(
                 "Quick had enable_checks=True. Disabling here because AutoScreenTracer handles this itself."
@@ -56,9 +54,7 @@ class AutoScreenTracer:
             self.quick.auto_fix = False
         w = lambda b: "with" if b else "without"
         logger.info(
-            "Plotting {} traces and with sensors {}".format(
-                w(traces), ", ".join([str(s) for s in self.plot_sensors])
-            )
+            f"Plotting {w(traces)} traces and with sensors {', '.join([str(s) for s in self.plot_sensors])}"
         )
 
     def plot_project(
@@ -82,13 +78,13 @@ class AutoScreenTracer:
     ) -> None:
         control = None if control is None else ControlTypes.fetch(control)
         runs = self.quick.query_runs(where)
-        logger.notice("Plotting {} runs...".format(len(runs)))
+        logger.notice(f"Plotting {runs} runs...")
         for run in Tools.loop(runs, logger.info):
             try:
                 self.plot_run(run, control)
             except:
-                logger.exception("Failed to process run r{}".format(run.id))
-        logger.notice("Plotted {} runs.".format(len(runs)))
+                logger.exception(f"Failed to process run {run.id}")
+        logger.notice(f"Plotted {len(runs)} runs.")
 
     def plot_run(
         self, run: Runs, control: Union[None, ControlTypes, str, int] = "solvent (-)"
@@ -102,9 +98,9 @@ class AutoScreenTracer:
         path.mkdir(parents=True, exist_ok=True)
         done_path = path / ".done"
         if done_path.exists() and not self.redo:
-            logger.info("Handling r{}... No need.".format(run.id))
+            logger.info(f"Handling r{run.id}... No need.")
             return
-        logger.info("Handling r{}...".format(run.id))
+        logger.info(f"Handling r{run.id}...")
         try:
             if self.redownload:
                 q0.delete(run)
@@ -120,7 +116,7 @@ class AutoScreenTracer:
             if len(concerns) > 0:
                 Concerns.log_warnings(concerns)
             else:
-                logger.minor("No concerns for r{}".format(run.id))
+                logger.minor(f"No concerns for r{run.id}")
             concerns = Concerns.to_df(concerns)
             concerns.to_csv(path / "concerns.csv")
             # now fix issues
@@ -129,78 +125,87 @@ class AutoScreenTracer:
             # misc stuff
             tags = Tools.query(RunTags.select().where(RunTags.run == run))
             tags.to_csv(path / "tags.csv")
-            if self.metric is None:
-                scores = (
-                    pd.DataFrame(np.square(df.z_score(control)).mean(axis=1))
-                    .rename(columns={0: "dist"})
-                    .reset_index()[["name", "control_type", "dist"]]
-                )
-            else:
-                scores = self.metric(df)
-                # keep columns
-            scores.to_csv(path / "scores.csv")
+            self._write_scores(df, control, path)
             ########################################
             # and now come the plots
             ########################################
             with FigureTools.hiding():
-                # save traces and heatmaps
-                def trace_it():
-                    yield from q0.traces(df, control_types=control, always_plot_control=False)
-
-                if self.traces and control is not None:
-                    logger.debug("Plotting traces...")
-                    self.saver.save_all(trace_it(), path / "traces")
-                logger.debug("Plotting heatmaps...")
-                self.saver.save(q0.rheat(df, show_name_lines=False), path / "rheat")
-                if control is not None:
-                    self.saver.save(
-                        q0.zheat(
-                            df, control_type=control, show_name_lines=False, show_control_lines=True
-                        ),
-                        path / "zheat",
-                    )
-                # diagnostics
-                logger.debug("Plotting diagnostics...")
-                try:
-                    figure = q0.diagnostics(run, sensors=self.plot_sensors)
-                    self.saver.save(figure, path / "diagnostics")
-                except:  # need base exception for RuntimeError: Internal psf_fseek() failed from soundfile
-                    logger.error("Failed to get main sensor data", exc_info=True)
-                # sensor data info
-                logger.debug("Saving additional sensor data...")
-                try:
-                    img = q0.sensor_cache.load(SensorNames.PREVIEW, run).sensor_data  # type Image
-                    img.save(path / "preview.png", "png")
-                except:
-                    logger.minor("No ROI preview")
-                try:
-                    img = q0.sensor_cache.load(SensorNames.WEBCAM, run).sensor_data  # type Image
-                    img.save(path / "snap.png", "png")
-                except:
-                    logger.minor("No webcam snapshot")
-                # additional info
-                # logger.debug("Saving structures...")
-                # try:
-                #    img = q0.structures_on_plate(run)
-                #    img.save(path / "structures.png", "png")
-                # except Exception:
-                #    logger.error("Failed to plot structures", exc_info=True)
+                self._plot(df, control, path)
             ########################
             # we're done with plots
-            Tools.write_properties_file(
-                {
-                    "chemfish_version": chemfish_version,
-                    "chemfish_startup_time": chemfish_start_time.isoformat(),
-                    "current_time": datetime.now().isoformat(),
-                },
-                done_path,
-            )
-            logger.info("Done with r{}.".format(run.id))
+            self._write_properties(done_path)
+            logger.info(f"Done with r{run.id}.")
         except:
             tb = traceback.format_exc()
             (path / ".failed").write_text(datetime.now().isoformat() + "\n\n" + tb, encoding="utf8")
             raise
         FigureTools.clear()
+
+    def _write_scores(self, df: WellFrame, control: ControlTypes, path: Path):
+        if self.metric is None:
+            scores = (
+                pd.DataFrame(np.square(df.z_score(control)).mean(axis=1))
+                .rename(columns={0: "dist"})
+                .reset_index()[["name", "control_type", "dist"]]
+            )
+        else:
+            scores = self.metric(df)
+            # keep columns
+        scores.to_csv(path / "scores.csv")
+
+    def _plot(self, df: WellFrame, control: ControlTypes, path: Path):
+
+        q0 = self.quick
+        # save traces and heatmaps
+        def trace_it():
+            yield from q0.traces(df, control_types=control, always_plot_control=False)
+
+        if self.traces and control is not None:
+            logger.debug("Plotting traces...")
+            self.saver.save_all(trace_it(), path / "traces")
+        logger.debug("Plotting heatmaps...")
+        self.saver.save(q0.rheat(df, show_name_lines=False), path / "rheat")
+        if control is not None:
+            self.saver.save(
+                q0.zheat(df, control_type=control, show_name_lines=False, show_control_lines=True),
+                path / "zheat",
+            )
+        # diagnostics
+        logger.debug("Plotting diagnostics...")
+        try:
+            figure = q0.diagnostics(run, sensors=self.plot_sensors)
+            self.saver.save(figure, path / "diagnostics")
+        except:  # need base exception for RuntimeError: Internal psf_fseek() failed from soundfile
+            logger.error("Failed to get main sensor data", exc_info=True)
+        # sensor data info
+        logger.debug("Saving additional sensor data...")
+        try:
+            img = q0.sensor_cache.load(SensorNames.PREVIEW, run).sensor_data  # type Image
+            img.save(path / "preview.png", "png")
+        except:
+            logger.minor("No ROI preview")
+        try:
+            img = q0.sensor_cache.load(SensorNames.WEBCAM, run).sensor_data  # type Image
+            img.save(path / "snap.png", "png")
+        except:
+            logger.minor("No webcam snapshot")
+        # additional info
+        # logger.debug("Saving structures...")
+        # try:
+        #    img = q0.structures_on_plate(run)
+        #    img.save(path / "structures.png", "png")
+        # except Exception:
+        #    logger.error("Failed to plot structures", exc_info=True)
+
+    def _write_properties(self, done_path: Path):
+        Tools.write_properties_file(
+            {
+                "chemfish_version": chemfish_version,
+                "chemfish_startup_time": chemfish_start_time.isoformat(),
+                "current_time": datetime.now().isoformat(),
+            },
+            done_path,
+        )
 
     def run_path(self, run: Runs) -> Path:
         return self.path / self.path_fn(run)

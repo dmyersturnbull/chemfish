@@ -217,7 +217,7 @@ class TracePlotter(KvrcPlotting):
                 or (name in control_names and name not in control_names[name])
             ]
         )
-        logger.info("Plotting {} traces...".format(n_plots))
+        logger.info(f"Plotting {n_plots} traces...")
         # set viz defaults
         figsize, trace_height, stim_height = self._assign_sizes(len(self._extra_gridspec_slots))
         y_bounds = (0, df.max().max()) if self._y_bounds is None else self._y_bounds
@@ -264,7 +264,7 @@ class TracePlotter(KvrcPlotting):
         elif isinstance(control_names, dict):
             cn = control_names
         else:
-            raise XTypeError("Bad type {}".format(type(control_names)))
+            raise XTypeError(f"Bad type {type(control_names)}")
         # TODO
         # flat_list = [item for sublist in cn.values() for item in sublist]
         # missing_names = set(flat_list)
@@ -296,7 +296,7 @@ class TracePlotter(KvrcPlotting):
         y_bounds,
         battery,
     ):
-        logger.debug("Plotting trace for {}".format(name))
+        logger.debug(f"Plotting trace for {name}")
         all_names = [*sub.unique_names(), *control_names]
         all_is_control = [s if s in control_names else None for s in all_names]
         the_colors = InternalVizTools.assign_color_dict_x(all_names, all_is_control)
@@ -346,10 +346,14 @@ class TracePlotter(KvrcPlotting):
     def _assign_alphas(self, control_names: Sequence[str], name: str) -> Dict[str, float]:
         return {
             **{
-                control_name: chemfish_rc.band_control_alpha if self._banded else chemfish_rc.trace_control_alpha
+                control_name: chemfish_rc.band_control_alpha
+                if self._banded
+                else chemfish_rc.trace_control_alpha
                 for control_name in control_names
             },
-            name: chemfish_rc.band_treatment_alpha if self._banded else chemfish_rc.trace_treatment_alpha,
+            name: chemfish_rc.band_treatment_alpha
+            if self._banded
+            else chemfish_rc.trace_treatment_alpha,
         }
 
 

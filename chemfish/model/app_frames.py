@@ -253,7 +253,7 @@ class AppFrame(TypedDf):
             ],
         )
         if len(df) == 0:
-            logger.warning("Battery {} has no stimulus frames".format(battery.id))
+            logger.warning(f"Battery {battery.name} has no stimulus frames")
         return df.sort_values("start_ms").reset_index(drop=True)
 
 

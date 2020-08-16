@@ -32,9 +32,7 @@ class TwoDWellTransform(WellTransform, metaclass=abc.ABCMeta):
     def validate(self, df: WellFrame) -> None:
         if df.feature_length() != 2:
             raise LengthMismatchError(
-                "{} only applies to WellFrames with precisely 2 features".format(
-                    self.__class__.__name__
-                )
+                f"{self.__class__.__name__} only applies to WellFrames with precisely 2 features"
             )
 
 
@@ -48,7 +46,7 @@ class OutlierStdTransform(TrimmingWellTransform):
         for col in df.columns:
             df = self._trim(df, col)
         self.trimmed_wells = original - set(df["well"])
-        logger.minor("Trimmed {} wells with > {} stds".format(len(self.trimmed_wells), self.n_stds))
+        logger.minor(f"Trimmed {len(self.trimmed_wells)} wells with > {self.n_stds} stds")
         return df
 
     def _trim(self, df, col):
@@ -64,9 +62,7 @@ class OutlierDistanceTransform(TrimmingWellTransform):
         original = set(df["well"])
         df = self._trim(df)
         self.trimmed_wells = set(df["well"]) - original
-        logger.minor(
-            "Trimmed {} wells with distance > {}".format(len(self.trimmed_wells), self.max_distance)
-        )
+        logger.minor(f"Trimmed {len(self.trimmed_wells)} wells with distance > {self.max_distance}")
         return df
 
     def _trim(self, df):
@@ -92,9 +88,7 @@ class SklearnTransform(WellTransform, metaclass=abc.ABCMeta):
 
     def fit(self, df: WellFrame) -> WellFrame:
         logger.info(
-            "Fitting {} wells and {} features with {}".format(
-                len(df), df.n_columns(), self.model.__class__.__name__
-            )
+            f"Fitting {len(df)} wells and {df.n_columns()} features with {self.model.__class__.__name__}"
         )
         fitted = self.model.fit_transform(df.values)
         fitted = pd.DataFrame(fitted)

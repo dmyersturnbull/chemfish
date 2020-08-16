@@ -18,8 +18,10 @@ class SummarizedSpindleFrame(BaseScoreFrame):
             {ValarTools.control_display_name(s): s.name for s in ControlTypes.select()}
         )
         split = [splitter(name) for name in summary["label"]]
-        summary["label"] = get1st(split)
-        summary["x_raw"] = [np.nan if Tools.is_probable_null(s) else s for s in get2nd(split)]
+        summary["label"] = [i[0] for i in split]
+        summary["x_raw"] = [
+            np.nan if Tools.is_probable_null(s) else s for s in [k[1] for k in split]
+        ]
         if all(summary["x_raw"].isnull()):
             logger.caution("All response x values are null")
         del split  # we're going to sort, so don't use this!!
@@ -185,10 +187,10 @@ class SpindleFrame(ScoreFrameWithPrediction):
         This just considers only 1 control type.
         """
         if ci is None and boot is not None:
-            raise XTypeError("CI is None but boot is {}".format(boot))
+            raise XTypeError(f"CI is None but boot is {boot}")
         control = control if isinstance(control, str) else ControlTypes.fetch(control).name
         if control not in self["target"].unique():
-            raise XValueError("This spindle does not have a control named '{}'".format(control))
+            raise XValueError(f"This spindle does not have a control named '{control}'")
         x = SpindleFrame(self[self["target"] == control])
         summary = x.summarize(ci, center_fn=center_fn, spread_fn=spread_fn, boot=boot)
         summary = SummarizedSpindleFrame(summary)

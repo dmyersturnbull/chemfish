@@ -27,7 +27,7 @@ class AudioTools:
             return ipd.Audio(data=path)
 
     @classmethod
-    def to_wav(cls, path: PLike):
+    def to_wav(cls, path: PathLike):
         path = Tools.prepped_file(path)
         with path.open("rb") as rf:
             song = pydub.AudioSegment(data=rf.read(), sample_width=2, frame_rate=44100, channels=1)
@@ -35,7 +35,7 @@ class AudioTools:
         return path.with_suffix("wav")
 
     @classmethod
-    def load_pydub(cls, path: PLike) -> pydub.AudioSegment:
+    def load_pydub(cls, path: PathLike) -> pydub.AudioSegment:
         path = str(Path(path))
         return pydub.AudioSegment.from_file(path)
 
@@ -125,8 +125,8 @@ class Waveform:
         :return: numpy array of orr
         """
         if new_sampling_hertz > self.sampling_rate:
-            raise ValueError(
-                "New sampling rate is higher than current of {}".format(self.sampling_rate)
+            raise OutOfRangeError(
+                f"New sampling rate is higher than current of {self.sampling_rate}"
             )
         chunk_size = int(self.sampling_rate / new_sampling_hertz)
         groups = [self.data[x : x + chunk_size] for x in range(0, len(self.data), chunk_size)]
@@ -148,8 +148,8 @@ class Waveform:
         :return: The same Waveform as a copy
         """
         if new_sampling_hertz > self.sampling_rate:
-            raise ValueError(
-                "New sampling rate is higher than current of {}".format(self.sampling_rate)
+            raise OutOfRangeError(
+                f"New sampling rate is higher than current of {self.sampling_rate}"
             )
         # setting res_type='scipy' seems to allow downsampling to smaller values without DivideByZero errors
         y = librosa.resample(self.data, self.sampling_rate, new_sampling_hertz, res_type="scipy")

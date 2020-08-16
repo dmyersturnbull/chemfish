@@ -47,9 +47,7 @@ class FeatureType:
                 .first()
             )
             if wf is None:
-                raise ValarLookupError(
-                    "No feature {} for well {}".format(self.valar_feature.name, well)
-                )
+                raise ValarLookupError(f"No feature {self.valar_feature.name} for well {well}")
         return self.from_blob(wf.floats, well, stringent=stringent)
 
     @abcd.abstractmethod
@@ -77,7 +75,7 @@ class _ConsecutiveFrameFeature(FeatureType, metaclass=abcd.ABCMeta):
     def from_blob(self, blob: bytes, well: Union[Wells, int], stringent: bool = False):
         well = Wells.fetch(well)
         if len(blob) == 0:
-            logger.warning("Empty {} feature array for well {}".format(self.feature_name, well.id))
+            logger.warning(f"Empty {self.feature_name} feature array for well {well.id}")
             return np.empty(0, dtype=np.float32)
         floats = Tools.blob_to_signed_floats(blob)
         floats.setflags(write=1)  # blob_to_floats gets read-only arrays
@@ -104,7 +102,7 @@ class _Diff(_ConsecutiveFrameFeature):
     def __init__(
         self, name: str, tau: int, recommended_scale: int, recommended_unit: str, interpolated: bool
     ):
-        v = Features.select().where(Features.name == "{}({})".format(name, tau)).first()
+        v = Features.select().where(Features.name == f"{name}({tau})").first()
         generations = (
             DataGeneration.pointgrey_generations()
             if interpolated
@@ -141,13 +139,13 @@ class FeatureTypes:
                 "Can't get FeatureType by Valar Features row because it's ambiguous. Get the feature type explicitly using FeatureTypes._ ."
             )
         if not isinstance(f, (FeatureType, str)):
-            raise TypeError("Can't get FeatureType by type {}".format(type(f)))
+            raise TypeError(f"Can't get FeatureType by type {type(f)}")
         if isinstance(f, FeatureType):
             return f
         for v in FeatureTypes.known:
             if v.internal_name == f:
                 return v
-        raise ValarLookupError("No feature {}".format(f))
+        raise ValarLookupError(f"No feature {f}")
 
 
 __all__ = ["FeatureType", "FeatureTypes"]

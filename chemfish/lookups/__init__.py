@@ -180,9 +180,7 @@ class LookupBuilder:
         expressions.extend(datetimes)
         if any((isinstance(dt, datetime)) for dt in wheres) and not hasattr(self._table, "created"):
             raise XTypeError(
-                "Datetime fields ({}) not accepted for table {}, which has no 'created' field".format(
-                    datetimes, self._table
-                )
+                f"Datetime fields ({datetimes}) not accepted for table {self._table}, which has no 'created' field"
             )
         bads = [
             where
@@ -191,7 +189,7 @@ class LookupBuilder:
         ]
         if len(bads) > 0:
             raise XTypeError(
-                "Types {} not recognized for lookup values {}".format([type(b) for b in bads], bads)
+                f"Types {[type(b) for b in bads]} not recognized for lookup values {bads}"
             )
         # noinspection PyTypeChecker
         if len(expressions) > 0 and len(singles) > 0:

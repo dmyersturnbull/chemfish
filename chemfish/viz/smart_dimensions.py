@@ -69,7 +69,7 @@ class RefDims(dict):
         try:
             super().__setitem__(key, float(value))
         except:
-            raise XTypeError("{} is not a float".format(value))
+            raise XTypeError(f"{value} is not a float")
 
 
 __all__ = ["RefDims"]

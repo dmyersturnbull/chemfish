@@ -24,10 +24,13 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
         run = Tools.run(run, join=True)
         t0 = time.monotonic()
         n = len(sensors)
-        logger.info("Plotting {} sensors for r{}...".format(n, run.id))
+        logger.info(f"Plotting {n} sensors for r{run.id}...")
         # set up the figure and gridspec
         figure = plt.figure(
-            figsize=(chemfish_rc.trace_width, chemfish_rc.trace_layer_const_height + n * chemfish_rc.trace_layer_height)
+            figsize=(
+                chemfish_rc.trace_width,
+                chemfish_rc.trace_layer_const_height + n * chemfish_rc.trace_layer_height,
+            )
         )
         gs = GridSpec(n + 1, 1, height_ratios=[1] * (n + 1), figure=figure)
         gs.update(hspace=chemfish_rc.trace_hspace)
@@ -68,7 +71,7 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
             rotation=0 if chemfish_rc.sensor_use_symbols else 90,
         )
         FigureTools.stamp_runs(figure.axes[0], run)
-        logger.minor("Plotted sensor data. Took {}s.".format(round(time.monotonic() - t0, 1)))
+        logger.minor("Plotted sensor data. Took {round(time.monotonic() - t0, 1))}s.")
         return figure
 
 

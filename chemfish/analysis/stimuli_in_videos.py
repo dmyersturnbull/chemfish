@@ -24,7 +24,7 @@ class VideoStimFrameDisplayer:
         self.b_id = self.run.experiment.battery.id
         self.generation = ValarTools.generation_of(self.run)
         if not self.generation.is_sauronx():
-            raise SauronxOnlyError("Run r{} is legacy".format(self.run.id))
+            raise SauronxOnlyError(f"Run r{self.run.id} is legacy")
 
     def _create_stimplot(self, start_ms: int, end_ms: int):
         # extract relevant batterystimframedata
@@ -47,14 +47,12 @@ class VideoStimFrameDisplayer:
         vid_w = int(cv_video.get(cv2.CAP_PROP_FRAME_WIDTH))
         vid_h = int(cv_video.get(cv2.CAP_PROP_FRAME_HEIGHT))
         x0, y0, x1, y1 = ValarTools.toml_items(self.run)[
-            "sauron.hardware.camera.plate.{}.roi".format(self.run.plate.plate_type_id)
+            f"sauron.hardware.camera.plate.{self.run.plate.plate_type_id}.roi"
         ]
         evid_dim = (x1 - x0, y1 - y0)
         if (evid_dim[0] != vid_w) and evid_dim[1] != vid_h:
             raise IncorrectVidDimensionsError(
-                "Video has wrong dimensions. Expected: {0} Actual: {1}".format(
-                    evid_dim, (vid_w, vid_h)
-                )
+                f"Video has wrong dimensions. Expected: {evid_dim} Actual: {(vid_w, vid_h)}"
             )
         return vid_w, vid_h
 
@@ -62,9 +60,9 @@ class VideoStimFrameDisplayer:
         vid_w, vid_h = self._check_vid_dims(cv_video)
         fps = int(cv_video.get(cv2.CAP_PROP_FPS))
         if "-framerate" not in self.inputdict:
-            self.inputdict["-framerate"] = "{}".format(fps)
+            self.inputdict["-framerate"] = f"{fps}"
         if "-video_size" not in self.inputdict:
-            self.inputdict["-video_size"] = "{0}x{1}".format(vid_w, vid_h)
+            self.inputdict["-video_size"] = f"{vid_w}x{vid_h}"
         if "-pixel_format" not in self.outputdict:
             self.outputdict["-pixel_format"] = "gray"
         if "-vcodec" not in self.outputdict:

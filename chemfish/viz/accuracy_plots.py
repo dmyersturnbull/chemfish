@@ -49,7 +49,7 @@ class AccuracyPlotStyle(enum.Enum):
         try:
             return AccuracyPlotStyle[s.upper()]
         except KeyError:
-            raise XValueError("No style {}".format(s))
+            raise XValueError(f"No style {s}")
 
 
 @abcd.auto_eq()

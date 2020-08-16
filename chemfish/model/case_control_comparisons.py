@@ -390,10 +390,10 @@ class TrainableCcIterator(SizedIterator):
             cc = next(self.__it)
             smalldf = self._select(cc)
             if smalldf is not None:
-                logger.debug("{} has {} rows".format(cc, len(smalldf)))
+                logger.debug(f"{cc} has {len(smalldf)} rows")
                 return TrainableCc(cc.name, cc.control, cc.repeat, smalldf)
             else:
-                logger.debug("{} is empty".format(cc))
+                logger.debug(f"{cc} is empty")
             i += 1
             if i > self.total():
                 raise StopIteration()  # TODO workaround
@@ -505,9 +505,7 @@ class CcIterators:
             csel = CcControlSelectors.same(restrict_to_same, restrict_include_null)
         rand = cls._rand(low, high, seed)
         if low is None or high is None or low == high:
-            logger.warning(
-                "vs_control_rand has has fixed value for low={}, high={}".format(low, high)
-            )
+            logger.warning(f"vs_control_rand has has fixed value for low={low}, high={high}")
         sampler = CcSubsamplers.keep_rand(rand, balanced=True)
         return TrainableCcIterator(df, it, control_selector=csel, subsampler=sampler)
 
@@ -585,7 +583,7 @@ class CcIterators:
     @classmethod
     def _rand(cls, low: Optional[int], high: Optional[int], seed: int):
         if (low is None) != (high is None) or low is not None and low > high:
-            raise ContradictoryRequestError("low is {} but high is {}".format(low, high))
+            raise ContradictoryRequestError("low is {low} but high is {high}")
         elif low is None:
             return None
         else:
@@ -594,7 +592,7 @@ class CcIterators:
             def rand(available):
                 return rs.randint(low=min(available, low), high=min(available, high) + 1)
 
-            rand.__name__ = "rand_avail({}–{},seed={})".format(low, high, seed)
+            rand.__name__ = f"rand_avail({low}–{high},seed={seed})"
             return rand
 
 

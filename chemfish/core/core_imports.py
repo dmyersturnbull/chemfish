@@ -22,7 +22,6 @@ from typeddfs import *
 from chemfish.core import *
 from chemfish.core import ChemfishResources, LogLevel, chemfish_start_time
 from chemfish.core._tools import *
-from chemfish.core._valar_tools import *
 from chemfish.core.data_generations import DataGeneration
 from chemfish.core.environment import *
 from chemfish.core.tools import *

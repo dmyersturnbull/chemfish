@@ -61,21 +61,15 @@ class VideoCache(AVideoCache):
             video_path = self.path_of(run)
             t0 = time.monotonic()
             if video_path.exists():
-                logger.debug("Run {} is already at {}".format(run.id, video_path))
+                logger.debug(f"Run {run.id} is already at {video_path}")
             else:
                 generation = ValarTools.generation_of(run)
-                logger.info(
-                    "Downloading {} video of r{} to {} ...".format(
-                        generation.name, run.id, video_path
-                    )
-                )
+                logger.info(f"Downloading {generation.name} video of r{run.id} to {video_path} ...")
                 remote_path = self.shire_store / get_video_path_on_shire(run, full_dir=False)
                 self._copy_from_shire(remote_path, video_path)
                 # TODO check for properties file
                 logger.notice(
-                    "Downloaded video of r{}. Took {}s.".format(
-                        run.id, round(time.monotonic() - t0, 1)
-                    )
+                    f"Downloaded video of r{run.id}. Took {round(time.monotonic() - t0, 1)}s."
                 )
 
     def _load(self, run: RunLike) -> SauronxVideo:
@@ -92,7 +86,7 @@ class VideoCache(AVideoCache):
         """
         path = self.path_of(run)
         if not video_hasher.check_hash(path):
-            raise HashValidationFailedError("Video at {} did not validate".format(path))
+            raise HashValidationFailedError(f"Video at {path} did not validate")
 
     def _copy_from_shire(self, remote_path, local_path):
         try:
@@ -101,14 +95,10 @@ class VideoCache(AVideoCache):
                 str(remote_path) + ".sha256", str(local_path) + ".sha256", False
             )
         except Exception as e:
-            raise VideoDownloadError(
-                "Failed to copy from the Shire at path {}".format(remote_path)
-            ) from e
+            raise VideoDownloadError(f"Failed to copy from the Shire at path {remote_path}") from e
         if not Path(local_path).exists():
             raise VideoDownloadError(
-                "Video directory was downloaded to {}, but the video does not exist".format(
-                    local_path
-                )
+                f"Video directory was downloaded to {local_path}, but the video does not exist"
             )
 
 

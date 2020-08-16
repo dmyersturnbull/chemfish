@@ -64,7 +64,7 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
         t0 = time.monotonic()
         battery = Batteries.fetch(battery)
         n_plots = len(df)
-        logger.info("Plotting heatmap with {} rows...".format(n_plots))
+        logger.info(f"Plotting heatmap with {n_plots} rows...")
         vmin, vmax = self._vmin_max(df)
         figure, ax1, ax2 = self._figure(len(df), stimframes is not None)
         if chemfish_rc.rasterize_heatmaps:
@@ -77,20 +77,23 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
                 stimframes, ax2, starts_at_ms=starts_at_ms, battery=battery
             )
         logger.minor(
-            "Plotted heatmap with {} rows. Took {}s.".format(
-                n_plots, round(time.monotonic() - t0, 1)
-            )
+            f"Plotted heatmap with {n_plots} rows. Took {round(time.monotonic() - t0, 1)}s."
         )
         FigureTools.stamp_runs(ax1, df.unique_runs())
         return figure
 
     def _figure(self, n_rows: int, with_stimframes: bool):
-        figure = plt.figure(figsize=(chemfish_rc.heatmap_width, chemfish_rc.heatmap_row_height * n_rows))
+        figure = plt.figure(
+            figsize=(chemfish_rc.heatmap_width, chemfish_rc.heatmap_row_height * n_rows)
+        )
         if with_stimframes:
             gs = gridspec.GridSpec(
                 2,
                 1,
-                height_ratios=[n_rows * chemfish_rc.heatmap_row_height, chemfish_rc.heatmap_stimplot_height],
+                height_ratios=[
+                    n_rows * chemfish_rc.heatmap_row_height,
+                    chemfish_rc.heatmap_stimplot_height,
+                ],
                 figure=figure,
             )
         else:

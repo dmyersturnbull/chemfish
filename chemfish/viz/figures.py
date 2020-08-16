@@ -132,7 +132,7 @@ class FigureTools:
 
     @classmethod
     def save(
-        cls, figure: FigureSeqLike, path: PLike, names: Optional[Iterator[str]] = None, **kwargs
+        cls, figure: FigureSeqLike, path: PathLike, names: Optional[Iterator[str]] = None, **kwargs
     ) -> None:
         """
         Save a figure or sequence of figures to `FigureSaver`.
@@ -273,9 +273,7 @@ class FigureTools:
         This is unfortunately necessary in cases where, for ex, only a handle per color is wanted -- not a handle per color and marker shape.
         Applies `FigureTools.fix_labels`.
         """
-        assert len(labels) == len(colors), "{} labels but {} colors".format(
-            len(labels), len(colors)
-        )
+        assert len(labels) == len(colors), f"{len(labels)} labels but {len(colors)} colors"
         legend_dict = {e: colors[i] for i, e in enumerate(labels)}
         patch_list = []
         for key in legend_dict:
@@ -348,7 +346,11 @@ class FigureTools:
         def choose_fix(s: str) -> str:
             if not plt.rcParams["text.usetex"]:
                 return fix_u(s)
-            elif chemfish_rc.label_force_text_mode or not chemfish_rc.label_force_math_mode and "$" not in s:
+            elif (
+                chemfish_rc.label_force_text_mode
+                or not chemfish_rc.label_force_math_mode
+                and "$" not in s
+            ):
                 return fix_ltext(s)
             elif (
                 chemfish_rc.label_force_math_mode
@@ -358,7 +360,7 @@ class FigureTools:
             ):
                 return fix_lmath(s)
             else:
-                logger.error("Cannot fix mixed-math mode string {}".format(Chars.shelled(s)))
+                logger.error(f"Cannot fix mixed-math mode string {Chars.shelled(s)}")
                 return s
 
         def fix(s0: str) -> str:
@@ -378,7 +380,7 @@ class FigureTools:
                 # noinspection PyUnresolvedReferences
                 s0.set_text(r)
             if r != s:
-                logger.debug("Fixed {} → {}".format(s, r))
+                logger.debug(f"Fixed {s} → {r}")
             return r
 
         if Tools.is_true_iterable(name):
@@ -416,9 +418,9 @@ class FigureTools:
         plt.close("all")
         m = len(plt.get_fignums())
         if m == 0:
-            logger.debug("Cleared {} {}.".format(n, "figures" if n > 1 else "figure"))
+            logger.debug(f"Cleared {n} figure{'s' if n>1 else ''}.")
         else:
-            logger.error("Failed to close figures. Cleared {}; {} remain.".format(n - m, m))
+            logger.error(f"Failed to close figures. Cleared {n - m}; {m} remain.")
         return n
 
     @classmethod
@@ -485,7 +487,9 @@ class FigureTools:
 
     @classmethod
     def _text(cls, ax: Axes, text: str, corner: Corner, **kwargs) -> Axes:
-        fontsize, kwargs = InternalTools.from_kwargs(kwargs, "fontsize", chemfish_rc.stamp_font_size)
+        fontsize, kwargs = InternalTools.from_kwargs(
+            kwargs, "fontsize", chemfish_rc.stamp_font_size
+        )
         t = ax.text(s=text, **corner.params(), fontsize=fontsize, transform=ax.transAxes, **kwargs)
         t.set_bbox(dict(alpha=0.0))
         return ax
@@ -501,7 +505,7 @@ class _Pub:
 
     @contextmanager
     def __call__(
-        self, width: str, height: str, save_under: PLike = "", *args, **kwargs
+        self, width: str, height: str, save_under: PathLike = "", *args, **kwargs
     ) -> Generator[FigureSaver, None, None]:
         """
         A context manager with a `FigureSaver`, non-interactive, auto-clearing, and optional chemfish_rc params.
@@ -517,19 +521,17 @@ class _Pub:
         # the_fn, kwargs = InternalTools.from_kwargs(kwargs, 'fn', None)
         # args = [*args, the_fn if the_fn is not None else copy(args)]
         pretty_dir = str(save_under) if len(str(save_under)) > 0 else "."
-        logger.debug(
-            "::Entered:: saving environment {} under {}".format(kwargs.get("scale", ""), pretty_dir)
-        )
+        logger.debug(f"::Entered:: saving environment {kwargs.get('scale', '')} under {pretty_dir}")
         FigureTools.clear()
         saver = FigureSaver(save_under=save_under, clear=lambda fig: FigureTools.clear())
         with FigureTools.hiding():
-            with chemfish_rc.using(width=width, height=height, *args, savefig_format="pdf", **kwargs):
+            with chemfish_rc.using(
+                width=width, height=height, *args, savefig_format="pdf", **kwargs
+            ):
                 yield saver
-        logger.debug(
-            "::Left:: saving environment {} under {}".format(kwargs.get("scale", ""), pretty_dir)
-        )
+        logger.debug("::Left:: saving environment {kwargs.get('scale', '')} under {pretty_dir}")
 
 
 Pub = _Pub()
 
-__all__ = ["FigureTools", "FigureSaver", "FancyCmaps", "Corners", "Corner", "Pub"]
+__all__ = ["FigureTools", "FigureSaver", "Corners", "Corner", "Pub"]

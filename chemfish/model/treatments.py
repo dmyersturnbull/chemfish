@@ -38,9 +38,9 @@ class Treatment:
         if bid is None:
             raise XValueError("Batch ID cannot be None")
         if oc is None:
-            raise XValueError("Batch lookup_hash for b{} is None".format(bid))
+            raise XValueError(f"Batch lookup_hash for b{bid} is None")
         if dose is None:
-            raise XValueError("Dose for b{} is None".format(bid))
+            raise XValueError(f"Dose for b{bid} is None")
         self.bid = bid
         self.oc = oc
         self.compound_id = compound_id
@@ -89,7 +89,7 @@ class Treatment:
         )
 
     def __str__(self):
-        return "b{}({}µM)".format(self.id, self.dose) if self.id is not None else "-"
+        return f"b{self.id}({self.dose}µM)" if self.id is not None else "-"
 
     def __repr__(self):
         return str(self)
@@ -191,9 +191,7 @@ class Treatments:
         elif Tools.is_true_iterable(treatments):
             return Treatments(treatments)
         else:
-            raise XTypeError(
-                "Invalid type {} for treatments {}".format(type(treatments), treatments)
-            )
+            raise XTypeError(f"Invalid type {type(treatments)} for treatments {treatments}")
 
 
 TreatmentLike = Union[Treatments, Treatment, Collection[Treatment]]

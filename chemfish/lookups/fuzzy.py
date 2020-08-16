@@ -18,13 +18,13 @@ class Fuzzy:
 
     @classmethod
     def projects(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
-        logger.debug("Searching project names for '{}'...".format(s))
+        logger.debug(f"Searching project names for '{s}'...")
         query = Projects.select()
         data = list(query)
         raw = process.extract(s, {x.name for x in data}, limit=limit)
         matches = {name: score for name, score in raw if score >= min_score}
         projects = {x.id: x.name for x in data if x.name in matches.keys()}
-        logger.debug("Done. Found {} projects.".format(len(projects)))
+        logger.debug(f"Done. Found {len(projects)} projects.")
         df = Lookups.projects(Projects.id << set(projects.keys()))
         df["name"] = df["id"].map(projects.get)
         df["score"] = df["name"].map(matches.get)
@@ -35,13 +35,13 @@ class Fuzzy:
     def experiments(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
     ):
-        logger.debug("Searching experiment names for '{}'...".format(s))
+        logger.debug(f"Searching experiment names for '{s}'...")
         query = Experiments.select()
         data = list(query)
         raw = process.extract(s, {x.name for x in data}, limit=limit)
         matches = {name: score for name, score in raw if score >= min_score}
         experiments = {x.id: x.name for x in data if x.name in matches.keys()}
-        logger.debug("Done. Found {} experiments.".format(len(experiments)))
+        logger.debug(f"Done. Found {len(experiments)} experiments.")
         df = Lookups.experiments(Experiments.id << set(experiments.keys()))
         df["name"] = df["id"].map(experiments.get)
         df["score"] = df["name"].map(matches.get)
@@ -52,13 +52,13 @@ class Fuzzy:
     def batteries(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
     ):
-        logger.debug("Searching batteries for '{}'...".format(s))
+        logger.debug(f"Searching batteries for '{s}'...")
         query = Batteries.select()
         data = list(query)
         raw = process.extract(s, {x.name for x in data}, limit=limit)
         matches = {name: score for name, score in raw if score >= min_score}
         batteries = {x.id: x.name for x in data if x.name in matches.keys()}
-        logger.debug("Done. Found {} batteries.".format(len(batteries)))
+        logger.debug(f"Done. Found {len(batteries)} rows.")
         df = Lookups.batteries(Batteries.id << set(batteries.keys()))
         df["name"] = df["id"].map(batteries.get)
         df["score"] = df["name"].map(matches.get)
@@ -67,13 +67,13 @@ class Fuzzy:
 
     @classmethod
     def assays(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
-        logger.debug("Searching assays for '{}'...".format(s))
+        logger.debug(f"Searching assays for '{s}'...")
         query = Assays.select()
         data = list(query)
         raw = process.extract(s, {x.name for x in data}, limit=limit)
         matches = {name: score for name, score in raw if score >= min_score}
         assays = {x.id: x.name for x in data if x.name in matches.keys()}
-        logger.debug("Done. Found {} assays.".format(len(assays)))
+        logger.debug(f"Done. Found {len(assays)} rows.")
         df = Lookups.assays(Assays.id << set(assays.keys()))
         df["name"] = df["id"].map(assays.get)
         df["score"] = df["name"].map(matches.get)
@@ -82,13 +82,13 @@ class Fuzzy:
 
     @classmethod
     def runs(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
-        logger.debug("Searching run descriptions for '{}'...".format(s))
+        logger.debug(f"Searching run descriptions for '{s}'...")
         query = Runs.select()
         data = list(query)
         raw = process.extract(s, {x.description for x in data}, limit=limit)
         matches = {name: score for name, score in raw if score >= min_score}
         runs = {x.id: x.description for x in data if x.description in matches.keys()}
-        logger.debug("Done. Found {} runs.".format(len(runs)))
+        logger.debug(f"Done. Found {len(runs)} rows.")
         df = Lookups.runs(Runs.id << set(runs.keys()))
         df["name"] = df["id"].map(runs.get)
         df["score"] = df["name"].map(matches.get)
@@ -97,13 +97,13 @@ class Fuzzy:
 
     @classmethod
     def variants(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
-        logger.debug("Searching variant names for '{}'...".format(s))
+        logger.debug(f"Searching variant names for '{s}'...")
         query = GeneticVariants.select()
         data = list(query)
         raw = process.extract(s, {x.name for x in data}, limit=limit)
         matches = {name: score for name, score in raw if score >= min_score}
         variants = {x.id: x.name for x in data if x.name in matches.keys()}
-        logger.debug("Done. Found {} variants.".format(len(variants)))
+        logger.debug(f"Done. Found {len(variants)} rows.")
         df = Lookups.variants(variants.keys())
         df["name"] = df["id"].map(variants.get)
         df["score"] = df["name"].map(matches.get)
@@ -114,30 +114,15 @@ class Fuzzy:
     def constructs(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
     ):
-        logger.debug("Searching constructs for '{}'...".format(s))
+        logger.debug(f"Searching constructs for '{s}'...")
         query = GeneticConstructs.select()
         data = list(query)
         raw = process.extract(s, {x.name for x in data}, limit=limit)
         matches = {name: score for name, score in raw if score >= min_score}
         constructs = {x.id: x.name for x in data if x.name in matches.keys()}
-        logger.debug("Done. Found {} constructs.".format(len(constructs)))
+        logger.debug(f"Done. Found {len(constructs)} rows.")
         df = Lookups.constructs(constructs.keys())
         df["name"] = df["id"].map(constructs.get)
-        df["score"] = df["name"].map(matches.get)
-        df = df.sort_values("score", ascending=False)
-        return Lookup(df)
-
-    @classmethod
-    def genes(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
-        logger.debug("Searching genes for '{}'...".format(s))
-        query = Genes.select()
-        data = list(query)
-        raw = process.extract(s, {x.name for x in data}, limit=limit)
-        matches = {name: score for name, score in raw if score >= min_score}
-        genes = {x.id: x.name for x in data if x.name in matches.keys()}
-        logger.debug("Done. Found {} genes.".format(len(genes)))
-        df = Lookups.genes(genes.keys())
-        df["name"] = df["id"].map(genes.get)
         df["score"] = df["name"].map(matches.get)
         df = df.sort_values("score", ascending=False)
         return Lookup(df)
@@ -146,7 +131,7 @@ class Fuzzy:
     def compounds(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
     ):
-        logger.debug("Searching compound labels for '{}'...".format(s))
+        logger.debug(f"Searching compound labels for '{s}'...")
         query = CompoundLabels.select()
         if ref is not None:
             query = query.where(CompoundLabels.ref_id == Refs.fetch(ref).id)
@@ -154,7 +139,7 @@ class Fuzzy:
         raw = process.extract(s, {x.name for x in data}, limit=limit)
         matches = {name: score for name, score in raw if score >= min_score}
         compounds = {x.compound_id: x.name for x in data if x.name in matches.keys()}
-        logger.debug("Done. Found {} compounds.".format(len(compounds)))
+        logger.debug(f"Done. Found {len(compounds)} rows.")
         df = Lookups.compounds(compounds.keys())
         df["name"] = df["id"].map(compounds.get)
         df["score"] = df["name"].map(matches.get)
@@ -163,7 +148,7 @@ class Fuzzy:
 
     @classmethod
     def batches(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 70, limit: int = 100):
-        logger.debug("Searching batch labels for '{}'...".format(s))
+        logger.debug(f"Searching batch labels for '{s}'...")
         query = BatchLabels.select()
         if ref is not None:
             query = query.where(BatchLabels.ref_id == Refs.fetch(ref).id)
@@ -171,7 +156,7 @@ class Fuzzy:
         raw = process.extract(s, {x.name for x in data}, limit=limit)
         matches = {name: score for name, score in raw if score >= min_score}
         batches = {x.batch_id: x.name for x in data if x.name in matches.keys()}
-        logger.debug("Done. Found {} batches.".format(len(batches)))
+        logger.debug(f"Done. Found {len(batches)} rows.")
         df = Lookups.batches(batches.keys())
         df["name"] = df["id"].map(batches.get)
         df["score"] = df["name"].map(matches.get)
@@ -182,7 +167,7 @@ class Fuzzy:
     def mandos_objects(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: Optional[int] = 100
     ):
-        logger.debug("Searching mandos_object_tags for '{}'...".format(s))
+        logger.debug("Searching mandos_object_tags for '{s}'...")
         query = MandosObjectTags.select()
         if ref is not None:
             query = query.where(MandosObjectTags.ref_id == Refs.fetch(ref).id)
@@ -190,7 +175,7 @@ class Fuzzy:
         raw = process.extract(s, {x.name for x in data}, limit=limit)
         matches = {name: score for name, score in raw if score >= min_score}
         objects = {x.object_id: x.name for x in data if x.name in matches.keys()}
-        logger.debug("Done. Found {} mandos_objects.".format(len(objects)))
+        logger.debug(f"Done. Found {len(objects)} rows.")
         df = MandosLookups.objects(objects.keys())
         df["name"] = df["id"].map(objects.get)
         df["score"] = df["name"].map(matches.get)

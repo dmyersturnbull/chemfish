@@ -38,7 +38,7 @@ class MultiTrainer:
 
     def __init__(
         self,
-        save_dir: PLike,
+        save_dir: PathLike,
         model_type: SklearnWfClassifierWithOob,
         iterator_fn: Callable[[], TrainableCcIterator],
         always_log: bool = False,
@@ -77,7 +77,7 @@ class MultiTrainer:
                 + "\n".join(lines)
             )
             if max_iters is not None and i > max_iters:
-                logger.info("Exiting after {} iters".format(i))
+                logger.info(f"Exiting after {i} iters")
                 break
 
     def iterate(self, df: WellFrame) -> Generator[TrainableCc, None, None]:
@@ -108,10 +108,10 @@ class MultiTrainer:
         decisions = []
         for tt, subdir, n_trained in self._iterate(df):
             if subdir.exists_with_decision():
-                logger.debug(("{} already trained".format(subdir)))
+                logger.debug((f"{subdir} already trained"))
                 decision = DecisionFrame.read_csv(subdir.decision_csv)
             else:
-                logger.debug(("Training {}".format(subdir)))
+                logger.debug((f"Training {subdir}"))
                 silence = n_trained > 0 and not self.always_log
                 with Tools.silenced(no_stderr=silence, no_stdout=silence):
                     with logger.suppressed(silence):
@@ -134,7 +134,7 @@ class MultiTrainer:
         current_repeat = None
         for i, tt in enumerate(Tools.loop(it, log=logger.info, every_i=200)):
             if current_repeat is not None and tt.repeat != current_repeat:
-                logger.debug("Finished with repeat {}".format(current_repeat))
+                logger.debug(f"Finished with repeat {current_repeat}")
             current_repeat = tt.repeat
             subdir = ClassifierPath(self.save_dir / tt.directory)
             if not subdir.exists_with_decision():
@@ -174,7 +174,7 @@ class MultiTrainer:
         Reads in `DecisionFrame`s
         Slow.
         """
-        logger.minor("Loading decisions at {}".format(self.save_dir))
+        logger.minor(f"Loading decisions at {self.save_dir}")
         for path, cc in Tools.loop(
             self.load_paths(), n_total=len(self), log=logger.minor, every_i=1000
         ):
@@ -202,7 +202,7 @@ class MultiTrainer:
             yield path, cc
 
     def _startup_messages(self, it: TrainableCcIterator, df):
-        logger.debug("Iterator has length {}".format(len(it)))
+        logger.debug(f"Iterator has length {len(it)}")
         fn_strs = [
             Tools.pretty_function(it.treatment_selector),
             Tools.pretty_function(it.control_selector),
@@ -233,7 +233,7 @@ class MultiTrainers:
     def vs_control(
         cls,
         df: WellFrame,
-        save_dir: PLike,
+        save_dir: PathLike,
         model_type: SklearnWfClassifierWithOob,
         n_repeats: int = 1,
         restrict_to_same: Union[None, str, Set[str]] = None,
@@ -257,7 +257,7 @@ class MultiTrainers:
     def vs_control_rand(
         cls,
         df: WellFrame,
-        save_dir: PLike,
+        save_dir: PathLike,
         model_type: SklearnWfClassifierWithOob,
         n_repeats: int = 1,
         restrict_to_same: Union[None, str, Set[str]] = None,
@@ -285,7 +285,7 @@ class MultiTrainers:
     def vs_self(
         cls,
         df: WellFrame,
-        save_dir: PLike,
+        save_dir: PathLike,
         model_type: SklearnWfClassifierWithOob,
         n_repeats: int = 1,
         subsample_to: Optional[int] = None,
@@ -299,7 +299,7 @@ class MultiTrainers:
     def vs_self_random(
         cls,
         df: WellFrame,
-        save_dir: PLike,
+        save_dir: PathLike,
         model_type: SklearnWfClassifierWithOob,
         n_repeats: int = 1,
         low: Optional[int] = None,
@@ -317,7 +317,7 @@ class MultiTrainers:
     def vs_other(
         cls,
         df: WellFrame,
-        save_dir: PLike,
+        save_dir: PathLike,
         model_type: SklearnWfClassifierWithOob,
         n_repeats: int = 1,
         restrict_to_same: Union[None, str, Set[str]] = None,

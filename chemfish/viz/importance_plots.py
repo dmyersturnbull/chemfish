@@ -1,11 +1,7 @@
 from chemfish.core.core_imports import *
-from chemfish.model.app_frames import *
-from chemfish.model.assay_frames import *
-from chemfish.model.stim_frames import *
 from chemfish.viz import CakeComponent
 from chemfish.viz._internal_viz import *
 from chemfish.viz.figures import *
-from chemfish.viz.stim_plots import StimframesPlotter
 
 
 @abcd.auto_eq()
@@ -46,7 +42,9 @@ class ImportancePlotter(CakeComponent, KvrcPlotting):
         ax.set_ylabel("weight")
         if self._scatter:
             if isinstance(weights, tuple):
-                ax.scatter(weights[0], weights[1], c=chemfish_rc.weight_scatter_color, rasterized=False)
+                ax.scatter(
+                    weights[0], weights[1], c=chemfish_rc.weight_scatter_color, rasterized=False
+                )
             else:
                 ax.scatter(
                     np.arange(0, len(weights)),

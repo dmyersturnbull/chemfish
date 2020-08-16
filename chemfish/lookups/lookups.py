@@ -1124,9 +1124,6 @@ class Lookups(LookupTool):
         regex: bool = False,
     ) -> Lookup:
         query = GeneticVariants.select(GeneticVariants, Users).join(Users, JOIN.LEFT_OUTER)
-        events = defaultdict(list)
-        for e in GeneticEvents.select():
-            events[e.variant_id].append(e)
         variants = {v.id: v for v in GeneticVariants.select()}
         df = Lookups._simple(
             GeneticVariants,
@@ -1145,105 +1142,6 @@ class Lookups(LookupTool):
             ("fully_annotated", "fully_annotated", bool),
             ("when_inserted", "created"),
         )
-        if len(df) > 0:  # TODO shouldn't be needed
-            df["n_events"] = df.index.map(lambda v: len(events[v]) if v in events else 0)
-        return df
-
-    @classmethod
-    def tissues(
-        cls,
-        *wheres: Union[ExpressionsLike, int, str, Tissues],
-        like: bool = False,
-        regex: bool = False,
-    ) -> Lookup:
-        query = Tissues.select(Tissues, Refs).join(Refs)
-        return Lookups._simple(
-            Tissues,
-            query,
-            like,
-            regex,
-            wheres,
-            "id",
-            "name",
-            ("external_id", "external"),
-            ("ref", "ref.name"),
-            "created",
-        )
-
-    @classmethod
-    def genes(
-        cls,
-        *wheres: Union[ExpressionsLike, int, str, Genes],
-        like: bool = False,
-        regex: bool = False,
-    ) -> Lookup:
-        query = Genes.select()
-        return Lookups._simple(
-            Genes,
-            query,
-            like,
-            regex,
-            wheres,
-            "id",
-            "name",
-            "pub_link",
-            "description",
-            ("length", "sequence", lambda s: None if s is None else len(s)),
-            "created",
-        )
-
-    @classmethod
-    def constructs(
-        cls,
-        *wheres: Union[ExpressionsLike, int, str, GeneticConstructs],
-        like: bool = False,
-        regex: bool = False,
-    ) -> Lookup:
-        query = (
-            GeneticConstructs.select(GeneticConstructs, Users, Suppliers, Locations, Refs)
-            .join(Users, JOIN.LEFT_OUTER)
-            .switch(GeneticConstructs)
-            .join(Suppliers, JOIN.LEFT_OUTER)
-            .switch(GeneticConstructs)
-            .join(Locations, JOIN.LEFT_OUTER)
-            .switch(GeneticConstructs)
-            .join(Refs, JOIN.LEFT_OUTER)
-        )
-        features = defaultdict(list)
-        for f in GeneticConstructFeatures.select():
-            features[f.construct_id].append(f)
-        df = Lookups._simple(
-            GeneticConstructs,
-            query,
-            like,
-            regex,
-            wheres,
-            "id",
-            "kind",
-            "name",
-            "description",
-            ("location", "location.name"),
-            "box_number",
-            "tube_number",
-            ("supplier", "supplier.name"),
-            ("data_ref", "ref.name"),
-            "pmid",
-            "pub_link",
-            ("creator", "creator.username"),
-            "date_made",
-            ("marker", "selection_marker"),
-            ("strain", "bacterial_strain"),
-            "vector",
-            ("file_bytes", "raw_file", lambda r: len(r) if r is not None else None),
-        )
-        # skipped reason_made and notes
-        if len(df) > 0:
-            df["tube"] = df.apply(lambda c: "{}:{}".format(c.box_number, c.tube_number), axis=1)
-            # noinspection PyUnresolvedReferences
-            df = df.drop("box_number", axis=1).drop("tube_number", axis=1)
-            df["n_features"] = df.index.map(lambda v: len(features[v]) if v in features else 0)
-            df = Lookup.convert(df)
-        df = Lookup.convert(df)
         return df
 
     @classmethod

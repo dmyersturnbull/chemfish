@@ -149,7 +149,7 @@ class ChemfishRc(KvrcCore):
         self.trace_hspace = config.new_length("trace_hspace", self.height / 24)
         if self.trace_hspace != self.height / 24:
             logger.warning(
-                "trace_hspace={} will be ignored due to a matplotlib bug.".format(self.trace_hspace)
+                f"trace_hspace={self.trace_hspace} will be ignored due to a matplotlib bug."
             )
 
         # trace legends
@@ -390,10 +390,7 @@ class ChemfishRc(KvrcCore):
             logger.warning("savefig.bbox should be 'standard'")
         for z, v in {"svg": "none", "pdf": 42, "ps": 42}.items():
             if self[z + ".fonttype"] != v:
-                warn(
-                    "{}.fonttype != {}, which may cause problems. Changing globally.".format(z, v),
-                    XWarning,
-                )
+                warn(f"{z}.fonttype != {v}, which may cause problems. Changing globally.", XWarning)
                 self[z + ".fonttype"] = v
 
 

@@ -29,7 +29,7 @@ class CompositeWellNamer(WellNamer):
 
     def __add__(self, other):
         if not isinstance(other, WellNamer):
-            raise XTypeError("Got {}, not namer".format(type(other)))
+            raise XTypeError(f"Got {type(other)}, not namer")
         return CompositeWellNamer([*self.namers, other])
 
 
@@ -83,11 +83,13 @@ class WellNamerBuilder(BuiltWellNamer):
     """
     A builder for Namers.
     Example usage:
-        >>> namer = WellNamerBuilder()\
-        >>>     .text('be warned! ', if_missing_col='control_type')\
-        >>>     .column('control_type', suffix='; ')\
-        >>>     .treatments(displayer=StringTreatmentNamer('c${cid} (${um}µM)'))\
+        >>> namer = (
+        >>>     WellNamerBuilder()
+        >>>     .text('be warned! ', if_missing_col='control_type')
+        >>>     .column('control_type', suffix='; ')
+        >>>     .treatments(displayer=StringTreatmentNamer('c${cid} (${um}µM)'))
         >>>     .build()
+        >>> )
         >>> namer(df)  # something like ['solvent (-)', 'be warned! c55 (55.23µM)']
     """
 

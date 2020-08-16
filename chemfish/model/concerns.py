@@ -66,7 +66,7 @@ class Severity(enum.Enum):
     ```
     def lateness(concern: TargetTimeConcern) -> Severity:
         if concern.kind is not TargetTimeKind.TREATMENT:
-            raise ValueError("Not defined on kind {}".format(concern.kind))
+            raise ValueError(f"Not defined on kind {concern.kind}")
         if concern.actual > 2*60*60 or concern.actual < 0.5*60*60:  # 2 hours late or 30 min early
             return Severity.CRITICAL
         else:
@@ -106,13 +106,15 @@ class Severity(enum.Enum):
     @property
     def log_level(self) -> str:
         return {
-            9: "ERROR",  # shouldn't be used, so don't
+            9: "ERROR",
             4: "WARNING",
             3: "WARNING",
             2: "CAUTION",
             1: "INFO",
             0: "INFO",
-        }[self.value]
+        }[  # shouldn't be used, so don't
+            self.value
+        ]
 
     @property
     def emoji(self) -> str:
@@ -161,8 +163,8 @@ class Severity(enum.Enum):
             for x in cls:
                 if level == x.value:
                     return x
-            raise XValueError("Bad value {}".format(level))
-        raise XTypeError("Bad type {} for {}".format(type(level), level))
+            raise XValueError(f"Bad level value {level}")
+        raise XTypeError(f"Bad type {type(level)} for {level}")
 
     @classmethod
     def parse(cls, level: str) -> Severity:
@@ -178,7 +180,7 @@ class Severity(enum.Enum):
         for val in Severity:
             if val.name == level or level[0] == str(val.value):
                 return val
-        raise LookupFailedError("Level {} not recognized".format(level))
+        raise LookupFailedError(f"Level {level} not recognized")
 
     @classmethod
     def bad_values(cls) -> Sequence[Severity]:
@@ -233,7 +235,7 @@ class LoadConcern(Concern):
         return {**self._main_dict(), "message": str(self.error)}
 
     def description(self) -> str:
-        return "Load failed with {}".format(self.run.id, type(self.error))
+        return "Load failed with {self.run.id} / {type(self.error)}"
 
 
 @dataclass
@@ -245,7 +247,7 @@ class ImpossibleTimeConcern(Concern):
         return {**self._main_dict(), "kind": self.kind, "value": self.value}
 
     def description(self) -> str:
-        return "{} time is {}".format(self.kind, self.value)
+        return f"{self.kind} time is {self.value}"
 
 
 @dataclass
@@ -267,9 +269,9 @@ class MissingSensorConcern(Concern):
 
     def description(self) -> str:
         if len(self.missing) > 1:
-            return "Missing sensors: {}".format(", ".join([s.name for s in self.missing]))
+            return f"Missing sensors: {', '.join([s.name for s in self.missing])}"
         elif len(self.missing) == 1:
-            return "Missing sensor: {}".format(", ".join([s.name for s in self.missing]))
+            return f"Missing sensor: {', '.join([s.name for s in self.missing])}"
         else:
             return "Has all sensors"
 
@@ -309,7 +311,7 @@ class BatchConcern(Concern):
         }
 
     def description(self) -> str:
-        return "Suspicious batch b{}: {}".format(self.batch.id, Chars.squoted(self.annotation.name))
+        return f"Suspicious batch b{self.batch.id}: '{self.annotation.name}'"
 
 
 @dataclass
@@ -347,9 +349,7 @@ class _ErrorConcern(Concern, metaclass=abc.ABCMeta):
     def relative_diff(self) -> float:
         if not hasattr(self, "__relative_diff"):
             if self.expected == 0 or np.isinf(self.expected):
-                logger.debug(
-                    "Expected value is {}. Setting relative_diff=+inf".format(self.expected)
-                )
+                logger.debug(f"Expected value is {self.expected}. Setting relative_diff=+inf")
                 self.__relative_diff = np.inf
             else:
                 # noinspection PyAttributeOutsideInit
@@ -360,10 +360,10 @@ class _ErrorConcern(Concern, metaclass=abc.ABCMeta):
     def log2_diff(self) -> float:
         if not hasattr(self, "__log2diff"):
             if self.expected == 0 or np.isinf(self.expected):
-                logger.debug("Expected value is {}. Setting log2_diff=+inf".format(self.expected))
+                logger.debug(f"Expected value is {self.expected}. Setting log2_diff=+inf")
                 self.__log2diff = np.inf
             elif self.actual == 0 or np.isinf(self.actual):
-                logger.debug("Actual value is {}. Setting log2_diff=+inf".format(self.actual))
+                logger.debug(f"Actual value is {self.actual}. Setting log2_diff=+inf")
                 self.__log2diff = np.inf
             else:
                 # noinspection PyAttributeOutsideInit
@@ -390,9 +390,7 @@ class SensorLengthConcern(_ErrorConcern):
         return {**super().as_dict(), "sensor": self.sensor.id}
 
     def description(self) -> str:
-        return "Sensor {} length: {}: {} → {}".format(
-            self.sensor.name, self.severity.name.lower(), self.expected, self.actual
-        )
+        return f"Sensor {self.sensor.name} severity: {self.severity.name.lower()}: {self.expected} → {self.actual}"
 
 
 @dataclass
@@ -447,7 +445,7 @@ class NFeaturesConcern(_ErrorConcern):
         return super().as_dict()
 
     def description(self) -> str:
-        return "Feature length: {} → {}".format(self.expected, self.actual)
+        return f"Feature length: {self.expected} → {self.actual}"
 
 
 @dataclass

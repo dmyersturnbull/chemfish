@@ -101,7 +101,7 @@ class SaveLoadCsv(AbstractSaveLoad, metaclass=abc.ABCMeta):
 
     def save(self, path: PathLike):
         if not isinstance(self.data, self.df_class):
-            raise TypeError("Type {} is not a {}".format(type(self.data), self.df_class))
+            raise TypeError(f"Type {type(self.data)} is not a {self.df_class}")
         path = Path(path)
         pd.DataFrame(self.data).to_csv(path)
 
@@ -139,13 +139,13 @@ class ClassifierPath:
 
     def verify_exists(self) -> None:
         if not self.exists():
-            raise PathError("No trained model under {}".format(self), path=self.path)
+            raise PathError(f"No trained model under {self}", path=self.path)
 
     def verify_exists_with_decision(self) -> None:
         if not self.exists():
-            raise PathError("No trained model under {}".format(self), path=self.path)
+            raise PathError(f"No trained model under {self}", path=self.path)
         if not self.decision_csv.exists():
-            raise PathError("No decision CSV under {}".format(self), path=self.path)
+            raise PathError(f"No decision CSV under {self}", path=self.path)
 
     def exists_with_decision(self) -> bool:
         return self.exists() and self.decision_csv.exists()

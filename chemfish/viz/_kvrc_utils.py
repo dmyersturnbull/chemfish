@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import ast
 import textwrap
+from functools import total_ordering
+from typing import Union
 
 import matplotlib
 import matplotlib.cm as cmaps
@@ -14,32 +16,52 @@ from chemfish.viz import plt
 from chemfish.viz.color_schemes import *
 from chemfish.viz.smart_dimensions import RefDims
 
-from functools import total_ordering
-from typing import Union
-
 
 @total_ordering
 class TimeUnit:
     def __init__(self, unit: str, abbrev: str, singlular: str, n_ms: int):
-        self.unit, self.abbrev, self.singular, self.plural, self.n_ms = unit, abbrev, singlular, singlular + 's', n_ms
-    def to_ms(self, n: int): return n * self.n_ms
-    def __eq__(self, other): return self.n_ms == other.n_ms
-    def __lt__(self, other): return self.n_ms < other.n_ms
-    def __repr__(self): return '⟨'+self.abbrev+'⟩'
-    def __str__(self): return '⟨'+self.abbrev+'⟩'
+        self.unit, self.abbrev, self.singular, self.plural, self.n_ms = (
+            unit,
+            abbrev,
+            singlular,
+            singlular + "s",
+            n_ms,
+        )
+
+    def to_ms(self, n: int):
+        return n * self.n_ms
+
+    def __eq__(self, other):
+        return self.n_ms == other.n_ms
+
+    def __lt__(self, other):
+        return self.n_ms < other.n_ms
+
+    def __repr__(self):
+        return "⟨" + self.abbrev + "⟩"
+
+    def __str__(self):
+        return "⟨" + self.abbrev + "⟩"
 
 
 class TimeUnits:
-    MS = TimeUnit('ms', 'ms', 'millisecond', 1)
-    SEC = TimeUnit('s', 'sec', 'second',   1000)
-    MIN = TimeUnit('min', 'min', 'minute', 1000 * 60)
-    HOUR = TimeUnit('hr', 'hour', 'hour',  1000 * 60 * 60)
-    DAY = TimeUnit('day', 'day', 'day',    1000 * 60 * 60 * 24)
-    WEEK = TimeUnit('wk', 'week', 'week',  1000 * 60 * 60 * 24 * 7)
+    MS = TimeUnit("ms", "ms", "millisecond", 1)
+    SEC = TimeUnit("s", "sec", "second", 1000)
+    MIN = TimeUnit("min", "min", "minute", 1000 * 60)
+    HOUR = TimeUnit("hr", "hour", "hour", 1000 * 60 * 60)
+    DAY = TimeUnit("day", "day", "day", 1000 * 60 * 60 * 24)
+    WEEK = TimeUnit("wk", "week", "week", 1000 * 60 * 60 * 24 * 7)
 
     @classmethod
     def values(cls):
-        return [TimeUnits.MS, TimeUnits.SEC, TimeUnits.MIN, TimeUnits.HOUR, TimeUnits.DAY, TimeUnits.WEEK]
+        return [
+            TimeUnits.MS,
+            TimeUnits.SEC,
+            TimeUnits.MIN,
+            TimeUnits.HOUR,
+            TimeUnits.DAY,
+            TimeUnits.WEEK,
+        ]
 
     @classmethod
     def of(cls, s: Union[TimeUnit, str]) -> TimeUnit:
@@ -49,7 +71,7 @@ class TimeUnits:
         for u in TimeUnits.values():
             if s in [u.abbrev, u.plural, u.singular, u.unit]:
                 return u
-        raise LookupError("Unit type {} not found".format(s))
+        raise LookupError(f"Unit type {s} not found")
 
 
 class KvrcDefaults:
@@ -121,7 +143,7 @@ class Key:
         :raises OpStateError: If it has a non-None `Key.value` (it's already been resolved)
         """
         if self.value is not None:
-            raise OpStateError("Cannot resolve {} again".format(self.key))
+            raise OpStateError(f"Cannot resolve {self.key} again")
         if value is None:  # not set
             value = self.fallback
         else:
@@ -129,14 +151,12 @@ class Key:
                 value = self._parse(value)
                 return Key(self.key, self.kind, self.fallback, self.nullable, self.desc, value)
             except (ValueError, TypeError, ArithmeticError):
-                raise ConfigError(
-                    "Value {} for key {} is not of type {}".format(value, self.key, self.kind)
-                )
+                raise ConfigError(f"Value {value} for key {self.key} is not of type {self.kind}")
         return Key(self.key, self.kind, self.fallback, self.nullable, self.desc, value)
 
     def __lt__(self, other):
         if not isinstance(other, Key):
-            raise XTypeError("{} is not a Key".format(other))
+            raise XTypeError(f"{other} is not a Key")
         return self.key < other.key
 
     def _parse(self, value: str) -> Optional[T]:
@@ -217,7 +237,7 @@ class KvrcConfig:
     ) -> Optional[str]:
         def en(v):
             if v not in choices:
-                raise ConfigError("{} is not in {}".format(v, choices))
+                raise ConfigError(f"{v} is not in {choices}")
             return v
 
         return self.key(key, en, fallback, d=desc)
@@ -242,7 +262,7 @@ class KvrcConfig:
     ) -> Optional[str]:
         def lam(v):
             if v not in MarkerStyle.markers.keys():
-                raise ConfigError("{} is not a valid marker style".format(v))
+                raise ConfigError(f"{v} is not a valid marker style")
 
         return self.key(key, lam, fallback, d=desc)
 
@@ -327,7 +347,7 @@ class KvrcConfig:
     def new_font_weight(self, key: str, fallback: Optional[str], desc: Optional[str] = None) -> str:
         def fw(value):
             if key not in {"normal", "bold", "heavy", "light", "ultrabold", "ultralight"}:
-                raise ConfigError("Font weight {} not understood for {}".format(value, key))
+                raise ConfigError(f"Font weight {value} not understood for {key}")
             return value
 
         return self.key(key, fw, fallback, d=desc)
@@ -408,21 +428,21 @@ class KvrcConfig:
     ) -> float:
         f = float(value)
         if minimum is not None and f < minimum:
-            raise ConfigError("Value for key {} below minimum of {}".format(key, minimum))
+            raise ConfigError(f"Value for key {key} below minimum of {minimum}")
         if maximum is not None and f > maximum:
-            raise ConfigError("Value for key {} above maximum of {}".format(key, maximum))
+            raise ConfigError(f"Value for key {key} above maximum of {maximum}")
         return f
 
     def _conv_int(
         self, key: str, value: str, minimum: Optional[int], maximum: Optional[int]
     ) -> int:
         if "." in str(value):
-            raise ConfigError("Value for key {} is not an integer".format(key))
+            raise ConfigError(f"Value for key {key} is not an integer")
         f = int(value)
         if minimum is not None and f < minimum:
-            raise ConfigError("Value for key {} below minimum of {}".format(key, minimum))
+            raise ConfigError(f"Value for key {key} below minimum of {minimum}")
         if maximum is not None and f > maximum:
-            raise ConfigError("Value for key {} above maximum of {}".format(key, maximum))
+            raise ConfigError(f"Value for key {key} above maximum of {maximum}")
         return f
 
     def _eval_dict(self, value: str, vtypes):
@@ -449,7 +469,9 @@ class KvrcCore:
     A base without specific param values.
     """
 
-    def __init__(self, matplotlib_style_path: Optional[PLike], kvrc_style_path: Optional[PLike]):
+    def __init__(
+        self, matplotlib_style_path: Optional[PathLike], kvrc_style_path: Optional[PathLike]
+    ):
         self.stimulus_names, self._stimulus_names = None, None
         self.stimulus_colors, self._stimulus_colors = None, None
         self.feature_names, self._feature_names = None, None
@@ -479,7 +501,7 @@ class KvrcCore:
         self.load(self._matplotlib_style_path, self._kvrc_style_path)
 
     def load(
-        self, matplotlib_style_path: Optional[PLike], kvrc_style_path: Optional[PLike]
+        self, matplotlib_style_path: Optional[PathLike], kvrc_style_path: Optional[PathLike]
     ) -> None:
         """
         Reads and loads the matplotlib and chemfish_rc style file, if they're not `None`.
@@ -489,7 +511,7 @@ class KvrcCore:
         if kvrc_style_path is not None:
             self._load_kvrc(kvrc_style_path)
 
-    def _load_mpl(self, matplotlib_style_path: PLike) -> None:
+    def _load_mpl(self, matplotlib_style_path: PathLike) -> None:
         self._matplotlib_style_path = matplotlib_style_path
         plt.style.use(str(matplotlib_style_path))
         # IT TURNS OUT WE NEED TO SET BOTH!!!!
@@ -501,18 +523,16 @@ class KvrcCore:
         )
         if not chemfish_env.quiet:
             logger.info(
-                "Loaded {} matplotlib RC settings from {}".format(
-                    len(mpl_read), matplotlib_style_path
-                )
+                f"Loaded {len(mpl_read)} matplotlib RC settings from {matplotlib_style_path}"
             )
-            logger.debug("Set matplotlib settings {}".format(mpl_read))
+            logger.debug(f"Set matplotlib settings {mpl_read}")
 
-    def _load_kvrc(self, kvrc_style_path: PLike) -> None:
+    def _load_kvrc(self, kvrc_style_path: PathLike) -> None:
         self._kvrc_style_path = kvrc_style_path
         try:
             viz_params = Tools.read_properties_file(str(kvrc_style_path))
         except ParsingError as e:
-            raise ConfigError("Bad chemfish_rc file {}".format(kvrc_style_path)) from e
+            raise ConfigError("Bad chemfish_rc file {kvrc_style_path}") from e
         config = KvrcConfig(viz_params)
         # set everything in subclass
         self._load_settings(config)
@@ -541,14 +561,10 @@ class KvrcCore:
                 and not k.startswith("width_")
                 and not k.startswith("height_")
             ):
-                raise UnrecognizedKeyError("Viz key '{}' was not recognized".format(k))
+                raise UnrecognizedKeyError(f"Viz key '{k}' was not recognized")
         # log important info
         if not chemfish_env.quiet:
-            logger.info(
-                "Loaded {} Chemfish viz settings from {}".format(
-                    len(config.passed), kvrc_style_path
-                )
-            )
+            logger.info(f"Loaded {len(config.passed)} Chemfish viz settings from {kvrc_style_path}")
             if len(self.widths) + len(self.heights) > 0:
                 logger.info(
                     "Set {} reference widths and heights. Pad is ({}, {}). Gutter is {}.".format(
@@ -560,7 +576,7 @@ class KvrcCore:
                 )
             else:
                 logger.info("No reference widths or heights set.")
-            logger.debug("Set chemfish_rc settings {}".format(viz_params))
+            logger.debug(f"Set chemfish_rc settings {viz_params}")
 
     def _load_settings(self, config: KvrcConfig):
         """
@@ -737,7 +753,7 @@ class KvrcCore:
         elif item.replace("_", ".", 1) in plt.rcParams:
             self._update(item.replace("_", ".", 1), value)
         else:
-            raise UnrecognizedKeyError("No visualization setting {}".format(item))
+            raise UnrecognizedKeyError(f"No visualization setting {item}")
 
     def _update(self, item: str, value):
         plt.rcParams[item] = value
@@ -774,7 +790,7 @@ class KvrcCore:
             logger.error("chemfish_rc might be reloading")
             return "chemfish.viz.kvrc"  # 'No visualization setting __module__'
         else:
-            raise UnrecognizedKeyError("No visualization setting {}".format(item))
+            raise UnrecognizedKeyError(f"No visualization setting {item}")
 
     def __iter__(self) -> Iterator[str]:
         """

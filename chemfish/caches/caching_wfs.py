@@ -75,7 +75,7 @@ class CachingWellFrameBuilder(WellFrameBuilder):
         feature = FeatureTypes.of(feature)
         if feature != self._cache.feature:
             raise ContradictoryRequestError(
-                "Requested feature {}, but the cache uses {}".format(feature, self._cache.feature)
+                f"Requested feature {feature}, but the cache uses {self._cache.feature}"
             )
         self._dtype = dtype
         return self

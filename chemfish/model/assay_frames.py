@@ -68,33 +68,20 @@ class AssayFrame(TypedDf):
         assay_positions = pd.DataFrame(
             [
                 pd.Series(
-                    [
-                        ap.id,
-                        ap.assay.id,
-                        ap.assay.name,
-                        simplifier(ap.assay.name),
-                        ValarTools.assay_ms_per_stimframe(ap.assay) * ap.start,
-                        ValarTools.assay_ms_per_stimframe(ap.assay) * (ap.start + ap.assay.length),
-                    ]
+                    {
+                        "position_id": ap.id,
+                        "assay_id": ap.assay.id,
+                        "name": ap.assay.name,
+                        "simplified_name": simplifier(ap.assay.name),
+                        "start_ms": ValarTools.assay_ms_per_stimframe(ap.assay) * ap.start,
+                        "end_ms": ValarTools.assay_ms_per_stimframe(ap.assay)
+                        * (ap.start + ap.assay.length),
+                    }
                 )
                 for ap in query
             ]
         )
-        df = (
-            assay_positions.rename(
-                columns={
-                    0: "position_id",
-                    1: "assay_id",
-                    2: "name",
-                    3: "simplified_name",
-                    4: "start_ms",
-                    5: "end_ms",
-                    6: "n_ms",
-                }
-            )
-            .drop_duplicates()
-            .sort_values("start_ms")
-        )
+        df = assay_positions.drop_duplicates().sort_values("start_ms")
         df["start"] = df["start_ms"].map(Tools.ms_to_minsec)
         df["end"] = df["end_ms"].map(Tools.ms_to_minsec)
         df["duration"] = (df["end_ms"] - df["start_ms"]).map(Tools.ms_to_minsec)

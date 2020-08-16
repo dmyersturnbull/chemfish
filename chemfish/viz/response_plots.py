@@ -25,7 +25,9 @@ class Miniaxis:
         x, mean, upper, lower = self._mk2(x, mean, upper, lower)
         ax = self.twin if twin else self.ax
         if chemfish_rc.response_bound_alpha > 0:
-            ax.fill_between(x, lower, upper, facecolor=color, alpha=chemfish_rc.response_bound_alpha)
+            ax.fill_between(
+                x, lower, upper, facecolor=color, alpha=chemfish_rc.response_bound_alpha
+            )
         if chemfish_rc.response_mean_alpha > 0:
             ax.plot(x, mean, label=label, color=color, alpha=chemfish_rc.response_mean_alpha)
         if chemfish_rc.response_mean_marker != "":
@@ -198,11 +200,19 @@ class Grid:
             return data[c] if c in data.columns else None
 
         mean, upper, lower = get("score_1"), get("upper_1"), get("lower_1")
-        mini.plot(data["x_value"], mean, upper, lower, drug, chemfish_rc.response_color_left, twin=False)
+        mini.plot(
+            data["x_value"], mean, upper, lower, drug, chemfish_rc.response_color_left, twin=False
+        )
         if self.right_label is not None:
             mean, upper, lower = get("score_2"), get("upper_2"), get("lower_2")
             mini.plot(
-                data["x_value"], mean, upper, lower, drug, chemfish_rc.response_color_right, twin=True
+                data["x_value"],
+                mean,
+                upper,
+                lower,
+                drug,
+                chemfish_rc.response_color_right,
+                twin=True,
             )
         mini.adjust(
             drug,

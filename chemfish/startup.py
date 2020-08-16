@@ -127,8 +127,7 @@ from chemfish.viz.figures import *
 # viz
 from chemfish.viz.heatmaps import *
 from chemfish.viz.importance_plots import *
-from chemfish.viz.kvrc import chemfish_rc
-from chemfish.viz.kvrc import KvrcDefaults
+from chemfish.viz.kvrc import KvrcDefaults, chemfish_rc
 from chemfish.viz.response_plots import *
 from chemfish.viz.stim_plots import *
 from chemfish.viz.timeline_plots import *
@@ -159,15 +158,11 @@ __filterer.substring_never(".*libuv only supports.*")
 
 if not chemfish_env.quiet:
     logger.notice(
-        "Chemfish version {}. Started in {}s.".format(
-            chemfish_version.strip(), round(time.monotonic() - chemfish_start_clock), 1
-        )
+        f"Chemfish version {chemfish_version.strip()}. Started in {round(time.monotonic() - chemfish_start_clock)}s."
     )
-    logger.debug(
-        "Figure dimensions: {}{}{}".format(chemfish_rc.height, Chars.times, chemfish_rc.width)
-    )
+    logger.debug(f"Figure dimensions: {chemfish_rc.height}×{chemfish_rc.width}")
     logger.info("Severity key: " + Severity.key_str())
 if not chemfish_env.quiet and matplotlib.get_backend().endswith("backend_inline"):
     logger.error("Using inline backend. Use '%matplotlib widget' instead.")
 else:
-    logger.debug("Using backend: {}".format(matplotlib.get_backend()))
+    logger.debug(f"Using backen  {matplotlib.get_backend()}")

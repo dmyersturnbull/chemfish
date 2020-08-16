@@ -100,7 +100,7 @@ class WellClassifier(SaveableTrainable):
         if len(wells) == 0:
             raise EmptyCollectionError("Cannot train on an empty WellFrame")
         if len(set(names)) == 1:
-            logger.warning("Training a classifier for only 1 label: {}".format(names[0]))
+            logger.warning(f"Training a classifier for only 1 label: {names[0]}")
         if len(set(names)) > 50:
             logger.warning("Training a classifier on >50 labels")
 
@@ -109,9 +109,7 @@ class WellClassifier(SaveableTrainable):
         overlap = set(names).difference(set(self.info["labels"]))
         if len(overlap) > 0:
             raise LengthMismatchError(
-                "Test labels {} are not in the train labels {}".format(
-                    set(names), set(self.info["labels"])
-                )
+                f"Test labels {set(names)} are not in the train labels {set(self.info['labels'])}"
             )
         intersec = set(self.info["labels"]).intersection(set(wells.values))
         if len(intersec) > 0:
@@ -120,9 +118,7 @@ class WellClassifier(SaveableTrainable):
             logger.warning("Features don't match")
 
     def __repr__(self):
-        return "{}({})".format(
-            self.__class__.__name__, "trained" if self.is_trained else "untrained"
-        )
+        return f"{self.__class__.__name__}({'trained' if self.is_trained else 'not trained'})"
 
     def __str__(self):
         return repr(self)
@@ -163,7 +159,7 @@ class BuildableWellClassifier(abcd.ABC):
         raise NotImplementedError()
 
     @classmethod
-    def load_(cls, path: PLike):
+    def load_(cls, path: PathLike):
         x = cls.build()
         x.load(path)
         return x
@@ -198,7 +194,7 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
     def statistics(self) -> Mapping[str, Any]:
         return {}
 
-    def load(self, path: PLike) -> None:
+    def load(self, path: PathLike) -> None:
         self._verify_untrained()
         path = Path(path)
         if path.suffix == ".pkl":
@@ -209,31 +205,29 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
             try:
                 self.info = path.load_info()
             except Exception:
-                raise LoadError("Failed to load model metadata at {}".format(path.info_json))
+                raise LoadError(f"Failed to load model metadata at {path.info_json}")
             try:
                 self.model = joblib.load(str(path.model_pkl))
             except Exception:
-                raise LoadError("Failed to load model at {}".format(path.model_pkl))
+                raise LoadError(f"Failed to load model at {path.model_pkl}")
             if self.info["params"] != self.params:
                 logger.error(
-                    "Loaded model params don't match: {} in info and {} in classifier".format(
-                        self.info["params"], self.params
-                    )
+                    f"Loaded model params don't match: {self.info['params']} in info and {self.params} in classifier"
                 )
             self.info["params"] = self.params
         except:  # don't allow a partial state
             self.info = None
             self.model = None
             raise
-        logger.debug("Loaded model at {}".format(path.model_pkl))
+        logger.debug(f"Loaded model at {path.model_pkl}")
 
-    def save(self, path: PLike) -> None:
+    def save(self, path: PathLike) -> None:
         self._verify_trained()
         path = Path(path)
         if str(path).endswith("model.pkl"):
             path = path.parent
         path = ClassifierPath(path)
-        logger.debug("Saving model to {} ...".format(path.model_pkl))
+        logger.debug(f"Saving model to {path.model_pkl} ...")
         info = copy(self.info)
         info["params"] = self.params
         info["stats"] = self.statistics()
@@ -241,21 +235,19 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
             path.prep()
             path.save_info(info)
         except Exception:
-            raise LoadError("Failed to save model metadata to {}".format(path.info_json))
+            raise LoadError(f"Failed to save model metadata to {path.info_json}")
         try:
             joblib.dump(self.model, str(path.model_pkl), protocol=chemfish_env.pickle_protocol)
         except Exception:
-            raise LoadError("Failed to save model to {}".format(path.model_pkl))
-        logger.debug("Saved model to {}".format(path.model_pkl))
+            raise LoadError(f"Failed to save model to {path.model_pkl}")
+        logger.debug(f"Saved model to {path.model_pkl}")
 
     def train(self, df: WellFrame) -> None:
         self._verify_train(df["well"].values, df["name"].values, df.columns.values)
         logger.info(self._startup_string(df))
         reps = df.n_replicates()
         logger.minor(
-            "Training with replicates: {}".format(
-                ", ".join([k + "=" + str(v) for k, v in reps.items()])
-            )
+            "Training with replicates: " + ", ".join([k + "=" + str(v) for k, v in reps.items()])
         )
         if len(set(reps.values())) > 1:
             logger.caution("Training with an imbalanced set")
@@ -265,7 +257,7 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
             self.model.fit(*df.xy())
         except Exception:
             raise ClassifierTrainFailedError(
-                "Failed to train (names {} and runs {})".format(df.unique_names(), df.unique_runs())
+                f"Failed to train (names {df.unique_names()} and runs {df.unique_runs()})"
             )
         t1, d1 = time.monotonic(), datetime.now()
         # update info
@@ -284,12 +276,10 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
             )
         )
         if 4 <= len(stats) <= 50:
-            logger.minor("Statistics: {}".format(", ".join(stats)))
+            logger.minor(f"Statistics: {', '.join(stats)}")
 
     def test(self, df: WellFrame) -> DecisionFrame:
-        logger.minor(
-            "Testing on names {} and runs {} ...".format(df.unique_names(), df.unique_runs())
-        )
+        logger.minor(f"Testing on names {df.unique_names()} and runs {df.unique_runs()} ...")
         self._verify_test(df["well"].values, df["name"].values, df.columns.values)
         X, y = df.xy()
         labels = self.model.classes_
@@ -297,7 +287,7 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
             predictions = self.model.predict_proba(X)
         except Exception:
             raise ClassifierPredictFailedError(
-                "Failed to test (names {} and runs {})".format(df.unique_names(), df.unique_runs())
+                f"Failed to test (names {df.unique_names()} and runs {df.unique_runs()})"
             )
         return DecisionFrame.of(y, labels, predictions, df["well"].values)
 
@@ -325,7 +315,7 @@ class SklearnWfClassifierWithOob(
 
     def save_to_dir(
         self,
-        path: PLike,
+        path: PathLike,
         exist_ok: bool = True,
         figures: bool = False,
         sort: bool = True,
@@ -336,7 +326,7 @@ class SklearnWfClassifierWithOob(
 
         path = Tools.prepped_dir(path, exist_ok=exist_ok)
         path = ClassifierPath(path)
-        logger.debug("Saving info{} to {}".format(path, " and figures" if figures else ""))
+        logger.debug(f"Saving to {path}")
         self._verify_trained()
         self.save(path.model_pkl)
         decision = self.training_decision
@@ -434,7 +424,7 @@ class WellClassifiers:
             else ""
         )
         if qname in WellClassifiers._classifier_cache:
-            logger.debug("Loading existing type {}".format(qname))
+            logger.debug(f"Loading existing type {qname}")
             return WellClassifiers._classifier_cache[qname]
         supers = WellClassifiers._choose_classes(model)
 
@@ -454,7 +444,7 @@ class WellClassifiers:
         if isinstance(model, AnySklearnClassifier):
             X.depths = Ut.depths
         WellClassifiers._classifier_cache[qname] = X
-        logger.minor("Registered new type {}".format(qname))
+        logger.minor(f"Registered new type {qname}")
         return X
 
     @classmethod

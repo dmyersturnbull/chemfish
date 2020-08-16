@@ -1,7 +1,6 @@
-from pocketutils.tools.common_tools import CommonTools
 from pocketutils.tools.filesys_tools import FilesysTools
 
-from chemfish.core import ChemfishResources, log_factory
+from chemfish.core import log_factory
 from chemfish.core._imports import *
 from chemfish.core.valar_singleton import *
 
@@ -12,7 +11,7 @@ for handler in logging.getLogger().handlers:
 MAIN_DIR = Path.home() / ".chemfish"
 CONFIG_PATH = os.environ.get("CHEMFISH_CONFIG", MAIN_DIR / "chemfish.config")
 if CONFIG_PATH is None:
-    raise FileDoesNotExistError("No config file at {}".format(CONFIG_PATH))
+    raise FileDoesNotExistError(f"No config file at {CONFIG_PATH}")
 VIZ_PATH = MAIN_DIR / "chemfish_viz.properties"
 
 
@@ -38,13 +37,12 @@ class ChemfishEnvironment:
         : viz_file: Path to chemfish-specific visualization options in the style of Matplotlib RC
         : n_cores: Default number of cores for some jobs, including with parallelize()
         : jupyter_template: Path to a Jupyter template text file
-        : quiet: Ignore startup messages, etc, for knowledgable users
     """
 
     def __init__(self):
         self.config_file = Path(CONFIG_PATH).expanduser()
         if not self.config_file.exists():
-            raise MissingResourceError("No config file at path {}".format(self.config_file))
+            raise MissingResourceError(f"No config file at path {self.config_file}")
         props = self._get_props()
 
         def _try(key: str, fallback=None):
@@ -53,7 +51,7 @@ class ChemfishEnvironment:
         self.home = Path(__file__).parent.parent
         self.username = _try("username")
         if self.username is None:
-            raise MissingConfigKeyError("Must specify username in {}".format(self.config_file))
+            raise MissingConfigKeyError(f"Must specify username in {self.config_file}")
         self.user = Users.fetch(self.username)
         self.user_ref = Refs.fetch("manual:" + self.username)
         self.chemfish_log_level = _try("chemfish_log_level", "INFO")
@@ -74,19 +72,14 @@ class ChemfishEnvironment:
             _try("jupyter_template", ChemfishResources.path("jupyter_template.txt"))
         ).expanduser()
         self.viz_file = Path(_try("viz_file", VIZ_PATH)).expanduser()
-        self.quiet = CommonTools.parse_bool(_try("quiet", False))
         if not self.viz_file.exists():
-            raise MissingResourceError("No viz file at path {}".format(self.viz_file))
+            raise MissingResourceError(f"No viz file at path {self.viz_file}")
         self._adjust_logging()
-        if not self.quiet:
-            logger.info("Read {} .".format(self.config_file))
+        logger.info(f"Read {self.config_file} .")
         self.cache_dir.mkdir(exist_ok=True, parents=True)
-        if not self.quiet:
-            logger.info(
-                "Set {} chemfish config items. Run 'print(chemfish_env.info())' for details.".format(
-                    len(props)
-                )
-            )
+        logger.info(
+            f"Set {len(props)} chemfish config items. Run 'print(chemfish_env.info())' for details."
+        )
 
     def _get_props(self):
         try:
@@ -95,20 +88,15 @@ class ChemfishEnvironment:
                 for k, v in FilesysTools.read_properties_file(self.config_file).items()
             }
         except ParsingError as e:
-            raise MissingConfigKeyError(
-                "Bad chemfish config file {}".format(self.config_file)
-            ) from e
+            raise MissingConfigKeyError(f"Bad chemfish config file {self.config_file}") from e
         return props
 
     def _adjust_logging(self):
         logger.setLevel(self.chemfish_log_level)
         logging.getLogger(self.global_log_level)
-        if not self.quiet:
-            logger.info(
-                "Set global log level to {} and chemfish to {}.".format(
-                    self.global_log_level, self.chemfish_log_level
-                )
-            )
+        logger.info(
+            "Set global log level to {self.global_log_level} and chemfish to {self.chemfish_log_level}."
+        )
 
 
 chemfish_env = ChemfishEnvironment()

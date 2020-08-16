@@ -39,7 +39,7 @@ class TreatmentNamer:
                 else None
             )
         else:
-            raise TypeError("Type {} for name not recognized".format(type(names)))
+            raise TypeError(f"Type {type(names)} for name not recognized")
 
 
 rtreatment = re.compile(r"\${treatment\}")
@@ -119,9 +119,7 @@ class StringTreatmentNamer(TreatmentNamer):
         )
         if n_dollar > n_left or n_dollar > n_right or n_left != n_right:
             logger.warning(
-                "Expression contains {} $ signs but {} left braces and {} right braces. As this intended?".format(
-                    n_dollar, n_left, n_right
-                )
+                f"Expression contains {n_dollar} $ signs but {n_left} left braces and {n_right} right braces. Intended?"
             )
 
         # just test first
@@ -130,7 +128,7 @@ class StringTreatmentNamer(TreatmentNamer):
         for match in rwrong.finditer(e):
             bad.append(match.group(0))
         if len(bad) > 0:
-            raise UnknownVariableError("The expressions {} were not recognized".format(bad))
+            raise UnknownVariableError(f"The expressions {bad} were not recognized")
 
     def display(self, t: Treatment, name: Union[None, str, Mapping[int, str]]) -> str:
         name = self._convert(t, name)
@@ -260,7 +258,7 @@ class StringTreatmentNamer(TreatmentNamer):
                 else name[0].upper() + name.lower()[1:]
             )
         else:
-            raise UnknownVariableError("Unknown capitalization scheme {}".format(rule))
+            raise UnknownVariableError(f"Unknown capitalization scheme {rule}")
 
     def __repr__(self):
         return "display(" + self.expression + ")"

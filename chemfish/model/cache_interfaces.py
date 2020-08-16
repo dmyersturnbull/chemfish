@@ -28,7 +28,7 @@ class AChemfishCache(Generic[KEY, VALUE], metaclass=ABCMeta):
     def path_of(self, key: KEY) -> Path:
         raise NotImplementedError()
 
-    def key_from_path(self, path: PLike) -> KEY:
+    def key_from_path(self, path: PathLike) -> KEY:
         raise NotImplementedError()
 
     def download(self, *keys: KEY) -> None:
@@ -66,7 +66,7 @@ class AChemfishCache(Generic[KEY, VALUE], metaclass=ABCMeta):
 
 
 class AWellCache(AChemfishCache[RunLike, WellFrame], metaclass=ABCMeta):
-    def __init__(self, feature, cache_dir: PLike, dtype):
+    def __init__(self, feature, cache_dir: PathLike, dtype):
         raise NotImplementedError()
 
     def load_multiple(self, runs: RunsLike) -> WellFrame:
@@ -77,12 +77,12 @@ class AWellCache(AChemfishCache[RunLike, WellFrame], metaclass=ABCMeta):
 
 
 class ASensorCache(AChemfishCache[Tup[SensorNames, RunLike], SensorDataLike], metaclass=ABCMeta):
-    def __init__(self, cache_dir: PLike):
+    def __init__(self, cache_dir: PathLike):
         raise NotImplementedError()
 
 
 class AStimCache(AChemfishCache[BatteryLike, BatteryStimFrame], metaclass=ABCMeta):
-    def __init__(self, cache_dir: PLike, dtype, loader):
+    def __init__(self, cache_dir: PathLike, dtype, loader):
         raise NotImplementedError()
 
     @property
@@ -95,12 +95,12 @@ class StimulusWaveform(Waveform):
 
 
 class AVideoCache(AChemfishCache[RunLike, SauronxVideo], metaclass=ABCMeta):
-    def __init__(self, cache_dir: PLike, shire_store: PLike):
+    def __init__(self, cache_dir: PathLike, shire_store: PathLike):
         raise NotImplementedError()
 
 
 class AnAudioStimulusCache(AChemfishCache[StimulusLike, Path], metaclass=ABCMeta):
-    def __init__(self, cache_dir: PLike):
+    def __init__(self, cache_dir: PathLike):
         raise NotImplementedError()
 
     def load_moviepy(self, stimulus: StimulusLike) -> AudioClip:

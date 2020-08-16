@@ -62,7 +62,7 @@ class ChemfishValarTools:
         :raises TypeError: If `data` is not a Numpy array at all
         """
         if data.dtype != dtype:
-            raise IncomptabileNumpyArrayDataType("Type {} is not a {}".format(data.dtype, dtype))
+            raise IncomptabileNumpyArrayDataType(f"Type {data.dtype} is not a {dtype}")
         return struct.pack(
             ">" + "f" * len(data), *data
         )  # For now, we are assuming data is 1D np.array. Change this once it's not.
@@ -75,9 +75,7 @@ class ChemfishValarTools:
             return [Wells.fetch(wells)]
         else:
             raise XTypeError(
-                "{} is not a valid parameter type. Please use a well or an iterable of wells.".format(
-                    type(wells)
-                )
+                f"{type(wells)} is not a valid parameter type. Use a well or an iterable of wells."
             )
 
     @classmethod
@@ -92,7 +90,7 @@ class ChemfishValarTools:
         # make sure there aren't any weird types
         bad_types = [r for r in runs if not isinstance(r, (int, float, str, Runs, Submissions))]
         if len(bad_types) > 0:
-            raise IncompatibleDataError("Invalid type for run or list or runs {}".format(bad_types))
+            raise IncompatibleDataError(f"Invalid type for run or list or runs {bad_types}")
         # we'll build this up by setting individual indices
         blanks = [None for _ in runs]  # type: List[Optional[Runs]]
         # get by runs
@@ -112,8 +110,8 @@ class ChemfishValarTools:
                 new = Runs.fetch_all_or_none([r for i, r in missing])
             except AssertionError:
                 # TODO this shouldn't be raised
-                raise LookupFailedError("At least one run is missing in {}".format(runs)) from None
-            for i, n in zip_strict([i for i, r in missing], new):
+                raise LookupFailedError(f"At least one run is missing in {runs}") from None
+            for i, n in Tools.zip_strict([i for i, r in missing], new):
                 blanks[i] = n
         # get by submission objects
         if any([b is None for b in blanks]):
@@ -144,7 +142,7 @@ class ChemfishValarTools:
         # check that there are no missing items
         missing = {i: r for i, r in enumerate(runs) if blanks[i] is None}
         if len(missing) > 0:
-            raise ValarLookupError("Didn't find {}".format(missing))
+            raise ValarLookupError(f"Didn't find {missing}")
         return blanks
 
     @classmethod
@@ -186,7 +184,7 @@ class ChemfishValarTools:
         ):
             sub = Submissions.fetch_or_none(run)
             if sub is None:
-                raise ValarLookupError("No run {}".format(run))
+                raise ValarLookupError(f"No run {run}")
             if join:
                 return bq().where(Submissions.id == sub.id).first()
             else:
@@ -204,7 +202,7 @@ class ChemfishValarTools:
             attempt = bq().where(Runs.tag == run).first()
             if attempt is not None:
                 return attempt
-            raise ValarLookupError("No run {}".format(run))
+            raise ValarLookupError(f"No run {run}")
         return Runs.fetch(run)
 
     @classmethod
@@ -241,12 +239,12 @@ class Tools(_Tools, ChemfishValarTools):
         )
 
     @classmethod
-    def prepped_file(cls, path: PLike) -> Path:
+    def prepped_file(cls, path: PathLike) -> Path:
         cls.prep_file(path)
         return Path(path)
 
     @classmethod
-    def prepped_dir(cls, path: PLike, exist_ok: bool = True) -> Path:
+    def prepped_dir(cls, path: PathLike, exist_ok: bool = True) -> Path:
         cls.prep_dir(path, exist_ok=True)
         return Path(path)
 

@@ -22,7 +22,9 @@ class WellCache(AWellCache):
     A cache for WellFrames with a particular feature.
     """
 
-    def __init__(self, feature: FeatureTypeLike, cache_dir: PLike = DEFAULT_CACHE_DIR, dtype=None):
+    def __init__(
+        self, feature: FeatureTypeLike, cache_dir: PathLike = DEFAULT_CACHE_DIR, dtype=None
+    ):
         self.feature = FeatureTypes.of(feature) if feature is not None else None
         cache_dir = Path(cache_dir) / ("-" if self.feature is None else self.feature.internal_name)
         self._cache_dir = Tools.prepped_dir(cache_dir)
@@ -46,7 +48,7 @@ class WellCache(AWellCache):
         return self.cache_dir / (str(run.id) + ".h5")
 
     @abcd.overrides
-    def key_from_path(self, path: PLike) -> RunLike:
+    def key_from_path(self, path: PathLike) -> RunLike:
         path = Path(path).relative_to(self.cache_dir)
         return int(re.compile(r"^([0-9]+)\.h5$").fullmatch(path.name).group(1))
 
@@ -90,7 +92,7 @@ class WellCache(AWellCache):
                     df = pd.read_hdf(self.path_of(r), "df")
                 except Exception:
                     raise CacheSaveError(
-                        "Failed to load run [] from cache at {}".format(str(r), self.path_of(r))
+                        f"Failed to load run {str(r)} from cache at {self.path_of(r)}"
                     )
                 df = WellFrame(df)
             df = df.reset_index()
@@ -111,14 +113,12 @@ class WellCache(AWellCache):
         for run in df["run"].unique():
             dfc = WellFrame.vanilla(df[df["run"] == run].copy())
             saved_to = self.path_of(run)
-            logger.minor("Saving run {} to {}".format(run, saved_to))
+            logger.minor(f"Saving run {run} to {saved_to}")
             with Tools.silenced(no_stderr=True, no_stdout=True):
                 try:
                     dfc.to_hdf(str(saved_to), "df")
                 except Exception:
-                    raise CacheSaveError(
-                        "Failed to save run [] to cache at {}".format(str(run), saved_to)
-                    )
+                    raise CacheSaveError(f"Failed to save run {str(run)} to cache at {saved_to}")
 
 
 __all__ = ["WellCache"]

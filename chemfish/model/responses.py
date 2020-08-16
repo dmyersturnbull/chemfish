@@ -14,11 +14,11 @@ class DoseResponseFrame(TypedDf):
         """
         upper, lower, score = "upper_" + str(i), "lower_" + str(i), "score_" + str(i)
         if score not in self.columns:
-            raise MissingColumnError("No column {}".format(score))
+            raise MissingColumnError(f"No column {score}")
         df = self[["label", "x_value", upper, lower, score]].rename(
             columns={upper: "upper", lower: "lower", score: "score"}
         )
-        return BaseScoreFrame.make_into(df, "ScoreFrame{}".format(i))
+        return BaseScoreFrame.make_into(df, f"ScoreFrame{i}")
 
     def sort_pretty(self, more_controls: Optional[Set[str]] = None):
         """

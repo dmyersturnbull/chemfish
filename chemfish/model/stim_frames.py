@@ -44,14 +44,14 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
                         self[orig_stim_name], stim, waveform_loader(stim.name), is_legacy=is_legacy
                     )
                 except Exception as e:
-                    raise AlgorithmError("Failed to expand audio {}".format(orig_stim_name)) from e
+                    raise AlgorithmError(f"Failed to expand audio {orig_stim_name}") from e
 
     def with_nonzero(self, stim_or_type: Union[str, Stimuli, StimulusType]):
         return self.with_at_least(stim_or_type, 0)
 
     def with_at_least(self, stim_or_type: Union[str, Stimuli, StimulusType], byteval: int):
         if byteval < 0 or byteval > 255:
-            raise OutOfRangeError("{} is not a byte".format(byteval), value=byteval)
+            raise OutOfRangeError(f"{byteval} is not a byte", value=byteval)
         real_stim = Stimuli.fetch_or_none(stim_or_type)
         real_type = None if real_stim is not None else StimulusType.of(stim_or_type)
         sel = None
@@ -105,11 +105,9 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
                 "frames",
             ],
         )
-        logger.info("Downloaded battery {}".format(battery.name))
+        logger.info(f"Downloaded battery {battery.name}")
         if len(df) == 0:
-            logger.warning(
-                "Battery {} / {} has no stimulus frames".format(battery.id, battery.name)
-            )
+            logger.warning("Battery {battery} / {battery.name} has no stimulus frames")
         return df.sort_values("start")
 
     @classmethod
@@ -165,21 +163,6 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
             return stimframes
 
 
-class AssayStimFrame(StimFrame):
-    @classmethod
-    def of(
-        cls,
-        assay: Union[Assays, int, str],
-        start_ms: Optional[int] = None,
-        end_ms: Optional[int] = None,
-    ) -> AssayStimFrame:
-        raise NotImplementedError()
-        # assay = Assays.fetch(assay)  # type: Assays
-        # stimframes = _generate_stimframes(assay)
-        # stimframes = _slice(stimframes, assay.name, start_ms, end_ms)
-        # return AssayStimFrame(stimframes)
-
-
 class BatteryStimFrame(StimFrame):
     def slice_ms(
         self,
@@ -220,4 +203,4 @@ class BatteryStimFrame(StimFrame):
         return BatteryStimFrame(stimframes)
 
 
-__all__ = ["StimFrame", "AssayStimFrame", "BatteryStimFrame"]
+__all__ = ["StimFrame", "BatteryStimFrame"]

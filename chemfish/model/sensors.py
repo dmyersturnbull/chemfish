@@ -187,7 +187,7 @@ class ImageSensor(ChemfishSensor):
         )
         wb1 = Tools.wb1_from_run(self.run)
         if len(rois) != wb1.n_wells:
-            raise LengthMismatchError("{} rois but {} wells".format(len(rois), wb1.n_wells))
+            raise LengthMismatchError(f"{len(rois)} rois but {wb1.n_wells} wells")
         for w in rois:
             draw.rectangle((w.x0, w.y0, w.x1, w.y1), outline=color)
         return new

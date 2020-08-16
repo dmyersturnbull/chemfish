@@ -17,23 +17,99 @@ class InternalTools:
     """
 
     @classmethod
+    def download_frame_timestamps(cls, run_id: int) -> np.array:
+        """
+        Downloads the timestamps that SauronX recorded for the frame capture times, or None if the sensor was not defined.
+        Will always return None for legacy data.
+        In pre-PointGrey data, these are the timestamps that MATLAB received the frames.
+        In PointGrey data, these are the timestamps that the image was taken (according to the camera firmware).
+        :param run_id: The ID of a runs row, only
+        :return: The numpy array of floats, or None
+        """
+        return InternalTools.convert_sensor_data(
+            SensorData.select()
+            .where(SensorData.run_id == run_id)
+            .where(SensorData.sensor_id == 3)
+            .first()
+        )
+
+    @classmethod
+    def download_stimulus_timestamps(cls, run_id: int) -> Optional[np.array]:
+        """
+        Downloads the timestamps that SauronX recorded for the stimuli, or None if the sensor was not defined.
+        Will always return None for legacy data.
+        :param run_id: The ID of a runs row, only
+        :return: The numpy array of floats, or None
+        """
+        return InternalTools.convert_sensor_data(
+            SensorData.select()
+            .where(SensorData.run_id == run_id)
+            .where(SensorData.sensor_id == 4)
+            .first()
+        )
+
+    @classmethod
+    def convert_sensor_data(cls, data: SensorData) -> Union[None, np.array, bytes, str]:
+        """
+        Downloads and converts sensor data.
+        See `InternalTools.convert_sensor_data_from_bytes` for details.
+        :param data: The ID or instance of a row in sensor_data
+        :return: The converted data
+        """
+        data = SensorData.fetch(data)
+        return InternalTools.convert_sensor_data_from_bytes(data.sensor, data.floats)
+
+    @classmethod
+    def convert_sensor_data_from_bytes(
+        cls, sensor: Union[str, int, Sensors], data: bytes
+    ) -> Union[None, np.array, bytes, str]:
+        """
+        Convert the sensor data to its appropriate type as defined by `sensors.data_type`.
+        WARNING:
+            Currently does not handle `sensors.data_type=='utf8_char'`. Currently there are no sensors in Valar with this data type.
+        :param sensor: The name, ID, or instance of the sensors row
+        :param data: The data from `sensor_data.floats`; despite the name this is blob represented as bytes and may not correspond to floats at all
+        :return: The converted data, or None if `data` is None
+        """
+        sensor = Sensors.fetch(sensor)
+        dt = sensor.data_type
+        if data is None:
+            return None
+        if dt == "byte":
+            return np.frombuffer(data, dtype=np.byte)
+        if dt == "unsigned_byte":
+            return np.frombuffer(data, dtype=np.byte) + 2 ** 7
+        if dt == "short":
+            return np.frombuffer(data, dtype=">i2").astype(np.int64)
+        if dt == "unsigned_short":
+            return np.frombuffer(data, dtype=">i2").astype(np.int64) + 2 ** 15
+        if dt == "int":
+            return np.frombuffer(data, dtype=">i4").astype(np.int64)
+        if dt == "unsigned_int":
+            return np.frombuffer(data, dtype=">i4").astype(np.int64) + 2 ** 31
+        if dt == "float":
+            return np.frombuffer(data, dtype=">f4").astype(np.float64)
+        if dt == "double":
+            return np.frombuffer(data, dtype=">f8").astype(np.float64)
+        if dt == "utf8_char":
+            return str(dt, encoding="utf-8")
+        elif dt == "other":
+            return data
+        else:
+            raise UnsupportedOpError(f"Oh no! Sensor cache doesn't recognize dtype {dt}")
+
+    @classmethod
     def verify_class_has_attrs(cls, class_, *attributes: Union[str, Iterable[str]]) -> None:
         attributes = InternalTools.flatten_smart(attributes)
         bad_attributes = [not hasattr(class_, k) for k in attributes]
         if any(bad_attributes):
-            raise AttributeError("No {} attribute(s) {}".format(class_.__name__, bad_attributes))
-
-    @classmethod
-    def verify_unsed(cls, first: Collection[Any], second: Collection[Any]) -> None:
-        bad = {k for k in first if k in second}
-        if len(bad) > 0:
-            raise AlreadyUsedError("{} were already used".format(bad))
+            raise AttributeError(f"No {class_.__name__} attribute(s) {bad_attributes}")
 
     @classmethod
     def warn_overlap(cls, a: Collection[Any], b: Collection[Any]) -> Set[Any]:
         bad = set(a).intersection(set(b))
         if len(bad) > 0:
-            logger.error("Values {} are present in both sets".format(", ".join(bad)))
+            logger.error(f"Values {', '.join(bad)} are present in both sets")
         return bad
 
     @classmethod
@@ -72,41 +148,22 @@ class InternalTools:
         return [thing_class.fetch(thing).id for thing in things]
 
     @classmethod
-    def fetch_all(cls, thing_class: Type[BaseModel], things) -> Sequence[BaseModel]:
-        """
-        Fetches a single row from a table, returning the row instances.
-        Each returned row is guaranteed to exist in the table at the time the query is executed.
-        :param thing_class: The table (peewee model)
-        :param things: A list of lookup values -- each is an ID or unique varchar/char/enum field value
-        :raises A ValarLookupError If the row was not found
-        :return: The ID of the row
-        """
-        # TODO make faster
-        things = InternalTools.listify(things)
-        return [thing_class.fetch(thing) for thing in things]
-
-    @classmethod
-    def fetch_all_ids_unchecked(cls, thing_class: Type[BaseModel], things):
+    def fetch_all_ids_unchecked(cls, thing_class: Type[BaseModel], things, keep_none: bool = False):
         """
         Fetches a single row from a table, returning the row IDs.
         If just IDs are passed, just returns them -- this means that the return value is NOT GUARANTEED to be a valid row ID.
         :param thing_class: The table (peewee model)
         :param things: A list of lookup values -- each is an ID or unique varchar/char/enum field value
+        :param keep_none: Include None values
         :raises A ValarLookupError If the row was not found
         :return: The ID of the row
         """
         things = InternalTools.listify(things)
+        # noinspection PyTypeChecker
         return [
-            thing if isinstance(thing, int) else thing_class.fetch(thing).id for thing in things
-        ]
-
-    @classmethod
-    def fetch_all_ids_unchecked_keep_none(cls, thing_class: Type[BaseModel], things):
-        things = InternalTools.listify(things)
-        return [
-            None
-            if thing is None
-            else (thing if isinstance(thing, int) else thing_class.fetch(thing).id)
+            thing
+            if isinstance(thing, int) or thing is None and keep_none
+            else thing_class.fetch(thing).id
             for thing in things
         ]
 
@@ -142,20 +199,6 @@ class InternalTools:
         return y
 
     @classmethod
-    def flatten_nested(
-        cls, seq: Iterable[Any], apply=lambda x: x, until=lambda x: True, discard_nulls: bool = True
-    ) -> Iterator[Any]:
-        for s in seq:
-            if Tools.is_true_iterable(s):
-                yield from InternalTools.flatten_nested(s, apply, until, discard_nulls)
-            elif s is None and discard_nulls:
-                pass
-            elif until(s):
-                yield apply(s)
-            else:
-                raise XTypeError("Wrong type {} for {}".format(type(s), s))
-
-    @classmethod
     def listify(cls, sequence_or_element: Any) -> Sequence[Any]:
         """
         Makes a singleton list of a single element or returns the iterable.
@@ -189,7 +232,7 @@ class InternalTools:
         """
         well = Wells.select(Wells, Runs).join(Runs).where(Wells.id == well).first()
         if well is None:
-            raise ValarLookupError("No well {}".format(well))
+            raise ValarLookupError(f"No well {well}")
         return well
 
     @classmethod
@@ -246,16 +289,5 @@ class InternalTools:
                 return False
         return None
 
-
-# TODO move to test
-got = list(
-    InternalTools.flatten_nested(
-        [1, 2, [3, (5, {7, None})]],
-        until=lambda s: isinstance(s, int),
-        apply=lambda s: s + 10,
-        discard_nulls=True,
-    )
-)
-assert got == [11, 12, 13, 15, 17]
 
 __all__ = ["InternalTools"]

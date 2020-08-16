@@ -38,7 +38,7 @@ def fix_fig(fig: Figure, **kwargs):
     # fig.set_size_inches(w, h)
     if label is not None:  # maybe super() actually has defaults
         fig.set_label(label)
-    logger.trace("New figure of dimensions {},{}".format(h, w))
+    logger.trace(f"New figure of dimensions {h},{w}")
 
 
 def new_fig(**kwargs):

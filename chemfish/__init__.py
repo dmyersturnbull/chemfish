@@ -3,9 +3,9 @@ Metadata for this project.
 """
 
 import logging
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import metadata as __load
 from pathlib import Path
-
-from importlib.metadata import PackageNotFoundError, metadata as __load
 
 logger = logging.getLogger(Path(__file__).parent.name)
 
@@ -33,6 +33,6 @@ except PackageNotFoundError:  # pragma: no cover
 
 if __name__ == "__main__":  # pragma: no cover
     if __metadata is not None:
-        print("{} (v{})".format(__metadata["name"], __metadata["version"]))
+        print(f"__metadata['name'] (v{__metadata['version']})")
     else:
         print("Unknown project info")

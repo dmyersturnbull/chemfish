@@ -65,9 +65,7 @@ class MetricData:
         true: Sequence[float],
     ):
         if len(false) != len(true):
-            raise LengthMismatchError(
-                "FPR has length {} but TPR has length {}".format(len(false), len(true))
-            )
+            raise LengthMismatchError(f"FPR has length {len(false)} but TPR has length {len(true)}")
         self.label, self.control, self.score, self.false, self.true = (
             label,
             control,
@@ -168,7 +166,7 @@ class BaseScoreFrame(TypedDf):
         boot: Optional[int] = None,
     ) -> BaseScoreFrame:
         if ci is not None and (ci < 0 or ci > 1):
-            raise ValueError("CI is {}".format(ci))
+            raise ValueError(f"CI is {ci}")
         gb = self.core_info_cols
         selected = self[[*gb, "score"]]
         scores = selected.groupby("label").aggregate(center_fn)
@@ -243,23 +241,17 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
             if len(labels) == 2 and label != __a and label != __b:
                 curves.append(bylabel._curve(control_label, info, clazz))
             elif label != control_label and label != __a and label != __b:
-                logger.caution(
-                    "Skipping {} vs {} with {} labels".format(control_label, label, len(labels))
-                )
+                logger.caution(f"Skipping {control_label} vs {label} with {len(labels)} labels")
         if __a is not None and __b is not None:
             curves.append(self._curveab(control_label, info, clazz))
         elif __a is not None:
-            logger.warning(
-                "{}__a exists but {}__b does not. Ignoring.".format(control_label, control_label)
-            )
+            logger.warning(f"{control_label}__a exists but {control_label}__b does not. Ignoring.")
         elif __b is not None:
-            logger.warning(
-                "{}__b exists but {}__a does not. Ignoring.".format(control_label, control_label)
-            )
+            logger.warning(f"{control_label}__b exists but {control_label}__a does not. Ignoring.")
         return curves
 
     def _curveab(self, control_label: str, info, clazz):
-        logger.caution("Transparently handling __a and __b for {} in curves".format(control_label))
+        logger.caution(f"Transparently handling __a and __b for {control_label} in curves")
         __a, __b = self.__ab(control_label)
         bylabel = self.by_label([__a, __b])
         # TODO _false_and_score
@@ -268,9 +260,7 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
         true, score = list(truea) + list(trueb), list(scorea) + list(scoreb)
         data = clazz(control_label, control_label, true, score)
         logger.minor(
-            "{} for {} against itself is {}%".format(
-                info.score, control_label, Tools.round_to_sigfigs(data.score, 3)
-            )
+            f"{info.score} for {control_label} against itself is {Tools.round_to_sigfigs(data.score, 3)}%"
         )
         return data
 
@@ -288,9 +278,7 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
         true, score = self._true_and_score(control_label)
         data = clazz(other_label, None, true, score)
         logger.minor(
-            "{} for {} against {} is {}%".format(
-                info.score, other_label, control_label, Tools.round_to_sigfigs(data.score, 3)
-            )
+            f"{info.score} for {other_label} against {control_label} is {Tools.round_to_sigfigs(data.score, 3)}%"
         )
         return data
 

@@ -1,0 +1,112 @@
+[
+    {
+        "name": "MGH",
+        "description": "Legacy data from Massachusetts General Hospital",
+        "start_date": "2011-01-01",
+        "end_date": "2014-01-01",
+        "has_submission": false,
+        "quality": 1,
+        "saurons": [
+            "MGH"
+        ],
+        "required_sensors": [
+            "legacy-assay-milliseconds"
+        ],
+        "optional_sensors": [
+            "legacy-temperature-celsius"
+        ]
+    },
+    {
+        "name": "PIKE_LEGACY",
+        "description": "Legacy data at UCSF on Pike cameras",
+        "start_date": "2014-01-01",
+        "end_date": "2017-01-01",
+        "has_submission": false,
+        "quality": 1,
+        "saurons": ["1", "2", "3"],
+        "required_sensors": [
+            "legacy-assay-milliseconds"
+        ],
+        "optional_sensors": [
+            "legacy-temperature-celsius"
+        ]
+    },
+    {
+        "name": "PIKE_SAURONX",
+        "description": "SauronX data at UCSF on Pike cameras",
+        "start_date": "2016-01-01",
+        "end_date": "",
+        "has_submission": true,
+        "quality": 2,
+        "saurons": ["1", "2", "3"],
+        "required_sensors": [
+            "sauronx-snapshot-ms",
+            "sauronx-stimulus-id",
+            "sauronx-stimulus-ms",
+            "sauronx-stimulus-value"
+        ],
+        "optional_sensors": [
+            "sauronx-decibels",
+            "sauronx-microphone-ms",
+            "sauronx-microphone-wav",
+            "sauronx-tinkerkit-photosensor-ms",
+            "sauronx-tinkerkit-photosensor-values",
+            "sauronx-tinkerkit-thermosensor-ms",
+            "sauronx-tinkerkit-thermosensor-values",
+            "webcam",
+            "preview"
+        ]
+    },
+    {
+        "name": "POINTGREY_ALPHA",
+        "description": "Early SauronX data at UCSF on PointGrey cameras",
+        "start_date": "2017-01-01",
+        "end_date": "2020-01-01",
+        "has_submission": true,
+        "quality": 2,
+        "saurons": ["4"],
+        "required_sensors": [
+            "sauronx-snapshot-ms",
+            "sauronx-stimulus-id",
+            "sauronx-stimulus-ms",
+            "sauronx-stimulus-value"
+        ],
+        "optional_sensors": [
+            "sauronx-decibels",
+            "sauronx-microphone-ms",
+            "sauronx-microphone-wav",
+            "sauronx-tinkerkit-photosensor-ms",
+            "sauronx-tinkerkit-photosensor-values",
+            "sauronx-tinkerkit-thermosensor-ms",
+            "sauronx-tinkerkit-thermosensor-values",
+            "webcam",
+            "preview"
+        ]
+    },
+    {
+        "name": "POINTGREY",
+        "description": "SauronX data at UCSF on PointGrey cameras",
+        "start_date": "2018-01-01",
+        "end_date": "",
+        "has_submission": true,
+        "quality": 4,
+        "saurons": ["Thor", "Smaug", "Drake", "Wyrm"],
+        "required_sensors": [
+            "sauronx-snapshot-ms",
+            "sauronx-stimulus-id",
+            "sauronx-stimulus-ms",
+            "sauronx-stimulus-value"
+        ],
+        "optional_sensors": [
+            "sauronx-decibels",
+            "sauronx-microphone-ms",
+            "sauronx-microphone-wav",
+            "sauronx-tinkerkit-photosensor-ms",
+            "sauronx-tinkerkit-photosensor-values",
+            "sauronx-tinkerkit-thermosensor-ms",
+            "sauronx-tinkerkit-thermosensor-values",
+            "webcam",
+            "preview"
+        ]
+    }
+]

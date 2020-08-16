@@ -223,7 +223,7 @@ class RunDurationPlotter:
         ax.set_yticklabels([])
         ax.set_xlabel(self._attribute)
         if len({m for m in minute_durations if m < 0}) > 0:
-            logger.error("Some {} durations are negative".format(self._attribute))
+            logger.error(f"Some {self._attribute} durations are negative")
         ax.set_xlim(0, None)
         return ax.get_figure()
 

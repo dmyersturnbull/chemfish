@@ -104,7 +104,7 @@ class HitSearch:
         if name in HitFrame.reserved_columns():
             raise ReservedError("Cannot use the name 'score', which is reserved")
         if name in self.secondary_score_fns:
-            raise AlreadyUsedError("{} is already used".format(name))
+            raise AlreadyUsedError(f"{name} is already used")
         self.secondary_score_fns[name] = function
         return self
 
@@ -115,7 +115,7 @@ class HitSearch:
         :param name: 'score' for the primary score or the name of a secondary score
         """
         if name != "score" and (name not in self.secondary_score_fns):
-            raise LookupFailedError("Score {} was not found".format(name))
+            raise LookupFailedError(f"Score {name} was not found")
         self._min_scores[name] = value
         return self
 
@@ -125,7 +125,7 @@ class HitSearch:
         This function is generally only used to help debug a phenosearch.
         """
         if n < 0:
-            raise XValueError("Limit {} is negative".format(n))
+            raise XValueError(f"Limit {n} is negative")
         self._limit = n
         return self
 
@@ -155,7 +155,7 @@ class HitSearch:
         df = HitFrame(results).reset_index()
         if path is not None:
             df.to_csv(path)
-        logger.minor("Saved {} hits".format(len(results)))
+        logger.minor(f"Saved {len(results)} hits")
         return df
 
     def iterate(self) -> Iterator[pd.Series]:
@@ -225,7 +225,8 @@ class HitSearchTools:
     ) -> Sequence[int]:
         """
         Get a list of the times in stimframes (milliseconds for sauronx)that one or more stimuli of interest changed value.
-        If multiple stimuli are passed, does not differentiate. In other words, if red LED is on at 200, then the blue turns on at 255, that start will be included (subject to min_duration_ms).
+        If multiple stimuli are passed, does not differentiate. In other words, if red LED is on at 200, then the blue turns on at 255,
+            that start will be included (subject to min_duration_ms).
         :param battery: The name, ID, or instance of a battery
         :param stimuli: Either a stimulus or set of stimuli
         :param start: Include times the stimulus increased in pwm (or volume)
@@ -236,10 +237,11 @@ class HitSearchTools:
         apps = AppFrame.of(battery)
         if ValarTools.battery_is_legacy(battery):
             warn(
-                "Getting stimulus start and stop positions for a legacy battery. Make sure you're using 25-fps-based values for min_duration_ms instead of milliseconds."
+                "Getting stimulus start and stop positions for a legacy battery."
+                "Make sure you're using 25-fps-based values for min_duration_ms instead of milliseconds."
             )
         if min_duration_ms < 0:
-            raise XValueError("Duration must be >= 0; was {}".format(min_duration_ms))
+            raise XValueError(f"Duration must be >= 0; was {min_duration_ms}")
         stimuli = [s.name for s in Stimuli.fetch_all(stimuli)]
         positions = []
         apps = AppFrame(apps[apps["stimulus"].isin(stimuli)]).insight()
@@ -272,7 +274,8 @@ class TruncatingScorer:
     def __init__(self, query: np.array, similarity: Callable[[np.array, Wells], float]):
         """
         :param query: A time trace of MI or cd(10)
-        :param similarity: Any function that computes a similarity between two arrays. If you have a distance function, wrap it in `lambda x, y: -distance(x, y)`"""
+        :param similarity: Any function that computes a similarity between two arrays. If you have a distance function,
+               wrap it in `lambda x, y: -distance(x, y)`"""
         self.query = query
         self.similarity = similarity
         self.problematic_wells = set()  # type: Set[Wells]
@@ -357,7 +360,7 @@ class HitScores:
             def similarity(x, y):
                 return -np.power(np.power(weights * np.abs(x - y), p).sum(), 1 / p)
 
-        similarity.__name__ = "-minkowski(p={})".format(p)
+        similarity.__name__ = f"-minkowski(p={p})"
         return TruncatingScorer(query, similarity)
 
 

@@ -84,7 +84,7 @@ class ChemfishProcessor:
         n_exists = sum([not cache.has_video(v) for v in args])
         for arg in args:
             cache.download(arg)
-        logger.notice("Downloaded {} videos.".format(n_exists))
+        logger.notice(f"Downloaded {n_exists} videos.")
 
     def _copy_if(self, dest: Path, source: Path) -> bool:
         import shutil
@@ -94,10 +94,10 @@ class ChemfishProcessor:
             dest.parent.mkdir(parents=True, exist_ok=True)
             # noinspection PyTypeChecker
             shutil.copy(source, dest)
-            logger.info("Copied {} → {}".format(source, dest))
+            logger.info(f"Copied {source} → {dest}")
             return True
         else:
-            logger.info("Skipping {}".format(dest))
+            logger.info(f"Skipping {dest}")
             return False
 
 

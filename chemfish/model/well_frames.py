@@ -771,7 +771,7 @@ class WellFrame(TypedDf):
             if ts.len() == 0:
                 return fallback
             elif ts.len() > 1:
-                raise MultipleMatchesError("Multiple treatments {}".format(ts))
+                raise MultipleMatchesError(f"Multiple treatments {ts}")
             else:
                 return transform(ts[0].dose)
 
@@ -1039,9 +1039,7 @@ class WellFrame(TypedDf):
     def with_new(self, meta_col: str, setter: Union[pd.Series, pd.Index, Sequence[str], WellNamer]):
         if meta_col not in WellFrameColumnTools.special_cols:
             raise RefusingRequestError(
-                "Can only set special meta columns ({}), not {}. See `set_meta_col` instead.".format(
-                    WellFrameColumnTools.special_cols, meta_col
-                )
+                f"Can only set reserved cols ({WellFrameColumnTools.special_cols}), not {meta_col}. Use set_meta_col."
             )
 
         dtype = tuple if meta_col == "compound_namer" else str
@@ -1115,9 +1113,7 @@ class WellFrame(TypedDf):
             df = WellFrame.__fix_columns(df, require_full, ignore_extra_meta)
         except Exception:
             logger.error(
-                "Couldn't convert WellFrame with columns meta columns {} and columns {}".format(
-                    df.index.names, df.columns
-                )
+                f"Couldn't convert WellFrame with columns meta columns {df.index.names} and columns {df.columns}"
             )
             raise
         df.__class__ = cls
@@ -1197,7 +1193,7 @@ class WellFrame(TypedDf):
         # tabs can interfere with saving in various formats
         bad = {name for name in df["name"] if "\t" in str(name)}
         if len(bad) > 0:
-            raise InvalidWellFrameError("Names {} contain tab characters".format(bad))
+            raise InvalidWellFrameError(f"Names {bad} contain tab characters")
         # display_name is best to have in general
         if "display_name" not in df.columns:
             df["display_name"] = df["name"]
@@ -1218,9 +1214,7 @@ class WellFrame(TypedDf):
         # 'name' is the only fully required meta column
         if "name" not in df.columns:
             raise InvalidWellFrameError(
-                "Required column {} not in index; got {} for columns and {} for index".format(
-                    "name", df.columns, df.index.names
-                )
+                f"Required column 'name' not in index; got columns {df.columns} and index {df.index.names}"
             )
         df["name"] = df["name"].map(str).astype(str)
         # optionally require every 'required' column
@@ -1228,9 +1222,7 @@ class WellFrame(TypedDf):
             for c in WellFrameColumns.required_names:
                 if c not in df.columns:
                     raise InvalidWellFrameError(
-                        "Required column {} not in index; got {} for columns and {} for index".format(
-                            c, df.columns, df.index.names
-                        )
+                        f"Required column '{c}' not in index; got columns {df.columns} and index {df.index.names}"
                     )
         df = WellFrame.__drop(df)
         # if we don't allow additional meta columns, only set those in reserved_names (if they exist)

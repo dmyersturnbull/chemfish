@@ -26,9 +26,9 @@ class ChemfishDatasetTools:
             m = len(df[df["c_ids"] == (c,)])
             if m < cutoff:
                 df = df[df["c_ids"] != (c,)]
-                logger.info("Discarded c{} with {}<{} replicates".format(c, m, cutoff))
+                logger.info(f"Discarded c{c} with {m}<{cutoff} replicates")
                 m = len(df[df["c_ids"] == (c,)])
-                assert m == 0, "{} left".format(m)
+                assert m == 0, f"{m} left"
         return df
 
     @classmethod
@@ -87,12 +87,10 @@ class ChemfishDatasetTools:
 
 class ChemfishDataset(metaclass=abc.ABCMeta):
     def __call__(self):
-        logger.info("Downloading {}...".format(self.name))
+        logger.info(f"Downloading {self.name}...")
         df = self._download()
         logger.notice(
-            "Downloaded {} with {} runs, {} names, and {} wells.".format(
-                self.name, len(df.unique_runs()), len(df.unique_names()), len(df)
-            )
+            f"Downloaded {self.name} w/ {len(df.unique_runs())} runs, {len(df.unique_names())} names, {len(df)} wells."
         )
         return df
 
@@ -192,12 +190,7 @@ class LeoDataset2(ChemfishDataset):
         original_length = df.feature_length()
         df = df.after_last_nan().before_first_nan()
         logger.minor(
-            "Lost {} features: {} {} {}".format(
-                original_length - df.feature_length(),
-                original_length,
-                Chars.right,
-                df.feature_length(),
-            )
+            f"Lost {original_length - df.feature_length()} features: {original_length} → {df.feature_length()}"
         )
         nreps = {
             k.replace("screen :: BIOMOL :: Leo :: on Thor :: Leo", ""): v
@@ -207,7 +200,7 @@ class LeoDataset2(ChemfishDataset):
             .to_dict()
             .items()
         }
-        logger.minor("N replicates by experiment: {}".format(nreps))
+        logger.minor(f"N replicates by experiment: {nreps}")
         return (
             df.sort_values(["run", "well_index"])
             .subset(1, None)

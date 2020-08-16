@@ -167,7 +167,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         elif Tools.is_true_iterable(where):
             self._wheres.extend(where)
         else:
-            raise XTypeError("Strange WHERE type {}".format(type(where)))
+            raise XTypeError(f"Strange WHERE type {type(where)}")
         return self
 
     def limit_to(self, limit: Optional[int]) -> WellFrameBuilder:
@@ -177,17 +177,15 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         :return:
         """
         if self._limit is not None:
-            raise ContradictoryRequestError("Limit {} already set".format(self._limit))
+            raise ContradictoryRequestError(f"Limit {self._limit} already set")
         if limit is not None:
-            logger.warning(
-                "Setting limit {} in WellFrameBuilder. This may not always work.".format(limit)
-            )
+            logger.warning(f"Setting limit {limit} in WellFrameBuilder. This may not always work.")
             self._limit = limit
         return self
 
     def with_feature(self, feature: Union[None, str, FeatureType], dtype=None) -> WellFrameBuilder:
         if self._feature is not None:
-            raise ContradictoryRequestError("Feature {} already added".format(self._feature))
+            raise ContradictoryRequestError(f"Feature {self._feature} already added")
         if feature is not None:
             self._feature = FeatureTypes.of(feature)
         self._dtype = dtype
@@ -203,15 +201,11 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         """
         if name in [c[0] for c in WellFrameColumns.reserved]:
             raise ReservedError(
-                "Column name {} is reserved. See the attributes in WellFrameColumns to use one of those or choose a different name.".format(
-                    name
-                )
+                f"Column name {name} is reserved. Use a column in WellFrameColumns or choose another name."
             )
         if not (isinstance(name, str)):
             raise XTypeError(
-                "Name parameter must be a string. The name you provided is of type: {} ".format(
-                    type(name)
-                )
+                f"Name parameter must be a string. The name you provided is of type: {type(name)}"
             )
         self._columns[name] = function
         return self
@@ -280,9 +274,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
             )
         else:
             logger.info(
-                "Fetching WellFrame with feature {} for {} runs ...".format(
-                    self._feature, len(self._required_runs)
-                )
+                f"Fetching WellFrame with feature {self._feature} for {len(self._required_runs)} runs ..."
             )
         df = self._build_inner(query)
         logger.info(
@@ -297,18 +289,18 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         treatments = list(query)
         if not treatments:
             raise EmptyCollectionError(
-                "Query is completely empty. Please make sure the where statements and constructors have appropriate arguments."
+                "Query is empty. Make sure the WHERE statements and constructors have appropriate arguments."
             )
         all_wells = {t.well for t in treatments}
         all_runs = {t.well.run for t in treatments}
         assert None not in all_runs, "'None' is a run ID"
         for req in self._required_runs:
-            assert req in all_runs, "Run r{} was required but not found".format(req)
+            assert req in all_runs, r"Run r{req} was required but not found"
         # map each well to its associated treatments
         well_to_treatments = {w: [] for w in all_wells}
         all_well_ids = {w.id for w in all_wells}
         for well in self._required_wells:
-            assert well.id in all_well_ids, "Well {} was required but not found.".format(well)
+            assert well.id in all_well_ids, f"Well {well} was required but not found."
         for t in treatments:
             if t.batch_id is not None:  # generally not needed
                 well_to_treatments[t.well].append(t)
@@ -394,7 +386,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
             if features is not None:
                 if well.id not in features:
                     raise NoFeaturesError(
-                        "The feature {} is not defined on well {}".format(self._feature, well.id)
+                        f"The feature {self._feature} is not defined on well {well.id}"
                     )
                 if self._dtype is None:
                     dct2 = {i: mi for i, mi in enumerate(features[well.id])}
@@ -421,9 +413,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
             logger.warning("The WellFrame is empty")
 
     def __repr__(self):
-        return "WellFrameBuilder(feature={}, {} wheres @ {})".format(
-            self._feature, len(self._wheres), hex(id(self))
-        )
+        return f"WellFrameBuilder(feature={self._feature}, {len(self._wheres)} wheres @ {hex(id(self))})"
 
     def __str__(self):
         return repr(self)

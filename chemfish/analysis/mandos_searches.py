@@ -173,7 +173,7 @@ class MandosSearch:
         for where in self.wheres:
             query = query.where(where)
         query = list(query)
-        logger.minor("Found {} annotations".format(len(query)))
+        logger.minor(f"Found {len(query)} annotations")
         df = pd.DataFrame(
             [
                 pd.Series(

@@ -15,8 +15,8 @@ from chemfish.model.compound_names import *
 class LayoutFrame(UntypedDf):
     def drug_cols(self):
         ii = 1
-        while "batch_{}".format(ii) in self.columns:
-            b, d = "batch_{}".format(ii), "dose_{}".format(ii)
+        while f"batch_{ii}" in self.columns:
+            b, d = f"batch_{ii}", f"dose_{ii}"
             yield ii, b, d
             ii += 1
 
@@ -61,17 +61,17 @@ class LayoutChecker:
         for wrange in ranges:
             for well in wb1.parse(wrange):
                 if well in all_wells:
-                    logger.warning("Well {} specified twice".format(well))
+                    logger.warning(f"Well {well} specified twice")
                 all_wells.add(well)
         for well in wb1.all_labels():
             if well not in all_wells:
-                logger.error("Well {} missing".format(well))
+                logger.error(f"Well {well} missing")
 
 
 class LayoutParser:
     def parse(
         self,
-        df: Union[PLike, pd.DataFrame],
+        df: Union[PathLike, pd.DataFrame],
         n_rows=8,
         n_columns=12,
         check_vals=True,
@@ -88,9 +88,7 @@ class LayoutParser:
             for label in EL.parse(series_row.well):
                 if label in labels_to_lines:
                     raise AlreadyUsedError(
-                        "{} was included in spreadsheet rows {} and {}".format(
-                            label, labels_to_lines[label], line_number
-                        )
+                        f"{label} was included in spreadsheet rows {labels_to_lines[label]} and {line_number}"
                     )
                 labels_to_lines[label] = line_number
                 r, c = EL.label_to_rc(label)
@@ -121,9 +119,7 @@ class LayoutParser:
                 series_dict.update(self._drugs_flat(df, series_row))
                 new_df.append(series_dict)
         if len(new_df) != n_rows * n_columns:
-            raise XValueError(
-                "Expected {} wells but got {}".format(n_rows * n_columns, len(new_df))
-            )
+            raise XValueError(f"Expected {n_rows * n_columns} wells but got {len(new_df)}")
         df = pd.DataFrame(new_df, columns=self._cols(df))
         df[["dpf", "n"]] = df[["dpf", "n"]].apply(pd.to_numeric)
         df = df.astype({"dpf": "Int64", "n": "Int64"})
@@ -150,9 +146,7 @@ class LayoutParser:
                     float(dose_float)
                 except ValueError:
                     raise XValueError(
-                        "Dose of '{}'  in column {} on row {} is invalid".format(
-                            dose_float, dose_series, row_number
-                        )
+                        f"Dose of '{dose_float}'  in column {dose_series} on row {row_number} is invalid"
                     ) from None
             df[dose_series].map(float)
             for batch in df[batch_series]:
@@ -166,7 +160,7 @@ class LayoutParser:
             batches = set()
             for batch, dose in self._drugs(df, row):
                 if batch in batches:
-                    raise AlreadyUsedError("Batch {} is duplicated in row {}".format(batch, i))
+                    raise AlreadyUsedError(f"Batch {batch} is duplicated in row {i}")
                 if not Tools.is_empty(batch):
                     batches.add(batch)
 
@@ -186,8 +180,8 @@ class LayoutParser:
 
     def _drug_cols(self, df):
         ii = 1
-        while "batch_{}".format(ii) in df.columns:
-            b, d = "batch_{}".format(ii), "dose_{}".format(ii)
+        while f"batch_{ii}" in df.columns:
+            b, d = f"batch_{ii}", f"dose_{ii}"
             yield ii, b, d
             ii += 1
 
@@ -330,16 +324,12 @@ class LayoutParser:
                         and batch.compound_id in ValarTools.known_solvent_names().keys()
                     ):
                         logger.debug(
-                            "Skipping solvent {} for well {}".format(
-                                ValarTools.known_solvent_names()[batch.compound_id], well.id
-                            )
+                            f"Skipping solvent {ValarTools.known_solvent_names()[batch.compound_id]} for well {well.id}"
                         )
                         continue
                     unique_bids.add(batch)
                     logger.debug(
-                        "Adding batch {} (dose {}) for well {} and control type {}".format(
-                            batch, dose, well.id, row.control
-                        )
+                        f"Adding batch {batch} (dose {dose}) for well {well.id} and control type {row.control}"
                     )
                     wt = WellTreatments(well=well, batch=batch, micromolar_dose=dose)
                     if not dry:
@@ -347,17 +337,11 @@ class LayoutParser:
                     n_treatments += 1
             total_n_wells += n_wells
             total_n_treatments += n_treatments
-            logger.debug(
-                "Added {} wells and {} treatments for row {}".format(
-                    n_wells, n_treatments, row.well
-                )
-            )
+            logger.debug(f"Added {n_wells} wells and {n_treatments} treatments for row {row.well}")
         logger.notice(
-            "Added {} total wells and {} treatments for run r{}".format(
-                total_n_wells, total_n_treatments, run.id
-            )
+            f"Added {total_n_wells} total wells and {total_n_treatments} treatments for run r{run.id}"
         )
-        logger.info("Added batch IDs: {}".format(Tools.join(unique_bids, ",")))
+        logger.info("Added batch IDs: " + Tools.join(unique_bids, ","))
 
 
 class LayoutVisualizer:
@@ -411,7 +395,7 @@ class LayoutVisualizer:
         # Verify that the batch columns each have dose counterparts
         for b in batch_cols:
             num = b.split("_")[1]
-            dose = "dose_{}".format(num)
+            dose = f"dose_{num}"
             if dose in lower_cols:
                 valid_b.add((b, dose))
         return valid_b
@@ -452,7 +436,7 @@ class LayoutVisualizer:
             if ("$" not in cp) and (cp != "-"):
                 batch_id = Batches.fetch(cp.replace('"', "")).id
                 if batch_id in batch_dict:
-                    treat_dict[batch_dict[batch_id] + " (b{})".format(batch_id)] = color_map[cp]
+                    treat_dict[batch_dict[batch_id] + f" (b{batch_id})"] = color_map[cp]
                 else:
                     treat_dict[cp] = color_map[cp]
             else:
@@ -461,8 +445,8 @@ class LayoutVisualizer:
 
     def _create_treatment_df(self, num: int, df: pd.DataFrame):
         # Color the batch_df first then overwrite with dose values
-        batch_df = self._pivot(df, "batch_{}".format(num))
-        dose_df = self._pivot(df, "dose_{}".format(num))
+        batch_df = self._pivot(df, f"batch_{num}")
+        dose_df = self._pivot(df, f"dose_{num}")
         colored_df, color_map = self._add_color_scheme(dose_df, batch_df)
         fixed_color_map = self._fix_batch_dict(color_map)
         return colored_df, fixed_color_map
@@ -482,14 +466,14 @@ class LayoutVisualizer:
     def _display_single(self, df: pd.DataFrame, label: str = None):
         tab = widgets.Tab()
         num_t = len(self._find_treatments(df))
-        tab_titles = ["Treatment {}".format(i + 1) for i in range(num_t)]
+        tab_titles = [f"Treatment {i + 1}" for i in range(num_t)]
         tab_titles += ["Variant", "Control", "Dpf", "Group", "N"]
         tab_dfs = [self._create_treatment_df(t + 1, df) for t in range(num_t)]
         tab_dfs += [
             self._add_color_scheme(self._pivot(df, j.lower()))
             for j in ["Variant", "Control", "Dpf", "Group", "N"]
         ]
-        tab_labels = ["Treatment {}: Dose(uM) & Batches".format(k + 1) for k in range(num_t)]
+        tab_labels = [f"Treatment {k + 1}: Dose(µM) & Batches" for k in range(num_t)]
         tab_labels += [
             "Genetic Variants",
             "Control Types",
@@ -583,8 +567,8 @@ class TemplateLayoutVisualizer(LayoutVisualizer):
                     num = max(dose_list) + 1
                 else:
                     num = 1
-                well_dict["dose_{}".format(num)] = wt.dose_expression
-                well_dict["batch_{}".format(num)] = wt.batch_expression
+                well_dict[f"dose_{num}"] = wt.dose_expression
+                well_dict[f"batch_{num}"] = wt.batch_expression
         return pd.DataFrame(list(all_wells.values()))
 
 
@@ -661,8 +645,8 @@ class RunLayoutVisualizer(LayoutVisualizer):
                 num = max(dose_list) + 1
             else:
                 num = 1
-            well_dict["dose_{}".format(num)] = wt.micromolar_dose
-            well_dict["batch_{}".format(num)] = wt.batch.lookup_hash
+            well_dict[f"dose_{num}"] = wt.micromolar_dose
+            well_dict[f"batch_{num}"] = wt.batch.lookup_hash
         return pd.DataFrame(list(all_wells.values()))
 
 
@@ -685,9 +669,9 @@ class BatchGetter:
         if name in self._controls[name]:
             return self._controls[name]
         s = self._pattern.match(name)
-        assert s is not None, "None for {}".format(name)
+        assert s is not None, f"None for {name}"
         s = s.group(1)
-        assert s is not None, "None for {}".format(name)
+        assert s is not None, f"None for {name}"
         return Batches.fetch(self._prefix + "." + str(s))
 
 
@@ -714,7 +698,7 @@ class DoseColumnIterator:
             return x
         except StopIteration:
             raise ValueError(
-                "Out of range on {} with {} queries".format(batch, self._numbers[batch])
+                f"Out of range on {batch} with {self._numbers[batch]} queries"
             ) from None
 
 
@@ -754,7 +738,7 @@ class LiteralImporter:
                     .first(),
                 )
                 new_wt.save()
-        logger.notice("{} has been replaced.".format(run))
+        logger.notice(f"{run} has been replaced.")
 
 
 __all__ = [

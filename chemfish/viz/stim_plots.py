@@ -49,11 +49,9 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         if battery is not None:
             battery = Batteries.fetch(battery)
         if battery is None:
-            logger.debug("Plotting battery with {} stimframes...".format(len(stimframes)))
+            logger.debug(f"Plotting battery with {len(stimframes)} stimframes...")
         else:
-            logger.debug(
-                "Plotting battery {} with {} stimframes...".format(battery.id, len(stimframes))
-            )
+            logger.debug(f"Plotting battery {battery.id} with {len(stimframes)} stimframes...")
         if starts_at_ms is None:
             starts_at_ms = 0
         n_ms = len(stimframes) * 1000 / self._fps
@@ -112,7 +110,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
             )
         ax.set_ybound(0, 1)
         ax.set_xbound(0, len(stimframes))
-        logger.debug("Finished plotting battery. Took {}s.".format(round(time.monotonic() - t0, 1)))
+        logger.debug(f"Finished plotting battery. Took {round(time.monotonic() - t0, 1)}s.")
         return ax
 
     def _plot_stim(self, stim, r, ax, kind):
@@ -228,7 +226,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         mark_freq = mark_every / 1000 * self._fps
         # TODO  + 5*mark_freq ??
         ax2.set_xticks(np.arange(0, np.ceil(len(stimframes)) + mark_freq, mark_freq))
-        ax2.set_xlabel("time ({})".format(units))
+        ax2.set_xlabel(f"time ({units})")
         ax2.xaxis.set_major_formatter(
             ticker.FuncFormatter(
                 lambda frame, pos: "{0:g}".format(

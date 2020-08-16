@@ -38,7 +38,7 @@ class CompoundNamer(metaclass=abc.ABCMeta):
         dct = self.fetch(compounds)
         return [
             dct.get(c)
-            for c in InternalTools.fetch_all_ids_unchecked_keep_none(Compounds, compounds)
+            for c in InternalTools.fetch_all_ids_unchecked(Compounds, compounds, keep_none=True)
         ]
 
     def map_2d(
@@ -56,7 +56,7 @@ class CompoundNamer(metaclass=abc.ABCMeta):
         dct = self.fetch(self._flatten_to_id_set(compounds))
         lst = []
         for clist in compounds:
-            clist = InternalTools.fetch_all_ids_unchecked_keep_none(Compounds, clist)
+            clist = InternalTools.fetch_all_ids_unchecked(Compounds, clist, keep_none=True)
             lst.append([dct.get(c) for c in clist])
         return lst
 
@@ -69,7 +69,7 @@ class CompoundNamer(metaclass=abc.ABCMeta):
 
     def _flatten_to_id_set(self, compounds):
         cs = InternalTools.flatten_smart(compounds)
-        return set(InternalTools.fetch_all_ids_unchecked_keep_none(Compounds, cs))
+        return set(InternalTools.fetch_all_ids_unchecked(Compounds, cs, keep_none=True))
 
 
 @abcd.auto_repr_str()
@@ -85,11 +85,7 @@ class BatchNamer(metaclass=abc.ABCMeta):
     def _flatten_to_id_set(self, batches):
         if isinstance(batches, int) or isinstance(batches, str):
             return [batches]
-        all_cpids = set(
-            InternalTools.flatten_nested(
-                batches, until=lambda s: isinstance(s, (Batches, int, str)), discard_nulls=True
-            )
-        )
+        all_cpids = set(InternalTools.flatten_smart(batches))
         return set(InternalTools.fetch_all_ids_unchecked(Batches, all_cpids))
 
 

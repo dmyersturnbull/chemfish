@@ -15,7 +15,7 @@ class SensorCache(ASensorCache):
     A cache for sensor data from a given run
     """
 
-    def __init__(self, cache_dir: PLike = DEFAULT_CACHE_DIR):
+    def __init__(self, cache_dir: PathLike = DEFAULT_CACHE_DIR):
         self._cache_dir = Tools.prepped_dir(cache_dir)
 
     @property
@@ -30,7 +30,7 @@ class SensorCache(ASensorCache):
         return self.cache_dir / str(run.id) / (sensor.name + ext)
 
     @abcd.overrides
-    def key_from_path(self, path: PLike) -> Tup[SensorLike, RunLike]:
+    def key_from_path(self, path: PathLike) -> Tup[SensorLike, RunLike]:
         path = Path(path).relative_to(self.cache_dir)
         run = int(re.compile(r"^r([0-9]+)$").fullmatch(path.parent.name).group(1))
         sensor = re.compile(r"^r([a-z0-9\-_]+)\..+$").fullmatch(path.name).group(1)
@@ -80,7 +80,7 @@ class SensorCache(ASensorCache):
         elif sensor_name == SensorNames.PREVIEW:
             return ImageSensor(run, self._download("preview", run)).draw_roi_grid()
         else:
-            raise UnsupportedOpError("Sensor of type {} cannot be loaded".format(sensor_name))
+            raise UnsupportedOpError(f"Sensor of type {sensor_name} cannot be loaded")
 
     def _download(self, sensor: SensorLike, run: RunLike) -> bytes:
         """
@@ -96,9 +96,9 @@ class SensorCache(ASensorCache):
             if sensor.name in bdata_names:
                 return path.read_bytes()
             else:
-                return InternalValarTools.convert_sensor_data_from_bytes(sensor, path.read_bytes())
+                return InternalTools.convert_sensor_data_from_bytes(sensor, path.read_bytes())
         Tools.prep_file(path, exist_ok=False)
-        logger.minor("Downloading {} for run r{} from Valar...".format(sensor.name, run.id))
+        logger.minor(f"Downloading {sensor.name} for run r{run.id} from Valar...")
         data = (
             SensorData.select(SensorData)
             .where(SensorData.run_id == run.id)
@@ -106,12 +106,12 @@ class SensorCache(ASensorCache):
             .first()
         )
         if data is None:
-            raise ValarLookupError("No data for sensor {} on run {}".format(sensor.id, run.name))
+            raise ValarLookupError(f"No data for sensor {sensor.id} on run r{run.name}")
         path.write_bytes(data.floats)
         if sensor.name in bdata_names:
             return data.floats
         else:
-            return InternalValarTools.convert_sensor_data_from_bytes(sensor, data.floats)
+            return InternalTools.convert_sensor_data_from_bytes(sensor, data.floats)
 
 
 __all__ = ["SensorCache"]

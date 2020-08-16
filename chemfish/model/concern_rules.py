@@ -117,7 +117,7 @@ class SensorLengthConcernRule(ConcernRule):
             except ValarLookupError:
                 pass  # hit debug below
             if photo_data is None:
-                logger.debug("Missing photosensor data on r{}".format(run.id))
+                logger.debug(f"Missing photosensor data on r{run.id}")
             else:
                 actual = np.float(len(photo_data.data))
                 yield self._new(run, expected, actual, generation, self._photosensor)
@@ -224,9 +224,7 @@ class TargetTimeConcernRule(ConcernRule):
             match = list(pattern.finditer(run.experiment.notes))
             if len(match) > 2:
                 logger.error(
-                    "Multiple tags matching {} in notes for experiment {}".format(
-                        annotation_name, run.experiment.name
-                    )
+                    f"Multiple tags for {annotation_name} in experiment {run.experiment.name}"
                 )
                 expected = self.default_expected_time(kind)
             elif len(match) == 1:
@@ -241,9 +239,7 @@ class TargetTimeConcernRule(ConcernRule):
                         yield float(tag.value), tag
                     except (AttributeError, ArithmeticError):
                         raise XValueError(
-                            "Annotation {} does not have a valid float value (is {})".format(
-                                tag.id, tag.value
-                            )
+                            f"Annotation {tag.id} does not have a valid float value (is {tag.value})"
                         )
             else:
                 yield (expected, None)
@@ -405,9 +401,7 @@ class ImpossibleTimeConcernRule(ConcernRule):
                 yield self._new(run, "datetime_plated", "None")
             if len(batches) > 0 and run.datetime_dosed is None:
                 yield self._new(
-                    run,
-                    "datetime_dosed",
-                    "None [batches {}]".format(",".join([str(b) for b in batches])),
+                    run, "datetime_dosed", f"None [batches {','.join([str(b) for b in batches])}]",
                 )
             if len(batches) == 0 and run.datetime_dosed is not None:
                 yield self._new(
@@ -520,22 +514,20 @@ class ConcernRuleCollection:
         runs = list(df.unique_runs())
         key = Severity.key_str()
         if len(runs) > 1:
-            logger.info("Checking {} on {} runs.".format(self.__class__.__name__, len(runs)))
+            logger.info(f"Checking {self.__class__.__name__} on {len(runs)} runs.")
         elif len(runs) == 1:
-            logger.info("Checking {} on run r{}.".format(self.__class__.__name__, runs[0]))
+            logger.info(f"Checking {self.__class__.__name__} on run r{runs[0]}.")
         for rule in self.rules:
-            logger.debug("Checking rule {}".format(rule.__class__.__name__))
+            logger.debug(f"Checking rule {rule.__class__.__name__}")
             concerns = list(rule.of(df))
             if len(concerns) > 0 and len(runs) == 1:
-                logger.debug("Found {} concerns on r{}.".format(len(concerns), runs[0]))
+                logger.debug(f"Found {len(concerns)} concerns on r{runs[0]}.")
             elif len(concerns) > 0:
-                logger.debug("Found {} concerns on {} runs.".format(len(concerns), len(runs)))
+                logger.debug(f"Found {len(concerns)} concerns on {len(runs)} runs.")
             for concern in concerns:
                 if concern.severity >= self.min_severity:
                     logger.debug(
-                        "Found concern {} on r{}: {}".format(
-                            concern.__class__.name, concern.run.id, concern.description()
-                        )
+                        f"Found concern {concern.__class__.name} on r{concern.run.id}: {concern.description()}"
                     )
                     yield concern
 
@@ -617,4 +609,5 @@ __all__ = [
     "SimpleConcernRuleCollection",
     "ConcernRuleCollection",
     "SensorConcernRuleCollection",
+    "Concerns",
 ]

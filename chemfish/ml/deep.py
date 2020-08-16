@@ -57,7 +57,7 @@ def __name_device(x):
     )
 
 
-logger.notice("Loaded tensorflow {} and keras {}.".format(tf.__version__, keras.__version__))
+logger.notice(f"Loaded tensorflow {tf.__version__} and keras {keras.__version__}.")
 logger.notice(
     "GPU(s) are {}available. Using {} devices:\n".format(
         "" if tf.test.is_gpu_available() else "NOT ", len(devices)

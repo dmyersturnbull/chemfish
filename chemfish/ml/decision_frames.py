@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from pocketutils.ml.decision_frame import DecisionFrame as _DF
-
+from chemfish.core.core_imports import *
 from chemfish.ml.accuracy_frames import AccuracyFrame
 from chemfish.ml.confusion_matrices import ConfusionMatrix
 
@@ -48,15 +47,11 @@ class DecisionFrame(TypedDf):
         correct_labels = self.index.get_level_values("label")
         if self.shape[0] != len(correct_labels):
             raise LengthMismatchError(
-                "Number of rows of decision function of shape {} is not the length of the correct labels {}".format(
-                    self.shape, len(correct_labels)
-                )
+                f"N decision function rows of shape {self.shape} != N correct labels {len(correct_labels)}"
             )
         if self.shape[1] != len(labels):
             raise LengthMismatchError(
-                "Number of columns of decision function of shape {} is not the length of the class labels {}".format(
-                    self.shape, len(labels)
-                )
+                "N decision function columns of shape {self.shape} != N class labels {len(labels)}"
             )
         correct_confused_with = {c: {p: 0.0 for p in labels} for c in labels}
         for r, row in enumerate(self.index):

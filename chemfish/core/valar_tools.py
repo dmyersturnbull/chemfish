@@ -21,24 +21,14 @@ def _build_stim_colors():
     return dct
 
 
-_stimulus_display_colors = _build_stim_colors()
-
-
 def _build_stim_names():
     dct = {s.name: s.name for s in Stimuli.select()}
     resource = InternalTools.load_resource("core", "stim_names.json")[0]
     dct.update(resource)
-    for k, v in copy(dct).items():
-        v = v.replace("_", " ")
-        if v.endswith("Sq"):
-            v = v[:-2] + " square"
-        if v.lower().endswith("hzS"):
-            v = v[:-3] + "Hz sine"
-        v = v.replace("hz", "Hz")
-        dct[k] = v
     return dct
 
 
+_stimulus_display_colors = _build_stim_colors()
 _stimulus_replace = _build_stim_names()
 
 _pointgrey_sensors = set(Sensors.list_where((Sensors.id > 2) & (Sensors.id != 7)))
@@ -47,13 +37,15 @@ _required_sauronx_sensors = set(Sensors.list_where((Sensors.id > 2) & (Sensors.i
 _legacy_sensors = set(Sensors.list_where(Sensors.id < 3))
 _required_legacy_sensors = set(Sensors.list_where(Sensors.id == 2))
 
+MANUAL_REF_HIGH_ID = Refs.fetch("manual:high").id
+
 
 class StimulusType(SmartEnum):
-    LED = 1
-    AUDIO = 2
-    SOLENOID = 3
-    NONE = 4
-    IR = 5
+    LED = enum.auto()
+    AUDIO = enum.auto()
+    SOLENOID = enum.auto()
+    NONE = enum.auto()
+    IR = enum.auto()
 
 
 _saurons = list(Saurons.select())
@@ -150,7 +142,7 @@ class ValarTools:
             return StimulusType.NONE
         elif stimulus.name == "IR array":
             return StimulusType.IR
-        assert False, "No type for stimulus {} found!".format(stimulus.name)
+        assert False, f"No type for stimulus {stimulus.name} found!"
 
     @classmethod
     def toml_file(cls, run: RunLike) -> TomlData:
@@ -162,9 +154,7 @@ class ValarTools:
         """
         run = Tools.run(run)
         if run.submission is None:
-            raise SauronxOnlyError(
-                "No config files are stored for legacy data (run r{})".format(run.id)
-            )
+            raise SauronxOnlyError(f"No config files are stored for legacy data (run r{run.id})")
         t = ConfigFiles.fetch(run.config_file)
         return TomlData(t.toml_text)
 
@@ -178,12 +168,10 @@ class ValarTools:
         """
         run = ValarTools.run(run)
         if run.submission is None:
-            raise SauronxOnlyError(
-                "No log files are stored for legacy data (run r{})".format(run.id)
-            )
+            raise SauronxOnlyError(f"No log files are stored for legacy data (run r{run.id})")
         f = LogFiles.select().where(LogFiles.run == run).first()
         if f is None:
-            raise ValarLookupError("No log file for SauronX run r{}".format(run.id))
+            raise ValarLookupError(f"No log file for SauronX run r{run.id}")
         return f.text
 
     @classmethod
@@ -238,7 +226,6 @@ class ValarTools:
         run = Tools.run(run)
         plate = Plates.fetch(run.plate)  # type: Plates
         if run.plate.datetime_plated is None:
-            # logger.error("Plate {} (run {}) has no datetime_plated".format(run.plate.id, run.id))
             return np.inf
         if run.datetime_dosed is None:
             return (run.datetime_run - plate.datetime_plated).total_seconds()
@@ -252,9 +239,7 @@ class ValarTools:
             return ValarTools._download(remote_path, local_path, False, overwrite)
         except Exception:
             raise DownloadError(
-                "Failed to download file {} to {} with{} overwrite".format(
-                    remote_path, local_path, "" if overwrite else "out"
-                )
+                "Failed to download file {remote_path} to {local_path} with{'' if overwrite else 'out'} overwrite"
             )
 
     @classmethod
@@ -264,16 +249,14 @@ class ValarTools:
             return ValarTools._download(remote_path, local_path, True, overwrite)
         except Exception:
             raise DownloadError(
-                "Failed to download dir {} to {} with{} overwrite".format(
-                    remote_path, local_path, "" if overwrite else "out"
-                )
+                f"Failed to download dir {remote_path} to {local_path} with{'' if overwrite else 'out'} overwrite"
             )
 
     @classmethod
     def _download(cls, remote_path: str, path: PLike, is_dir: bool, overwrite: bool) -> None:
         path = str(path)
         # TODO check overwrite and prep
-        logger.debug("Downloading {} -> {}".format(remote_path, path))
+        logger.debug("Downloading {remote_path} -> {path}")
         Tools.prep_file(path, exist_ok=overwrite)
         # TODO check regex for drive letters
         if os.name == "nt" and (remote_path.startswith(r"\\") or remote_path.startswith("Z:\\")):
@@ -308,7 +291,7 @@ class ValarTools:
             row = (
                 CompoundLabels.select()
                 .where(CompoundLabels.compound == solvent)
-                .where(CompoundLabels.ref == 86)
+                .where(CompoundLabels.ref == MANUAL_REF_HIGH_ID)
             ).first()
             return None if row is None else row.name
 
@@ -417,23 +400,29 @@ class ValarTools:
         :return: A DataGeneration instance
         """
         run = ValarTools.run(run)
-        sauron = run.sauron_config.sauron  # SauronConfigs.fetch(run.sauron_config).sauron
-        # sauronx_version = RunTags.select().where(RunTags.run_id == run.id).where(RunTags.name == 'sauronx_version').first()
-        return ValarTools.__generation(sauron.id, sauron.name, run.submission_id is not None)
+        sauronx = run.submission_id is not None
+        generations: Sequence[Dict[str, Any]] = InternalTools.load_resource(
+            "core", "generations.toml"
+        )
+        # noinspection PyChainedComparisons
+        matches = {
+            sauronx == x["has_submission"]
+            and run.datetime_run >= datetime.strftime(x["start_date"], "%Y-%m-%d")
+            and run.datetime_run <= datetime.strftime(x["end_date"], "%Y-%m-%d")
+            and run.sauron_config.sauron.name in x["saurons"]
+            for x in generations
+        }
+        return Tools.only(matches)
 
     @classmethod
     def __generation(cls, sauron_id, sauron_name, has_sub):
-        # The Sauron IDs are:
-        #     1–9   ⇒ Pike
-        #     10–19 ⇒ PointGrey
-        #     20–29 ⇒ specialized
         df: pd.DataFrame = InternalTools.load_resource("core", "sauron_generations.csv")
         df = df[df["has_sub"] == "yes" if has_sub else "no"]
         df = df[df["name"] == sauron_name]
         if len(df) == 0:
-            raise ValueError("Did not detect a generation for Sauron {}".format(sauron_name))
+            raise ValueError(f"Did not detect a generation for Sauron {sauron_name}")
         elif len(df) > 1:
-            raise ValueError("Multiple generation matches for Sauron {}".format(sauron_name))
+            raise ValueError("Multiple generation matches for Sauron {sauron_name}")
         return DataGeneration.of(df["generation"][0])
 
     @classmethod
@@ -458,7 +447,7 @@ class ValarTools:
             )
             if got == n_wells:
                 features.add(feature.name)
-            assert got == 0 or got == n_wells, "{} != {}".format(got, n_wells)
+            assert got == 0 or got == n_wells, f"{got} != {n_wells}"
         return features
 
     @classmethod
@@ -528,7 +517,7 @@ class ValarTools:
             sauron = sauron.name
         sauron = str(sauron).lower()
         if sauron not in _sauron_str_name_map:
-            raise ValarLookupError("No sauron {}".format(sauron))
+            raise ValarLookupError(f"No sauron {sauron}")
         return _sauron_str_name_map[sauron]
 
     @classmethod
@@ -557,9 +546,7 @@ class ValarTools:
                 .where(SauronConfigs.datetime_changed == config[1])
             )
             if c is None:
-                raise ValarLookupError(
-                    "No sauron_config for sauron {} at {}".format(sauron.name, config[1])
-                )
+                raise ValarLookupError(f"No sauron_config for sauron {sauron.name} at {config[1]}")
             else:
                 return c
 
@@ -596,9 +583,7 @@ class ValarTools:
         run = ValarTools.run(run)
         t = RunTags.select().where(RunTags.run_id == run.id).where(RunTags.name == tag_name).first()
         if t is None:
-            raise ValarLookupError(
-                "No run_tags row for name {} on run {}".format(tag_name, run.name)
-            )
+            raise ValarLookupError(f"No run_tags row for name {tag_name} on run {run.name}")
         return t.value
 
     @classmethod
@@ -860,9 +845,7 @@ class ValarTools:
         )
         if param_name not in params["name"].tolist():
             raise ValarLookupError(
-                "No submission param with name {} for submission {}".format(
-                    param_name, submission.lookup_hash
-                )
+                f"No submission param with name {param_name} for submission {submission.lookup_hash}"
             )
         # handle special case of library syntax
         row = params[params["name"] == param_name].iloc[0]
@@ -903,9 +886,7 @@ class ValarTools:
             return [np.int64(l) for l in literal]
         else:
             raise TypeError(
-                "This shouldn't happen: type {} of param value {} not understood".format(
-                    type(literal), literal
-                )
+                f"This shouldn't happen: type {type(literal)} of param value {literal} not understood"
             )
 
     @classmethod
@@ -952,26 +933,24 @@ class ValarTools:
                 },
                 name="possible submission param names",
             )
-        oc = ValarTools.parse_param_value(submission, var_name)
-        if isinstance(oc, str) and oc.startswith("[/") and oc.endswith("/]"):
+        b = ValarTools.parse_param_value(submission, var_name)
+        if isinstance(b, str) and b.startswith("[/") and b.endswith("/]"):
             # new style where we keep the [/CB333/] format
             # and valar.params converts it
-            return oc[2:-2]
-        if isinstance(oc, list):
+            return b[2:-2]
+        if isinstance(b, list):
             # old style where the website converted the library into a list
-            oc = oc[0]
+            b = b[0]
             # ex: CB6158101
             pat = re.compile("""([A-Z]{2}[0-9]{5})[0-9]{2}""")
-            match = pat.fullmatch(oc.legacy_internal)
+            match = pat.fullmatch(b.legacy_internal)
             if match is None:
                 raise ValarLookupError(
-                    "Batch {} on submission {} has the wrong legacy_internal_id form {}".format(
-                        oc.lookup_hash, submission.lookup_hash, oc.legacy_internal
-                    )
+                    f"Batch {b.lookup_hash} on submission {submission.lookup_hash} has an invalid legacy_internal_id {b.legacy_internal}"
                 )
             return match.group(1)
         else:
-            assert False, "Type {} of param {} not understood".format(type(oc), oc)
+            assert False, "Type {type(b)} of param {b} not understood"
 
     @classmethod
     def runs(

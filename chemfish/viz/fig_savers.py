@@ -26,7 +26,7 @@ class FigureSaver:
 
     def __init__(
         self,
-        save_under: Optional[PLike] = None,
+        save_under: Optional[PathLike] = None,
         clear: Union[bool, Callable[[Figure], Any]] = False,
         warnings: bool = True,
         as_type: Optional[str] = None,
@@ -49,7 +49,7 @@ class FigureSaver:
         self.save(*tup)
 
     def save(
-        self, figure: FigureSeqLike, path: PLike = "", names: Optional[Iterator[str]] = None
+        self, figure: FigureSeqLike, path: PathLike = "", names: Optional[Iterator[str]] = None
     ) -> None:
         """
         Saves either:
@@ -70,7 +70,7 @@ class FigureSaver:
             self.save_one(figure, path)
 
     def save_all_as_pdf(
-        self, figures: FigureSeqLike, path: PLike, names: Optional[Iterator[str]] = None
+        self, figures: FigureSeqLike, path: PathLike, names: Optional[Iterator[str]] = None
     ) -> None:
         """
         Save a single PDF with potentially many figures.
@@ -86,17 +86,20 @@ class FigureSaver:
                 self._clean_up(figure)
 
     def save_all(
-        self, figures: FigureSeqLike, directory: PLike = "", names: Optional[Iterator[str]] = None
+        self,
+        figures: FigureSeqLike,
+        directory: PathLike = "",
+        names: Optional[Iterator[str]] = None,
     ) -> None:
         for name, figure in self._enumerate(figures, names):
             # DO NOT prepend self.__save_under here!! It's done in save_one.
             path = Path(directory) / Tools.sanitize_path_node(name, is_file=True)
             self._save_one(figure, path)  # clears if needed
 
-    def save_one(self, figure: Figure, path: PLike) -> None:
+    def save_one(self, figure: Figure, path: PathLike) -> None:
         self._save_one(figure, path)
 
-    def _save_one(self, figure: Figure, path: PLike) -> None:
+    def _save_one(self, figure: Figure, path: PathLike) -> None:
         path = self._sanitized_file(path)
         figure.savefig(path, **self._kwargs)
         self._clean_up(figure)
@@ -124,7 +127,7 @@ class FigureSaver:
         elif callable(self._clear):
             self._clear(figure)
 
-    def _sanitized_file(self, path: PLike) -> Path:
+    def _sanitized_file(self, path: PathLike) -> Path:
         """
         Sanitizes a file path:
             - prepends self._save_under if needed
@@ -134,9 +137,7 @@ class FigureSaver:
         """
         path = Path(path)
         if self._save_under is not None and Path(path).is_absolute():
-            logger.warning(
-                "_save_under is {} but path {} is absolute".format(self._save_under, path)
-            )
+            logger.warning(f"_save_under is {self._save_under} but path {path} is absolute")
         elif self._save_under is not None:
             path = self._save_under / path
         ext_valid = any((str(path).endswith("." + s) for s in KNOWN_EXTENSIONS))

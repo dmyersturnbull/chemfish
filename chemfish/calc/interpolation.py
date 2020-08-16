@@ -13,9 +13,7 @@ class InterpolationFailedError(AlgorithmError):
 class FeatureTimestampMismatchError(InterpolationFailedError):
     def __init__(self, feature: str, well: int, n_features: int, n_timestamps: int, n_ideal: int):
         feature = Features.fetch(feature).name
-        msg = "Could not interpolate {}: Number of features ({}) does not match number of timestamps ({}); ideal is {}".format(
-            feature, n_features, n_timestamps, n_ideal
-        )
+        msg = f"Could not interpolate {feature}: {n_features} features != {n_timestamps} timestamps; ideal is {n_ideal}"
         super(FeatureTimestampMismatchError, self).__init__(msg, feature, well)
         self.n_features = n_features
         self.n_timestamps = n_timestamps
@@ -41,14 +39,14 @@ class FeatureInterpolation:
         """
         run = InternalTools.well(well).run
         ideal_framerate = ValarTools.frames_per_second(run)
-        all_frames_ms = InternalValarTools.download_frame_timestamps(run)
-        stimtimes = InternalValarTools.download_stimulus_timestamps(run)
+        all_frames_ms = InternalTools.download_frame_timestamps(run)
+        stimtimes = InternalTools.download_stimulus_timestamps(run)
         battery = run.experiment.battery
         actual_battery_start_ms, actual_battery_stop_ms = stimtimes[0], stimtimes[-1]
         expected_stop_ms = actual_battery_start_ms + battery.length
         # differs by >= than 2 frames
         if abs(actual_battery_stop_ms - expected_stop_ms) >= 2 * 1000 / ideal_framerate:
-            msg = "Run {} has recorded stop time of {}, but start time + battery length = {} + {} = {} (difference of {}ms)".format(
+            msg = "Run {} has recorded stop time {} but start time + battery length = {} + {} = {} (diff {}ms)".format(
                 run,
                 actual_battery_stop_ms,
                 actual_battery_start_ms,
@@ -86,7 +84,7 @@ class FeatureInterpolation:
         """
         Interpolates a time-dependent, frame-by-frame feature using timestamps.
         See exterior_interpolate_features for a simpler way to call this and for more info.
-        Inerpolates using scipy.interpolate.interp1d with kind='previous', fill_value='extrapolate', bounds_error=False, and assume_sorted=True
+        Interpolates using scipy.interpolate.interp1d with kind='previous', fill_value='extrapolate', bounds_error=False, and assume_sorted=True
         :param feature_arr: The array of the feature; not affected
         :param frames_ms: The millisecond timestamps, which can be float-typed.
                 This is NOT set to start with the battery start.
@@ -128,9 +126,7 @@ class FeatureInterpolation:
             )
         except BaseException as e:
             raise InterpolationFailedError(
-                "Failed calling interp1d on {} for well {}".format(self.feature, well),
-                self.feature,
-                well,
+                f"Failed calling interp1d on {self.feature} for well {well}", self.feature, well
             ) from e
         return feature_interp(new_time)
 

@@ -16,7 +16,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
     A cache for audio files for stimuli.
     """
 
-    def __init__(self, cache_dir: PLike = DEFAULT_CACHE_DIR):
+    def __init__(self, cache_dir: PathLike = DEFAULT_CACHE_DIR):
         self._cache_dir = Tools.prepped_dir(cache_dir)
 
     @property
@@ -28,7 +28,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
         return self.cache_dir / (stimulus.name + ".wav")
 
     @abcd.overrides
-    def key_from_path(self, path: PLike) -> StimulusLike:
+    def key_from_path(self, path: PathLike) -> StimulusLike:
         pass
 
     @abcd.overrides
@@ -46,21 +46,17 @@ class AudioStimulusCache(AnAudioStimulusCache):
             if tmpfile.exists():
                 return
             if stimulus.audio_file_id is None:
-                raise ValarLookupError("No audio file for {}".format(stimulus.name))
+                raise ValarLookupError(f"No audio file for {stimulus.name}")
             audio_file = AudioFiles.fetch(stimulus.audio_file_id)
             if audio_file.data is None:
-                raise DataIntegrityError(
-                    "Audio file for stimulus {} has no data".format(stimulus.name)
-                )
+                raise DataIntegrityError(f"Audio file for stimulus {stimulus.name} has no data")
             fmt_str = Path(audio_file.filename).suffix.lstrip(".")
             try:
                 song = pydub.AudioSegment(
                     data=audio_file.data, sample_width=2, frame_rate=44100, channels=1
                 )
             except Exception:
-                raise DataIntegrityError(
-                    "Audio file for stimulus {} is invalid".format(stimulus.name)
-                )
+                raise DataIntegrityError(f"Audio file for stimulus {stimulus.name} is invalid")
             song.export(tmpfile, format=fmt_str)
 
     @abcd.overrides
@@ -69,7 +65,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
         try:
             return AudioFileClip(fetched)
         except Exception:
-            raise DataIntegrityError("Failed load stimulus {} as an AudioFileClip".format(stimulus))
+            raise DataIntegrityError(f"Failed load stimulus {stimulus} as an AudioFileClip")
 
     @abcd.overrides
     def load_pydub(self, stimulus: StimulusLike) -> pydub.AudioSegment:
@@ -77,7 +73,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
         try:
             return pydub.AudioSegment.from_file(path)
         except Exception:
-            raise DataIntegrityError("Failed to read file {}".format(path))
+            raise DataIntegrityError(f"Failed to read file {path}")
 
     @abcd.overrides
     def load_waveform(self, stimulus: StimulusLike) -> StimulusWaveform:
@@ -86,7 +82,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
         try:
             data, sampling_rate = librosa.load(str(path))
         except Exception:
-            raise LoadError("Failed to read file {}".format(path))
+            raise LoadError(f"Failed to read file {path}")
         return StimulusWaveform(
             stimulus.name, str(path), data, sampling_rate, -1, 1, stimulus.description
         )

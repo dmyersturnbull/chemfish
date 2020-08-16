@@ -20,7 +20,7 @@ class AudioExpansion:
         :return:
         """
         stim = Stimuli.fetch(stim)
-        logger.info("Expanding audio on {}{}".format(stim.name, "(legacy)" if is_legacy else ""))
+        logger.info(f"Expanding audio on {stim.name}{'(legacy)' if is_legacy else ''}")
         form = (
             waveform.standardize_legacy(50.0, 200.0)
             if is_legacy
@@ -34,7 +34,7 @@ class AudioExpansion:
             # if the audio is a block format, start will often be less than i, which is OK
             if i == 0 or start >= i:
                 if start < i:
-                    raise AlgorithmError("Frame {} went off the edge".format(start))
+                    raise AlgorithmError(f"Frame {start} went off the edge")
                 built.append(np.zeros(start - i))
                 built.append(form.data)
                 i = start + len(form.data)

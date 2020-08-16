@@ -75,20 +75,7 @@ from chemfish.core import (
     logger,
 )
 
-zip_strict, zip_list = CommonTools.zip_strict, CommonTools.zip_list
-
-PLike = Union[str, PurePath, os.PathLike]
-
-
-def get1st(it: Iterable[Collection[Any]]):
-    return [i[0] for i in it]
-
-
-def get2nd(it: Iterable[Collection[Any]]):
-    return [i[1] for i in it]
-
-
-from pocketutils.core.exceptions import *
+PathLike = Union[str, PurePath, os.PathLike]
 
 
 class NoFeaturesError(MissingResourceError):

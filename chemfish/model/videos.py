@@ -111,7 +111,7 @@ class SauronxVideo:
 
     def __init__(
         self,
-        path: PLike,
+        path: PathLike,
         run: RunLike,
         video: VideoFileClip,
         roi_ref: RefLike,
@@ -133,9 +133,7 @@ class SauronxVideo:
         self.wb1 = Tools.wb1_from_run(self.run)
         if not self.generation.is_sauronx():
             logger.warning(
-                "Run r{} is legacy (generation {}); the ROIs might be wrong.".format(
-                    self.run.id, self.generation.name
-                )
+                f"Run r{self.run.id} is generation {self.generation.name}; the ROIs might be wrong."
             )
         self.video = video
         self.roi_ref = Refs.fetch(roi_ref)
@@ -228,7 +226,7 @@ class SauronxVideo:
             r, g, b = to_rgb(color)
             color = (r * 255, g * 255, b * 255)
         except ValueError:
-            raise XValueError("Color {} is invalid".format(color))
+            raise XValueError(f"Color {color} is invalid")
         if x0 is None:
             x0 = 0
         if y0 is None:
@@ -240,7 +238,12 @@ class SauronxVideo:
         coords = dict(x0=x0 - self.x0, y0=y0 - self.y0, x1=x1 - self.x0, y1=y1 - self.y0)
         if start_ms is None and end_ms is None:
             clip = self.video.copy().fl_image(
-                partial(_draw_rectangle, **coords, color=color, thickness=chemfish_rc.video_roi_line_width)
+                partial(
+                    _draw_rectangle,
+                    **coords,
+                    color=color,
+                    thickness=chemfish_rc.video_roi_line_width,
+                )
             )
         else:
             start_ms, end_ms = (
@@ -250,7 +253,10 @@ class SauronxVideo:
             clip = self.video.copy().subfx(
                 lambda v: v.fl_image(
                     partial(
-                        _draw_rectangle, **coords, color=color, thickness=chemfish_rc.video_roi_line_width
+                        _draw_rectangle,
+                        **coords,
+                        color=color,
+                        thickness=chemfish_rc.video_roi_line_width,
                     )
                 ),
                 start_ms,
@@ -369,16 +375,16 @@ class SauronxVideo:
         )
 
     def ipython_display(self, suppress: bool = True):
-        logger.info("Displaying {}".format(self))
+        logger.info(f"Displaying {self}")
         with logger.suppressed(suppress, universe=True):
             with Tools.silenced(suppress, suppress):
                 return ipython_display(self.video)
 
-    def save_mkv(self, path: PLike) -> None:
+    def save_mkv(self, path: PathLike) -> None:
         path = str(Tools.prepped_file(path).with_suffix(".mkv"))
         self.video.write_videofile(path, codec=codec, ffmpeg_params=custom_ffmpeg_params)
 
-    def save_mp4(self, path: PLike) -> None:
+    def save_mp4(self, path: PathLike) -> None:
         path = str(Tools.prepped_file(path).with_suffix(".mp4"))
         self.video.write_videofile(path, ffmpeg_params=custom_ffmpeg_params_mp4)
 
@@ -387,14 +393,12 @@ class SauronxVideo:
 
     def _verify_slice(self, start_ms: int, end_ms: int, assay: Optional[AssayPositions]):
         if start_ms < 0 or end_ms <= start_ms or end_ms > self.n_ms:
-            raise OutOfRangeError("{}–{}".format(start_ms, end_ms))
+            raise OutOfRangeError(f"{start_ms}–{end_ms}")
         if assay is not None and (
             assay.start < self.starts_at_ms or assay.start + assay.assay.length > self.ends_at_ms
         ):
             raise RefusingRequestError(
-                "Can't trim to assay; not in bounds {}–{}".format(
-                    self.starts_at_ms, self.ends_at_ms
-                )
+                "Can't trim to assay; not in bounds {self.starts_at_ms}–{self.ends_at_ms}"
             )
         clip = self.video.subclip(start_ms / 1000, end_ms / 1000)
         clip_hist = self.clip_history + [(start_ms, end_ms)]
@@ -420,15 +424,11 @@ class SauronxVideo:
         self, lookup: Any, roi: Rois, ref: Optional[int] = None, run: Optional[int] = None
     ) -> Rois:
         if len(self.crop_history) > 0:
-            raise RefusingRequestError("Can't get ROI {} for a cropped video".format(lookup))
+            raise RefusingRequestError(f"Can't get ROI {lookup} for a cropped video")
         if ref is not None and ref != self.roi_ref.id:
-            raise RefusingRequestError(
-                "ROI {} uses ref {}, not {}".format(lookup, ref, self.roi_ref.id)
-            )
+            raise RefusingRequestError(f"ROI {lookup} uses ref {ref}, not {self.roi_ref.id}")
         if run is not None and run != self.run.id:
-            raise RefusingRequestError(
-                "{} belongs to run r{}, not r{}".format(lookup, run, self.run.id)
-            )
+            raise RefusingRequestError(f"{lookup} belongs to run r{run}, not r{self.run.id}")
         RoiTools.verify_roi(roi, self.width, self.height, lookup)
         return roi
 
@@ -473,7 +473,7 @@ class SauronxVideo:
 
 class SauronxVideos:
     @classmethod
-    def of(cls, path: PLike, run: Runs) -> SauronxVideo:
+    def of(cls, path: PathLike, run: Runs) -> SauronxVideo:
         run = Tools.run(run, join=True)
         generation = ValarTools.generation_of(run)
         roi_ref = "hardware:sauronx" if generation.is_sauronx() else "hardware:legacy"

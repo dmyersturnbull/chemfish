@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 from clana.visualize_cm import simulated_annealing
 from matplotlib.figure import Figure
-from pocketutils.ml.confusion_matrix import ConfusionMatrix as _CM
 
 from chemfish.core.core_imports import *
 from chemfish.viz.confusion_plots import *
@@ -27,7 +26,7 @@ class ConfusionMatrix(UntypedDf):
 
     def warn_if_asymmetric(self) -> None:
         if self.rows != self.cols:
-            logger.warning("Rows {} != columns {}".format(self.rows, self.columns))
+            logger.warning(f"Rows {self.rows} != columns {self.columns}")
 
     def is_symmetric(self) -> bool:
         return self.rows == self.cols
@@ -141,14 +140,12 @@ class ConfusionMatrix(UntypedDf):
         """
         if not self.is_symmetric():
             raise AmbiguousRequestError(
-                "Unclear how to sort because rows {} and columns {} differ".format(
-                    self.rows, self.columns
-                )
+                f"Can't sort because rows {self.rows} and columns {self.columns} differ"
             )
         optimized = simulated_annealing(self.values, **kwargs)
         perm = list(reversed(optimized["perm"]))
         perm = {name: perm.index(i) for i, name in enumerate(self.rows)}
-        logger.info("Permutation for rows {}: {}".format(self.rows, perm))
+        logger.info(f"Permutation for rows {self.rows}: {perm}")
         return perm
 
     def sort_alphabetical(self) -> ConfusionMatrix:
@@ -169,18 +166,14 @@ class ConfusionMatrix(UntypedDf):
         """
         if not self.is_symmetric():
             raise AmbiguousRequestError(
-                "Unclear how to sort because rows {} and columns {} differ".format(
-                    self.rows, self.columns
-                )
+                f"Cannot sort because rows {self.rows} and columns {self.columns} differ"
             )
         if isinstance(permutation, Sequence):
             if set(permutation) != set(self.rows):
                 permutation = {name: i for i, name in enumerate(permutation)}
             else:
                 raise RefusingRequestError(
-                    "{} permutation elements instead of {}. See `sort_first`.".format(
-                        len(permutation), len(self)
-                    )
+                    f"{len(permutation)} permutation elements instead of {len(self)}. See sort_first."
                 )
         data = self.reindex(sorted(self.rows, key=lambda s: permutation[s]), axis=1)
         xx = [permutation[name] for name in self.rows]
@@ -208,11 +201,11 @@ class ConfusionMatrix(UntypedDf):
     def length(self) -> int:
         """Get a safe length, verifying that the len(rows) == len(cols)."""
         if len(self.rows) != len(self.cols):
-            raise LengthMismatchError("{} rows != {} cols".format(len(self.rows), len(self.cols)))
+            raise LengthMismatchError(f"{len(self.rows)} rows != {len(self.cols)} cols")
         return len(self.rows)
 
     def __repr__(self) -> str:
-        return "ConfusionMatrix({} labels @ {})".format(len(self.rows), hex(id(self)))
+        return f"ConfusionMatrix({len(self.rows)} labels @ {hex(id(self))})"
 
     def __str__(self) -> str:
         return repr(self)

@@ -18,9 +18,7 @@ class TwoDWellPlotter(WellPlotter):
     def plot(self, df: WellFrame) -> Figure:
         if df.feature_length() != 2:
             raise LengthMismatchError(
-                "{} only applies to WellFrames with precisely 2 features".format(
-                    self.__class__.__name__
-                )
+                f"{self.__class__.__name__} only applies to WellFrames with precisely 2 features"
             )
         if len(df["name"].unique()) < len(df["color"].unique()):
             raise LengthMismatchError(
@@ -30,9 +28,9 @@ class TwoDWellPlotter(WellPlotter):
             )
         str_sizes = [s for s in df["size"].unique() if Tools.try_none(lambda: float(s)) is None]
         if len(str_sizes) > 0:
-            logger.warning("Sizes {} could not be converted to floats. Ignoring.".format(str_sizes))
+            logger.warning(f"Sizes {str_sizes} could not be converted to floats. Ignoring.")
         cls = df.__class__
-        logger.minor("Plotting with {}...".format(self.__class__.__name__))
+        logger.minor(f"Plotting with {self.__class__.__name__}...")
         figure = plt.figure()
         ax = figure.add_subplot(1, 1, 1)
         for marker in df["marker"].unique():
@@ -63,7 +61,11 @@ class TwoDWellPlotter(WellPlotter):
         ax.set_yticks([])
         ordered_names = df["name"].unique().tolist()
         ordered_colors = df["color"].unique().tolist()
-        kwargs = dict(ncol=chemfish_rc.tsne_legend_n_cols) if chemfish_rc.tsne_legend_n_cols is not None else {}
+        kwargs = (
+            dict(ncol=chemfish_rc.tsne_legend_n_cols)
+            if chemfish_rc.tsne_legend_n_cols is not None
+            else {}
+        )
         FigureTools.manual_legend(
             ax,
             ordered_names,

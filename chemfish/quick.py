@@ -20,8 +20,8 @@ from chemfish.ml.transformers import *
 from chemfish.model.app_frames import *
 from chemfish.model.assay_frames import *
 from chemfish.model.compound_names import *
-from chemfish.model.concerns import *
 from chemfish.model.concern_rules import *
+from chemfish.model.concerns import *
 from chemfish.model.features import *
 from chemfish.model.sensors import *
 from chemfish.model.stim_frames import *
@@ -168,9 +168,7 @@ class Quick:
         """
         if as_of > datetime.now():
             logger.warning(
-                "as_of is set {} in the future".format(
-                    Tools.delta_time_to_str((as_of - datetime.now()).total_seconds())
-                )
+                f"as_of is set {Tools.delta_time_to_str((as_of - datetime.now()).total_seconds())} in the future"
             )
         self.feature = FeatureTypes.of(feature)
         self.generation = DataGeneration.of(generation)
@@ -489,7 +487,7 @@ class Quick:
         )
         for name, figure in traces:
             figure.axes[0].set_ylabel(
-                "Z-score [{}]".format(chemfish_rc.feature_names[self.feature.internal_name])
+                f"Z-score [{chemfish_rc.feature_names[self.feature.internal_name]}]"
             )
             yield name, figure
 
@@ -574,7 +572,7 @@ class Quick:
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
         outlier_stds: Optional[float] = 5,
-        path_stub: Optional[PLike] = None,
+        path_stub: Optional[PathLike] = None,
         **kwargs,
     ) -> Tup[WellFrame, Figure]:
         all_params = {"outlier_stds": outlier_stds, **kwargs}
@@ -601,28 +599,27 @@ class Quick:
         namer: Optional[WellNamer] = None,
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
-        path_stub: Optional[PLike] = None,
+        path_stub: Optional[PathLike] = None,
     ) -> Tup[WellFrame, Figure]:
         df = self.df(run, namer=namer, start_ms=start_ms, end_ms=end_ms)
         trans = transform.fit(df)
         if path_stub is not None:
             path_stub = Path(path_stub)
-            trans.to_hdf(path_stub.with_suffix(".transform.h5"))
-            Tools.save_json(all_params, path_stub.with_suffix(".transform.json"))
-            logger.info(
-                "Saved {} and {}".format(
-                    path_stub.with_suffix(".transform.h5"), path_stub.with_suffix(".transform.json")
-                )
-            )
+            h5_path = path_stub.with_suffix(".transform.h5")
+            json_path = path_stub.with_suffix(".transform.json")
+            pdf_path = path_stub.with_suffix(".transform.pdf")
+            trans.to_hdf(h5_path)
+            Tools.save_json(all_params, json_path)
+            logger.info(f"Saved {h5_path} and {json_path}")
         figure = WellPlotters.basic(trans, recolor=recolor)
         if path_stub is not None:
-            FigureSaver().save(figure, path_stub.with_suffix(".transform.pdf"))
+            FigureSaver().save(figure, pdf_path)
         return trans, figure
 
     def classify(
         self,
         run: QsLike,
-        save_dir: Optional[PLike] = None,
+        save_dir: Optional[PathLike] = None,
         namer: Optional[WellNamer] = None,
         model_fn: SklearnWfClassifierWithOob = WellForestClassifier,
         start_ms: Optional[int] = None,
@@ -637,10 +634,10 @@ class Quick:
         df = self.df(run, namer=namer, start_ms=start_ms, end_ms=end_ms)
         model = model_fn.build(**kwargs)
         if save_dir.exists():
-            logger.info("Loading existing model at {}".format(save_dir))
+            logger.info(f"Loading existing model at {save_dir}")
             model.load(save_dir)
         elif load_only:
-            raise OpStateError("Model at {} trained".format(save_dir))
+            raise OpStateError(f"Model at {save_dir} trained")
         else:
             model.train(df)
         if color:
@@ -857,12 +854,12 @@ class Quick:
         used_generations = {ValarTools.generation_of(run) for run in df.unique_runs()}
         if len(used_generations) > 1:
             raise MultipleGenerationsError(
-                "Got multiple generations in quick.df {}".format(used_generations)
+                f"Got multiple generations in quick.df {used_generations}"
             )
         used_generation = next(iter(used_generations))
         if used_generation is not self.generation:
             raise IncompatibleGenerationError(
-                "Wrong generation {}; expected {}".format(used_generation, self.generation)
+                f"Wrong generation {used_generation}; expected {self.generation}"
             )
 
     def spit_concerns(
@@ -870,7 +867,7 @@ class Quick:
         wheres: ExpressionsLike,
         min_severity: Severity = Severity.GOOD,
         as_of: Optional[datetime] = None,
-        path: Optional[PLike] = None,
+        path: Optional[PathLike] = None,
     ) -> Sequence[Concern]:
         """
         Finds `Concern`s on runs matching the conditions `wheres` (which are processed by `Quick.query_runs`).
@@ -881,7 +878,7 @@ class Quick:
         q0.auto_fix = False
         q0.as_of = datetime.now()
         runs = q0.query_runs(wheres)
-        logger.notice("Spitting issues for {} runs".format(len(runs)))
+        logger.notice(f"Spitting issues for {len(runs)} runs")
         coll = SimpleConcernRuleCollection(q0.feature, q0.sensor_cache, as_of, min_severity)
         concerns = []
         for i, run in enumerate(Tools.loop(runs, log=logger.info, every_i=10)):
@@ -964,7 +961,7 @@ class Quick:
             self.auto_fix
             and self.feature is not None
             and self.feature.time_dependent
-            and self.generation in [DataGeneration.PIKE_LEGACY_MATT, DataGeneration.PIKE_MGH]
+            and self.generation in [DataGeneration.PIKE_LEGACY, DataGeneration.PIKE_MGH]
         ):
             # This block deals with a weird problem in legacy data:
             # Because there were hidden gaps of time between assays, the value at the start of each assay
@@ -981,7 +978,7 @@ class Quick:
                     logger.warning("MI trace contains 0s and might have breaks between assays.")
                     df = WellFrame.retype(df.completion().replace(-1.0, np.NaN))
             if n_unified > 0:
-                logger.warning("Unified {} NaNs at the end".format(n_unified))
+                logger.warning(f"Unified {n_unified} NaNs at the end")
             df = WellFrame.retype(df.fillna(0))
         elif self.auto_fix:
             # if the feature is not interpolated, n_unified_start will always be 0
@@ -997,7 +994,7 @@ class Quick:
         if len(self.discard_trash) > 0:
             df = df.without_controls_matching(names=self.discard_trash)
             if len(df) != n:
-                logger.caution("Discarded {} trash controls".format(len(df) - n))
+                logger.caution(f"Discarded {len(df) - n} trash controls")
         return df
 
     def _df(
@@ -1134,9 +1131,7 @@ class Quick:
         # handle main cases: both, name, type, or neither
         if control_name is not None and control_type is not None:
             raise ContradictoryRequestError(
-                "Can only specify a control_type or a control_name; got {} and {}".format(
-                    control_type, control_name
-                )
+                f"Can only use control_type OR control_name; got {control_type} and {control_name}"
             )
         elif control_name is not None:
             return df.name_subtract(subtraction, control_name)
@@ -1203,13 +1198,13 @@ class Quick:
         for run in runs:
             if self.well_cache is not None:
                 self.well_cache.delete(run)
-        logger.notice("Deleted {} run(s) from the cache(s)".format(len(runs)))
+        logger.notice(f"Deleted {len(runs)} run(s) from the cache(s)")
 
     def __repr__(self):
         if self.as_of is None:
-            return "Quick({})".format(self.feature)
+            return f"Quick({self.feature})"
         else:
-            return "Quick({} @ {})".format(self.feature, str(self.as_of)[:-3])
+            return f"Quick({self.feature} @ {str(self.as_of)[:-3]})"
 
     def __str__(self):
         return repr(self)
@@ -1228,10 +1223,6 @@ class Quicks:
     @classmethod
     def pike_legacy(cls, as_of: Optional[datetime], **kwargs):
         return cls.choose(DataGeneration.PIKE_LEGACY, as_of=as_of, **kwargs)
-
-    @classmethod
-    def pike_legacy_matt(cls, as_of: Optional[datetime], **kwargs):
-        return cls.choose(DataGeneration.PIKE_LEGACY_MATT, as_of=as_of, **kwargs)
 
     @classmethod
     def pike_mgh(cls, as_of: Optional[datetime], **kwargs):
