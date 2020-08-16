@@ -22,6 +22,7 @@ from chemfish.core.core_imports import *
 
 
 class ErrorBehavior(SmartEnum):
+    """ """
     FAIL = 1
     LOG_ERROR = 2
     LOG_WARNING = 3
@@ -30,11 +31,30 @@ class ErrorBehavior(SmartEnum):
 
 
 class AbstractSaveLoad(metaclass=abc.ABCMeta):
+    """ """
     def save(self, path: PathLike) -> None:
+        """
+        
+
+        Args:
+          path: PathLike: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     # noinspection PyAttributeOutsideInit
     def load(self, path: PathLike):
+        """
+        
+
+        Args:
+          path: PathLike: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
 
@@ -43,19 +63,52 @@ class SaveableTrainable(AbstractSaveLoad):
     A simpler saveable.=
     Saves and loads a .info file with these properties.
     To implement, just override save() and load(), and have each call its supermethod
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self):
         self.info = {}
 
     def save(self, path: PathLike) -> None:
+        """
+        
+
+        Args:
+          path: PathLike: 
+
+        Returns:
+
+        """
         FilesysTools.save_json(self.info, path.with_suffix(path.suffix + ".info"))
 
     def load(self, path: PathLike):
+        """
+        
+
+        Args:
+          path: PathLike: 
+
+        Returns:
+
+        """
         path = Path(path)
         self.info = FilesysTools.load_json(path.with_suffix(path.suffix + ".info"))
 
         def fix(key, value):
+            """
+            
+
+            Args:
+              key: 
+              value: 
+
+            Returns:
+
+            """
             if key in ["started", "finished"]:
                 return datetime.isoformat(value)
             elif isinstance(value, list):
@@ -68,13 +121,32 @@ class SaveableTrainable(AbstractSaveLoad):
 
 
 class SaveableTrainableCsv(SaveableTrainable, metaclass=abc.ABCMeta):
+    """ """
     def save(self, path: PathLike):
+        """
+        
+
+        Args:
+          path: PathLike: 
+
+        Returns:
+
+        """
         path = Path(path)
         super().save(path)
         self.data.to_csv(path)
 
     # noinspection PyAttributeOutsideInit
     def load(self, path: PathLike):
+        """
+        
+
+        Args:
+          path: PathLike: 
+
+        Returns:
+
+        """
         path = Path(path)
         super().load(path)
         self.data = pd.read_csv(path)
@@ -82,30 +154,57 @@ class SaveableTrainableCsv(SaveableTrainable, metaclass=abc.ABCMeta):
 
 
 class SaveLoadCsv(AbstractSaveLoad, metaclass=abc.ABCMeta):
-    """
-    Has an attribute (property) called `data`.
-    """
+    """Has an attribute (property) called `data`."""
 
     @property
     @abc.abstractmethod
     def data(self) -> pd.DataFrame:
+        """ """
         raise NotImplementedError()
 
     @data.setter
     def data(self, df: pd.DataFrame):
+        """
+        
+
+        Args:
+          df: pd.DataFrame: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     @property
     def df_class(self) -> Type[pd.DataFrame]:
+        """ """
         return pd.DataFrame
 
     def save(self, path: PathLike):
+        """
+        
+
+        Args:
+          path: PathLike: 
+
+        Returns:
+
+        """
         if not isinstance(self.data, self.df_class):
             raise TypeError(f"Type {type(self.data)} is not a {self.df_class}")
         path = Path(path)
         pd.DataFrame(self.data).to_csv(path)
 
     def load(self, path: PathLike):
+        """
+        
+
+        Args:
+          path: PathLike: 
+
+        Returns:
+
+        """
         path = Path(path)
         self.data = self.df_class(pd.read_csv(path))
 
@@ -122,35 +221,55 @@ class ClassifierPath:
     print(path.weight_csv.exists())  # might be false, even for a trained classifier
     ```
     Similarly, `path.decision_csv` will not exist if the model does not support training decision functions (typically out-of-bag).
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, path: PathLike):
         self.path = Path(path)
 
     def prep(self):
+        """ """
         PathTools.prep_dir(self.path, exist_ok=True)
 
     def load_info(self):
+        """ """
         path = self.info_json
         return FilesysTools.load_json(path)
 
     def save_info(self, info):
+        """
+        
+
+        Args:
+          info: 
+
+        Returns:
+
+        """
         FilesysTools.save_json(info, self.info_json)
 
     def verify_exists(self) -> None:
+        """ """
         if not self.exists():
             raise PathError(f"No trained model under {self}", path=self.path)
 
     def verify_exists_with_decision(self) -> None:
+        """ """
         if not self.exists():
             raise PathError(f"No trained model under {self}", path=self.path)
         if not self.decision_csv.exists():
             raise PathError(f"No decision CSV under {self}", path=self.path)
 
     def exists_with_decision(self) -> bool:
+        """ """
         return self.exists() and self.decision_csv.exists()
 
     def exists(self) -> bool:
+        """ """
         return (
             self.path.exists()
             and self.path.is_dir()
@@ -161,18 +280,23 @@ class ClassifierPath:
         )
 
     def resolve(self) -> ClassifierPath:
+        """ """
         return ClassifierPath(self.path.resolve())
 
     def parent(self) -> Path:
+        """ """
         return self.path.parent
 
     def parents(self) -> Sequence[Path]:
+        """ """
         return self.path.parents
 
     def anchor(self) -> str:
+        """ """
         return self.path.anchor
 
     def name(self) -> str:
+        """ """
         return self.path.name
 
     def __truediv__(self, other) -> Path:
@@ -180,58 +304,72 @@ class ClassifierPath:
 
     @property
     def model_pkl(self) -> Path:
+        """ """
         return self / "model.pkl"
 
     @property
     def info_json(self) -> Path:
+        """ """
         return self / "info.json"
 
     @property
     def cc_json(self) -> Path:
+        """ """
         return self / "cc.json"
 
     @property
     def decision_csv(self) -> Path:
+        """ """
         return self / "decision.csv"
 
     @property
     def weight_csv(self) -> Path:
+        """ """
         return self / "weight.csv"
 
     @property
     def weight_h5(self) -> Path:
+        """ """
         return self / "weight.h5"
 
     @property
     def weight_h5_key(self) -> str:
+        """ """
         return "weight"
 
     @property
     def accuracy_csv(self) -> Path:
+        """ """
         return self / "accuracy.csv"
 
     @property
     def confusion_csv(self) -> Path:
+        """ """
         return self / "confusion.csv"
 
     @property
     def confusion_pdf(self) -> Path:
+        """ """
         return self / "confusion.pdf"
 
     @property
     def swarm_pdf(self) -> Path:
+        """ """
         return self / "swarm.pdf"
 
     @property
     def bar_pdf(self) -> Path:
+        """ """
         return self / "bar.pdf"
 
     @property
     def boxplot_pdf(self) -> Path:
+        """ """
         return self / "boxplot.pdf"
 
     @property
     def violin_pdf(self) -> Path:
+        """ """
         return self / "violin.pdf"
 
     def __repr__(self):

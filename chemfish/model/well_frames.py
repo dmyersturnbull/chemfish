@@ -8,6 +8,7 @@ from chemfish.model.wf_tools import *
 
 
 class InvalidWellFrameError(ConstructionError):
+    """ """
     pass
 
 
@@ -92,6 +93,11 @@ class WellFrame(TypedDf):
                             This excludes columns such as well, row, column, well_index, and well_label,
                             but will include treatments, run, and all other columns.
                             See WellFrameColumnTools.well_position_cols for full info.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, data=None, index=None, columns=None, dtype=None, copy=False):
@@ -100,26 +106,71 @@ class WellFrame(TypedDf):
     @abcd.overrides
     @abcd.copy_docstring(pd.DataFrame.copy)
     def copy(self, deep=True):
+        """
+
+
+        Args:
+          deep:
+
+        Returns:
+
+        """
         return self.__class__.retype(super().copy())
 
     @abcd.overrides
     @abcd.copy_docstring(pd.DataFrame.astype)
     def astype(self, dtype, copy=True, errors="raise", **kwargs):
+        """
+
+
+        Args:
+          dtype:
+          copy:
+          errors:
+          **kwargs:
+
+        Returns:
+
+        """
         return self.__class__.retype(super().astype(dtype, copy=copy, errors=errors, **kwargs))
 
     def head(self, n: Optional[int] = 5):
+        """
+
+
+        Args:
+          n:
+
+        Returns:
+
+        """
         if n is None:
             return self
         return self.__class__.retype(super().head())
 
     @abcd.overrides
     def abs(self):
+        """ """
         return self.__class__.retype(super().abs())
 
     @abcd.overrides
     def replace(
         self, to_replace=None, value=None, inplace=False, limit=None, regex=False, method="pad"
     ):
+        """
+
+
+        Args:
+          to_replace:  (Default value = None)
+          value:
+          inplace:
+          limit:
+          regex:
+          method:
+
+        Returns:
+
+        """
         return self.__class__.retype(
             super().replace(
                 to_replace=to_replace,
@@ -134,16 +185,19 @@ class WellFrame(TypedDf):
     @classmethod
     @abcd.overrides
     def reserved_index_names(cls) -> Sequence[str]:
+        """ """
         return WellFrameColumns.reserved_names
 
     @classmethod
     @abcd.overrides
     def required_index_names(cls) -> Sequence[str]:
+        """ """
         return WellFrameColumns.required_names
 
     @classmethod
     @abcd.overrides
     def columns_to_drop(cls) -> Sequence[str]:
+        """ """
         return ["__sort", "level_0", "index", "level_1"]
 
     def __setitem__(self, key, value):
@@ -169,6 +223,7 @@ class WellFrame(TypedDf):
         return ret
 
     def safe_reset_index(self):
+        """ """
         bad = InternalTools.warn_overlap(self.columns, self.index.names)
         df = self.__class__.drop_cols(self, bad)
         df = self.__class__.vanilla(df)
@@ -178,6 +233,11 @@ class WellFrame(TypedDf):
         """
         Drops the feature columns, returning only the index.
         :return: A copy as a WellFrame
+
+        Args:
+
+        Returns:
+
         """
         if len(self.columns) == 0:
             return self
@@ -191,6 +251,11 @@ class WellFrame(TypedDf):
         Drops every feature column after (and including) the first NaN in any row.
         Also see after_last_nan and unify_last_nans_inplace.
         :return: A copy as a WellFrame
+
+        Args:
+
+        Returns:
+
         """
         return self.__class__.retype(self[self.columns[: -self.count_nans_at_end()]])
 
@@ -199,6 +264,11 @@ class WellFrame(TypedDf):
         Drops every feature column before (and including) the last NaN spanning from the start of the features to the first non-NaN column, in any row.
         Also see before_first_nan.
         :return: A copy as a WellFrame
+
+        Args:
+
+        Returns:
+
         """
         return self.__class__.retype(self[self.columns[self.count_nans_at_start() :]])
 
@@ -206,6 +276,11 @@ class WellFrame(TypedDf):
         """
         Counts the number of columns, starting from the last, before all of the values are non-null.
         :return: The number of columns
+
+        Args:
+
+        Returns:
+
         """
         for i in range(0, len(self.columns)):
             if not self[self.columns[-i - 1]].isnull().values.any():
@@ -216,6 +291,11 @@ class WellFrame(TypedDf):
         """
         Counts the number of columns, starting from the first, after which all of the values are non-null.
         :return: The number of columns
+
+        Args:
+
+        Returns:
+
         """
         for i in range(0, len(self.columns)):
             if not self[self.columns[i]].isnull().values.any():
@@ -225,6 +305,12 @@ class WellFrame(TypedDf):
     def unify_last_nans(self, fill_value: float = np.NaN) -> WellFrame:
         """
         See `WellFrame.unify_last_nans_inplace`. This returns a copy, which requires more memory.
+
+        Args:
+          fill_value: float:  (Default value = np.NaN)
+
+        Returns:
+
         """
         df = self.copy()
         df.unify_last_nans_inplace(fill_value)
@@ -236,7 +322,13 @@ class WellFrame(TypedDf):
         Only affects NaNs that continue to the end.
         More technically, for every column from the last to the first, drops it if contains a single NaN, and returns if it doesn't.
         Also see unify_first_nans_inplace and before_first_nan.
-        :param fill_value: The number of columns filled
+
+        Args:
+          fill_value: The number of columns filled
+          fill_value: float:  (Default value = np.NaN)
+
+        Returns:
+
         """
         n_unified = 0
         for i in range(len(self.columns) - 1, 0, -1):
@@ -249,6 +341,12 @@ class WellFrame(TypedDf):
     def unify_first_nans(self, fill_value: float = np.NaN) -> WellFrame:
         """
         See `WellFrame.unify_first_nans_inplace`. This returns a copy, which requires more memory.
+
+        Args:
+          fill_value: float:  (Default value = np.NaN)
+
+        Returns:
+
         """
         df = self.copy()
         df.unify_first_nans_inplace(fill_value)
@@ -259,7 +357,13 @@ class WellFrame(TypedDf):
         Replaces every column at the beginning containing a NaN with some value.
         Only affects NaNs that continue to the end.
         Also see unify_last_nans_inplace and after_first_nan.
-        :param fill_value: The number of columns filled
+
+        Args:
+          fill_value: The number of columns filled
+          fill_value: float:  (Default value = np.NaN)
+
+        Returns:
+
         """
         n_unified = 0
         for i in range(0, len(self.columns)):
@@ -275,6 +379,11 @@ class WellFrame(TypedDf):
         You may want to call unify_last_nans() first.
         Will warn if some but not all of the values of the last frame are NaN, suggesting that you should call unify_last_nans() before.
         :return: A copy as a WellFrame
+
+        Args:
+
+        Returns:
+
         """
         last_col = self.columns[len(self.columns) - 1]
         if self[last_col].isnull().values.any() and not self[last_col].isnull().values.all():
@@ -290,10 +399,16 @@ class WellFrame(TypedDf):
         Approximates the correct start and end frames by detecting the framerate.
         Note that this is a less sophisticated, subtly more error-prone method than going by the exact timestamps.
         Will fail if this WellFrame contains runs with different FPSes.
-        :param start_ms: The milliseconds to start at
-        :param end_ms: The millseconds to end at
-        :param override_fps: Correct the FPS from what's assumed from the battery
-        :return: A new WellFrame
+
+        Args:
+          start_ms: The milliseconds to start at
+          end_ms: The millseconds to end at
+          override_fps: Correct the FPS from what's assumed from the battery
+          override_fps: Optional[int]:  (Default value = None)
+
+        Returns:
+          A new WellFrame
+
         """
         if override_fps is None:
             fps = Tools.only(
@@ -311,9 +426,16 @@ class WellFrame(TypedDf):
     def subset(self, start: Optional[int] = None, end: Optional[int] = None) -> WellFrame:
         """
         Slices the features by index.
-        :param start: The first MI index (snapshot)
-        :param end: The last MI index (snapshot)
-        :return: The dataframe with only metadata and the MI values requested
+
+        Args:
+          start: The first MI index (snapshot)
+          end: The last MI index (snapshot)
+          start:
+          end:
+
+        Returns:
+          The dataframe with only metadata and the MI values requested
+
         """
         if start is None:
             start = 0
@@ -326,10 +448,16 @@ class WellFrame(TypedDf):
         """
         Counts the number of features.
         :return: The exact number of features
+
+        Args:
+
+        Returns:
+
         """
         return len(self.columns)
 
     def n_replicates(self) -> Mapping[str, int]:
+        """ """
         return self.reset_index().groupby("name").count()["well"].to_dict()
 
     def xy(self) -> Tup[np.array, np.array]:
@@ -337,13 +465,20 @@ class WellFrame(TypedDf):
         return self.values, self.names().values
 
     def cross_runs(self) -> Iterator[Tup[WellFrame, WellFrame]]:
+        """ """
         for run in self.unique_runs():
             yield self.without_run_id(run), self.with_run(run)
 
     def bootstrap(self, n: Optional[int] = None) -> WellFrame:
         """
         Subsamples WITH replacement.
-        :param n: If None, uses len(self)
+
+        Args:
+          n: If None, uses len(self)
+          n:
+
+        Returns:
+
         """
         n = len(self) if n is None else n
         return self.__class__.of(self.sample(n, replace=True))
@@ -351,7 +486,13 @@ class WellFrame(TypedDf):
     def subsample(self, n: Optional[int] = None) -> WellFrame:
         """
         Subsamples WITHOUT replacement.
-        :param n: If None, uses len(self)
+
+        Args:
+          n: If None, uses len(self)
+          n:
+
+        Returns:
+
         """
         if n is None:
             return self
@@ -361,7 +502,13 @@ class WellFrame(TypedDf):
         """
         Subsamples WITHOUT replacement,
         keeping the min replicate counts for any name, for each name
-        :param n: If None, uses the max permitted
+
+        Args:
+          n: If None, uses the max permitted
+          n:
+
+        Returns:
+
         """
         if n is None:
             n = min(self.n_replicates().values())
@@ -370,6 +517,7 @@ class WellFrame(TypedDf):
         )
 
     def names(self) -> pd.Series:
+        """ """
         return self.index.get_level_values("name")
 
     def display_names(self) -> pd.Series:
@@ -381,73 +529,180 @@ class WellFrame(TypedDf):
         )
 
     def packs(self) -> pd.Series:
+        """ """
         return self.index.get_level_values("name")
 
     def unique_names(self) -> Sequence[str]:
+        """ """
         return self.index.get_level_values("name").unique().tolist()
 
     def unique_packs(self) -> Sequence[str]:
+        """ """
         return self.index.get_level_values("pack").unique().tolist()
 
     def unique_runs(self) -> Set[int]:
+        """ """
         return self["run"].unique().tolist()
 
     def with_name(self, name: Union[Sequence[str], Set[str], str]) -> WellFrame:
         """
         Selects only the wells matching a name.
-        :param name: An entry in the name column, or list or set of them
-        :return: A modified copy of this WellFrame
+
+        Args:
+          name: An entry in the name column, or list or set of them
+          name: Union[Sequence[str]:
+          Set[str]:
+          str]:
+
+        Returns:
+          A modified copy of this WellFrame
+
         """
         name = Tools.to_true_iterable(name)
         return self.__class__.retype(self[self.names().isin(name)])
 
     def with_wells(self, wells: Union[Iterable[Union[int, Wells]], Wells, int]):
+        """
+
+
+        Args:
+          wells:
+
+        Returns:
+
+        """
         wells = InternalTools.fetch_all_ids_unchecked(Wells, Tools.to_true_iterable(wells))
         return self.__class__.retype(self[self["well"].isin(wells)])
 
     def with_run(self, runs: Union[Iterable[RunLike], RunLike]) -> WellFrame:
         """
         Selects only the wells matching a run ID.
-        :param runs: A run ID, or list or set of them
-        :return: A modified copy of this WellFrame
+
+        Args:
+          runs: A run ID, or list or set of them
+          runs: Union[Iterable[RunLike]:
+          RunLike]:
+
+        Returns:
+          A modified copy of this WellFrame
+
         """
         runs = set(Tools.run_ids_unchecked(runs))
         return self.__class__.retype(self[self["run"].isin(runs)])
 
     def with_run_id(self, run_id: Union[int, Set[int]]) -> WellFrame:
+        """
+
+
+        Args:
+          run_id:
+        Returns:
+
+        """
         return self.with_run(run_id)
 
     def without_run(self, runs: Union[int, Set[int]]) -> WellFrame:
+        """
+
+
+        Args:
+          runs:
+
+        Returns:
+
+        """
         runs = set(Tools.run_ids_unchecked(runs))
         return self.__class__.retype(self[~self["run"].isin(runs)])
 
     def without_run_id(self, run_id: Union[int, Set[int]]) -> WellFrame:
+        """
+
+
+        Args:
+          run_id:
+        Returns:
+
+        """
         return self.without_run(run_id)
 
     def with_pack(self, pack: Union[Sequence[str], Set[str], str]) -> WellFrame:
+        """
+
+
+        Args:
+          pack: Union[Sequence[str]:
+          Set[str]:
+          str]:
+
+        Returns:
+
+        """
         pack = Tools.to_true_iterable(pack)
         return self.__class__.retype(self[self.packs().isin(pack)])
 
     def apply_by_name(self, function) -> WellFrame:
+        """
+
+
+        Args:
+          function:
+
+        Returns:
+
+        """
         return self.__class__.of(self.group_by(level="name", sort=False).apply(function))
 
     def apply_by_run(self, function) -> WellFrame:
+        """
+
+
+        Args:
+          function:
+
+        Returns:
+
+        """
         return self.__class__.of(self.group_by(level="run", sort=False).apply(function))
 
     def apply_by_pack(self, function) -> WellFrame:
+        """
+
+
+        Args:
+          function:
+
+        Returns:
+
+        """
         return self.__class__.of(self.group_by(level="pack", sort=False).apply(function))
 
     def without_treatments(self) -> WellFrame:
-        """
-        :return: Only the wells that were not treated with batches
-        """
+        """:return: Only the wells that were not treated with batches"""
         return self[self["b_ids"].map(str) == "[]"]
 
     def with_only_all_treatments(self, treatments: Treatments) -> WellFrame:
+        """
+
+
+        Args:
+          treatments: Treatments:
+
+        Returns:
+
+        """
         treatments = Treatments.of(treatments)
         return self[self["treatments"] == treatments]
 
     def with_only_any_treatments(self, treatments: Treatments) -> WellFrame:
+        """
+
+
+        Args:
+          treatments: Treatments:
+
+        Returns:
+
+        """
         treatments = Treatments.of(treatments)
         z = self.__class__.retype(
             self[self["treatments"].map(lambda ts: any([t in ts for t in treatments]))]
@@ -457,12 +712,30 @@ class WellFrame(TypedDf):
         )
 
     def with_any_treatments(self, treatments: Treatments) -> WellFrame:
+        """
+
+
+        Args:
+          treatments: Treatments:
+
+        Returns:
+
+        """
         treatments = Treatments.of(treatments)
         return self.__class__.retype(
             self[self["treatments"].map(lambda ts: any([t in ts for t in treatments]))]
         )
 
     def with_all_treatments(self, treatments: Treatments) -> WellFrame:
+        """
+
+
+        Args:
+          treatments: Treatments:
+
+        Returns:
+
+        """
         treatments = Treatments.of(treatments)
         return self.__class__.retype(
             self[self["treatments"].map(lambda ts: all([t in ts for t in treatments]))]
@@ -471,6 +744,16 @@ class WellFrame(TypedDf):
     def with_compound_at_dose_any(
         self, compound: Union[Compounds, int, str], dose: SupportsFloat
     ) -> WellFrame:
+        """
+
+
+        Args:
+          compound:
+          dose:
+
+        Returns:
+
+        """
         compound = Compounds.fetch(compound)
         dose = float(dose)
         d = self.with_all_compounds(compound)
@@ -484,6 +767,18 @@ class WellFrame(TypedDf):
     def with_batch_at_dose_any(
         self, batch: Union[Batches, int, str], dose: SupportsFloat
     ) -> WellFrame:
+        """
+
+
+        Args:
+          batch: Union[Batches:
+          int:
+          str]:
+          dose: SupportsFloat:
+
+        Returns:
+
+        """
         batch = Batches.fetch(batch)
         dose = float(dose)
         d = self.with_all_batches(batch)
@@ -493,12 +788,30 @@ class WellFrame(TypedDf):
     def with_only_all_compounds(
         self, compounds: Union[int, str, Compounds, Set[Union[int, str, Compounds]]]
     ) -> WellFrame:
+        """
+
+
+        Args:
+          compounds:
+
+        Returns:
+
+        """
         compounds = set(InternalTools.fetch_all_ids(Compounds, compounds))
         return self.__class__.retype(self[self["c_ids"].map(lambda cids: set(cids) == compounds)])
 
     def with_only_any_compounds(
         self, compounds: Union[int, str, Compounds, Set[Union[int, str, Compounds]]]
     ) -> WellFrame:
+        """
+
+
+        Args:
+          compounds:
+
+        Returns:
+
+        """
         compounds = set(InternalTools.fetch_all_ids(Compounds, compounds))
         z = self.__class__.retype(
             self[self["c_ids"].map(lambda cids: any([c in cids for c in compounds]))]
@@ -510,12 +823,30 @@ class WellFrame(TypedDf):
     def with_only_all_batches(
         self, batches: Union[int, str, Batches, Set[Union[int, str, Batches]]]
     ) -> WellFrame:
+        """
+
+
+        Args:
+          batches:
+
+        Returns:
+
+        """
         batches = set(InternalTools.fetch_all_ids(Batches, batches))
         return self.__class__.retype(self[self["b_ids"].map(lambda bids: set(bids) == batches)])
 
     def with_only_any_batches(
         self, batches: Union[int, str, Batches, Set[Union[int, str, Batches]]]
     ) -> WellFrame:
+        """
+
+
+        Args:
+          batches:
+
+        Returns:
+
+        """
         batches = set(InternalTools.fetch_all_ids(Batches, batches))
         z = self.__class__.retype(
             self[self["b_ids"].map(lambda bids: any([c in bids for c in batches]))]
@@ -527,6 +858,15 @@ class WellFrame(TypedDf):
     def with_all_compounds(
         self, compounds: Union[int, str, Compounds, Set[Union[int, str, Compounds]]]
     ) -> WellFrame:
+        """
+
+
+        Args:
+          compounds:
+
+        Returns:
+
+        """
         compounds = tuple(InternalTools.fetch_all_ids(Compounds, compounds))
         return self.__class__.retype(
             self[self["c_ids"].map(lambda cids: all([c in cids for c in compounds]))]
@@ -535,6 +875,15 @@ class WellFrame(TypedDf):
     def with_all_batches(
         self, batches: Union[int, str, Batches, Set[Union[int, str, Batches]]]
     ) -> WellFrame:
+        """
+
+
+        Args:
+          batches:
+
+        Returns:
+
+        """
         batches = tuple(InternalTools.fetch_all_ids(Batches, batches))
         return self.__class__.retype(
             self[self["b_ids"].map(lambda bids: all([b in bids for b in batches]))]
@@ -543,6 +892,15 @@ class WellFrame(TypedDf):
     def with_any_compounds(
         self, compounds: Union[int, str, Compounds, Set[Union[int, str, Compounds]]]
     ) -> WellFrame:
+        """
+
+
+        Args:
+          compounds:
+
+        Returns:
+
+        """
         compounds = InternalTools.fetch_all_ids(Compounds, compounds)
         return self.__class__.retype(
             self[self["c_ids"].map(lambda cids: any([c in cids for c in compounds]))]
@@ -551,6 +909,15 @@ class WellFrame(TypedDf):
     def with_any_batches(
         self, batches: Union[int, str, Batches, Set[Union[int, str, Batches]]]
     ) -> WellFrame:
+        """
+
+
+        Args:
+          batches:
+
+        Returns:
+
+        """
         batches = InternalTools.fetch_all_ids(Batches, batches)
         return self.__class__.retype(
             self[self["b_ids"].map(lambda bids: any([b in bids for b in batches]))]
@@ -559,6 +926,15 @@ class WellFrame(TypedDf):
     def without_any_compounds(
         self, compounds: Union[int, str, Compounds, Set[Union[int, str, Compounds]]]
     ) -> WellFrame:
+        """
+
+
+        Args:
+          compounds:
+
+        Returns:
+
+        """
         compounds = InternalTools.fetch_all_ids(Compounds, compounds)
         return self.__class__.retype(
             self[self["c_ids"].map(lambda cids: all([c not in cids for c in compounds]))]
@@ -567,6 +943,15 @@ class WellFrame(TypedDf):
     def without_any_batches(
         self, batches: Union[int, str, Batches, Set[Union[int, str, Batches]]]
     ) -> WellFrame:
+        """
+
+
+        Args:
+          batches:
+
+        Returns:
+
+        """
         batches = InternalTools.fetch_all_ids(Batches, batches)
         return self.__class__.retype(
             self[self["b_ids"].map(lambda bids: all([b not in bids for b in batches]))]
@@ -575,6 +960,15 @@ class WellFrame(TypedDf):
     def without_all_compounds(
         self, compounds: Union[int, str, Compounds, Set[Union[int, str, Compounds]]]
     ) -> WellFrame:
+        """
+
+
+        Args:
+          compounds:
+
+        Returns:
+
+        """
         compounds = tuple(InternalTools.fetch_all_ids(Compounds, compounds))
         return self.__class__.retype(
             self[self["c_ids"].map(lambda cids: any([c not in cids for c in compounds]))]
@@ -583,6 +977,15 @@ class WellFrame(TypedDf):
     def without_all_batches(
         self, batches: Union[int, str, Batches, Set[Union[int, str, Batches]]]
     ) -> WellFrame:
+        """
+
+
+        Args:
+          batches:
+
+        Returns:
+
+        """
         batches = tuple(InternalTools.fetch_all_ids(Batches, batches))
         return self.__class__.retype(
             self[self["b_ids"].map(lambda bids: any([b not in bids for b in batches]))]
@@ -591,6 +994,18 @@ class WellFrame(TypedDf):
     def with_controls(
         self, names: Union[None, str, Iterable[str]] = None, **attributes
     ) -> WellFrame:
+        """
+
+
+        Args:
+          names: Union[None:
+          str:
+          Iterable[str]]:  (Default value = None)
+          **attributes:
+
+        Returns:
+
+        """
         return self.with_controls_matching(names=names, **attributes)
 
     def with_controls_matching(
@@ -598,6 +1013,13 @@ class WellFrame(TypedDf):
     ) -> WellFrame:
         """
         Returns the subset of the wellframe containing the controls meeting certain criteria. See optional arguments for WellFrames.controls_matching for details on these criteria.
+
+        Args:
+          names:
+          **attributes:
+
+        Returns:
+
         """
         matches = self.unique_controls_matching(names, **attributes)
         return self.__class__.retype(self[self["control_type"].isin(matches)])
@@ -605,6 +1027,18 @@ class WellFrame(TypedDf):
     def without_controls_matching(
         self, names: Union[None, str, Iterable[str]] = None, **attributes
     ) -> WellFrame:
+        """
+
+
+        Args:
+          names: Union[None:
+          str:
+          Iterable[str]]:  (Default value = None)
+          **attributes:
+
+        Returns:
+
+        """
         matches = self.unique_controls_matching(names, **attributes)
         return self.__class__.retype(self[~self["control_type"].isin(matches)])
 
@@ -613,6 +1047,13 @@ class WellFrame(TypedDf):
     ) -> str:
         """
         Returns a unique control matching the conditions, or raises a MultipleMatchesError or LookupError.
+
+        Args:
+          names:
+          **attributes:
+
+        Returns:
+
         """
         return Tools.only(
             self.unique_controls_matching(names, **attributes), name="control types"
@@ -625,8 +1066,15 @@ class WellFrame(TypedDf):
     ) -> Set[str]:
         """
         Return the control types in this WellFrame matching ALL of the specified criteria.
-        :param names: The set of allowed control_types
-        :param attributes: Any key-value pairs mapping an attribute of ControlTypes to a required value
+
+        Args:
+          names: The set of allowed control_types
+          attributes: Any key-value pairs mapping an attribute of ControlTypes to a required value
+          names:
+          **attributes:
+
+        Returns:
+
         """
         return {
             c.name
@@ -643,6 +1091,12 @@ class WellFrame(TypedDf):
         """
         Sorts by the names with a natural sort, but putting control names at the top.
         To do this, relies on the name to determine whether a row is a control.
+
+        Args:
+          more_controls: Optional[Set[str]]:  (Default value = None)
+
+        Returns:
+
         """
         return self.__class__.retype(
             ValarTools.sort_controls_first(self, "name", more_controls=more_controls)
@@ -651,6 +1105,12 @@ class WellFrame(TypedDf):
     def sort_first(self, names: Sequence[str]):
         """
         Sorts these names first, keeping the rest in the same order.
+
+        Args:
+          names: Sequence[str]:
+
+        Returns:
+
         """
         return self.__class__.retype(ValarTools.sort_first(self, self["name"], names))
 
@@ -661,10 +1121,19 @@ class WellFrame(TypedDf):
         Either handles special cases or delegates to the superclass.
         WARNING: If inplace, na_position, kind, or axis is SET (even if default):
                 Will simply delegate to the superclass method and return a plain pd.DataFrame.
-        :param by: What to sort by
-        :param ascending: Pretty obvious
-        :param kwargs: Delegated to DataFrame.sort_values
-        :return: Either a new WellFrame or a DataFrame for other cases.
+
+        Args:
+          by: What to sort by
+          ascending: Pretty obvious
+          kwargs: Delegated to DataFrame.sort_values
+          by: Union[str:
+          Sequence[str]]:
+          ascending:
+          **kwargs:
+
+        Returns:
+          Either a new WellFrame or a DataFrame for other cases.
+
         """
         if any([k in kwargs for k in ["axis", "inplace", "kind", "na_position"]]):
             return super().sort_values(by, ascending=ascending, **kwargs)
@@ -676,6 +1145,11 @@ class WellFrame(TypedDf):
         """
         Sorts by so-called 'important' information, then by run (datetime_run), then by well index.
         In order: control_type, treatments, variant_name, n_fish, age, well_group, datetime_run, well_index
+
+        Args:
+
+        Returns:
+
         """
         return self.sort_values(
             [
@@ -699,8 +1173,18 @@ class WellFrame(TypedDf):
             - None     ==> will sort by 'name'
             - str      ==> will sort by that column by delegating to pd.sort_values
             - function ==> preferred. See below.
-        :param function: A function mapping the pd.Series of each row to a value that will be used as input to pd.sort_values
-        :return: The sorted WellFrame
+
+        Args:
+          function: A function mapping the pd.Series of each row to a value that will be used as input to pd.sort_values
+          function: Union[None:
+          Callable[[pd.Series]:
+          Any]:
+          pd.Series:
+          Sequence[Any]]:  (Default value = None)
+
+        Returns:
+          The sorted WellFrame
+
         """
         # we'll add in a __sort column and then call sort_values
         # this column will be removed by self.__class__.of
@@ -718,8 +1202,13 @@ class WellFrame(TypedDf):
     def agg_by_name(self, function=np.mean) -> WellFrame:
         """
         Aggregates by the 'name' column alone. All other meta column will be dropped.
-        :param function: The function to use in aggregation
-        :return: The aggregated WellFrame
+
+        Args:
+          function:
+
+        Returns:
+          The aggregated WellFrame
+
         """
         return self.__class__.of(self.groupby(level="name", sort=False).apply(function))
 
@@ -728,8 +1217,13 @@ class WellFrame(TypedDf):
         Aggregates by battery, Sauron config, name, pack (if any), size (if any) and information about the contents of the well.
         Note that this excludes display_name.
         Meta columns not aggregated on (not in the above list) will be dropped.
-        :param function: The function to use in aggregation
-        :return: The aggregated WellFrame
+
+        Args:
+          function:
+
+        Returns:
+          The aggregated WellFrame
+
         """
         well_cols = WellFrameColumnTools.unimportant_cols
         return self._agg_by(function, well_cols)
@@ -738,8 +1232,13 @@ class WellFrame(TypedDf):
         """
         Aggregates by everything except for well, well_index, well_label, row, and column.
         All meta columns that are excluded will be dropped.
-        :param function: The function to use in aggregation
-        :return: The aggregated df
+
+        Args:
+          function:
+
+        Returns:
+          The aggregated df
+
         """
         well_cols = WellFrameColumnTools.well_position_cols
         return self._agg_by(function, well_cols)
@@ -748,8 +1247,13 @@ class WellFrame(TypedDf):
         """
         Aggregates by the 'pack' column alone.
         All other meta column will be dropped.
-        :param function: The function to use in aggregation
-        :return: The aggregated df
+
+        Args:
+          function:
+
+        Returns:
+          The aggregated df
+
         """
         return self.__class__.of(self.groupby(level="pack", sort=False).apply(function))
 
@@ -757,17 +1261,51 @@ class WellFrame(TypedDf):
         """
         Aggregates by the 'run' column alone.
         All other meta column will be dropped.
-        :param function: The function to use in aggregation
-        :return: The aggregated df
+
+        Args:
+          function:
+
+        Returns:
+          The aggregated df
+
         """
         return self.__class__.of(self.groupby(level="run", sort=False).apply(function))
 
     def log2_dose_to_size(self, fallback: str = "N/A"):
+        """
+
+
+        Args:
+          fallback:
+
+        Returns:
+
+        """
         # noinspection PyTypeChecker
         return self.dose_to_size(fallback, np.log2)
 
     def dose_to_size(self, fallback: str = "N/A", transform: Callable[[float], Any] = lambda s: s):
+        """
+
+
+        Args:
+          fallback:
+          transform: Callable[[float]:
+          Any]:  (Default value = lambda s: s)
+
+        Returns:
+
+        """
         def gsize(ts: Treatments):
+            """
+
+
+            Args:
+              ts: Treatments:
+
+            Returns:
+
+            """
             if ts.len() == 0:
                 return fallback
             elif ts.len() > 1:
@@ -778,15 +1316,21 @@ class WellFrame(TypedDf):
         return self.set_meta_col("size", self["treatments"].map(gsize).map(str))
 
     def feature_means(self) -> WellFrame:
-        """
-        :return: A new WellFrame with a single feature column, 0, which has the mean.
-        """
+        """:return: A new WellFrame with a single feature column, 0, which has the mean."""
         return self.apply_to_features(lambda d: pd.DataFrame(d.mean(axis=1)))
 
     def apply_to_features(self, function: Callable[[pd.DataFrame], pd.DataFrame]) -> WellFrame:
-        """Applies a function to the features only, and then merges it back with meta.
-        :param function: Actually a function of WellFrame; can return a DataFrame or WellFrame
-        :return: A new WellFrame
+        """
+        Applies a function to the features only, and then merges it back with meta.
+
+        Args:
+          function: Actually a function of WellFrame; can return a DataFrame or WellFrame
+          function: Callable[[pd.DataFrame]:
+          pd.DataFrame]:
+
+        Returns:
+          A new WellFrame
+
         """
         return self.__with_new_features(function(self))
 
@@ -798,10 +1342,17 @@ class WellFrame(TypedDf):
     ) -> WellFrame:
         """
         Applies a function along a sliding window of the features using pd.DataFrame.rolling.
-        :param function: A smoothing function mapping pd.Series to pd.Series
-        :param window_size: The number of features in each window
-        :param window_type: An argument to pd.DataFrame.rolling `win_type`
-        :return: The same WellFrame with smoothed features
+
+        Args:
+          function:
+          window_size: The number of features in each window
+          window_type: An argument to pd.DataFrame.rolling `win_type`
+          window_size: int:  (Default value = 10)
+          window_type: Optional[str]:  (Default value = "triang")
+
+        Returns:
+          The same WellFrame with smoothed features
+
         """
         results = function(self.rolling(window_size, axis=1, min_periods=1, win_type=window_type))
         return self.__with_new_features(results)
@@ -810,8 +1361,17 @@ class WellFrame(TypedDf):
         """
         Takes Z-score of the features with respect the specified control wells.
         Concretely, calculates: (well - controls.mean()) / all_wells.std()
-        :param control_type: The name, ID, or instance of a ControlTypes
-        :return: The same WellFrame with new features
+
+        Args:
+          control_type: The name, ID, or instance of a ControlTypes
+          control_type: Union[None:
+          str:
+          int:
+          ControlTypes]:
+
+        Returns:
+          The same WellFrame with new features
+
         """
         zs = lambda case, control: (case - control.mean()) / case.std()
         return self.control_subtract(zs, control_type)
@@ -823,9 +1383,20 @@ class WellFrame(TypedDf):
     ) -> WellFrame:
         """
         Applies a function to the whole dataframe with respect to the controls.
-        :param function: Maps (whole_df, controls_only) to a new DataFrame
-        :param control_type: The name, ID, or object for a ControlType. If None, is taken to mean all controls (which is potentially weird).
-        :return: The same WellFrame
+
+        Args:
+          function: Maps (whole_df, controls_only) to a new DataFrame
+          control_type: The name, ID, or object for a ControlType. If None, is taken to mean all controls (which is potentially weird).
+          function: Callable[[pd.DataFrame:
+          pd.DataFrame]:
+          control_type: Union[None:
+          str:
+          int:
+          ControlTypes]:
+
+        Returns:
+          The same WellFrame
+
         """
         if control_type is None:
             control_df = self.__class__.retype(self[self["control_type_id"].isnull()])
@@ -840,8 +1411,14 @@ class WellFrame(TypedDf):
         """
         Calculates Z-scores with respect to rows with the name column matching `name_to_subtract`.
         See WellFrame.z_score for more info.
-        :param name_to_subtract: The entry in the name column
-        :return: The same WellFrame
+
+        Args:
+          name_to_subtract: The entry in the name column
+          name_to_subtract: Optional[str]:
+
+        Returns:
+          The same WellFrame
+
         """
         return self.name_subtract(
             lambda case, control: (case - control.mean()) / case.std(), name_to_subtract
@@ -851,8 +1428,14 @@ class WellFrame(TypedDf):
         """
         Calculates Z-scores with respect to rows with the name column matching pack_to_subtract`.
         See WellFrame.z_score for more info.
-        :param pack_to_subtract: The entry in the pack column
-        :return: The same WellFrame
+
+        Args:
+          pack_to_subtract: The entry in the pack column
+          pack_to_subtract: Optional[str]:
+
+        Returns:
+          The same WellFrame
+
         """
         return self.pack_subtract(
             lambda case, control: (case - control.mean()) / case.std(), pack_to_subtract
@@ -862,8 +1445,14 @@ class WellFrame(TypedDf):
         """
         Calculates Z-scores with respect to rows with the run column matching pack_to_subtract`.
         See WellFrame.z_score for more info.
-        :param run_to_subtract: A run ID
-        :return: The same WellFrame
+
+        Args:
+          run_to_subtract: A run ID
+          run_to_subtract: Optional[int]:
+
+        Returns:
+          The same WellFrame
+
         """
         return self.run_subtract(
             lambda case, control: (case - control.mean()) / case.std(), run_to_subtract
@@ -874,10 +1463,19 @@ class WellFrame(TypedDf):
         function: Callable[[pd.DataFrame, pd.DataFrame], pd.DataFrame],
         name: Optional[str] = None,
     ) -> WellFrame:
-        """Analogous to control_subtract, but subtracts with respect to names (in the index) rather than actual control types.
-        :param function: Maps (whole_df, controls_only) to a new DataFrame
-        :param name: The string in this_df.names()
-        :return: A new WellFrame
+        """
+        Analogous to control_subtract, but subtracts with respect to names (in the index) rather than actual control types.
+
+        Args:
+          function: Maps (whole_df, controls_only) to a new DataFrame
+          name: The string in this_df.names()
+          function: Callable[[pd.DataFrame:
+          pd.DataFrame]:
+          name:
+
+        Returns:
+          A new WellFrame
+
         """
         control_df = self.with_name(name)
         results = function(self, control_df)
@@ -888,10 +1486,19 @@ class WellFrame(TypedDf):
         function: Callable[[pd.DataFrame, pd.DataFrame], pd.DataFrame],
         pack: Optional[str] = None,
     ) -> WellFrame:
-        """Analogous to control_subtract, but subtracts with respect to packs (in the index) rather than actual control types.
-        :param function: Maps (whole_df, controls_only) to a new DataFrame
-        :param pack: The string in this_df.packs()
-        :return: A new WellFrame
+        """
+        Analogous to control_subtract, but subtracts with respect to packs (in the index) rather than actual control types.
+
+        Args:
+          function: Maps (whole_df, controls_only) to a new DataFrame
+          pack: The string in this_df.packs()
+          function: Callable[[pd.DataFrame:
+          pd.DataFrame]:
+          pack:
+
+        Returns:
+          A new WellFrame
+
         """
         control_df = self.with_pack(pack)
         results = function(self, control_df)
@@ -902,10 +1509,19 @@ class WellFrame(TypedDf):
         function: Callable[[pd.DataFrame, pd.DataFrame], pd.DataFrame],
         run: Optional[int] = None,
     ) -> WellFrame:
-        """Analogous to control_subtract, but subtracts with respect to runs (in the index) rather than actual control types.
-        :param function: Maps (whole_df, controls_only) to a new DataFrame
-        :param run: The ID
-        :return: A new WellFrame
+        """
+        Analogous to control_subtract, but subtracts with respect to runs (in the index) rather than actual control types.
+
+        Args:
+          function: Maps (whole_df, controls_only) to a new DataFrame
+          run: The ID
+          function: Callable[[pd.DataFrame:
+          pd.DataFrame]:
+          run:
+
+        Returns:
+          A new WellFrame
+
         """
         control_df = self.with_run(run)
         results = function(self, control_df)
@@ -915,6 +1531,11 @@ class WellFrame(TypedDf):
         """
         :return: A list of the unique batches.id values among all wells.
                 The values will be in the same order as they appear the rows (and then by their order in Treatments).
+
+        Args:
+
+        Returns:
+
         """
         return Tools.unique([item for sublist in self["b_ids"] for item in sublist])
 
@@ -922,6 +1543,11 @@ class WellFrame(TypedDf):
         """
         :return: A list of the unique compounds.id values among all wells.
                 The values will be in the same order as they appear the rows (and then by their order in Treatments).
+
+        Args:
+
+        Returns:
+
         """
         return Tools.unique([item for sublist in self["c_ids"] for item in sublist])
 
@@ -930,8 +1556,14 @@ class WellFrame(TypedDf):
         Returns unique compound names in the order they appear in this WellFrame (by row, then by item in the Treatments instances).
             - If `namer` is passed, transforms self['treatments'] and returns the result
             - If `namer is not passed, returns the unique items in self['compound_names'] in order.
-        :param namer: None or a CompoundNamer
-        :return: A list of the compound names as strings, in order
+
+        Args:
+          namer: None or a CompoundNamer
+          namer:
+
+        Returns:
+          A list of the compound names as strings, in order
+
         """
         if namer is None:
             return Tools.unique([item for sublist in self["compound_names"] for item in sublist])
@@ -943,6 +1575,11 @@ class WellFrame(TypedDf):
         """
         :return: A list of the unique Treatment values among all wells.
                 The values will be in the same order as they appear the rows (and then by their order in Treatments).
+
+        Args:
+
+        Returns:
+
         """
         return Treatments(
             Tools.unique([item for sublist in self["treatments"] for item in sublist])
@@ -952,18 +1589,40 @@ class WellFrame(TypedDf):
         """
         :return: A list of the unique batch.lookup_hash values among all wells.
                 The values will be in the same order as they appear the rows (and then by their order in Treatments).
+
+        Args:
+
+        Returns:
+
         """
         return Tools.unique([item.oc for sublist in self["treatments"] for item in sublist])
 
     def dose_of(self, batch: Union[Batches, str, int]) -> pd.Series:
         """
         Returns a Series of the specified batch, with 0.0 if the batch is not present.
-        :param batch: A batch ID, lookup_hash, or instance
-        :return: A Pandas Series with float values in which the entries match the rows in this WellFrame
+
+        Args:
+          batch: A batch ID, lookup_hash, or instance
+          batch: Union[Batches:
+          str:
+          int]:
+
+        Returns:
+          A Pandas Series with float values in which the entries match the rows in this WellFrame
+
         """
         batch = Batches.fetch(batch).lookup_hash
 
         def dof(treatments):
+            """
+
+
+            Args:
+              treatments:
+
+            Returns:
+
+            """
             ts = {t.oc: t.dose for t in treatments}
             if batch in ts:
                 return ts[batch]
@@ -975,6 +1634,13 @@ class WellFrame(TypedDf):
     def constrain(self, lower: float, upper: float) -> WellFrame:
         """
         Returns a new WellFrame with the features bound between lower and upper.
+
+        Args:
+          lower: float:
+          upper: float:
+
+        Returns:
+
         """
         results = self.clip(lower, upper)
         return self.__with_new_features(results)
@@ -982,6 +1648,12 @@ class WellFrame(TypedDf):
     def threshold_zeros(self, lower: float) -> WellFrame:
         """
         Returns a new WellFrame with features values under a certain (absolute value) threshold set to 0.
+
+        Args:
+          lower: float:
+
+        Returns:
+
         """
         results = (self.abs() >= lower) * self.values
         return self.__with_new_features(results)
@@ -992,6 +1664,15 @@ class WellFrame(TypedDf):
         """
         Returns a new WellFrame with new names set.
         Copies.
+
+        Args:
+          namer: Union[pd.Series:
+          pd.Index:
+          Sequence[str]:
+          WellNamer]:
+
+        Returns:
+
         """
         return self._with_new("name", namer, str)
 
@@ -1001,12 +1682,27 @@ class WellFrame(TypedDf):
         """
         Returns a new WellFrame with new display_names set.
         Copies.
+
+        Args:
+          namer: Union[pd.Series:
+          pd.Index:
+          Sequence[str]:
+          WellNamer]:
+
+        Returns:
+
         """
         return self._with_new("display_name", namer, str)
 
     def with_new_compound_names(self, namer: Optional[CompoundNamer]) -> WellFrame:
         """
         Returns a new WellFrame with the 'compound_names' meta column set.
+
+        Args:
+          namer: Optional[CompoundNamer]:
+
+        Returns:
+
         """
         if namer is None:
             return self._with_new(
@@ -1024,6 +1720,15 @@ class WellFrame(TypedDf):
         """
         Returns a new WellFrame with new packs set.
         Copies.
+
+        Args:
+          namer: Union[pd.Series:
+          pd.Index:
+          Sequence[str]:
+          WellNamer]:
+
+        Returns:
+
         """
         return self._with_new("pack", namer, str)
 
@@ -1033,10 +1738,32 @@ class WellFrame(TypedDf):
         """
         Returns a new WellFrame with new sizes set.
         Copies.
+
+        Args:
+          namer: Union[pd.Series:
+          pd.Index:
+          Sequence[str]:
+          WellNamer]:
+
+        Returns:
+
         """
         return self._with_new("size", namer, str)
 
     def with_new(self, meta_col: str, setter: Union[pd.Series, pd.Index, Sequence[str], WellNamer]):
+        """
+
+
+        Args:
+          meta_col: str:
+          setter: Union[pd.Series:
+          pd.Index:
+          Sequence[str]:
+          WellNamer]:
+
+        Returns:
+
+        """
         if meta_col not in WellFrameColumnTools.special_cols:
             raise RefusingRequestError(
                 f"Can only set reserved cols ({WellFrameColumnTools.special_cols}), not {meta_col}. Use set_meta_col."
@@ -1046,6 +1773,17 @@ class WellFrame(TypedDf):
         return self._with_new(meta_col, setter, dtype)
 
     def _with_new(self, col, namer, dtype):
+        """
+
+
+        Args:
+          col:
+          namer:
+          dtype:
+
+        Returns:
+
+        """
         df = self.__class__.retype(self.copy().reset_index().drop(col, axis=1))
         if isinstance(namer, pd.Series):
             df[col] = namer.values
@@ -1065,6 +1803,13 @@ class WellFrame(TypedDf):
     def set_meta_col(self, name: str, values: Any) -> WellFrame:
         """
         Returns a copy with a meta/index column set
+
+        Args:
+          name: str:
+          values: Any:
+
+        Returns:
+
         """
         df = self.copy().reset_index()
         df[name] = values
@@ -1099,12 +1844,21 @@ class WellFrame(TypedDf):
         WARNING: Does not make a copy. Changes the class of df to WellFrame in place.
         WARNING: Will drop any column called 'index', '__sort', or 'level_0'.
 
-        :param ignore_extra_meta: If True, leaves str-typed columns in the index.
-        :param df: A Pandas Dataframe to convert
-        :param require_full: If true, checks that the WellFrame has every 'required' (pseudo-required) column
-        :return: A WellFrame from this DataFrame, NOT a copy
-        :raises TypeError If the argument is not a WellFrame or DataFrame
-        :raises InvalidWellFrameError If the input is not valid
+        Args:
+          ignore_extra_meta: If True, leaves str-typed columns in the index.
+          df: A Pandas Dataframe to convert
+          require_full: If true, checks that the WellFrame has every 'required' (pseudo-required) column
+          df: pd.DataFrame:
+          require_full: bool:  (Default value = False)
+          ignore_extra_meta: bool:  (Default value = False)
+
+        Returns:
+          A WellFrame from this DataFrame, NOT a copy
+
+        Raises:
+          TypeError: If the argument is not a WellFrame or DataFrame
+          InvalidWellFrameError: If the input is not valid
+
         """
         if not isinstance(df, pd.DataFrame):
             raise TypeError("Can only build a WellFrame from a Pandas DataFrame.")
@@ -1126,8 +1880,14 @@ class WellFrame(TypedDf):
         Sets the __class__ of `df` to WellFrame.
         Instantaneous and in-place.
         Does not perform any checks; see `of` for a safer but slower method.
-        :param df: A Pandas DataFrame or subclass
-        :return: A WellFrame
+
+        Args:
+          df: A Pandas DataFrame or subclass
+          df: pd.DataFrame:
+
+        Returns:
+          A WellFrame
+
         """
         df.__class__ = cls
         # noinspection PyTypeChecker
@@ -1135,7 +1895,15 @@ class WellFrame(TypedDf):
 
     @classmethod
     def new_empty(cls, n_features: int) -> WellFrame:
-        """Returns a new empty DataFrame."""
+        """
+        Returns a new empty DataFrame.
+
+        Args:
+          n_features: int:
+
+        Returns:
+
+        """
         cols = WellFrameColumns.reserved_names
         df = pd.DataFrame(columns=[*cols, *np.arange(0, n_features)])
         df = df.reset_index().set_index(cols)
@@ -1145,8 +1913,14 @@ class WellFrame(TypedDf):
     def concat(cls, *wfs: Sequence[WellFrame]) -> WellFrame:
         """
         Concatenates WellFrames vertically.
-        :param wfs: A var-args list of WellFrames or DataFrames
-        :return: A new WellFrame
+
+        Args:
+          wfs: A var-args list of WellFrames or DataFrames
+          *wfs: Sequence[WellFrame]:
+
+        Returns:
+          A new WellFrame
+
         """
         return cls.of(pd.concat(wfs, sort=False))
 
@@ -1156,6 +1930,13 @@ class WellFrame(TypedDf):
         Builds a new WellFrame from meta and features. Requires that both are in the same order
         The meta columns will then be made into index columns.
         WARNING: Ignores and discards indices on the features
+
+        Args:
+          meta: pd.DataFrame:
+          features: pd.DataFrame:
+
+        Returns:
+
         """
         meta = cls.of(meta).reset_index()
         features = features.reset_index(drop=True)
@@ -1163,6 +1944,16 @@ class WellFrame(TypedDf):
         return cls.of(df)
 
     def _agg_by(self, function=np.mean, exclude: Set[str] = None) -> WellFrame:
+        """
+
+
+        Args:
+          function:
+          exclude:
+
+        Returns:
+
+        """
         if exclude is None:
             exclude = []
         df = self.copy()  # we'll change this inplace

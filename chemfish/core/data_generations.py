@@ -16,6 +16,11 @@ class DataGeneration(enum.Enum):
         - PIKE_SAURONX:      Saurons running Pike cameras using SauronX. Saurons 1, 2, 3, and 4.
         - POINTGREY_ALPHA:   Saurons running PointGrey cameras without the new stimuli and sensors. Saurons 2 and 4.
         - POINTGREY:         Saurons running PointGrey cameras after integrating sensors and the white and UV LEDs. Saurons 10, 11, 12, and 13.
+
+    Args:
+
+    Returns:
+
     """
 
     PIKE_MGH = enum.auto()
@@ -26,6 +31,15 @@ class DataGeneration(enum.Enum):
 
     @classmethod
     def of(cls, s: Union[str, DataGeneration]) -> DataGeneration:
+        """
+
+
+        Args:
+          s:
+
+        Returns:
+
+        """
         if isinstance(s, DataGeneration):
             return s
         return DataGeneration.__members__[s.upper().replace(" ", "_")]
@@ -37,22 +51,28 @@ class DataGeneration(enum.Enum):
         return self.name
 
     def is_pike(self) -> bool:
+        """ """
         return self in DataGeneration.pike_generations()
 
     def is_pointgrey(self) -> bool:
+        """ """
         return self in DataGeneration.pointgrey_generations()
 
     def is_sauronx(self) -> bool:
+        """ """
         return self in DataGeneration.sauronx_generations()
 
     def is_mgh(self) -> bool:
+        """ """
         return self is DataGeneration.PIKE_MGH
 
     def is_ucsf(self) -> bool:
+        """ """
         return self is not DataGeneration.PIKE_MGH
 
     @classmethod
     def pike_generations(cls) -> Set[DataGeneration]:
+        """ """
         return {
             DataGeneration.PIKE_MGH,
             DataGeneration.PIKE_LEGACY,
@@ -61,10 +81,12 @@ class DataGeneration(enum.Enum):
 
     @classmethod
     def pointgrey_generations(cls) -> Set[DataGeneration]:
+        """ """
         return {DataGeneration.POINTGREY_ALPHA, DataGeneration.POINTGREY}
 
     @classmethod
     def sauronx_generations(cls) -> Set[DataGeneration]:
+        """ """
         return {
             DataGeneration.PIKE_SAURONX,
             DataGeneration.POINTGREY_ALPHA,
@@ -73,6 +95,7 @@ class DataGeneration(enum.Enum):
 
     @classmethod
     def all_generations(cls) -> Set[DataGeneration]:
+        """ """
         return set(DataGeneration.__members__.values())
 
 

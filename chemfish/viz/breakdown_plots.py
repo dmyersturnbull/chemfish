@@ -9,11 +9,24 @@ from chemfish.viz.figures import *
 
 
 class BreakdownBarPlotter(KvrcPlotting):
+    """ """
     def __init__(self, bar_width: float = chemfish_rc.acc_bar_width_fraction, kwargs=None):
         self.bar_width = bar_width
         self.kwargs = {} if kwargs is None else kwargs
 
     def plot(self, labels, sizes, colors=None, ax=None):
+        """
+
+
+        Args:
+          labels:
+          sizes:
+          colors:
+          ax:
+
+        Returns:
+
+        """
         if ax is None:
             figure = plt.figure()
             ax = figure.add_subplot(1, 1, 1)
@@ -41,9 +54,7 @@ class BreakdownBarPlotter(KvrcPlotting):
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class BreakdownPiePlotter(KvrcPlotting):
-    """
-    Code to make pretty pie charts with holes in the center.
-    """
+    """Code to make pretty pie charts with holes in the center."""
 
     def __init__(self, figsize=None, radius: float = 1.0, kwargs=None):
         self._figsize = (chemfish_rc.width, chemfish_rc.width) if figsize is None else figsize
@@ -51,6 +62,19 @@ class BreakdownPiePlotter(KvrcPlotting):
         self._kwargs = {} if kwargs is None else kwargs
 
     def plot(self, labels, sizes, colors=None, explode=None, ax=None):
+        """
+
+
+        Args:
+          labels:
+          sizes:
+          colors:
+          explode:
+          ax:
+
+        Returns:
+
+        """
         if colors is False or colors is None:
             colors = ["black" for _ in labels]
         if explode is None:

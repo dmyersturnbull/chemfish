@@ -6,8 +6,10 @@ from chemfish.viz.breakdown_plots import BreakdownBarPlotter, BreakdownPiePlotte
 
 
 class MandosFrame(UntypedDf):
+    """ """
     @classmethod
     def required_columns(cls) -> Sequence[str]:
+        """ """
         return [
             "rule_id",
             "compound",
@@ -24,6 +26,7 @@ class MandosFrame(UntypedDf):
 
     @classmethod
     def reserved_columns(cls) -> Sequence[str]:
+        """ """
         return [
             "rule_id",
             "compound",
@@ -40,12 +43,36 @@ class MandosFrame(UntypedDf):
         ]
 
     def bar(self, colors: Union[None, bool, Sequence[str]] = None, ax=None):
+        """
+
+
+        Args:
+          colors: Union[None:
+          bool:
+          Sequence[str]]:  (Default value = None)
+          ax:
+
+        Returns:
+
+        """
         counts = self.counts_by_object()
         labels = counts["object_name"].values
         values = counts["count"].values
         return BreakdownBarPlotter().plot(labels, values, colors, ax=ax)
 
     def pie(self, colors: Union[None, bool, Sequence[str]] = None, ax=None):
+        """
+
+
+        Args:
+          colors: Union[None:
+          bool:
+          Sequence[str]]:  (Default value = None)
+          ax:
+
+        Returns:
+
+        """
         counts = self.counts_by_object()
         counts = UntypedDf(counts.iloc[::-1]).reset_index()  # reverse so we sort clockwise
         labels = counts["object_name"].values
@@ -53,9 +80,28 @@ class MandosFrame(UntypedDf):
         return BreakdownPiePlotter().plot(labels, values, colors, ax=ax)
 
     def counts_by_object(self, multi_count: bool = False):
+        """
+
+
+        Args:
+          multi_count: bool:  (Default value = False)
+
+        Returns:
+
+        """
         return self.counts_by_col("object_name", multi_count=multi_count)
 
     def counts_by_col(self, col: str, multi_count: bool = False):
+        """
+
+
+        Args:
+          col: str:
+          multi_count: bool:  (Default value = False)
+
+        Returns:
+
+        """
         if multi_count:
             counts = (
                 self.groupby(col)
@@ -75,14 +121,18 @@ class MandosFrame(UntypedDf):
 
 
 class ChemInfoFrame(TypedDf):
+    """ """
     @classmethod
     def required_columns(cls) -> Sequence[str]:
+        """ """
         return ["compound", "name", "value", "ref"]
 
 
 class GoTermFrame(TypedDf):
+    """ """
     @classmethod
     def required_columns(cls) -> Sequence[str]:
+        """ """
         return ["compound", "term"]
 
 
@@ -90,6 +140,7 @@ class GoTermFrame(TypedDf):
 @abcd.auto_eq()
 @abcd.auto_html()
 class MandosSearch:
+    """ """
     def __init__(self, kind: str, as_of: datetime):
         self.kind = kind
         self.wheres = []
@@ -102,21 +153,66 @@ class MandosSearch:
 
     @classmethod
     def targets(cls, as_of: datetime) -> MandosSearch:
+        """
+
+
+        Args:
+          as_of: datetime:
+
+        Returns:
+
+        """
         return MandosSearch("target", as_of)
 
     @classmethod
     def classes(cls, as_of: datetime) -> MandosSearch:
+        """
+
+
+        Args:
+          as_of: datetime:
+
+        Returns:
+
+        """
         return MandosSearch("class", as_of)
 
     @classmethod
     def indications(cls, as_of: datetime) -> MandosSearch:
+        """
+
+
+        Args:
+          as_of: datetime:
+
+        Returns:
+
+        """
         return MandosSearch("indication", as_of)
 
     def where(self, where) -> MandosSearch:
+        """
+
+
+        Args:
+          where:
+
+        Returns:
+
+        """
         self.wheres.append(where)
         return self
 
     def with_object_tags(self, name: Optional[str]) -> MandosSearch:
+        """
+
+
+        Args:
+          name: Optional[str]:
+
+        Returns:
+
+        """
         if name is None:
             self.object_tags = None
         else:
@@ -129,6 +225,15 @@ class MandosSearch:
         return self
 
     def with_rule_tags(self, name: Optional[str]) -> MandosSearch:
+        """
+
+
+        Args:
+          name: Optional[str]:
+
+        Returns:
+
+        """
         if name is None:
             self.rule_tags = None
         else:
@@ -141,6 +246,16 @@ class MandosSearch:
         return self
 
     def with_compound_names(self, col_name=None, namer=None) -> MandosSearch:
+        """
+
+
+        Args:
+          col_name:  (Default value = None)
+          namer:
+
+        Returns:
+
+        """
         if col_name is None:
             col_name = "compound_name"
         if namer is None:
@@ -149,6 +264,17 @@ class MandosSearch:
         return self
 
     def with_batches(self, refs: Set[Union[str, int, Refs]] = None) -> MandosSearch:
+        """
+
+
+        Args:
+          refs: Set[Union[str:
+          int:
+          Refs]]:  (Default value = None)
+
+        Returns:
+
+        """
         if refs is None:
             self.batch_refs = {1, 3, 10}
         else:
@@ -156,6 +282,7 @@ class MandosSearch:
         return self
 
     def search(self) -> MandosFrame:
+        """ """
         query = (
             MandosRules.select(MandosRules, Compounds, MandosPredicates, MandosObjects)
             .join(Compounds, JOIN.LEFT_OUTER)
@@ -218,6 +345,15 @@ class MandosSearch:
         return MandosFrame(df).cfirst(["rule_id", "compound_id"])
 
     def _add_batches(self, df: pd.DataFrame) -> None:
+        """
+
+
+        Args:
+          df: pd.DataFrame:
+
+        Returns:
+
+        """
         if self.batch_refs is None:
             return
         cids = set(df["compound_id"])
@@ -233,6 +369,15 @@ class MandosSearch:
             df["batch_ids"] = tuple(df["compound_id"].map(lambda target: lookup[compound]))
 
     def _add_object_tags(self, df: pd.DataFrame) -> None:
+        """
+
+
+        Args:
+          df: pd.DataFrame:
+
+        Returns:
+
+        """
         objs = set(df["object_id"])
         tags = MandosObjectTags.select().where(MandosObjectTags.object_id << objs)
         tags = (
@@ -243,6 +388,15 @@ class MandosSearch:
         self._add_tags(df, tags, "object_id")
 
     def _add_rule_tags(self, df: pd.DataFrame) -> None:
+        """
+
+
+        Args:
+          df: pd.DataFrame:
+
+        Returns:
+
+        """
         rules = set(df["rule_id"].unique())
         tags = MandosRuleTags.select().where(MandosRuleTags.rule_id << rules)
         tags = (
@@ -253,11 +407,31 @@ class MandosSearch:
         self._add_tags(df, tags, "rule_id")
 
     def _add_tags(self, df: pd.DataFrame, tags, name):
+        """
+
+
+        Args:
+          df: pd.DataFrame:
+          tags:
+          name:
+
+        Returns:
+
+        """
         lookup = defaultdict(lambda: [])
         for tag in tags:
             lookup[(getattr(tag, name), tag.name)].append(tag.value)
 
         def fix(target):
+            """
+
+
+            Args:
+              target:
+
+            Returns:
+
+            """
             ell = lookup.get((target, tag_name))
             return tuple([]) if ell is None else tuple(ell)
 
@@ -268,8 +442,20 @@ class MandosSearch:
 
 
 class MandosSearches:
+    """ """
     @classmethod
     def info(cls, compounds: Union[Compounds, int, str]) -> ChemInfoFrame:
+        """
+
+
+        Args:
+          compounds: Union[Compounds:
+          int:
+          str]:
+
+        Returns:
+
+        """
         if isinstance(compounds, (Compounds, int, str)):
             compounds = [compounds]
         compounds = [Compounds.fetch(c) for c in compounds]
@@ -294,21 +480,66 @@ class MandosSearches:
 
     @classmethod
     def targets(cls, compound: Union[Compounds, int, str], as_of: datetime) -> MandosFrame:
+        """
+
+
+        Args:
+          compound: Union[Compounds:
+          int:
+          str]:
+          as_of: datetime:
+
+        Returns:
+
+        """
         compound = Compounds.fetch(compound)
         return MandosSearch.targets(as_of).where(MandosRules.compound == compound.id).search()
 
     @classmethod
     def classes(cls, compound: Union[Compounds, int, str], as_of: datetime) -> MandosFrame:
+        """
+
+
+        Args:
+          compound: Union[Compounds:
+          int:
+          str]:
+          as_of: datetime:
+
+        Returns:
+
+        """
         compound = Compounds.fetch(compound)
         return MandosSearch.classes(as_of).where(MandosRules.compound == compound.id).search()
 
     @classmethod
     def indications(cls, compound: Union[Compounds, int, str], as_of: datetime) -> MandosFrame:
+        """
+
+
+        Args:
+          compound: Union[Compounds:
+          int:
+          str]:
+          as_of: datetime:
+
+        Returns:
+
+        """
         compound = Compounds.fetch(compound)
         return MandosSearch.indications(as_of).where(MandosRules.compound == compound.id).search()
 
     @classmethod
     def go_terms(cls, compounds: Set[int]) -> GoTermFrame:
+        """
+
+
+        Args:
+          compounds: Set[int]:
+
+        Returns:
+
+        """
         if isinstance(compounds, (Compounds, int, str)):
             compounds = [compounds]
         compounds = {Compounds.fetch(c).id for c in compounds}

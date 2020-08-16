@@ -17,6 +17,11 @@ class RefDims(dict):
     For example, (1/3) 2_col will subtract off the appropriate padding for 3 cols (2 spaces shared between 3 columns).
     The size is then rounded to sigfigs after -- normally 6 sigfigs, but overridden with width_sigfigs / height_sigfigs.
     The sum / difference is applied after.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, axis: str, n_sigfigs: int = 6):
@@ -30,6 +35,12 @@ class RefDims(dict):
         """
         Returns the resulting value (calling `self[item]`), also setting the text and value pointers in-place.
         It's best for this to match plt.rcParams[figure.figsize], but this is not required.
+
+        Args:
+          item: str: 
+
+        Returns:
+
         """
         scale = self[item]
         self.current_text = item

@@ -13,6 +13,11 @@ class SpindlePlotter:
     """
     Plots difference from a negative control on the x-axis and difference from a positive control on the y-axis.
     WARNING: CURRENTLY NOT GUARANTEED TO WORK.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(
@@ -26,6 +31,15 @@ class SpindlePlotter:
         self.x_thresh, self.y_thresh = x_thresh, y_thresh
 
     def plot(self, df: DoseResponseFrame2D):
+        """
+        
+
+        Args:
+          df: DoseResponseFrame2D: 
+
+        Returns:
+
+        """
         worst_negative = Tools.ifloor(df["score_1"].min() / 10) * 10
         worst_positive = Tools.ifloor(df["score_2"].min() / 10) * 10
         figure = plt.figure()
@@ -95,6 +109,15 @@ class SpindlePlotter:
         return figure
 
     def _line(self, thresh):
+        """
+        
+
+        Args:
+          thresh: 
+
+        Returns:
+
+        """
         if thresh is None:
             return None, None
         if isinstance(thresh, tuple):

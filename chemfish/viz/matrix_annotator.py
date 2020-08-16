@@ -4,9 +4,7 @@ from chemfish.viz.color_schemes import KvrcColorSchemes
 
 
 class MatrixAnnotator:
-    """
-    Adds labels and brackets around groups of y labels in a matrix that share the same 'target'.
-    """
+    """Adds labels and brackets around groups of y labels in a matrix that share the same 'target'."""
 
     def __init__(
         self,
@@ -27,6 +25,15 @@ class MatrixAnnotator:
         )
 
     def annotate(self, ax: Axes, name_to_target: Mapping[str, str]) -> None:
+        """
+
+
+        Args:
+          ax: Axes:
+          name_to_target:
+        Returns:
+
+        """
         ax.set_xlabel("")
         ax.set_ylabel("")
         qq = Tools.zip_list(
@@ -118,6 +125,25 @@ class MatrixAnnotator:
         text_halign,
         color,
     ):
+        """
+
+
+        Args:
+          ax:
+          top_y:
+          bottom_y:
+          top_x0:
+          top_x1:
+          bottom_x0:
+          bottom_x1:
+          text:
+          text_x:
+          text_halign:
+          color:
+
+        Returns:
+
+        """
         top_y, bottom_y = top_y - 0.5, bottom_y - 0.5
         y_adjust = self.padding
         ax.text(
@@ -136,6 +162,22 @@ class MatrixAnnotator:
         ax.vlines(bottom_x1, top_y + y_adjust, bottom_y - y_adjust, color=color)
 
     def _hline(self, ax, y, x0, x1, text, text_x, text_halign, color):
+        """
+
+
+        Args:
+          ax:
+          y:
+          x0:
+          x1:
+          text:
+          text_x:
+          text_halign:
+          color:
+
+        Returns:
+
+        """
         y -= 0.5
         ax.text(
             text_x,

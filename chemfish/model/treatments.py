@@ -12,6 +12,11 @@ class Treatment:
         1. Compound ID
         2. Batch ID
         3. Dose
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(
@@ -52,14 +57,25 @@ class Treatment:
 
     @property
     def id(self) -> int:
+        """ """
         return self.bid
 
     @property
     def cid(self) -> int:
+        """ """
         return self.compound_id
 
     @classmethod
     def from_well_treatment(cls, condition: WellTreatments) -> Treatment:
+        """
+
+
+        Args:
+          condition: WellTreatments:
+
+        Returns:
+
+        """
         batch = condition.batch
         compound = batch.compound
         return Treatment(
@@ -75,6 +91,16 @@ class Treatment:
 
     @classmethod
     def from_info(cls, batch: Union[Batches, int, str], dose: float) -> Treatment:
+        """
+
+
+        Args:
+          batch:
+          dose: float:
+
+        Returns:
+
+        """
         batch = Batches.fetch(batch)
         compound = batch.compound
         return Treatment(
@@ -102,6 +128,15 @@ class Treatment:
 
     def __lt__(self, other):
         def i(r: int):
+            """
+
+
+            Args:
+              r: int:
+
+            Returns:
+
+            """
             return -1 if r is None else r
 
         return (i(self.compound_id), self.id, self.dose) < (
@@ -114,6 +149,7 @@ class Treatment:
         return hash((self.bid, self.dose))
 
     def copy(self) -> Treatment:
+        """ """
         return Treatment(self.bid, self.oc, self.compound_id, self.inchikey, self.dose, self.tag)
 
 
@@ -124,12 +160,18 @@ class Treatments:
     Any duplicate Treatment instances (determined by Treatent.__eq__ will be removed,
     and the instances will be sorted by Treatment.__lt__.
     This has a __str__ and __repr__ that simplify the Treatment contents.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, treatments):
         self.treatments = sorted(set(treatments))
 
     def single(self) -> Treatment:
+        """ """
         return Tools.only(self.treatments, name="treatments")
 
     def __eq__(self, other):
@@ -145,9 +187,20 @@ class Treatments:
         return self._format(lambda t: "b" + str(t.bid))
 
     def str_with_hash(self):
+        """ """
         return self._format(lambda t: t.oc)
 
     def _format(self, function: Callable[[Treatment], Any]):
+        """
+
+
+        Args:
+          function: Callable[[Treatment]:
+          Any]:
+
+        Returns:
+
+        """
         if self.len() > 0:
             ocs = {function(t): [] for t in self}
             for t in self:
@@ -167,6 +220,7 @@ class Treatments:
         return str(self)
 
     def _repr_html_(self):
+        """ """
         return str(self)
 
     def __hash__(self):
@@ -177,13 +231,26 @@ class Treatments:
 
     # unfortunate workaround for https://github.com/pandas-dev/pandas/issues/17695
     def len(self):
+        """ """
         return len(self.treatments)
 
     def copy(self) -> Treatments:
+        """ """
         return Treatments(self.treatments)
 
     @classmethod
     def of(cls, treatments: Union[Treatments, Treatment, Collection[Treatment]]) -> Treatments:
+        """
+
+
+        Args:
+          treatments: Union[Treatments:
+          Treatment:
+          Collection[Treatment]]:
+
+        Returns:
+
+        """
         if isinstance(treatments, Treatments):
             return treatments
         elif isinstance(treatments, Treatment):

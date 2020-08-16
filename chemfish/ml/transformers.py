@@ -15,9 +15,23 @@ class WellTransform(abcd.ABC):
     ```
     df = df // transform1 // transform2 // transform3
     ```
+
+    Args:
+
+    Returns:
+
     """
 
     def fit(self, df: WellFrame) -> WellFrame:
+        """
+        
+
+        Args:
+          df: WellFrame: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     def __floordiv__(self, df: WellFrame) -> WellFrame:
@@ -25,11 +39,22 @@ class WellTransform(abcd.ABC):
 
 
 class TrimmingWellTransform(WellTransform, metaclass=abc.ABCMeta):
+    """ """
     pass
 
 
 class TwoDWellTransform(WellTransform, metaclass=abc.ABCMeta):
+    """ """
     def validate(self, df: WellFrame) -> None:
+        """
+        
+
+        Args:
+          df: WellFrame: 
+
+        Returns:
+
+        """
         if df.feature_length() != 2:
             raise LengthMismatchError(
                 f"{self.__class__.__name__} only applies to WellFrames with precisely 2 features"
@@ -37,11 +62,21 @@ class TwoDWellTransform(WellTransform, metaclass=abc.ABCMeta):
 
 
 class OutlierStdTransform(TrimmingWellTransform):
+    """ """
     def __init__(self, n_stds: float = 2):
         self.n_stds = n_stds
         self.trimmed_wells = None
 
     def fit(self, df: WellFrame) -> WellFrame:
+        """
+        
+
+        Args:
+          df: WellFrame: 
+
+        Returns:
+
+        """
         original = set(df["well"])
         for col in df.columns:
             df = self._trim(df, col)
@@ -50,15 +85,35 @@ class OutlierStdTransform(TrimmingWellTransform):
         return df
 
     def _trim(self, df, col):
+        """
+        
+
+        Args:
+          df: 
+          col: 
+
+        Returns:
+
+        """
         return df[(df[col] - df[col].mean()).abs() <= self.n_stds * np.std(df[col])]
 
 
 class OutlierDistanceTransform(TrimmingWellTransform):
+    """ """
     def __init__(self, distance_fn, max_distance: float):
         self.distance_fn, self.max_distance = distance_fn, max_distance
         self.trimmed_wells = None
 
     def fit(self, df: WellFrame) -> WellFrame:
+        """
+        
+
+        Args:
+          df: WellFrame: 
+
+        Returns:
+
+        """
         original = set(df["well"])
         df = self._trim(df)
         self.trimmed_wells = set(df["well"]) - original
@@ -66,15 +121,34 @@ class OutlierDistanceTransform(TrimmingWellTransform):
         return df
 
     def _trim(self, df):
+        """
+        
+
+        Args:
+          df: 
+
+        Returns:
+
+        """
         distances = df.apply(self.distance_fn)
         return df[distances <= self.max_distance]
 
 
 class RotationTransform(TwoDWellTransform):
+    """ """
     def __init__(self, degrees: float):
         self.degrees = degrees
 
     def fit(self, df: WellFrame) -> WellFrame:
+        """
+        
+
+        Args:
+          df: WellFrame: 
+
+        Returns:
+
+        """
         self.validate(df)
         rotated = ndimage.rotate(df.values)
         df[0] = rotated[0]
@@ -83,10 +157,20 @@ class RotationTransform(TwoDWellTransform):
 
 
 class SklearnTransform(WellTransform, metaclass=abc.ABCMeta):
+    """ """
     def __init__(self, model: TransformerMixin):
         self.model = model
 
     def fit(self, df: WellFrame) -> WellFrame:
+        """
+        
+
+        Args:
+          df: WellFrame: 
+
+        Returns:
+
+        """
         logger.info(
             f"Fitting {len(df)} wells and {df.n_columns()} features with {self.model.__class__.__name__}"
         )
@@ -96,44 +180,112 @@ class SklearnTransform(WellTransform, metaclass=abc.ABCMeta):
 
 
 class CompositeTransform(WellTransform):
+    """ """
     def __init__(self, *transformations: WellTransform):
         self.transformations = transformations
 
     def fit(self, df: WellFrame) -> WellFrame:
+        """
+        
+
+        Args:
+          df: WellFrame: 
+
+        Returns:
+
+        """
         for t in self.transformations:
             df = t.fit(df)
         return df
 
 
 class WellTransforms:
-    """
-    A suite of functions that apply common `WellTransformation`s to single WellFrames.
-    """
+    """A suite of functions that apply common `WellTransformation`s to single WellFrames."""
 
     @classmethod
     def tsne(cls, df: WellFrame, **kwargs) -> WellFrame:
+        """
+        
+
+        Args:
+          df: WellFrame: 
+          **kwargs: 
+
+        Returns:
+
+        """
         # noinspection PyTypeChecker
         return SklearnTransform(TSNE(**kwargs)).fit(df)
 
     @classmethod
     def pca(cls, df: WellFrame, **kwargs) -> WellFrame:
+        """
+        
+
+        Args:
+          df: WellFrame: 
+          **kwargs: 
+
+        Returns:
+
+        """
         # noinspection PyTypeChecker
         return SklearnTransform(PCA(**kwargs)).fit(df)
 
     @classmethod
     def compose(cls, *transformations: WellTransform):
+        """
+        
+
+        Args:
+          *transformations: WellTransform: 
+
+        Returns:
+
+        """
         return CompositeTransform(*transformations)
 
     @classmethod
     def outlier_std(cls, df: WellFrame, n_stds: float) -> WellFrame:
+        """
+        
+
+        Args:
+          df: WellFrame: 
+          n_stds: float: 
+
+        Returns:
+
+        """
         return OutlierStdTransform(n_stds).fit(df)
 
     @classmethod
     def outlier_dist(cls, df: WellFrame, distance_fn, max_distance) -> WellFrame:
+        """
+        
+
+        Args:
+          df: WellFrame: 
+          distance_fn: 
+          max_distance: 
+
+        Returns:
+
+        """
         return OutlierDistanceTransform(distance_fn, max_distance).fit(df)
 
     @classmethod
     def rotate(cls, df: WellFrame, degrees: float) -> WellFrame:
+        """
+        
+
+        Args:
+          df: WellFrame: 
+          degrees: float: 
+
+        Returns:
+
+        """
         return RotationTransform(degrees).fit(df)
 
 

@@ -4,6 +4,7 @@ from chemfish.lookups import *
 
 @abcd.external
 class TemplateLookups(LookupTool):
+    """ """
     @classmethod
     def treatments(
         cls,
@@ -11,6 +12,17 @@ class TemplateLookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = TemplateTreatments.select(TemplateTreatments, TemplatePlates).join(TemplatePlates)
         return TemplateLookups._simple(
             TemplatePlates,
@@ -31,6 +43,17 @@ class TemplateLookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = (
             TemplateWells.select(TemplateWells, TemplatePlates)
             .join(TemplatePlates)

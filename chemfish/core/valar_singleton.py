@@ -5,6 +5,7 @@ from valarpy import Valar as __Valar
 
 @abcd.auto_singleton
 class Valar(__Valar):
+    """ """
     def __init__(self):
         super().__init__()
         super().open()

@@ -7,14 +7,21 @@ from chemfish.viz.figures import FigureTools
 
 
 class MetricPlotter:
-    """
-    Plots ROC and Precision-Recall curves as 2D line plots.
-    """
+    """Plots ROC and Precision-Recall curves as 2D line plots."""
 
     def __init__(self, metric_info: MetricInfo):
         self.info = metric_info
 
     def plot(self, data: Sequence[MetricData]) -> Figure:
+        """
+
+
+        Args:
+          data: Sequence[MetricData]:
+
+        Returns:
+
+        """
         figure = plt.figure()
         ax = figure.add_subplot(1, 1, 1)
         colors = InternalVizTools.assign_colors_x(
@@ -38,12 +45,22 @@ class MetricPlotter:
 
 @enum.unique
 class AccuracyPlotStyle(enum.Enum):
+    """ """
     SWARM = 1
     VIOLIN = 2
     BAR = 3
 
     @classmethod
     def of(cls, s: Union[AccuracyPlotStyle, str]) -> AccuracyPlotStyle:
+        """
+
+
+        Args:
+          s:
+
+        Returns:
+
+        """
         if isinstance(s, AccuracyPlotStyle):
             return s
         try:
@@ -55,6 +72,9 @@ class AccuracyPlotStyle(enum.Enum):
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class AccuracyPlotter(KvrcPlotting):
+    """
+
+    """
     def __init__(
         self,
         style: Union[str, AccuracyPlotStyle],
@@ -67,7 +87,9 @@ class AccuracyPlotter(KvrcPlotting):
         Can perform a bar, swarm, or violin plot.
         If there are bounds present in the BaseScoreFrame plotted, will happily plot error bars for bar plots.
         See `AccuracyPlotter.plot?` for more info.
-        :param style: Can be 'swarm', 'violin', or 'bar'
+
+        Args:
+          style: Can be 'swarm', 'violin', or 'bar'
         """
         self._style = AccuracyPlotStyle.of(style)
         self._y_bounds = y_bounds
@@ -85,9 +107,17 @@ class AccuracyPlotter(KvrcPlotting):
         If it has a column 'class', that will be used to group labels and give them the same color.
         Otherwise pretty straightforward.
         It relies on chemfish_rc/KVRC params beggining with 'acc_'; ex: `acc_bar_edge_width` and `acc_point_size`.
-        :param df: Any BaseScoreFrame (DataFrame) with columns (at least) 'label' and 'score'
-        :param renamer: Alter the labels for display. Ex, by setting `renamer={'optovin': 'opto'}`.
-        :return: The Figure
+
+        Args:
+          df: Any BaseScoreFrame (DataFrame) with columns (at least) 'label' and 'score'
+          renamer: Alter the labels for display. Ex, by setting `renamer={'optovin': 'opto'}`.
+          df: BaseScoreFrame:
+          renamer: Optional[Callable[[str]:
+          str]]:  (Default value = None)
+
+        Returns:
+          The Figure
+
         """
         if isinstance(renamer, Mapping):
             renamer = lambda s: renamer[s]
@@ -167,6 +197,16 @@ class AccuracyPlotter(KvrcPlotting):
         return self._fix(x_labels, ax)
 
     def _change_width(self, ax, new_value):
+        """
+
+
+        Args:
+          ax:
+          new_value:
+
+        Returns:
+
+        """
         for patch in ax.patches:
             current_width = patch.get_width()
             diff = current_width - new_value
@@ -174,6 +214,16 @@ class AccuracyPlotter(KvrcPlotting):
             patch.set_x(patch.get_x() + diff * 0.5)  # recenter
 
     def _fix(self, x_labels, ax):
+        """
+
+
+        Args:
+          x_labels:
+          ax:
+
+        Returns:
+
+        """
         ax.set_ylabel(FigureTools.fix_labels(self._y_label))
         ax.set_xticklabels(
             FigureTools.fix_labels(ax.get_xticklabels()), rotation=chemfish_rc.acc_x_tick_rotation
@@ -189,6 +239,11 @@ class AccuracyDistPlotter(KvrcPlotting):
     """
     Plots a Kernel Density Estimate with seaborn for probability (or score) across compounds.
     Chooses decent defaults. Change the axis/figure after if needed.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(
@@ -214,9 +269,17 @@ class AccuracyDistPlotter(KvrcPlotting):
     ) -> Figure:
         """
         Each argument is a 2-tuple of (support, density).
-        :param treatments: Support and density for non-controls, typically covered in black.
-        :param negatives: Support and density for negative controls
-        :param positives: Support and density for positive controls
+
+        Args:
+          treatments: Support and density for non-controls, typically covered in black.
+          negatives: Support and density for negative controls
+          positives: Support and density for positive controls
+          treatments: KdeData:
+          negatives:
+          positives:
+
+        Returns:
+
         """
         figure = plt.figure()
         ax = figure.add_subplot(1, 1, 1)
@@ -268,6 +331,17 @@ class AccuracyDistPlotter(KvrcPlotting):
         """
         Adds a line indicating a significance threshold at x-value `x`.
         If you have multiple labels, use line breaks (\n) in `label`.
+
+        Args:
+          ax: Axes:
+          x: float:
+          label: Optional[str]:
+          textx:
+          texty:
+          text_kwargs:  (Default value = None)
+
+        Returns:
+
         """
         ax.axvline(
             x=x,

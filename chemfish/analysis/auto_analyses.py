@@ -13,6 +13,7 @@ from chemfish.viz.figures import *
 
 @abcd.auto_repr_str()
 class AutoScreenTracer:
+    """ """
     def __init__(
         self,
         quick: Quick,
@@ -62,6 +63,16 @@ class AutoScreenTracer:
         project: Union[Projects, int, str],
         control: Union[ControlTypes, str, int] = "solvent (-)",
     ):
+        """
+
+
+        Args:
+          project
+          control:
+
+        Returns:
+
+        """
         project = Projects.fetch(project)
         self.plot_where(Projects.id == project.id, control)
 
@@ -70,12 +81,35 @@ class AutoScreenTracer:
         experiment: Union[Experiments, int, str],
         control: Union[ControlTypes, str, int] = "solvent (-)",
     ):
+        """
+
+
+        Args:
+          experiment:
+          control:
+
+        Returns:
+
+        """
         experiment = Experiments.fetch(experiment)
         self.plot_where(Experiments.id == experiment.id, control)
 
     def plot_where(
         self, where, control: Union[None, ControlTypes, str, int] = "solvent (-)"
     ) -> None:
+        """
+
+
+        Args:
+          where:
+          control: Union[None:
+          ControlTypes:
+          str:
+          int]:  (Default value = "solvent (-)")
+
+        Returns:
+
+        """
         control = None if control is None else ControlTypes.fetch(control)
         runs = self.quick.query_runs(where)
         logger.notice(f"Plotting {runs} runs...")
@@ -89,6 +123,19 @@ class AutoScreenTracer:
     def plot_run(
         self, run: Runs, control: Union[None, ControlTypes, str, int] = "solvent (-)"
     ) -> None:
+        """
+
+
+        Args:
+          run: Runs:
+          control: Union[None:
+          ControlTypes:
+          str:
+          int]:  (Default value = "solvent (-)")
+
+        Returns:
+
+        """
         q0 = self.quick
         run = Runs.fetch(run)
         FigureTools.clear()
@@ -142,6 +189,17 @@ class AutoScreenTracer:
         FigureTools.clear()
 
     def _write_scores(self, df: WellFrame, control: ControlTypes, path: Path):
+        """
+
+
+        Args:
+          df: WellFrame:
+          control: ControlTypes:
+          path: Path:
+
+        Returns:
+
+        """
         if self.metric is None:
             scores = (
                 pd.DataFrame(np.square(df.z_score(control)).mean(axis=1))
@@ -154,10 +212,22 @@ class AutoScreenTracer:
         scores.to_csv(path / "scores.csv")
 
     def _plot(self, df: WellFrame, control: ControlTypes, path: Path):
+        """
+
+
+        Args:
+          df: WellFrame:
+          control: ControlTypes:
+          path: Path:
+
+        Returns:
+
+        """
 
         q0 = self.quick
         # save traces and heatmaps
         def trace_it():
+            """ """
             yield from q0.traces(df, control_types=control, always_plot_control=False)
 
         if self.traces and control is not None:
@@ -198,6 +268,15 @@ class AutoScreenTracer:
         #    logger.error("Failed to plot structures", exc_info=True)
 
     def _write_properties(self, done_path: Path):
+        """
+
+
+        Args:
+          done_path: Path:
+
+        Returns:
+
+        """
         Tools.write_properties_file(
             {
                 "chemfish_version": chemfish_version,
@@ -208,12 +287,31 @@ class AutoScreenTracer:
         )
 
     def run_path(self, run: Runs) -> Path:
+        """
+
+
+        Args:
+          run: Runs:
+
+        Returns:
+
+        """
         return self.path / self.path_fn(run)
 
 
 class AutoScreenTraces:
+    """ """
     @classmethod
     def run(cls, args):
+        """
+
+
+        Args:
+          args:
+
+        Returns:
+
+        """
         parser = argparse.ArgumentParser("Auto-generate screening plots")
         parser.add_argument("path", type=str)
         parser.add_argument("experiment", type=str)

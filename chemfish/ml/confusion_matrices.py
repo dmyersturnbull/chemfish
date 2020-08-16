@@ -19,19 +19,27 @@ class ConfusionMatrix(UntypedDf):
     """
     A wrapper around a confusion matrix as a Pandas DataFrame.
     The rows are the correct labels, and the columns are the predicted labels.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, data=None, index=None, columns=None, dtype=None, copy=False):
         super().__init__(data=data, index=index, columns=columns, dtype=dtype, copy=copy)
 
     def warn_if_asymmetric(self) -> None:
+        """ """
         if self.rows != self.cols:
             logger.warning(f"Rows {self.rows} != columns {self.columns}")
 
     def is_symmetric(self) -> bool:
+        """ """
         return self.rows == self.cols
 
     def _repr_html_(self) -> str:
+        """ """
         return "<strong>{}: {} {}</strong>\n{}".format(
             self.__class__.__name__,
             self._dims(),
@@ -41,6 +49,15 @@ class ConfusionMatrix(UntypedDf):
         )
 
     def sub(self, names: Set[str]) -> ConfusionMatrix:
+        """
+
+
+        Args:
+          names: Set[str]:
+
+        Returns:
+
+        """
         return ConfusionMatrix(self.loc[names][names])
 
     def shuffle(self) -> ConfusionMatrix:
@@ -49,6 +66,11 @@ class ConfusionMatrix(UntypedDf):
         Destroys the correct links between labels and values.
         Useful for permutation tests.
         :return: A copy
+
+        Args:
+
+        Returns:
+
         """
         cp = deepcopy(self.flatten())
         np.random.shuffle(cp)
@@ -56,33 +78,44 @@ class ConfusionMatrix(UntypedDf):
         return ConfusionMatrix(vals, index=self.rows, columns=self.columns)
 
     def diagonals(self) -> np.array:
-        """
-        Returns diagonal elements.
-        """
+        """Returns diagonal elements."""
         return np.array([self.iat[i, i] for i in range(len(self))])
 
     def off_diagonals_quantiles(self, q: float = 0.5) -> np.array:
+        """
+
+
+        Args:
+          q:
+
+        Returns:
+
+        """
         lst = []
         for i in range(len(self)):
             lst.append(np.quantile([self.iat[i, j] for j in range(len(self))], q))
         return np.array(lst)
 
     def off_diagonals_means(self) -> np.array:
+        """ """
         lst = []
         for i in range(len(self)):
             lst.append(np.mean([self.iat[i, j] for j in range(len(self))]))
         return np.array(lst)
 
     def flatten(self) -> np.array:
+        """ """
         return self.values.flatten()
 
     def sum_diagonal(self) -> float:
+        """ """
         s = 0
         for i in range(len(self)):
             s += self.iat[i, i]
         return s
 
     def sum_off_diagonal(self) -> float:
+        """ """
         s = 0
         for i in range(len(self)):
             for j in range(len(self)):
@@ -94,6 +127,11 @@ class ConfusionMatrix(UntypedDf):
         """
         Get the diagonal elements as a Pandas DataFrame with columns 'name' and 'score'.
         :return: A Pandas DataFrame
+
+        Args:
+
+        Returns:
+
         """
         sers = []
         for score, name in self.scores():
@@ -109,6 +147,11 @@ class ConfusionMatrix(UntypedDf):
         NaNs out the upper triangle, returning a copy.
         You may consider calling symmetrize first.
         WARNING: Do NOT call a sorting method after this.
+
+        Args:
+
+        Returns:
+
         """
         return ConfusionMatrix(self.where(np.tril(np.ones(self.shape)).astype(np.bool)))
 
@@ -117,6 +160,7 @@ class ConfusionMatrix(UntypedDf):
         return ConfusionMatrix(self.applymap(np.log10))
 
     def negative(self) -> ConfusionMatrix:
+        """ """
         return ConfusionMatrix(self.applymap(lambda x: -x))
 
     def sort(self, **kwargs) -> ConfusionMatrix:
@@ -124,9 +168,13 @@ class ConfusionMatrix(UntypedDf):
         Sorts this confusion matrix to show clustering. The same ordering is applied to the rows and columns.
         Call this first. Do not call symmetrize(), log(), or triagonalize() before calling this.
         Returns a copy.
-        :param: kwargs Passed to simulated_annealing: `steps`, `cooling_factor`, `temp`, `deterministic`
-        :return: A dictionary mapping class names to their new positions (starting at 0)
-        :return: A new ConfusionMatrix, sorted
+
+        Args:
+          **kwargs:
+
+        Returns:
+          A dictionary mapping class names to their new positions (starting at 0)
+
         """
         permutation = self.permutation(**kwargs)
         return self.sort_with(permutation)
@@ -135,8 +183,13 @@ class ConfusionMatrix(UntypedDf):
         """
         Sorts this confusion matrix to show clustering. The same ordering is applied to the rows and columns.
         Returns the sorting. Does not alter this ConfusionMatrix.
-        :param: kwargs Passed to simulated_annealing: `steps`, `cooling_factor`, `temp`, `deterministic`
-        :return: A dictionary mapping class names to their new positions (starting at 0)
+
+        Args:
+          **kwargs:
+
+        Returns:
+          A dictionary mapping class names to their new positions (starting at 0)
+
         """
         if not self.is_symmetric():
             raise AmbiguousRequestError(
@@ -149,20 +202,24 @@ class ConfusionMatrix(UntypedDf):
         return perm
 
     def sort_alphabetical(self) -> ConfusionMatrix:
-        """
-        Sort by the labels alphabetically.
-        """
+        """Sort by the labels alphabetically."""
         labels = sorted(self.rows)
         return self.sort_first(labels)
 
     def sort_with(self, permutation: Union[Sequence[str], Mapping[str, int]]) -> ConfusionMatrix:
         """
         Sorts this ConfusionMatrix's rows and columns by a predefined ordering. Returns a copy.
-        :param permutation: Maps names (strings) to their 0-indexed positions (integers)
-                If a mapping, takes as-is; these are returned by permutation()
-                If a DataFrame, must have 2 columns 'key' (name) and 'value' (position), and 1 row per name
-                If a str, tries to read a CSV file at that path into a DataFrame; uses Tools.csv_to_dict
-        :return: A new ConfusionMatrix with sorted rows and columns
+
+        Args:
+          permutation: Maps names (strings) to their 0-indexed positions (integers)
+        If a mapping, takes as-is; these are returned by permutation()
+        If a DataFrame, must have 2 columns 'key' (name) and 'value' (position), and 1 row per name
+        If a str, tries to read a CSV file at that path into a DataFrame; uses Tools.csv_to_dict
+          permutation: Union[Sequence[str]:
+
+        Returns:
+          A new ConfusionMatrix with sorted rows and columns
+
         """
         if not self.is_symmetric():
             raise AmbiguousRequestError(
@@ -184,6 +241,12 @@ class ConfusionMatrix(UntypedDf):
     def sort_first(self, first: Sequence[str]) -> ConfusionMatrix:
         """
         Put these elements first.
+
+        Args:
+          first: Sequence[str]:
+
+        Returns:
+
         """
         first = [*first, *[r for r in self.rows if r not in first]]
         permutation = {name: i for i, name in enumerate(first)}
@@ -191,10 +254,12 @@ class ConfusionMatrix(UntypedDf):
 
     @property
     def rows(self):
+        """ """
         return self.index.tolist()
 
     @property
     def cols(self):
+        """ """
         return self.columns.tolist()
 
     @property
@@ -220,12 +285,22 @@ class ConfusionMatrix(UntypedDf):
     ) -> Figure:
         """
         Generates a heatmap.
-        :param vmin: Set this as the minimum accuracy (white on the colorbar)
-        :param vmax: Set this as the maximum accuracy (black on the colorbar)
-        :param runs: Run stamps in the upper-left corner with these runs (not verified)
-        :param renamer: A function that maps the class names to new names for plotting
-        :param label_colors: Mapping from names to colors for the labels; or a string for all control colors
-        :return: The figure, which was not displayed
+
+        Args:
+          vmin: Set this as the minimum accuracy (white on the colorbar)
+          vmax: Set this as the maximum accuracy (black on the colorbar)
+          runs: Run stamps in the upper-left corner with these runs (not verified)
+          renamer: A function that maps the class names to new names for plotting
+          label_colors: Mapping from names to colors for the labels; or a string for all control colors
+          vmin:
+          vmax:
+          runs:
+          renamer:
+          label_colors:
+
+        Returns:
+          The figure, which was not displayed
+
         """
         return ConfusionPlots.plot(
             self, vmin=vmin, vmax=vmax, renamer=renamer, runs=runs, label_colors=label_colors
@@ -233,6 +308,17 @@ class ConfusionMatrix(UntypedDf):
 
     @classmethod
     def read_csv(cls, path: PathLike, *args, **kwargs):
+        """
+
+
+        Args:
+          path: PathLike:
+          *args:
+          **kwargs:
+
+        Returns:
+
+        """
         path = Path(path)
         df = pd.read_csv(path, index_col=0)
         df.index.name = "name"
@@ -240,12 +326,19 @@ class ConfusionMatrix(UntypedDf):
 
 
 class ConfusionMatrices:
+    """ """
     @classmethod
     def average(cls, matrices: Sequence[ConfusionMatrix]) -> ConfusionMatrix:
         """
         Averages a list of confusion matrices.
-        :param matrices: An iterable of ConfusionMatrices (does not need to be a list)
-        :return: A new ConfusionMatrix
+
+        Args:
+          matrices: An iterable of ConfusionMatrices (does not need to be a list)
+          matrices: Sequence[ConfusionMatrix]:
+
+        Returns:
+          A new ConfusionMatrix
+
         """
         if len(matrices) < 1:
             raise EmptyCollectionError("Cannot average 0 matrices")
@@ -274,9 +367,17 @@ class ConfusionMatrices:
     ) -> ConfusionMatrix:
         """
         Averages a list of confusion matrices.
-        :param matrices: An iterable of ConfusionMatrices (does not need to be a list)
-        :param aggregation to perform, such as np.mean
-        :return: A new ConfusionMatrix
+
+        Args:
+          matrices: An iterable of ConfusionMatrices (does not need to be a list)
+          aggregation: to perform, such as np.mean
+          matrices: Sequence[ConfusionMatrix]:
+          aggregation: Callable[[Sequence[pd.DataFrame]]:
+          None]:
+
+        Returns:
+          A new ConfusionMatrix
+
         """
         if len(matrices) < 1:
             raise EmptyCollectionError("Cannot aggregate 0 matrices")
@@ -297,6 +398,15 @@ class ConfusionMatrices:
 
     @classmethod
     def zeros(cls, classes: Sequence[str]) -> ConfusionMatrix:
+        """
+
+
+        Args:
+          classes: Sequence[str]:
+
+        Returns:
+
+        """
         return ConfusionMatrix(
             pd.DataFrame(
                 [pd.Series({"class": r, **{c: 0.0 for c in classes}}) for r in classes]
@@ -305,6 +415,15 @@ class ConfusionMatrices:
 
     @classmethod
     def perfect(cls, classes: Sequence[str]) -> ConfusionMatrix:
+        """
+
+
+        Args:
+          classes: Sequence[str]:
+
+        Returns:
+
+        """
         return ConfusionMatrix(
             pd.DataFrame(
                 [
@@ -316,6 +435,15 @@ class ConfusionMatrices:
 
     @classmethod
     def uniform(cls, classes: Sequence[str]) -> ConfusionMatrix:
+        """
+
+
+        Args:
+          classes: Sequence[str]:
+
+        Returns:
+
+        """
         return ConfusionMatrix(
             pd.DataFrame(
                 [

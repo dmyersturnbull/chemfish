@@ -8,14 +8,21 @@ from chemfish.core.core_imports import *
 
 
 class AudioTools:
+    """ """
     @classmethod
     def listen(cls, path: Union[str, PurePath, bytes]):
         """
         Returns an audio container that Jupyter notebook will display.
         Must be run from a Jupyter notebook.
         Will raise an ImportError if IPython cannot be imported.
-        :param path: The local path to the audio file
-        :return: A jupyter notebook ipd.Audio object
+
+        Args:
+          path: The local path to the audio file
+          path:
+
+        Returns:
+          A jupyter notebook ipd.Audio object
+
         """
         # noinspection PyPackageRequirements
         import IPython.display as ipd
@@ -28,6 +35,15 @@ class AudioTools:
 
     @classmethod
     def to_wav(cls, path: PathLike):
+        """
+
+
+        Args:
+          path: PathLike:
+
+        Returns:
+
+        """
         path = Tools.prepped_file(path)
         with path.open("rb") as rf:
             song = pydub.AudioSegment(data=rf.read(), sample_width=2, frame_rate=44100, channels=1)
@@ -36,6 +52,15 @@ class AudioTools:
 
     @classmethod
     def load_pydub(cls, path: PathLike) -> pydub.AudioSegment:
+        """
+
+
+        Args:
+          path: PathLike:
+
+        Returns:
+
+        """
         path = str(Path(path))
         return pydub.AudioSegment.from_file(path)
 
@@ -44,6 +69,11 @@ class Waveform:
     """
     Contains an array representing an audio waveform.
     Aso has a sampling rate, a name, an optional description, and optional file path.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(
@@ -73,10 +103,17 @@ class Waveform:
         """
         Downsamples to **1000 Hz** and normalizes to between 0 and 255.
         This is useful for various purposes in Chemfish, such as embedding into plots.
-        :param minimum: Normally 0
-        :param maximum: Normally 255
-        :return: The same Waveform as a copy
-        :param ms_freq: Normally 1000, though possibly 25 or 50 for legacy data
+
+        Args:
+          minimum: Normally 0
+          maximum: Normally 255
+          ms_freq: Normally 1000, though possibly 25 or 50 for legacy data
+          minimum:
+          maximum:
+
+        Returns:
+          The same Waveform as a copy
+
         """
         return self._standardize(minimum, maximum)
 
@@ -84,16 +121,34 @@ class Waveform:
         """
         Downsamples to **25 Hz** and normalizes to between 0 and 255.
         This is useful for various purposes in Chemfish, such as embedding into plots.
-        :param minimum: Normally 0
-        :param maximum: Normally 255
-        :return: The same Waveform as a copy
-        :param ms_freq: Normally 1000, though possibly 25 or 50 for legacy data
+
+        Args:
+          minimum: Normally 0
+          maximum: Normally 255
+          ms_freq: Normally 1000, though possibly 25 or 50 for legacy data
+          minimum:
+          maximum:
+
+        Returns:
+          The same Waveform as a copy
+
         """
         return self._standardize(minimum, maximum, ms_freq=25)
 
     def _standardize(
         self, minimum: float = 0, maximum: float = 255, ms_freq: int = 1000
     ) -> Waveform:
+        """
+
+
+        Args:
+          minimum:
+          maximum:
+          ms_freq: int:  (Default value = 1000)
+
+        Returns:
+
+        """
         if minimum < 0 or maximum > 255:
             raise OutOfRangeError("Must be between 0 and 255")
         y = self.downsample(ms_freq).data
@@ -106,9 +161,16 @@ class Waveform:
     def normalize(self, minimum: float = -1, maximum: float = 1) -> Waveform:
         """
         Constraints values between -1 and 1.
-        :param minimum: Normally -1
-        :param maximum: Normally 1
-        :return: The same Waveform as a copy
+
+        Args:
+          minimum: Normally -1
+          maximum: Normally 1
+          minimum:
+          maximum:
+
+        Returns:
+          The same Waveform as a copy
+
         """
         y = (self.data - self.data.min()) * (maximum - minimum) / (
             self.data.max() - self.data.min()
@@ -120,9 +182,15 @@ class Waveform:
     def ds_chunk_mean(self, new_sampling_hertz: float) -> Waveform:
         """
         Alternative to downsampling. Splits data into discrete chunks and then calculates mean for those chunks.
-        :param a: Numpy array of data that you wish to reduce the size of
-        :param new_sampling_hertz: rate of sampling
-        :return: numpy array of orr
+
+        Args:
+          a: Numpy array of data that you wish to reduce the size of
+          new_sampling_hertz: rate of sampling
+          new_sampling_hertz: float:
+
+        Returns:
+          numpy array of orr
+
         """
         if new_sampling_hertz > self.sampling_rate:
             raise OutOfRangeError(
@@ -144,8 +212,14 @@ class Waveform:
     def downsample(self, new_sampling_hertz: float) -> Waveform:
         """
         Downsamples to a new rate using librosa.resample.
-        :param new_sampling_hertz: A float such as 44100
-        :return: The same Waveform as a copy
+
+        Args:
+          new_sampling_hertz: A float such as 44100
+          new_sampling_hertz: float:
+
+        Returns:
+          The same Waveform as a copy
+
         """
         if new_sampling_hertz > self.sampling_rate:
             raise OutOfRangeError(
@@ -168,10 +242,17 @@ class Waveform:
     ) -> Waveform:
         """
         Smooths with a sliding window over time.
-        :param window_size: The number of elements in the window
-        :param function: The smoothing function to apply over the window
-        :param window_type: See Pandas pd.Series.rolling win_type
-        :return: The same Waveform as a copy
+
+        Args:
+          window_size: The number of elements in the window
+          function:
+          window_type: See Pandas pd.Series.rolling win_type
+          window_size: int:
+          window_type: Optional[str]:  (Default value = "triang")
+
+        Returns:
+          The same Waveform as a copy
+
         """
         data = function(
             pd.Series(self.data).rolling(window_size, min_periods=1, win_type=window_type)
@@ -189,9 +270,16 @@ class Waveform:
     def slice_ms(self, start_ms: int, end_ms: int) -> Waveform:
         """
         Gets a section of the waveform.
-        :param start_ms: The start milliseconds
-        :param end_ms: The end milliseconds
-        :return: The same Waveform as a copy
+
+        Args:
+          start_ms: The start milliseconds
+          end_ms: The end milliseconds
+          start_ms: int:
+          end_ms: int:
+
+        Returns:
+          The same Waveform as a copy
+
         """
         a = int(round(self.sampling_rate * start_ms / 1000))
         b = int(round(self.sampling_rate * end_ms / 1000))

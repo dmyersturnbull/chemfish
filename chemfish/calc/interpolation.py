@@ -4,6 +4,7 @@ from chemfish.core.core_imports import *
 
 
 class InterpolationFailedError(AlgorithmError):
+    """ """
     def __init__(self, msg: str, feature: str, well: int):
         super().__init__(msg)
         self.feature = feature
@@ -11,6 +12,7 @@ class InterpolationFailedError(AlgorithmError):
 
 
 class FeatureTimestampMismatchError(InterpolationFailedError):
+    """ """
     def __init__(self, feature: str, well: int, n_features: int, n_timestamps: int, n_ideal: int):
         feature = Features.fetch(feature).name
         msg = f"Could not interpolate {feature}: {n_features} features != {n_timestamps} timestamps; ideal is {n_ideal}"
@@ -21,6 +23,7 @@ class FeatureTimestampMismatchError(InterpolationFailedError):
 
 
 class FeatureInterpolation:
+    """ """
     def __init__(self, feature: Features):
         self.feature = feature
 
@@ -32,10 +35,18 @@ class FeatureInterpolation:
         This is appropriate for PointGrey camera data or other data with nanosecond or microsecond-resolved timestamps from the image sensor.
         This is not appropriate if the timestamps are not when the image was captured, or are too poorly resolved.
         Calls TimeSeriesFeatureTools.interpolate_features; see that function for more info.
-        :param feature_arr: The array of the feature; not affected
-        :param well: The well instance or ID
-        :param stringent: Raise exceptions for small errors
-        :return: The interpolated features
+
+        Args:
+          feature_arr: The array of the feature; not affected
+          well: The well instance or ID
+          stringent: Raise exceptions for small errors
+          feature_arr: np.array:
+          well:
+          stringent:
+
+        Returns:
+          The interpolated features
+
         """
         run = InternalTools.well(well).run
         ideal_framerate = ValarTools.frames_per_second(run)
@@ -85,15 +96,26 @@ class FeatureInterpolation:
         Interpolates a time-dependent, frame-by-frame feature using timestamps.
         See exterior_interpolate_features for a simpler way to call this and for more info.
         Interpolates using scipy.interpolate.interp1d with kind='previous', fill_value='extrapolate', bounds_error=False, and assume_sorted=True
-        :param feature_arr: The array of the feature; not affected
-        :param frames_ms: The millisecond timestamps, which can be float-typed.
-                This is NOT set to start with the battery start.
-                However, the milliseconds for battery_start, battery_end, and frames_ms must all be with respect to a single (unspecified) start time.
-                This will normally be the the start time of the run.
-        :param battery_start_ms: The millisecond at which the battery started (see `frames_ms`)
-        :param battery_stop_ms: The millisecond at which the battery finished (see `frames_ms`)
-        :param ideal_framerate: The framerate that was set in the camera config. The interpolation will use this to determine the resulting number of frames.
-        :return:
+
+        Args:
+          feature_arr: The array of the feature; not affected
+          frames_ms: The millisecond timestamps, which can be float-typed.
+        This is NOT set to start with the battery start.
+        However, the milliseconds for battery_start, battery_end, and frames_ms must all be with respect to a single (unspecified) start time.
+        This will normally be the the start time of the run.
+          battery_start_ms: The millisecond at which the battery started (see `frames_ms`)
+          battery_stop_ms: The millisecond at which the battery finished (see `frames_ms`)
+          ideal_framerate: The framerate that was set in the camera config. The interpolation will use this to determine the resulting number of frames.
+          feature_arr: np.array:
+          frames_ms: np.array:
+          battery_start_ms: int:
+          battery_stop_ms: int:
+          ideal_framerate: int:
+          well: int:
+          stringent: bool:
+
+        Returns:
+
         """
         # Later we want to have logic that checks that it makes sense to interpolate--we don't want to interpolate if there are problematic gaps
         # diffs = np.diff(frames_ms)

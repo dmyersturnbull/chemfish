@@ -11,6 +11,7 @@ from chemfish.viz._internal_viz import *
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class StimframesPlotter(CakeLayer, KvrcPlotting):
+    """ """
     def __init__(
         self,
         should_label: bool = True,
@@ -44,6 +45,19 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         starts_at_ms: int = 0,
         battery: Union[None, Batteries, str, int] = None,
     ) -> Axes:
+        """
+
+
+        Args:
+          stimframes: StimFrame:
+          ax:
+          assays:
+          starts_at_ms: int:  (Default value = 0)
+          battery:
+
+        Returns:
+
+        """
         # prep / define stuff
         t0 = time.monotonic()
         if battery is not None:
@@ -114,6 +128,18 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         return ax
 
     def _plot_stim(self, stim, r, ax, kind):
+        """
+
+
+        Args:
+          stim:
+          r:
+          ax:
+          kind:
+
+        Returns:
+
+        """
         c = stim.name
         n_stimframes = len(r)
         x = np.argwhere(r > 0)
@@ -159,6 +185,18 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         return ax, ValarTools.stimulus_display_name(c), chemfish_rc.get_stimulus_colors()[stim.name]
 
     def _plot_assays(self, assays, starts_at_ms, n_ms, ax):
+        """
+
+
+        Args:
+          assays:
+          starts_at_ms:
+          n_ms:
+          ax:
+
+        Returns:
+
+        """
         if not self._assay_labels and not chemfish_rc.assay_lines_without_text:
             return
         for a in assays.itertuples():
@@ -210,6 +248,18 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
                 )
 
     def _axis_labels(self, stimframes, ax, starts_at_ms, total_ms):
+        """
+
+
+        Args:
+          stimframes:
+          ax:
+          starts_at_ms:
+          total_ms:
+
+        Returns:
+
+        """
         if self._should_label:
             self._label_x(stimframes, ax, starts_at_ms, total_ms)
             ax.grid(False)
@@ -219,6 +269,18 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         ax.get_yaxis().set_ticks([])
 
     def _label_x(self, stimframes, ax2, starts_at_ms, total_ms):
+        """
+
+
+        Args:
+          stimframes:
+          ax2:
+          starts_at_ms:
+          total_ms:
+
+        Returns:
+
+        """
         assert starts_at_ms is not None
         assert self._fps is not None
         mark_every = self._best_marks(stimframes)
@@ -237,6 +299,15 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         )
 
     def _best_marks(self, stimframes):
+        """
+
+
+        Args:
+          stimframes:
+
+        Returns:
+
+        """
         if self._mark_every_n_ms is None:
             return InternalVizTools.preferred_tick_ms_interval(len(stimframes) / self._fps * 1000)
         else:

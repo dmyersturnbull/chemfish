@@ -3,6 +3,7 @@ from chemfish.core.core_imports import *
 
 
 class FeatureType:
+    """ """
     def __init__(
         self,
         valar_feature: Features,
@@ -37,6 +38,17 @@ class FeatureType:
         self.data_generations = generations
 
     def calc(self, wf: WellFeatures, well: Union[Wells, int], stringent: bool = False) -> np.array:
+        """
+
+
+        Args:
+          wf: WellFeatures:
+          well:
+          stringent:
+
+        Returns:
+
+        """
         if well is None and wf is not None:
             well = wf.well
         elif well is not None and wf is None:
@@ -52,10 +64,31 @@ class FeatureType:
 
     @abcd.abstractmethod
     def to_blob(self, arr: np.array):
+        """
+
+
+        Args:
+          arr: np.array:
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     @abcd.abstractmethod
     def from_blob(self, blob: bytes, well: Union[Wells, int], stringent: bool = False):
+        """
+
+
+        Args:
+          blob: bytes:
+          well: Union[Wells:
+          int]:
+          stringent:
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     def __repr__(self):
@@ -72,7 +105,20 @@ class FeatureType:
 
 
 class _ConsecutiveFrameFeature(FeatureType, metaclass=abcd.ABCMeta):
+    """ """
     def from_blob(self, blob: bytes, well: Union[Wells, int], stringent: bool = False):
+        """
+
+
+        Args:
+          blob: bytes:
+          well: Union[Wells:
+          int]:
+          stringent:
+
+        Returns:
+
+        """
         well = Wells.fetch(well)
         if len(blob) == 0:
             logger.warning(f"Empty {self.feature_name} feature array for well {well.id}")
@@ -90,15 +136,26 @@ class _ConsecutiveFrameFeature(FeatureType, metaclass=abcd.ABCMeta):
 
 
 class _Mi(_ConsecutiveFrameFeature):
+    """ """
     def __init__(self, interpolated: bool):
         v = Features.select().where(Features.name == "MI").first()
         super().__init__(v, True, 4, 1000, "(10³)", interpolated, DataGeneration.all_generations())
 
     def to_blob(self, arr: np.array):
+        """
+
+
+        Args:
+          arr: np.array:
+
+        Returns:
+
+        """
         return Tools.signed_floats_to_blob(arr)
 
 
 class _Diff(_ConsecutiveFrameFeature):
+    """ """
     def __init__(
         self, name: str, tau: int, recommended_scale: int, recommended_unit: str, interpolated: bool
     ):
@@ -113,13 +170,20 @@ class _Diff(_ConsecutiveFrameFeature):
         )
 
     def to_blob(self, arr: np.array):
+        """
+
+
+        Args:
+          arr: np.array:
+
+        Returns:
+
+        """
         return Tools.array_to_blob(arr, np.float32)
 
 
 class FeatureTypes:
-    """
-    The feature types in valar.features.
-    """
+    """The feature types in valar.features."""
 
     MI = _Mi(False)
     cd_10 = _Diff("cd", 10, 1, "", False)
@@ -131,8 +195,13 @@ class FeatureTypes:
     def of(cls, f: Union[FeatureType, str]) -> FeatureType:
         """
         Fetches a feature from its INTERNAL name.
-        :param f: A value in FeatureType.internal_name in one of the FeatureType entries in FeatureTypes.known
-        :return: The FeatureType
+
+        Args:
+          f: A value in FeatureType.internal_name in one of the FeatureType entries in FeatureTypes.known
+          f:
+        Returns:
+          The FeatureType
+
         """
         if isinstance(f, Features):
             raise TypeError(

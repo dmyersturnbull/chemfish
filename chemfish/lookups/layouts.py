@@ -6,20 +6,41 @@ from chemfish.model.wf_builders import *
 
 
 class Layout(UntypedDf):
+    """ """
     pass
 
 
 @abcd.auto_repr_str()
 @abcd.external
 class AbstractLayoutViewer:
+    """ """
     def __call__(self, run: Union[int, str, Runs, Submissions]) -> pd.DataFrame:
         return self.of(run)
 
     @abcd.abstractmethod
     def of(self, run: Union[int, str, Runs]) -> pd.DataFrame:
+        """
+
+
+        Args:
+          run:
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     def pivot(self, df: WellFrame, column: str) -> pd.DataFrame:
+        """
+
+
+        Args:
+          df: WellFrame:
+          column: str:
+
+        Returns:
+
+        """
         df = df.pivot("row", "column", column).reset_index()
         df["row"] = df["row"].map(lambda i: chr(64 + i))
         return df.set_index("row")
@@ -28,6 +49,7 @@ class AbstractLayoutViewer:
 @abcd.auto_repr_str()
 @abcd.external
 class LayoutViewer(AbstractLayoutViewer):
+    """ """
     def __init__(self, thing_name: str, function) -> None:
         self.thing_name = thing_name
         self._fn = function
@@ -36,6 +58,15 @@ class LayoutViewer(AbstractLayoutViewer):
         return self.of(run)
 
     def of(self, run: Union[int, str, Runs]) -> Layout:
+        """
+
+
+        Args:
+          run:
+
+        Returns:
+
+        """
         df = WellFrameBuilder.runs(run).with_column(self.thing_name, self._fn).build()
         return Layout.convert(self.pivot(df, self.thing_name))
 
@@ -43,11 +74,21 @@ class LayoutViewer(AbstractLayoutViewer):
 @abcd.auto_repr_str()
 @abcd.external
 class NamerLayoutViewer(AbstractLayoutViewer):
+    """ """
     def __init__(self, namer: WellNamer, compound_namer: CompoundNamer) -> None:
         self.namer = namer
         self.compound_namer = compound_namer
 
     def of(self, run: Union[int, str, Runs]) -> pd.DataFrame:
+        """
+
+
+        Args:
+          run:
+
+        Returns:
+
+        """
         df = (
             WellFrameBuilder.runs(run)
             .with_compound_names(self.compound_namer)
@@ -60,10 +101,20 @@ class NamerLayoutViewer(AbstractLayoutViewer):
 @abcd.auto_repr_str()
 @abcd.external
 class CompoundNamerLayoutViewer(AbstractLayoutViewer):
+    """ """
     def __init__(self, namer: CompoundNamer) -> None:
         self.namer = namer
 
     def of(self, run: Union[int, str, Runs]) -> Layout:
+        """
+
+
+        Args:
+          run:
+
+        Returns:
+
+        """
         df = WellFrameBuilder.runs(run).with_compound_names(self.namer).build()
         df = self.pivot(df, "compound_names")
         return Layout(df.applymap(lambda cnames: ", ".join(cnames)))
@@ -71,6 +122,7 @@ class CompoundNamerLayoutViewer(AbstractLayoutViewer):
 
 @abcd.external
 class LayoutViewers:
+    """ """
     treatments = LayoutViewer(
         "_treatments", lambda w, ts: str(Treatments([Treatment.from_well_treatment(t) for t in ts]))
     )
@@ -165,10 +217,29 @@ class LayoutViewers:
         namer: WellNamer = WellNamers.elegant(),
         compound_namer: CompoundNamer = CompoundNamers.tiered_fallback(),
     ):
+        """
+
+
+        Args:
+          namer:
+          compound_namer: CompoundNamer:  (Default value = CompoundNamers.tiered_fallback())
+
+        Returns:
+
+        """
         return NamerLayoutViewer(namer, compound_namer)
 
     @classmethod
     def compound_names(cls, namer: CompoundNamer = CompoundNamers.tiered_fallback()):
+        """
+
+
+        Args:
+          namer:
+
+        Returns:
+
+        """
         return CompoundNamerLayoutViewer(namer)
 
 

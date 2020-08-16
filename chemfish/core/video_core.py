@@ -16,14 +16,31 @@ bitrate = "500M"
 
 
 def get_video_filename(crf: int) -> str:
+    """
+    
+
+    Args:
+      crf: int: 
+
+    Returns:
+
+    """
     return "x265-crf" + str(crf)
 
 
 def get_video_path_on_shire(run: Runs, full_dir: bool = False) -> PurePath:
     """
-    :param run: The runs instance
-    :param full_dir: If true, gets the whole directory instead of the video
-    :return: The path to the video MKV file relative to (and under) the Shire.
+    
+
+    Args:
+      run: The runs instance
+      full_dir: If true, gets the whole directory instead of the video
+      run: Runs: 
+      full_dir: bool:  (Default value = False)
+
+    Returns:
+      The path to the video MKV file relative to (and under) the Shire.
+
     """
     run = Runs.fetch(run)
     year = str(run.datetime_run.year).zfill(4)

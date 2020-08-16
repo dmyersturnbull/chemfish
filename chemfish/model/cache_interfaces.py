@@ -21,26 +21,74 @@ VALUE = TypeVar("VALUE")
 @abcd.auto_hash()
 @abcd.auto_eq()
 class AChemfishCache(Generic[KEY, VALUE], metaclass=ABCMeta):
+    """ """
     @property
     def cache_dir(self) -> Path:
+        """ """
         raise NotImplementedError()
 
     def path_of(self, key: KEY) -> Path:
+        """
+        
+
+        Args:
+          key: KEY: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     def key_from_path(self, path: PathLike) -> KEY:
+        """
+        
+
+        Args:
+          path: PathLike: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     def download(self, *keys: KEY) -> None:
+        """
+        
+
+        Args:
+          *keys: KEY: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     def load(self, key: KEY) -> VALUE:
+        """
+        
+
+        Args:
+          key: KEY: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     def contains(self, key: KEY) -> bool:
+        """
+        
+
+        Args:
+          key: KEY: 
+
+        Returns:
+
+        """
         return self.path_of(key).exists()
 
     def contents(self) -> Sequence[KEY]:
+        """ """
         lst = []
         for path in self.cache_dir.iterdir():
             k = self.key_from_path(path)
@@ -50,6 +98,15 @@ class AChemfishCache(Generic[KEY, VALUE], metaclass=ABCMeta):
         return lst
 
     def delete(self, key: KEY) -> None:
+        """
+        
+
+        Args:
+          key: KEY: 
+
+        Returns:
+
+        """
         # TOD delete directories
         path = self.path_of(key).relative_to(self.cache_dir).parts
         if self.contains(key):
@@ -66,50 +123,102 @@ class AChemfishCache(Generic[KEY, VALUE], metaclass=ABCMeta):
 
 
 class AWellCache(AChemfishCache[RunLike, WellFrame], metaclass=ABCMeta):
+    """ """
     def __init__(self, feature, cache_dir: PathLike, dtype):
         raise NotImplementedError()
 
     def load_multiple(self, runs: RunsLike) -> WellFrame:
+        """
+        
+
+        Args:
+          runs: RunsLike: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     def with_dtype(self, dtype) -> AWellCache:
+        """
+        
+
+        Args:
+          dtype: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
 
 class ASensorCache(AChemfishCache[Tup[SensorNames, RunLike], SensorDataLike], metaclass=ABCMeta):
+    """ """
     def __init__(self, cache_dir: PathLike):
         raise NotImplementedError()
 
 
 class AStimCache(AChemfishCache[BatteryLike, BatteryStimFrame], metaclass=ABCMeta):
+    """ """
     def __init__(self, cache_dir: PathLike, dtype, loader):
         raise NotImplementedError()
 
     @property
     def is_expanded(self):
+        """ """
         raise NotImplementedError()
 
 
 class StimulusWaveform(Waveform):
+    """ """
     pass
 
 
 class AVideoCache(AChemfishCache[RunLike, SauronxVideo], metaclass=ABCMeta):
+    """ """
     def __init__(self, cache_dir: PathLike, shire_store: PathLike):
         raise NotImplementedError()
 
 
 class AnAudioStimulusCache(AChemfishCache[StimulusLike, Path], metaclass=ABCMeta):
+    """ """
     def __init__(self, cache_dir: PathLike):
         raise NotImplementedError()
 
     def load_moviepy(self, stimulus: StimulusLike) -> AudioClip:
+        """
+        
+
+        Args:
+          stimulus: StimulusLike: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     def load_pydub(self, name) -> pydub.AudioSegment:
+        """
+        
+
+        Args:
+          name: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     def load_waveform(self, stimulus) -> StimulusWaveform:
+        """
+        
+
+        Args:
+          stimulus: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
 

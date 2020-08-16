@@ -11,9 +11,7 @@ _compound_namer = TieredCompoundNamer(max_length=50)
 
 @abcd.external
 class Lookups(LookupTool):
-    """
-    Utilities for glancing at Valar's contents. Unlike "real" queries, these do not require a datetime filter.
-    """
+    """Utilities for glancing at Valar's contents. Unlike "real" queries, these do not require a datetime filter."""
 
     @classmethod
     def annotations(
@@ -22,6 +20,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          Annotations]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = (
             Annotations.select(
                 Annotations,
@@ -81,6 +93,18 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          BatchAnnotations]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = (
             BatchAnnotations.select(BatchAnnotations, Batches, Users)
             .join(Batches)
@@ -110,6 +134,18 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          SubmissionLike]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = (
             Submissions.select(Submissions, Experiments, Users, Batteries, TemplatePlates)
             .join(Experiments, JOIN.LEFT_OUTER)
@@ -154,6 +190,17 @@ class Lookups(LookupTool):
 
     @classmethod
     def plates(cls, *wheres: Union[Plates, int, ExpressionsLike]):
+        """
+
+
+        Args:
+          *wheres: Union[Plates:
+          int:
+          ExpressionsLike]:
+
+        Returns:
+
+        """
         query = Plates.select(Plates, PlateTypes, Users).join(PlateTypes).switch(Plates).join(Users)
         return Lookups._simple(
             Plates,
@@ -172,11 +219,32 @@ class Lookups(LookupTool):
     def runs(
         cls, *wheres: Union[RunsLike, ExpressionsLike], like: bool = False, regex: bool = False
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[RunsLike:
+          ExpressionsLike]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         wheres = InternalTools.flatten_smart(wheres)
         if all(isinstance(w, (int, Runs, str, Submissions)) for w in wheres):
             wheres = [Runs.id << [r.id for r in Tools.runs(wheres)]]
 
         def uses(*any_of):
+            """
+
+
+            Args:
+              *any_of:
+
+            Returns:
+
+            """
             return Lookups._expressions_use(wheres, any_of)
 
         uses_assays = uses(AssayPositions, Assays)
@@ -246,6 +314,15 @@ class Lookups(LookupTool):
 
     @classmethod
     def _runs_simplest(cls, with_assays: bool) -> ExpressionLike:
+        """
+
+
+        Args:
+          with_assays: bool:
+
+        Returns:
+
+        """
         query = (
             Runs.select(
                 Runs,
@@ -280,6 +357,15 @@ class Lookups(LookupTool):
 
     @classmethod
     def _runs_simple(cls, with_assays: bool) -> peewee.Query:
+        """
+
+
+        Args:
+          with_assays: bool:
+
+        Returns:
+
+        """
         query = (
             Wells.select(
                 Wells,
@@ -325,6 +411,17 @@ class Lookups(LookupTool):
     def _runs_hard(
         cls, with_assays: bool, with_batches: bool, with_compounds: bool
     ) -> peewee.Query:
+        """
+
+
+        Args:
+          with_assays: bool:
+          with_batches: bool:
+          with_compounds: bool:
+
+        Returns:
+
+        """
         tables = [
             WellTreatments,
             Wells,
@@ -387,6 +484,19 @@ class Lookups(LookupTool):
     def wells(
         cls, *wheres: Union[ExpressionsLike, int, Wells], like: bool = False, regex: bool = False
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          Wells]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = (
             Wells.select(Wells, Runs, Plates, PlateTypes).join(Runs).join(Plates).join(PlateTypes)
         )
@@ -406,6 +516,15 @@ class Lookups(LookupTool):
         )
 
         def label(row):
+            """
+
+
+            Args:
+              row:
+
+            Returns:
+
+            """
             pt = PlateTypes.fetch(row.plate_type)
             return WB1(pt.n_rows, pt.n_columns).index_to_label(row.position)
 
@@ -419,6 +538,21 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[None:
+          Projects:
+          str:
+          int:
+          ExpressionsLike]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = (
             Projects.select(Projects, ProjectTypes, Users, Experiments, Batteries, TemplatePlates)
             .join(ProjectTypes, JOIN.LEFT_OUTER)
@@ -453,6 +587,21 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[None:
+          Experiments:
+          str:
+          int:
+          ExpressionsLike]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = (
             Experiments.select(
                 Runs,
@@ -513,9 +662,27 @@ class Lookups(LookupTool):
         runs = Tools.multidict(runs, "experiment_id")
 
         def n_runs(e):
+            """
+
+
+            Args:
+              e:
+
+            Returns:
+
+            """
             return len(runs[e])
 
         def first_run(e):
+            """
+
+
+            Args:
+              e:
+
+            Returns:
+
+            """
             return Tools.first(
                 sorted(
                     (
@@ -526,6 +693,15 @@ class Lookups(LookupTool):
             )
 
         def last_run(e):
+            """
+
+
+            Args:
+              e:
+
+            Returns:
+
+            """
             return Tools.first(
                 reversed(
                     sorted(
@@ -538,12 +714,39 @@ class Lookups(LookupTool):
             )
 
         def generations(e):
+            """
+
+
+            Args:
+              e:
+
+            Returns:
+
+            """
             return frozenset((ValarTools.generation_of(r) for r in runs[e]))
 
         def saurons(e):
+            """
+
+
+            Args:
+              e:
+
+            Returns:
+
+            """
             return frozenset((ValarTools.sauron_name(r.sauron_config.sauron) for r in runs[e]))
 
         def sauron_configs(e):
+            """
+
+
+            Args:
+              e:
+
+            Returns:
+
+            """
             return frozenset((ValarTools.sauron_config_name(r.sauron_config) for r in runs[e]))
 
         if len(df) > 0:  # TODO shouldn't be needed
@@ -559,8 +762,16 @@ class Lookups(LookupTool):
     def compound_search(cls, *names: Union[Sequence[str], str], **where) -> Lookup:
         """
         Search for compounds matching names.
-        :param names: Names to search for in CompoundLabels
-        :param where: kwargs with a key of EITHER 'where' or 'wheres', which are lists of additional expressions
+
+        Args:
+          names: Names to search for in CompoundLabels
+          where: kwargs with a key of EITHER 'where' or 'wheres', which are lists of additional expressions
+          *names: Union[Sequence[str]:
+          str]:
+          **where:
+
+        Returns:
+
         """
         where = where.get("where", where.get("wheres"))
         names = InternalTools.flatten_smart(names)
@@ -575,6 +786,18 @@ class Lookups(LookupTool):
     def compounds(
         cls, *wheres: Union[CompoundLike, ExpressionsLike], like: bool = False, regex: bool = False
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[CompoundLike:
+          ExpressionsLike]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         uses_compound_labels = LookupTool._expressions_use(wheres, [CompoundLabels])
         uses_batches = LookupTool._expressions_use(wheres, [Batches])
         if uses_compound_labels:
@@ -609,8 +832,16 @@ class Lookups(LookupTool):
     def batch_search(cls, *names: Union[Sequence[str], str], **where) -> Lookup:
         """
         Search for batches matching names.
-        :param names: Names to search for in CompoundLabels and BatchLabels
-        :param where: kwargs with a key of EITHER 'where' or 'wheres', which are lists of additional expressions
+
+        Args:
+          names: Names to search for in CompoundLabels and BatchLabels
+          where: kwargs with a key of EITHER 'where' or 'wheres', which are lists of additional expressions
+          *names: Union[Sequence[str]:
+          str]:
+          **where:
+
+        Returns:
+
         """
         where = where.get("where", where.get("wheres"))
         names = InternalTools.flatten_smart(names)
@@ -625,6 +856,18 @@ class Lookups(LookupTool):
     def batches(
         cls, *wheres: Union[BatchLike, ExpressionsLike], like: bool = False, regex: bool = False
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[BatchLike:
+          ExpressionsLike]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         uses_batch_labels = Lookups._expressions_use(wheres, [BatchLabels])
         uses_compound_labels = Lookups._expressions_use(wheres, [CompoundLabels])
         DryStocks = Batches.alias()
@@ -727,6 +970,18 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          compounds: Union[CompoundLike:
+          Iterable[CompoundLike]]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         if isinstance(compounds, (Compounds, str, int)):
             compounds = [compounds]
         compounds = [Compounds.fetch(c) for c in compounds]
@@ -760,6 +1015,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          TransferPlates]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         # noinspection PyPep8Naming
         Parents = TransferPlates.alias()
         query = (
@@ -798,6 +1067,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          Users]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = Users.select()
         return Lookups._simple(
             Users,
@@ -821,6 +1104,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          ProjectTypes]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = ProjectTypes.select()
         df = Lookups._simple(ProjectTypes, query, like, regex, wheres, "id", "name", "description",)
         projects = Tools.multidict(
@@ -828,6 +1125,15 @@ class Lookups(LookupTool):
         )
 
         def n_projects(pt):
+            """
+
+
+            Args:
+              pt:
+
+            Returns:
+
+            """
             return len(projects[pt])
 
         if len(df) > 0:  # TODO shouldn't be needed
@@ -841,6 +1147,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          AudioFiles]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = AudioFiles.select(AudioFiles, Stimuli).join(Stimuli, JOIN.LEFT_OUTER)
         return Lookups._simple(
             AudioFiles,
@@ -863,6 +1183,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          Suppliers]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = Suppliers.select()
         return Lookups._simple(Suppliers, query, like, regex, wheres, "id", "name", "description")
 
@@ -873,6 +1207,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          Refs]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = Refs.select()
         return Lookups._simple(
             Refs,
@@ -896,6 +1244,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          Features]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = Features.select()
         return Lookups._simple(
             Features,
@@ -918,6 +1280,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          Sensors]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = Sensors.select()
         return Lookups._simple(
             Sensors,
@@ -941,6 +1317,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          Stimuli]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = Stimuli.select(Stimuli, AudioFiles).join(AudioFiles, JOIN.LEFT_OUTER)
         return Lookups._simple(
             Stimuli,
@@ -967,6 +1357,19 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          str:
+          PlateTypes]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = PlateTypes.select(PlateTypes, Suppliers).join(Suppliers, JOIN.LEFT_OUTER)
         return Lookups._simple(
             PlateTypes,
@@ -991,6 +1394,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          Saurons]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = Saurons.select(Saurons)
         return Lookups._simple(Saurons, query, like, regex, wheres, "id", "name", "active")
 
@@ -998,6 +1415,18 @@ class Lookups(LookupTool):
     def sauron_configs(
         cls, *wheres: Union[ExpressionsLike, int, SauronConfigs], **kwargs
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          SauronConfigs]:
+          **kwargs:
+
+        Returns:
+
+        """
         like = kwargs.get("like") is True
         regex = kwargs.get("regex") is True
         query = SauronConfigs.select(SauronConfigs, Saurons).join(Saurons)
@@ -1022,6 +1451,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          ControlTypes]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = ControlTypes.select()
         return Lookups._simple(
             ControlTypes,
@@ -1044,6 +1487,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          Locations]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         # noinspection PyPep8Naming
         Parents = Locations.alias()
         query = Locations.select().join(
@@ -1068,6 +1525,18 @@ class Lookups(LookupTool):
     def batteries(
         cls, *wheres: Union[ExpressionsLike, BatteryLike], like: bool = False, regex: bool = False
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          BatteryLike]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         # TODO does this work for empty batteries?
         query = (
             Batteries.select(Batteries, Users)
@@ -1095,6 +1564,18 @@ class Lookups(LookupTool):
     def assays(
         cls, *wheres: Union[ExpressionsLike, AssayLike], like: bool = False, regex: bool = False
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          AssayLike]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = (
             Assays.select(Assays, Users, TemplateAssays)
             .join(TemplateAssays, JOIN.LEFT_OUTER)
@@ -1123,6 +1604,20 @@ class Lookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          GeneticVariants]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = GeneticVariants.select(GeneticVariants, Users).join(Users, JOIN.LEFT_OUTER)
         variants = {v.id: v for v in GeneticVariants.select()}
         df = Lookups._simple(
@@ -1146,6 +1641,16 @@ class Lookups(LookupTool):
 
     @classmethod
     def _add_names(cls, df, id_col: str):
+        """
+
+
+        Args:
+          df:
+          id_col: str:
+
+        Returns:
+
+        """
         if len(df) > 0:
             all_ids = {
                 int(c) for c in df[id_col].unique().tolist() if not Tools.is_null(c) and c != ""

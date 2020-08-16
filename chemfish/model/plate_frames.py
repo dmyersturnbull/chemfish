@@ -5,22 +5,51 @@ from chemfish.model.features import *
 
 
 class PlateFrame(UntypedDf):
-    """
-    A row-by-column DataFrame representing some value in a multiwell plate.
-    """
+    """A row-by-column DataFrame representing some value in a multiwell plate."""
 
     @classmethod
     def mean(cls, run: RunLike, feature: FeatureType) -> PlateFrame:
+        """
+
+
+        Args:
+          run: RunLike:
+          feature: FeatureType:
+
+        Returns:
+
+        """
         return cls.of(run, feature, np.mean)
 
     @classmethod
     def sum(cls, run: RunLike, feature: FeatureType) -> PlateFrame:
+        """
+
+
+        Args:
+          run: RunLike:
+          feature: FeatureType:
+
+        Returns:
+
+        """
         return cls.of(run, feature, np.sum)
 
     @classmethod
     def of(
         cls, run: RunLike, feature: FeatureType, stat: Callable[[np.array], Union[float, str]]
     ) -> PlateFrame:
+        """
+
+
+        Args:
+          run: RunLike:
+          feature: FeatureType:
+          stat: Callable[[np.array]:
+
+        Returns:
+
+        """
         run = Tools.run(run)
         feature = FeatureTypes.of(feature)
         wb1 = Tools.wb1_from_run(run)

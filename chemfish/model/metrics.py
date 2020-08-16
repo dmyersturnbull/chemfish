@@ -7,6 +7,7 @@ from chemfish.core.core_imports import *
 
 
 class StatTools:
+    """ """
     @classmethod
     def kde(
         cls, a: np.array, kernel: str = "gau", bw: str = "normal_reference"
@@ -15,6 +16,14 @@ class StatTools:
         Calculates univariate KDE with statsmodel.
         (This function turned into a thin wrapper around statsmodel.)
         Note that scipy uses statsmodel for KDE if it's available. Otherwise, it silently falls back to scipy. That's clearly hazardous.
+
+        Args:
+          a: np.array:
+          kernel:
+          bw:
+
+        Returns:
+
         """
         if isinstance(a, pd.Series):
             a = a.values
@@ -27,19 +36,19 @@ class StatTools:
 @abcd.auto_eq()
 @abcd.auto_hash()
 class MetricInfo:
-    """
-    A type of 2D metric such as ROC or Precision-Recall.
-    """
+    """A type of 2D metric such as ROC or Precision-Recall."""
 
     def __init__(self, name: str, score: str, false: str, true: str):
         self.name, self.score, self.false, self.true = name, score, false, true
 
     @classmethod
     def roc(cls):
+        """ """
         return MetricInfo("ROC", "AUC (%)", "FPR (%)", "TPR (%)")
 
     @classmethod
     def pr(cls):
+        """ """
         return MetricInfo(
             "Precision" + Chars.en + "Recall",
             "average precision (%)",
@@ -52,9 +61,7 @@ class MetricInfo:
 @abcd.auto_eq()
 @abcd.auto_hash()
 class MetricData:
-    """
-    Typically either ROC or Precision-Recall curves.
-    """
+    """Typically either ROC or Precision-Recall curves."""
 
     def __init__(
         self,
@@ -78,6 +85,18 @@ class MetricData:
     def roc(
         cls, label: str, control: Optional[str], true: Sequence[bool], scores: Sequence[float]
     ) -> MetricData:
+        """
+
+
+        Args:
+          label: str:
+          control: Optional[str]:
+          true: Sequence[bool]:
+          scores: Sequence[float]:
+
+        Returns:
+
+        """
         auc = skmetrics.roc_auc_score(true, scores)
         fpr, tpr, thresholds = skmetrics.roc_curve(true, scores)
         return MetricData(label, control, auc * 100.0, fpr * 100.0, tpr * 100.0)
@@ -86,6 +105,18 @@ class MetricData:
     def pr(
         cls, label: str, control: Optional[str], true: Sequence[bool], scores: Sequence[float]
     ) -> MetricData:
+        """
+
+
+        Args:
+          label: str:
+          control: Optional[str]:
+          true: Sequence[bool]:
+          scores: Sequence[float]:
+
+        Returns:
+
+        """
         score = skmetrics.average_precision_score(true, scores)
         precision, recall, thresholds = skmetrics.precision_recall_curve(true, scores)
         return MetricData(label, control, score * 100.0, precision * 100.0, recall * 100.0)
@@ -95,20 +126,28 @@ class BaseScoreFrame(TypedDf):
     """
     Something that has a label and some kind of score(s).
     Requires at least a column called 'label'.
+
+    Args:
+
+    Returns:
+
     """
 
     @classmethod
     @abcd.overrides
     def required_columns(cls) -> Sequence[str]:
+        """ """
         return ["label", "score"]
 
     @classmethod
     @abcd.overrides
     def reserved_columns(cls) -> Sequence[str]:
+        """ """
         return ["control", "well", "run", "class", "lower", "upper", "spread", "pval", "is_control"]
 
     @property
     def value_cols(self) -> Sequence[str]:
+        """ """
         z = ["score"]
         for c in ["lower", "upper", "spread", "pval"]:
             if c in self.columns:
@@ -117,6 +156,7 @@ class BaseScoreFrame(TypedDf):
 
     @property
     def ref_cols(self) -> Sequence[str]:
+        """ """
         z = []
         for c in ["well", "run"]:
             if c in self.columns:
@@ -125,9 +165,18 @@ class BaseScoreFrame(TypedDf):
 
     @property
     def core_info_cols(self) -> Sequence[str]:
+        """ """
         return [c for c in ["label", "control", "class"] if c in self.columns]
 
     def by_label(self, label: Union[str, Iterable[str]]):
+        """
+
+
+        Args:
+          label:
+        Returns:
+
+        """
         if isinstance(label, str):
             return self.__class__(self[self["label"] == label])
         else:
@@ -135,6 +184,16 @@ class BaseScoreFrame(TypedDf):
 
     @classmethod
     def simple(cls, classes: pd.Series, scores: pd.Series):
+        """
+
+
+        Args:
+          classes: pd.Series:
+          scores: pd.Series:
+
+        Returns:
+
+        """
         df = BaseScoreFrame([classes, scores])
         df.columns = ["label", "score"]
         return BaseScoreFrame(df)
@@ -143,6 +202,12 @@ class BaseScoreFrame(TypedDf):
         """
         Sorts by the names with a natural sort, but putting control names at the top.
         To do this, relies on the name to determine whether a row is a control.
+
+        Args:
+          more_controls: Optional[Set[str]]:  (Default value = None)
+
+        Returns:
+
         """
         return self.__class__.retype(
             ValarTools.sort_controls_first(self, "label", more_controls=more_controls)
@@ -151,11 +216,18 @@ class BaseScoreFrame(TypedDf):
     def sort_first(self, names: Sequence[str]):
         """
         Sorts these names first, keeping the rest in the same order.
+
+        Args:
+          names: Sequence[str]:
+
+        Returns:
+
         """
         return self.__class__.retype(ValarTools.sort_first(self, self["label"], names))
 
     @property
     def _constructor_expanddim(self):
+        """ """
         raise ValueError()
 
     def summarize(
@@ -165,6 +237,18 @@ class BaseScoreFrame(TypedDf):
         spread_fn=np.std,
         boot: Optional[int] = None,
     ) -> BaseScoreFrame:
+        """
+
+
+        Args:
+          ci:
+          center_fn:  (Default value = np.mean)
+          spread_fn:  (Default value = np.std)
+          boot:
+
+        Returns:
+
+        """
         if ci is not None and (ci < 0 or ci > 1):
             raise ValueError(f"CI is {ci}")
         gb = self.core_info_cols
@@ -181,6 +265,16 @@ class BaseScoreFrame(TypedDf):
         else:
 
             def get_b(g, c):
+                """
+
+
+                Args:
+                  g:
+                  c:
+
+                Returns:
+
+                """
                 return np.quantile(
                     [
                         float(g.sample(len(g), replace=True).score.aggregate(center_fn))
@@ -200,6 +294,7 @@ class BaseScoreFrame(TypedDf):
         return self.__class__(summary.reset_index())
 
     def set_controls_from_names(self) -> BaseScoreFrame:
+        """ """
         z = self.copy()
         controls = {s.name: s.name for s in ControlTypes.select()}
         z["control"] = z["name"].map(lambda s: controls.get(s))
@@ -208,7 +303,18 @@ class BaseScoreFrame(TypedDf):
 
     @classmethod
     def make_into(cls, df: pd.DataFrame, class_name: str):
+        """
+
+
+        Args:
+          df: pd.DataFrame:
+          class_name: str:
+
+        Returns:
+
+        """
         class X(cls):
+            """ """
             pass
 
         X.__name__ = class_name
@@ -219,20 +325,55 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
     """
     A score frame with additional columns 'prediction' and 'score_for_prediction'.
     Supports generating ROC and PR curves.
+
+    Args:
+
+    Returns:
+
     """
 
     @classmethod
     @abcd.overrides
     def required_columns(cls) -> Sequence[str]:
+        """ """
         return ["label", "prediction", "score", "score_for_prediction"]
 
     def rocs(self, control_label: str) -> Sequence[MetricData]:
+        """
+
+
+        Args:
+          control_label: str:
+
+        Returns:
+
+        """
         return self._curves(control_label, MetricInfo.roc(), MetricData.roc)
 
     def prs(self, control_label: str) -> Sequence[MetricData]:
+        """
+
+
+        Args:
+          control_label: str:
+
+        Returns:
+
+        """
         return self._curves(control_label, MetricInfo.pr(), MetricData.pr)
 
     def _curves(self, control_label: str, info, clazz):
+        """
+
+
+        Args:
+          control_label: str:
+          info:
+          clazz:
+
+        Returns:
+
+        """
         __a, __b = self.__ab(control_label)
         curves = []
         for label in self["label"].unique():
@@ -251,6 +392,17 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
         return curves
 
     def _curveab(self, control_label: str, info, clazz):
+        """
+
+
+        Args:
+          control_label: str:
+          info:
+          clazz:
+
+        Returns:
+
+        """
         logger.caution(f"Transparently handling __a and __b for {control_label} in curves")
         __a, __b = self.__ab(control_label)
         bylabel = self.by_label([__a, __b])
@@ -270,6 +422,17 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
         return __a, __b
 
     def _curve(self, control_label: str, info, clazz):
+        """
+
+
+        Args:
+          control_label: str:
+          info:
+          clazz:
+
+        Returns:
+
+        """
         # the reason for taking the control label rather than the treatment is simple:
         # You can generally call AccuracyFramey.roc('solvent (-)') for any treatment.
         # You don't have to know which treatment it is.
@@ -283,6 +446,15 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
         return data
 
     def _true_and_score(self, control_label: str):
+        """
+
+
+        Args:
+          control_label: str:
+
+        Returns:
+
+        """
         true: Sequence[bool] = (self["label"] != control_label).astype(int).values
         score = [
             (s if guess != control_label else 100 - s) / 100.0
@@ -295,9 +467,7 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
 @abcd.auto_hash()
 @abcd.auto_eq()
 class KdeData:
-    """
-    Kernel density estimation data.
-    """
+    """Kernel density estimation data."""
 
     def __init__(
         self,
@@ -312,6 +482,16 @@ class KdeData:
     def density_df(
         self, support_start: Optional[float] = None, support_end: Optional[float] = None
     ) -> UntypedDf:
+        """
+
+
+        Args:
+          support_start: Optional[float]:  (Default value = None)
+          support_end: Optional[float]:  (Default value = None)
+
+        Returns:
+
+        """
         df = UntypedDf({"support": self.support, "density": self.density})
         if support_start is not None:
             df = df[df["support"] >= support_start]
@@ -321,10 +501,30 @@ class KdeData:
 
     @classmethod
     def from_scores(cls, df: BaseScoreFrame, **kwargs) -> KdeData:
+        """
+
+
+        Args:
+          df: BaseScoreFrame:
+          **kwargs:
+
+        Returns:
+
+        """
         return cls.from_samples(df["score"], **kwargs)
 
     @classmethod
     def from_samples(cls, samples: Sequence[float], **kwargs) -> KdeData:
+        """
+
+
+        Args:
+          samples: Sequence[float]:
+          **kwargs:
+
+        Returns:
+
+        """
         support, density = StatTools.kde(samples, **kwargs)
         return KdeData(samples, support, density, params=kwargs)
 

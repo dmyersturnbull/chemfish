@@ -10,18 +10,30 @@ from chemfish.model.wf_tools import *
 
 
 class WellFrameBuildError(ConstructionError):
+    """ """
     pass
 
 
 class WellFrameQuery:
-    """
-    Has static methods that return the fields to be used in a SELECT query for generating WellFrames.
-    """
+    """Has static methods that return the fields to be used in a SELECT query for generating WellFrames."""
 
     @classmethod
     def simple(
         cls, as_of: datetime, feature: Union[Features, int, str], wheres: Iterable[ExpressionLike]
     ) -> peewee.Query:
+        """
+
+
+        Args:
+          as_of: datetime:
+          feature: Union[Features:
+          int:
+          str]:
+          wheres: Iterable[ExpressionLike]:
+
+        Returns:
+
+        """
         if isinstance(feature, FeatureType):
             feature = feature.valar_feature
         query = WellFrameQuery().build(WellFrameQuery.fields())
@@ -38,10 +50,12 @@ class WellFrameQuery:
 
     @classmethod
     def no_fields(cls):
+        """ """
         return [Wells.id, Wells.run_id]
 
     @classmethod
     def fields(cls):
+        """ """
         return [
             WellTreatments,
             Batches,
@@ -66,6 +80,15 @@ class WellFrameQuery:
         ]
 
     def build(self, select_fields):
+        """
+
+
+        Args:
+          select_fields:
+
+        Returns:
+
+        """
         return (
             WellTreatments.select(*select_fields)
             .join(Batches)
@@ -103,7 +126,9 @@ class WellFrameQuery:
 
 
 class AbstractWellFrameBuilder:
+    """ """
     def build(self) -> WellFrame:
+        """ """
         raise NotImplementedError()
 
 
@@ -116,6 +141,11 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         - WellFrameBuilder(datetime) constructor for arbitrary wells for runs inserted before some datetime.
         - WellFrameBuilder.wells for a specific set of wells.
         - WellFrameBuilder.runs for all wells in a specific set of runs.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, before_datetime: Optional[datetime]) -> None:
@@ -149,6 +179,19 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
     def wells(
         cls, wells: Union[Union[int, Wells], Iterable[Union[int, Wells, str]]]
     ) -> WellFrameBuilder:
+        """
+
+
+        Args:
+          wells: Union[Union[int:
+          Wells]:
+          Iterable[Union[int:
+          Wells:
+          str]]]:
+
+        Returns:
+
+        """
         well_ids = Tools.wells(wells)
         wfb = cls(None).where(Wells.id << well_ids)
         wfb._required_wells = wells
@@ -156,12 +199,30 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
 
     @classmethod
     def runs(cls, runs: RunsLike) -> WellFrameBuilder:
+        """
+
+
+        Args:
+          runs: RunsLike:
+
+        Returns:
+
+        """
         runs = Tools.runs(runs)
         wfb = cls(None).where(Runs.id << runs)
         wfb._required_runs = runs
         return wfb
 
     def where(self, where: ExpressionsLike) -> WellFrameBuilder:
+        """
+
+
+        Args:
+          where: ExpressionsLike:
+
+        Returns:
+
+        """
         if isinstance(where, ExpressionLike):
             self._wheres.append(where)
         elif Tools.is_true_iterable(where):
@@ -173,8 +234,13 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
     def limit_to(self, limit: Optional[int]) -> WellFrameBuilder:
         """
         Gets the first `limit` rows/wells, ordered by run ID, then well index
-        :param limit:
-        :return:
+
+        Args:
+          limit: return:
+          limit: Optional[int]:
+
+        Returns:
+
         """
         if self._limit is not None:
             raise ContradictoryRequestError(f"Limit {self._limit} already set")
@@ -184,6 +250,18 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         return self
 
     def with_feature(self, feature: Union[None, str, FeatureType], dtype=None) -> WellFrameBuilder:
+        """
+
+
+        Args:
+          feature: Union[None:
+          str:
+          FeatureType]:
+          dtype:
+
+        Returns:
+
+        """
         if self._feature is not None:
             raise ContradictoryRequestError(f"Feature {self._feature} already added")
         if feature is not None:
@@ -196,8 +274,17 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
     ) -> WellFrameBuilder:
         """
         Add a new, non-reserved meta column.
-        :param name: The name of the new column
-        :param function: A function mapping the Wells instance and Treatments to the column value
+
+        Args:
+          name: The name of the new column
+          function: A function mapping the Wells instance and Treatments to the column value
+          name: str:
+          function: Callable[[Wells:
+          Treatments]:
+          Any]:
+
+        Returns:
+
         """
         if name in [c[0] for c in WellFrameColumns.reserved]:
             raise ReservedError(
@@ -213,7 +300,13 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
     def with_names(self, namer: WellNamer) -> WellFrameBuilder:
         """
         Set the 'name' column using this function.
-        :param namer: A Namer or function mapping pd.DataFrame to a Series with str type.
+
+        Args:
+          namer: A Namer or function mapping pd.DataFrame to a Series with str type.
+          namer: WellNamer:
+
+        Returns:
+
         """
         self._namer = namer
         return self
@@ -221,7 +314,13 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
     def with_display_names(self, namer: WellNamer) -> WellFrameBuilder:
         """
         Set the 'display_name' column using this function.
-        :param namer: A Namer or function mapping pd.DataFrame to a Series with str type.
+
+        Args:
+          namer: A Namer or function mapping pd.DataFrame to a Series with str type.
+          namer: WellNamer:
+
+        Returns:
+
         """
         self._display_namer = namer
         return self
@@ -229,7 +328,14 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
     def with_packs(self, packer: Callable[[pd.DataFrame], pd.Series]) -> WellFrameBuilder:
         """
         Set the 'pack' column using this function.
-        :param packer: A function mapping pd.DataFrame to a Series with str type.
+
+        Args:
+          packer: A function mapping pd.DataFrame to a Series with str type.
+          packer: Callable[[pd.DataFrame]:
+          pd.Series]:
+
+        Returns:
+
         """
         self._packer = packer
         return self
@@ -237,8 +343,15 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
     def with_sizes(self, sizer: Callable[[pd.DataFrame], pd.Series]) -> WellFrameBuilder:
         """
         Set the 'size' column using this function.
-        :param sizer: A function mapping pd.DataFrame to a Series with float type.
-        :return: self
+
+        Args:
+          sizer: A function mapping pd.DataFrame to a Series with float type.
+          sizer: Callable[[pd.DataFrame]:
+          pd.Series]:
+
+        Returns:
+          self
+
         """
         self._sizer = sizer
         return self
@@ -246,19 +359,32 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
     def with_compound_names(self, namer: CompoundNamer) -> WellFrameBuilder:
         """
         Add a 'compound_names' column using the CompoundNamer passed.
-        :param namer: A CompoundNamer
+
+        Args:
+          namer: A CompoundNamer
+          namer: CompoundNamer:
+
+        Returns:
+
         """
         self._compound_namer = namer
         return self
 
     def build(self) -> WellFrame:
-        """
-        Builds the WellFrame, actually performing the query.
-        """
+        """Builds the WellFrame, actually performing the query."""
         query = self._select_query()  # takes no time
         return self._build_outer(query)
 
     def _build_outer(self, query) -> WellFrame:
+        """
+
+
+        Args:
+          query:
+
+        Returns:
+
+        """
         t0 = time.monotonic()
         if self._required_runs is None or len(self._required_runs) == 0 or len(self._wheres) > 1:
             logger.info(
@@ -285,6 +411,15 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         return df
 
     def _build_inner(self, query) -> WellFrame:
+        """
+
+
+        Args:
+          query:
+
+        Returns:
+
+        """
         # run select statement
         treatments = list(query)
         if not treatments:
@@ -320,6 +455,12 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         Calling this is required for subclasses.
         WellFrameBulider._build_inner calls this itself though.
         This guarantees that the head wells are taken in the correct order.
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
         """
         if self._limit is not None:
             df = df.sort_values(["run", "well_index"]).head(self._limit)
@@ -332,6 +473,12 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         Restricting the Peewee query cuts down on the data returned for performance,
         but does not guarantee that all runs have the correct generation.
         You need to do this too.
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
         """
         if self._generation is not None:
             # we already restricted the query, but now we make sure to exclude all others
@@ -342,6 +489,15 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         return df
 
     def _transform_to_wf(self, df) -> WellFrame:
+        """
+
+
+        Args:
+          df:
+
+        Returns:
+
+        """
         df["name"] = df["well"]  # needed to have a valid WellFrame
         if self._compound_namer is None:
             df["compound_names"] = df["c_ids"].map(
@@ -358,6 +514,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         return WellFrame.of(df)
 
     def _select_query(self) -> peewee.Query:
+        """ """
         query = WellFrameQuery().build(WellFrameQuery.fields())
         for where in self._wheres:
             query = query.where(where)
@@ -367,6 +524,15 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         return query
 
     def _select_features(self, well_to_treatments):
+        """
+
+
+        Args:
+          well_to_treatments:
+
+        Returns:
+
+        """
         if self._feature is None:
             return None
         return {
@@ -379,7 +545,27 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         }
 
     def _build_df(self, well_to_treatments, features):
+        """
+
+
+        Args:
+          well_to_treatments:
+          features:
+
+        Returns:
+
+        """
         def capture(well: Wells, well_ts: Sequence[WellTreatments]) -> Mapping[int, np.array]:
+            """
+
+
+            Args:
+              well: Wells:
+              well_ts: Sequence[WellTreatments]:
+
+            Returns:
+
+            """
             dct1 = OrderedDict()
             for column_name, column_fn in self._columns.items():
                 dct1[column_name] = column_fn(well, well_ts)
@@ -404,6 +590,15 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         )
 
     def _fix_df(self, df):
+        """
+
+
+        Args:
+          df:
+
+        Returns:
+
+        """
         if len(df) > 0:
             for s in WellFrameColumnTools.int32_cols:
                 df[s] = df[s].astype(np.int32)

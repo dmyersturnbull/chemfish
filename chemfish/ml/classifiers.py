@@ -13,28 +13,31 @@ from chemfish.viz.figures import *
 
 
 class ClassifierFailedError(AlgorithmError):
+    """ """
     pass
 
 
 class ClassifierTrainFailedError(ClassifierFailedError):
+    """ """
     pass
 
 
 class ClassifierPredictFailedError(ClassifierFailedError):
+    """ """
     pass
 
 
 class TrainTestOverlapWarning(StrangeRequestWarning):
-    """
-    Training and test data overlap.
-    """
+    """Training and test data overlap."""
 
 
 class NotTrainedError(OpStateError):
+    """ """
     pass
 
 
 class AlreadyTrainedError(OpStateError):
+    """ """
     pass
 
 
@@ -58,26 +61,60 @@ class WellClassifier(SaveableTrainable):
         - wells, labels, features
         - started, finished, seconds_taken
     The saved .info file contains the above, plus the contents of `params` and any statistics.
+
+    Args:
+
+    Returns:
+
     """
 
     @abcd.abstractmethod
     def train(self, df: WellFrame) -> None:
+        """
+
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     @abcd.abstractmethod
     def test(self, df: WellFrame) -> DecisionFrame:
+        """
+
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
     @property
     @abcd.abstractmethod
     def params(self) -> Mapping[str, Any]:
+        """ """
         raise NotImplementedError()
 
     @property
     def is_trained(self):
+        """ """
         return "finished" in self.info
 
     def _update_wf_info(self, df: WellFrame):
+        """
+
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
+        """
         self.info.update(
             {
                 "wells": df["well"].values,
@@ -88,14 +125,27 @@ class WellClassifier(SaveableTrainable):
         )
 
     def _verify_trained(self):
+        """ """
         if not self.is_trained:
             raise NotTrainedError("Model is not trained")
 
     def _verify_untrained(self):
+        """ """
         if self.is_trained:
             raise AlreadyTrainedError("Model is already trained")
 
     def _verify_train(self, wells: np.array, names: Sequence[str], features):
+        """
+
+
+        Args:
+          wells: np.array:
+          names: Sequence[str]:
+          features:
+
+        Returns:
+
+        """
         self._verify_untrained()
         if len(wells) == 0:
             raise EmptyCollectionError("Cannot train on an empty WellFrame")
@@ -105,6 +155,17 @@ class WellClassifier(SaveableTrainable):
             logger.warning("Training a classifier on >50 labels")
 
     def _verify_test(self, wells: np.array, names: Sequence[str], features):
+        """
+
+
+        Args:
+          wells: np.array:
+          names: Sequence[str]:
+          features:
+
+        Returns:
+
+        """
         self._verify_trained()
         overlap = set(names).difference(set(self.info["labels"]))
         if len(overlap) > 0:
@@ -125,21 +186,26 @@ class WellClassifier(SaveableTrainable):
 
 
 class HasOob(WellClassifier, metaclass=abc.ABCMeta):
+    """ """
     @property
     @abcd.abstractmethod
     def oob_score(self) -> float:
+        """ """
         raise NotImplementedError()
 
     @property
     @abcd.abstractmethod
     def training_decision(self) -> DecisionFrame:
+        """ """
         raise NotImplementedError()
 
 
 class HasWeights(WellClassifier, metaclass=abc.ABCMeta):
+    """ """
     @property
     @abcd.abstractmethod
     def weights(self) -> Sequence[float]:
+        """ """
         raise NotImplementedError()
 
 
@@ -148,6 +214,11 @@ class BuildableWellClassifier(abcd.ABC):
     A WellClassifier with a classmethod `build` that returns a new instance from kwargs.
     This method is separated from the constructor, which might provide a different, more direct interface.
     The idea here is that `build` may be willing to assume default parameters.
+
+    Args:
+
+    Returns:
+
     """
 
     @classmethod
@@ -155,11 +226,26 @@ class BuildableWellClassifier(abcd.ABC):
     def build(cls, **kwargs):
         """
         Returns a new classifier from parameters.
+
+        Args:
+          **kwargs:
+
+        Returns:
+
         """
         raise NotImplementedError()
 
     @classmethod
     def load_(cls, path: PathLike):
+        """
+
+
+        Args:
+          path: PathLike:
+
+        Returns:
+
+        """
         x = cls.build()
         x.load(path)
         return x
@@ -170,6 +256,11 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
     A well classifier backed by a single scikit-learn classifier.
     Note that the constructer is typed as requiring a `ForestClassifier`, but this is only for better tab completion.
     It can accept any scikit-learn classifier.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, model: AnySklearnClassifier):
@@ -179,22 +270,43 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
 
     @classmethod
     def model_class(cls) -> Type:
+        """ """
         raise NotImplementedError()
 
     @property
     def params(self) -> Mapping[str, Any]:
+        """ """
         return self.model.get_params()
 
     @params.setter
     def params(self, **params):
+        """
+
+
+        Args:
+          **params:
+
+        Returns:
+
+        """
         self._verify_untrained()
         self.model.set_params(**params)
 
     @abcd.override_recommended
     def statistics(self) -> Mapping[str, Any]:
+        """ """
         return {}
 
     def load(self, path: PathLike) -> None:
+        """
+
+
+        Args:
+          path: PathLike:
+
+        Returns:
+
+        """
         self._verify_untrained()
         path = Path(path)
         if path.suffix == ".pkl":
@@ -222,6 +334,15 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
         logger.debug(f"Loaded model at {path.model_pkl}")
 
     def save(self, path: PathLike) -> None:
+        """
+
+
+        Args:
+          path: PathLike:
+
+        Returns:
+
+        """
         self._verify_trained()
         path = Path(path)
         if str(path).endswith("model.pkl"):
@@ -243,6 +364,15 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
         logger.debug(f"Saved model to {path.model_pkl}")
 
     def train(self, df: WellFrame) -> None:
+        """
+
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
+        """
         self._verify_train(df["well"].values, df["name"].values, df.columns.values)
         logger.info(self._startup_string(df))
         reps = df.n_replicates()
@@ -279,6 +409,15 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
             logger.minor(f"Statistics: {', '.join(stats)}")
 
     def test(self, df: WellFrame) -> DecisionFrame:
+        """
+
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
+        """
         logger.minor(f"Testing on names {df.unique_names()} and runs {df.unique_runs()} ...")
         self._verify_test(df["well"].values, df["name"].values, df.columns.values)
         X, y = df.xy()
@@ -292,6 +431,15 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
         return DecisionFrame.of(y, labels, predictions, df["well"].values)
 
     def _startup_string(self, df):
+        """
+
+
+        Args:
+          df:
+
+        Returns:
+
+        """
         return "Training on {} labels and {} features using {} examples, {} runs, and {} estimators on {} core(s).".format(
             len(df.unique_names()),
             df.feature_length(),
@@ -305,12 +453,14 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
 class SklearnWfClassifierWithOob(
     SklearnWellClassifier, HasOob, BuildableWellClassifier, metaclass=abc.ABCMeta
 ):
+    """ """
     def __init__(self, model: AnySklearnClassifier):
         model.oob_score = True  # ignore user preference so that oob_score() is defined
         super().__init__(model)
         self._trained_decision = None
 
     def statistics(self) -> Mapping[str, Any]:
+        """ """
         return {**super().statistics(), **{"oob_score": self.oob_score}}
 
     def save_to_dir(
@@ -322,6 +472,19 @@ class SklearnWfClassifierWithOob(
         runs: Optional[Sequence[int]] = None,
         label_colors: Optional[Mapping[str, str]] = None,
     ):
+        """
+
+
+        Args:
+          path: PathLike:
+          exist_ok: bool:  (Default value = True)
+          figures:
+          sort:
+          runs:
+          label_colors:
+        Returns:
+
+        """
         from chemfish.viz.figures import FigureSaver
 
         path = Tools.prepped_dir(path, exist_ok=exist_ok)
@@ -350,12 +513,14 @@ class SklearnWfClassifierWithOob(
 
     @property
     def oob_score(self) -> float:
+        """ """
         self._verify_trained()
         logger.debug("Calculating out-of-bag score...")
         return self.model.oob_score_
 
     @property
     def training_decision(self) -> DecisionFrame:
+        """ """
         logger.debug("Calculating training decision function...")
         self._verify_trained()
         if self._trained_decision is None:
@@ -368,12 +533,14 @@ class SklearnWfClassifierWithOob(
 
 
 class SklearnWfClassifierWithWeights(SklearnWellClassifier, HasWeights, metaclass=abc.ABCMeta):
+    """ """
     def __init__(self, model: AnySklearnClassifier):
         super().__init__(model)
         self._weights = None
 
     @property
     def weights(self) -> Sequence[float]:
+        """ """
         logger.debug("Calculating weights...")
         if self._weights is None:
             self._weights = self.model.feature_importances_
@@ -385,14 +552,33 @@ class Ut:
 
     @classmethod
     def depths(cls, model) -> Sequence[int]:
+        """
+
+
+        Args:
+          model:
+
+        Returns:
+
+        """
         return [t.tree_.max_depth for t in model.model.estimators_]
 
 
 class WellForestClassifier(SklearnWfClassifierWithOob, SklearnWfClassifierWithWeights):
+    """ """
     cached_name = "WellForestClassifier"
 
     @classmethod
     def build(cls, **kwargs):
+        """
+
+
+        Args:
+          **kwargs:
+
+        Returns:
+
+        """
         kwargs = copy(kwargs)
         if "n_estimators" not in kwargs:
             kwargs["n_estimators"] = 1000
@@ -400,23 +586,45 @@ class WellForestClassifier(SklearnWfClassifierWithOob, SklearnWfClassifierWithWe
 
     @classmethod
     def model_class(cls) -> Type[AnySklearnClassifier]:
+        """ """
         return RandomForestClassifier
 
     def depths(self) -> Sequence[int]:
+        """ """
         return Ut.depths(self)
 
 
 class WellClassifiers:
+    """ """
     _classifier_cache = {RandomForestClassifier.__qualname__: WellForestClassifier}
 
     @classmethod
     def forest(cls, **kwargs):
+        """
+
+
+        Args:
+          **kwargs:
+
+        Returns:
+
+        """
         return WellForestClassifier.build(**kwargs)
 
     @classmethod
     def new_class(
         cls, model: Type[AnySklearnClassifier], **default_kwargs
     ) -> Type[SklearnWellClassifier]:
+        """
+
+
+        Args:
+          model: Type[AnySklearnClassifier]:
+          **default_kwargs:
+
+        Returns:
+
+        """
         qname = (
             model.__qualname__
             + (":" + ",".join([str(k) + "=" + str(v) for k, v in default_kwargs.items()]))
@@ -429,12 +637,23 @@ class WellClassifiers:
         supers = WellClassifiers._choose_classes(model)
 
         class X(*supers):
+            """ """
             @classmethod
             def model_class(cls) -> Type[AnySklearnClassifier]:
+                """ """
                 return model
 
             @classmethod
             def build(cls, **kwargs):
+                """
+
+
+                Args:
+                  **kwargs:
+
+                Returns:
+
+                """
                 args = copy(default_kwargs)
                 args.update(kwargs)
                 return X(model(**args))
@@ -449,6 +668,15 @@ class WellClassifiers:
 
     @classmethod
     def _choose_classes(cls, model):
+        """
+
+
+        Args:
+          model:
+
+        Returns:
+
+        """
         has_oob = hasattr(model, "oob_score_") and hasattr(model, "oob_decision_function_")
         has_weights = hasattr(model, "feature_importances_")
         supers = []

@@ -5,17 +5,13 @@ from chemfish.core.valar_tools import *
 
 
 class TestValarTools:
-    """
-    Tests for ValarTools.
-    """
+    """Tests for ValarTools."""
 
     def __init__(self):
         self.fake_run = None
 
     def setUp(self) -> None:
-        """
-        Set-up method that is run to initialize a fake_run for the following three tests cases.
-        """
+        """Set-up method that is run to initialize a fake_run for the following three tests cases."""
         self.fake_run = Runs()
         run_attributes = [
             "id",
@@ -43,6 +39,15 @@ class TestValarTools:
     # TODO
     @given(arrays(np.float32, (integers(1, 1000)), elements=floats(0, 256)))
     def test_signed_floats_to_blob_inverts(self, data):
+        """
+        
+
+        Args:
+          data: 
+
+        Returns:
+
+        """
         "
         Tests the invariant that involves both the signed_floats_to_blob and the blob_to_signed_floats.
         "
@@ -50,9 +55,7 @@ class TestValarTools:
     """
 
     def test_run_wrong_param(self):
-        """
-        Tests that run method responds properly when nonexistent ID/name/tag/sub_hash is given.
-        """
+        """Tests that run method responds properly when nonexistent ID/name/tag/sub_hash is given."""
         with pytest.raises(ValarLookupError):
             ValarTools.run(599999)
         with pytest.raises(ValarLookupError):
@@ -69,9 +72,7 @@ class TestValarTools:
         ), "Incorrect result. Run Method should still return the non-existent run."
 
     def test_sensors_on(self):
-        """
-        Tests if sensors_on returns all sensors for a valid run.
-        """
+        """Tests if sensors_on returns all sensors for a valid run."""
         fake_set = {str(s) for s in ValarTools.sensors_on(self.fake_run)}
         empty_set = {str(s) for s in ValarTools.sensors_on(3)}
         valid_set = {str(s) for s in ValarTools.sensors_on(1)}
@@ -91,9 +92,7 @@ class TestValarTools:
         )
 
     def test_features_on(self):
-        """
-        Tests if features_on returns all features for a valid run.
-        """
+        """Tests if features_on returns all features for a valid run."""
         fake_set = ValarTools.features_on(self.fake_run)
         empty_set = ValarTools.features_on(3)
         valid_set = ValarTools.features_on(1)
@@ -114,10 +113,9 @@ class TestValarTools:
 
 
 class TestValarToolsMethodNoSetUp:
+    """ """
     def test_looks_like_submission_hash(self):
-        """
-        Tests that only 12 digit hex strings return true for looks_like_submission_hash method
-        """
+        """Tests that only 12 digit hex strings return true for looks_like_submission_hash method"""
         f = ValarTools.looks_like_submission_hash
         assert not f("aef1234")
         assert not f("12334560402249")
@@ -131,9 +129,7 @@ class TestValarToolsMethodNoSetUp:
             f(123456789120)
 
     def test_run_tag(self):
-        """
-        Tests that run_tag method returns tag value for given run id and tag name or raises ValarLookupError.
-        """
+        """Tests that run_tag method returns tag value for given run id and tag name or raises ValarLookupError."""
         run_id_value = ValarTools.run_tag(1, "first run tag")
         actual_value = "0123456789"
         assert run_id_value == actual_value
@@ -143,9 +139,7 @@ class TestValarToolsMethodNoSetUp:
             ValarTools.run_tag(100, "first run tag")
 
     def test_stimulus_display_name(self):
-        """
-        Tests stimulus_display_name.
-        """
+        """Tests stimulus_display_name."""
         f = ValarTools.stimulus_display_name
         with pytest.raises(ValarLookupError):
             f("badjfbdkf")
@@ -153,9 +147,7 @@ class TestValarToolsMethodNoSetUp:
         assert f(1) == "black (0nm)"
 
     def test_initials(self):
-        """
-        Tests that proper initials are returned for the initials methods.
-        """
+        """Tests that proper initials are returned for the initials methods."""
         f = ValarTools.initials
         all_lower = f(1)  # firstname: test, lastname: user
         all_upper = f(4)  # firstname: Test, lastname: User
@@ -171,9 +163,7 @@ class TestValarToolsMethodNoSetUp:
         assert numbers == ""
 
     def test_users_to_initials(self):
-        """
-        Tests that a mapping of all users to initials is properly returned.
-        """
+        """Tests that a mapping of all users to initials is properly returned."""
         user_initials = ValarTools.users_to_initials()
         check_dict = {
             Users.get_by_id(1): "TU",
@@ -191,6 +181,11 @@ class TestValarToolsMethodNoSetUp:
         """
         Tests that the runs fetched by a run's id, the same run's unique tag, the same run's name,
         and the same run's submission hash are identical.
+
+        Args:
+
+        Returns:
+
         """
         id_run = ValarTools.run(2)
         tag_run = ValarTools.run("unique tag")
@@ -219,6 +214,11 @@ class TestValarToolsMethodNoSetUp:
         """
         Tests that an iterable of the correct runs are fetched
         in correct order.
+
+        Args:
+
+        Returns:
+
         """
         r1_id = 1
         r2_name = "run_number_three"
@@ -250,9 +250,7 @@ class TestValarToolsMethodNoSetUp:
         )
 
     def test_assay_name_simplifier(self):
-        """
-        Tests that assay_name_simplifier returns the simplified strings.
-        """
+        """Tests that assay_name_simplifier returns the simplified strings."""
         ays = ValarTools.assay_name_simplifier()
         test_strings = [
             "assay",
@@ -283,9 +281,7 @@ class TestValarToolsMethodNoSetUp:
         assert actual_results == [ays(assay_name) for assay_name in test_strings]
 
     def test_parse_param_value(self):
-        """
-        Tests that the parse_param_value method responds appropriately to different user inputs.
-        """
+        """Tests that the parse_param_value method responds appropriately to different user inputs."""
         with pytest.raises(ValarLookupError):
             ValarTools.parse_param_value(
                 "5abbff3cdae1", "hello"
@@ -344,9 +340,7 @@ class TestValarToolsMethodNoSetUp:
         )
 
     def test_library_plate_id(self):
-        """
-        Tests that library plate ids are properly returned for both the new and old style submissions.
-        """
+        """Tests that library plate ids are properly returned for both the new and old style submissions."""
         f = ValarTools.library_plate_id_of_submission
         with pytest.raises(ValarLookupError):
             f("abcabcabcabccd", "$...AB123")
@@ -374,9 +368,7 @@ class TestValarToolsMethodNoSetUp:
         )
 
     def test_all_plates_ids_of_library(self):
-        """
-        Tests that all_plates_ids_of_library returns all the batches of a library.
-        """
+        """Tests that all_plates_ids_of_library returns all the batches of a library."""
         f = ValarTools.all_plates_ids_of_library
         with pytest.raises(ValarLookupError):
             f(6)  # nonexistent ref
@@ -392,9 +384,7 @@ class TestValarToolsMethodNoSetUp:
         ), "Incorrect result for ref that exists but has no batches that refer to it."  # ref exists but no batches refer to it
 
     def test_assay_is_background(self):
-        """
-        Tests assay_is_background.
-        """
+        """Tests assay_is_background."""
         f = ValarTools.assay_is_background
         with pytest.raises(ValarLookupError):
             f(1000)

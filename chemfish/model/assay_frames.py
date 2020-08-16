@@ -11,14 +11,29 @@ class AssayFrame(TypedDf):
     """
     A Pandas DataFrame that has one row per assay in a battery.
     Each row has the assay_positions ID, the assay name and simplified_name, and the start and end times.
+
+    Args:
+
+    Returns:
+
     """
 
     @classmethod
     def of(cls, battery: Union[Batteries, int, str]) -> AssayFrame:
+        """
+
+
+        Args:
+          battery:
+
+        Returns:
+
+        """
         return AssayFrame(AssayFrame._assay_df(battery))
 
     @classmethod
     def required_columns(cls) -> Sequence[str]:
+        """ """
         return [
             "position_id",
             "assay_id",
@@ -40,7 +55,13 @@ class AssayFrame(TypedDf):
         Examples:
             - `assays.by_substring('red')`
             - `assays.by_substring(['red', Assays.fetch('VSR1')])`
-        :returns A copy
+
+        Args:
+          superstrings:
+
+        Returns:
+          A copy
+
         """
         if not Tools.is_true_iterable(superstrings):
             superstrings = [superstrings]
@@ -53,7 +74,14 @@ class AssayFrame(TypedDf):
 
     @classmethod
     def _assay_df(cls, battery: Union[int, str]) -> pd.DataFrame:
-        """Returns a DataFrame of the assay name, start, and end in a battery."""
+        """
+        Returns a DataFrame of the assay name, start, and end in a battery.
+
+        Args:
+          battery:
+        Returns:
+
+        """
         simplifier = ValarTools.assay_name_simplifier()
         battery = Batteries.fetch(battery)
         query = (

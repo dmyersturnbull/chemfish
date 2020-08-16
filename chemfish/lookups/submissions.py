@@ -4,12 +4,19 @@ from chemfish.lookups import *
 
 @abcd.external
 class SubmissionLookups(LookupTool):
-    """
-    Utilities for glancing at Valar's contents. Unlike "real" queries, these do not require a datetime filter.
-    """
+    """Utilities for glancing at Valar's contents. Unlike "real" queries, these do not require a datetime filter."""
 
     @classmethod
     def tags(cls, wheres: Union[ExpressionsLike, RunTags] = None) -> Lookup:
+        """
+
+
+        Args:
+          wheres:
+
+        Returns:
+
+        """
         query = RunTags.select(RunTags, Runs).join(Runs)
         if isinstance(wheres, (int, str, Runs, Submissions)):
             wheres = Runs.id == Tools.run(wheres).id
@@ -28,6 +35,15 @@ class SubmissionLookups(LookupTool):
 
     @classmethod
     def tag_summary(cls, wheres: Union[ExpressionsLike, RunTags] = None) -> Lookup:
+        """
+
+
+        Args:
+          wheres:
+
+        Returns:
+
+        """
         return (
             SubmissionLookups.tags(wheres)
             .drop("id", axis=1)
@@ -40,10 +56,22 @@ class SubmissionLookups(LookupTool):
 
     @classmethod
     def unique_tags(cls) -> Set[str]:
+        """ """
         return {r.name for r in RunTags.select(RunTags.name).distinct()}
 
     @classmethod
     def records_on(cls, wheres: Union[ExpressionsLike, Submissions, str]) -> Lookup:
+        """
+
+
+        Args:
+          wheres: Union[ExpressionsLike:
+          Submissions:
+          str]:
+
+        Returns:
+
+        """
         wheres = InternalTools.flatten_smart(wheres)
         query = (
             SubmissionRecords.select(SubmissionRecords, Submissions, Saurons, Users)
@@ -79,6 +107,15 @@ class SubmissionLookups(LookupTool):
 
     @classmethod
     def params_on(cls, wheres: Union[ExpressionsLike, int, str, Submissions]) -> Lookup:
+        """
+
+
+        Args:
+          wheres:
+
+        Returns:
+
+        """
         wheres = InternalTools.flatten_smart(wheres)
         query = (
             SubmissionParams.select(SubmissionParams, Submissions, Experiments)

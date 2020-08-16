@@ -8,13 +8,21 @@ from chemfish.model.well_names import *
 
 
 class ChemfishDatasetTools:
+    """ """
     @classmethod
     def filter_fewer(cls, df: WellFrame, cutoff: int) -> WellFrame:
         """
         For any compound with fewer than `cutoff` wells containing exactly that compound, filters the corresponding wells.
-        :param df: A WellFrame with 0 or 1 compounds per well
-        :param cutoff: Minimum
-        :return: The filtered WellFrame
+
+        Args:
+          df: A WellFrame with 0 or 1 compounds per well
+          cutoff: Minimum
+          df: WellFrame: 
+          cutoff: int: 
+
+        Returns:
+          The filtered WellFrame
+
         """
         if np.any(df["c_ids"].map(len) > 1):
             raise RefusingRequestError(
@@ -33,10 +41,28 @@ class ChemfishDatasetTools:
 
     @classmethod
     def qc_compound_namer(cls, today: datetime) -> CompoundNamer:
+        """
+        
+
+        Args:
+          today: datetime: 
+
+        Returns:
+
+        """
         return CompoundNamers.tiered(as_of=today)
 
     @classmethod
     def qc_namer(cls, today: datetime) -> WellNamer:
+        """
+        
+
+        Args:
+          today: datetime: 
+
+        Returns:
+
+        """
         return (
             WellNamers.builder()
             .control_type()
@@ -46,6 +72,15 @@ class ChemfishDatasetTools:
 
     @classmethod
     def qc_dr_namer(cls, today: datetime) -> WellNamer:
+        """
+        
+
+        Args:
+          today: datetime: 
+
+        Returns:
+
+        """
         return (
             WellNamers.builder()
             .control_type()
@@ -55,10 +90,28 @@ class ChemfishDatasetTools:
 
     @classmethod
     def biomol_compound_namer(cls, today: datetime) -> CompoundNamer:
+        """
+        
+
+        Args:
+          today: datetime: 
+
+        Returns:
+
+        """
         return CompoundNamers.chembl(today)
 
     @classmethod
     def biomol_namer(cls, today: datetime) -> WellNamer:
+        """
+        
+
+        Args:
+          today: datetime: 
+
+        Returns:
+
+        """
         return (
             WellNamerBuilder()
             .column("control_type", transform=lambda s: "" if s == "low drug transfer" else s)
@@ -68,10 +121,28 @@ class ChemfishDatasetTools:
 
     @classmethod
     def biomol_display_namer(cls, today: datetime) -> WellNamer:
+        """
+        
+
+        Args:
+          today: datetime: 
+
+        Returns:
+
+        """
         return WellNamers.screening_plate_with_labels()
 
     @classmethod
     def dmt_simple_namer(cls, today: datetime) -> WellNamer:
+        """
+        
+
+        Args:
+          today: datetime: 
+
+        Returns:
+
+        """
         displayer = StringTreatmentNamer("${tag}")
         return (
             WellNamerBuilder()
@@ -86,6 +157,7 @@ class ChemfishDatasetTools:
 
 
 class ChemfishDataset(metaclass=abc.ABCMeta):
+    """ """
     def __call__(self):
         logger.info(f"Downloading {self.name}...")
         df = self._download()
@@ -97,9 +169,11 @@ class ChemfishDataset(metaclass=abc.ABCMeta):
     @property
     @abcd.override_recommended
     def name(self) -> str:
+        """ """
         return self.__class__.__name__
 
     def _download(self):
+        """ """
         raise NotImplementedError()
 
 
@@ -107,12 +181,14 @@ class ChemfishDataset(metaclass=abc.ABCMeta):
 @abcd.auto_hash()
 @abcd.auto_repr_str()
 class OptisepDataset(ChemfishDataset, metaclass=abc.ABCMeta):
+    """ """
     def __init__(self, training_experiment: int, is_test_set: bool):
         self.training_experiment = training_experiment
         self.is_test_set = is_test_set
 
     @abcd.overrides
     def _download(self):
+        """ """
         today = datetime(2019, 6, 17)
         sep = datetime(2018, 3, 24)
         # noinspection PyTypeChecker
@@ -133,7 +209,9 @@ class OptisepDataset(ChemfishDataset, metaclass=abc.ABCMeta):
 
 
 class LeoDataset1(ChemfishDataset):
+    """ """
     def _download(self):
+        """ """
         today = datetime(2019, 6, 17)
         n_replicates = 5
         df = (
@@ -155,7 +233,9 @@ class LeoDataset1(ChemfishDataset):
 
 
 class LeoDataset2(ChemfishDataset):
+    """ """
     def _download(self):
+        """ """
         pattern = re.compile(r".*BM ([0-9]{1,2})\.([1-9]{1,2}).*")
         today = datetime(2019, 10, 30)
         df = (
@@ -214,6 +294,11 @@ class _SimpleFlamesDataset(ChemfishDataset):
     FYI:
         - Removes the first and last frames
         - Datetime 2019-09-01
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, name: str, wheres, namer, compound_namer):
@@ -224,9 +309,11 @@ class _SimpleFlamesDataset(ChemfishDataset):
     @property
     @abcd.overrides
     def name(self) -> str:
+        """ """
         return self.__name
 
     def _download(self):
+        """ """
         today = datetime(2019, 9, 1)
         query = (
             CachingWellFrameBuilder(WellCache("cd(10)-i"), today)
@@ -240,34 +327,42 @@ class _SimpleFlamesDataset(ChemfishDataset):
 
 
 class ChemfishDatasets:
+    """ """
     @classmethod
     @abcd.copy_docstring(LeoDataset1)
     def leo_biomol(cls) -> WellFrame:
+        """ """
         return LeoDataset1()()
 
     @classmethod
     @abcd.copy_docstring(LeoDataset2)
     def leo_biomol_thor(cls) -> WellFrame:
+        """ """
         return LeoDataset2()()
 
     @classmethod
     def opti_train_a(cls) -> WellFrame:
+        """ """
         return OptisepDataset(1231, False)()
 
     @classmethod
     def opti_train_b(cls) -> WellFrame:
+        """ """
         return OptisepDataset(1238, False)()
 
     @classmethod
     def opti_test_a(cls) -> WellFrame:
+        """ """
         return OptisepDataset(1238, True)()
 
     @classmethod
     def opti_test_b(cls) -> WellFrame:
+        """ """
         return OptisepDataset(1231, True)()
 
     @classmethod
     def qc_opt_full(cls) -> WellFrame:
+        """ """
         today = datetime(2019, 9, 1)
         namer, compound_namer = (
             ChemfishDatasetTools.qc_namer(today),
@@ -282,6 +377,7 @@ class ChemfishDatasets:
 
     @classmethod
     def qc_dr_full(cls) -> WellFrame:
+        """ """
         today = datetime(2019, 9, 1)
         namer, compound_namer = (
             ChemfishDatasetTools.qc_dr_namer(today),
@@ -313,9 +409,7 @@ class ChemfishDatasets:
 
     @classmethod
     def dmt_small(cls) -> WellFrame:
-        """
-        DMT and DMT and isoDMT analogs at 200uM with solvent controls. Experiment 1744 with run ID 7887 and low-volume wells dropped.
-        """
+        """DMT and DMT and isoDMT analogs at 200uM with solvent controls. Experiment 1744 with run ID 7887 and low-volume wells dropped."""
         today = datetime(2019, 1, 1)
         compound_namer = CompoundNamers.tiered(as_of=today)
         namer = ChemfishDatasetTools.dmt_simple_namer(today)
@@ -333,6 +427,11 @@ class ChemfishDatasets:
         DMT and isoDMT analogs at 200uM with solvent controls. Experiment 1744 with run ID 7887 dropped.
         Replaces low-volume wells with their intended treatments.
         What was used in the paper.
+
+        Args:
+
+        Returns:
+
         """
         today = datetime(2019, 1, 1)
         compound_namer = CompoundNamers.tiered(as_of=today)

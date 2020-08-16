@@ -9,16 +9,16 @@ from chemfish.core.core_imports import *
 
 
 class InsightFrame(TypedDf):
-    """
-    A Pandas DataFrame that with one row per change to a stimulus over time.
-    """
+    """A Pandas DataFrame that with one row per change to a stimulus over time."""
 
     @classmethod
     def required_columns(cls):
+        """ """
         return ["value", "start_ms", "end_ms"]
 
     @classmethod
     def columns_to_drop(cls):
+        """ """
         return ["index"]
 
 
@@ -46,10 +46,24 @@ class AppFrame(TypedDf):
         - 'end_stimframe'
         - 'frames_sha1':
         - 'frames': A numpy array of uint8s
+
+    Args:
+
+    Returns:
+
     """
 
     @classmethod
     def of(cls, battery: Union[AppFrame, Batteries, int, str, pd.DataFrame]) -> AppFrame:
+        """
+
+
+        Args:
+          battery:
+
+        Returns:
+
+        """
         if isinstance(battery, AppFrame):
             return battery
         if isinstance(battery, pd.DataFrame):
@@ -60,6 +74,7 @@ class AppFrame(TypedDf):
 
     @classmethod
     def required_columns(cls):
+        """ """
         return [
             "sf_id",
             "ap_id",
@@ -80,6 +95,15 @@ class AppFrame(TypedDf):
         super().__init__(data=data, index=index, columns=columns, dtype=dtype, copy=copy)
 
     def ms_off(self, any_of_stimuli: Union[str, Sequence[str]]) -> Sequence[int]:
+        """
+
+
+        Args:
+          any_of_stimuli:
+
+        Returns:
+
+        """
         return self.ms_on(any_of_stimuli, lambda x: x == 0)
 
     def ms_on(
@@ -87,11 +111,33 @@ class AppFrame(TypedDf):
         any_of_stimuli: Union[str, Sequence[str]],
         accept_value: Callable[[int], bool] = lambda x: x > 0,
     ) -> Sequence[int]:
+        """
+
+
+        Args:
+          any_of_stimuli: Union[str:
+          Sequence[str]]:
+          accept_value: Callable[[int]:
+          bool]:  (Default value = lambda x: x > 0)
+
+        Returns:
+
+        """
         return self._ms_on(any_of_stimuli, accept_value)
 
     def _ms_on(
         self, any_of_stimuli: Union[str, Sequence[str]], accept_value: Callable[[int], bool]
     ) -> Sequence[int]:
+        """
+
+
+        Args:
+          any_of_stimuli:
+          accept_value:
+
+        Returns:
+
+        """
         if isinstance(any_of_stimuli, str):
             any_of_stimuli = [any_of_stimuli]
         bits = []
@@ -104,17 +150,56 @@ class AppFrame(TypedDf):
         return [i for j in bits for i in j]
 
     def by_stimulus(self, stimulus: Union[str, int, Stimuli]) -> AppFrame:
+        """
+
+
+        Args:
+          stimulus: Union[str:
+          int:
+          Stimuli]:
+
+        Returns:
+
+        """
         stimulus = stimulus if isinstance(stimulus, str) else Stimuli.fetch(stimulus).name
         return AppFrame.of(self[self["stimulus"] == stimulus].reset_index(drop=True))
 
     def by_start_ms(self, start_ms: int) -> AppFrame:
+        """
+
+
+        Args:
+          start_ms: int:
+
+        Returns:
+
+        """
         return AppFrame.of(self[self["start_ms"] == start_ms].reset_index(drop=True))
 
     def by_assay(self, assay: Union[str, int, Assays]) -> AppFrame:
+        """
+
+
+        Args:
+          assay:
+
+        Returns:
+
+        """
         assay = assay if isinstance(assay, str) else Assays.fetch(assay).name
         return AppFrame.of(self[self["assay"] == assay].reset_index(drop=True))
 
     def slice_ms(self, start_ms: Optional[int] = None, end_ms: Optional[int] = None) -> AppFrame:
+        """
+
+
+        Args:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+
+        Returns:
+
+        """
         if start_ms is None:
             start_ms = 0
         if end_ms is None:
@@ -126,8 +211,14 @@ class AppFrame(TypedDf):
     def insight_at_index(self, index: int) -> InsightFrame:
         """
         Generates something like template_stimulus_frames for legacy protocols and assays
-        :param index: A row index, starting at 0
-        :return: A DataFrame of start, end, and value for changes
+
+        Args:
+          index: A row index, starting at 0
+          index: int:
+
+        Returns:
+          A DataFrame of start, end, and value for changes
+
         """
         z = self.iloc[index]
         return AppFrame._insight(z).sort_values("start_ms")
@@ -136,6 +227,11 @@ class AppFrame(TypedDf):
         """
         Generates something like template_stimulus_frames for legacy or SauronX batteries and assays
         :return: A DataFrame of start, end, and value for changes
+
+        Args:
+
+        Returns:
+
         """
         return InsightFrame(
             InsightFrame.convert(
@@ -147,6 +243,15 @@ class AppFrame(TypedDf):
 
     @classmethod
     def _insight(cls, frames_row: pd.Series) -> InsightFrame:
+        """
+
+
+        Args:
+          frames_row: pd.Series:
+
+        Returns:
+
+        """
         ms_per_stimframe = ValarTools.assay_ms_per_stimframe(frames_row.assay)
         df = pd.DataFrame(AppFrame._provide(frames_row, ms_per_stimframe))
         df["value"] = df["value"].astype(np.int32)
@@ -159,6 +264,16 @@ class AppFrame(TypedDf):
 
     @classmethod
     def _provide(cls, frames_row: pd.Series, ms_per_stimframe: int) -> Iterator[pd.Series]:
+        """
+
+
+        Args:
+          frames_row: pd.Series:
+          ms_per_stimframe: int:
+
+        Returns:
+
+        """
         insight = AppFrame._frames_insight(frames_row.frames, 1 / ms_per_stimframe)
         for i in range(0, len(insight)):
             prev = int(insight["start_ms"].iloc[i] + frames_row.start_ms)
@@ -181,6 +296,16 @@ class AppFrame(TypedDf):
 
     @classmethod
     def _frames_insight(cls, arr: np.array, framerate: float) -> pd.DataFrame:
+        """
+
+
+        Args:
+          arr: np.array:
+          framerate: float:
+
+        Returns:
+
+        """
         last_v = -1
         changes = []
         for i, v in enumerate(arr):
@@ -194,6 +319,17 @@ class AppFrame(TypedDf):
 
     @classmethod
     def _frame_df(cls, battery: Union[int, str, Batteries]) -> pd.DataFrame:
+        """
+
+
+        Args:
+          battery: Union[int:
+          str:
+          Batteries]:
+
+        Returns:
+
+        """
         battery = Batteries.fetch(battery)
         simplifier = ValarTools.assay_name_simplifier()
         positions = list(

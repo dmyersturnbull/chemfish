@@ -37,6 +37,11 @@ class ChemfishEnvironment:
         : viz_file: Path to chemfish-specific visualization options in the style of Matplotlib RC
         : n_cores: Default number of cores for some jobs, including with parallelize()
         : jupyter_template: Path to a Jupyter template text file
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self):
@@ -46,6 +51,16 @@ class ChemfishEnvironment:
         props = self._get_props()
 
         def _try(key: str, fallback=None):
+            """
+
+
+            Args:
+              key: str:
+              fallback:
+
+            Returns:
+
+            """
             return props.get(key, fallback)
 
         self.home = Path(__file__).parent.parent
@@ -82,6 +97,7 @@ class ChemfishEnvironment:
         )
 
     def _get_props(self):
+        """ """
         try:
             props = {
                 k: v.strip("\t '\"")
@@ -92,6 +108,7 @@ class ChemfishEnvironment:
         return props
 
     def _adjust_logging(self):
+        """ """
         logger.setLevel(self.chemfish_log_level)
         logging.getLogger(self.global_log_level)
         logger.info(

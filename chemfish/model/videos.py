@@ -19,7 +19,21 @@ stim_colors = {s.name: "#" + s.default_color for s in Stimuli.select()}
 
 
 def _draw_rectangle(frame, x0, y0, x1, y1, thickness: int, color):
-    """Draw a rectangle in the frame"""
+    """
+    Draw a rectangle in the frame
+
+    Args:
+      frame:
+      x0:
+      y0:
+      x1:
+      y1:
+      thickness: int:
+      color:
+
+    Returns:
+
+    """
     frame = np.copy(frame)
     frame.setflags(write=1)  # unfortunate result of some update to numpy or moviepy
     top, bottom, left, right = y0, y1, x0, x1
@@ -31,6 +45,15 @@ def _draw_rectangle(frame, x0, y0, x1, y1, thickness: int, color):
 
 
 def _concat_audio(clips):
+    """
+
+
+    Args:
+      clips:
+
+    Returns:
+
+    """
     if len(clips) == 0:
         return None
     newclips = []
@@ -107,6 +130,10 @@ class SauronxVideo:
         - video.draw_roi_grid:                  Show the well ROIs as a grid
         - video.draw_rectangle:                 Draw an arbitrary rectangle
 
+    Args:
+
+    Returns:
+
     """
 
     def __init__(
@@ -164,20 +191,49 @@ class SauronxVideo:
                 self.wf = WellFrameBuilder.runs(run).build()
 
     def highlight_by(self, well_frame_fn: Callable[[WellFrame], WellFrame]) -> SauronxVideo:
+        """
+
+
+        Args:
+          well_frame_fn: Callable[[WellFrame]:
+          WellFrame]:
+
+        Returns:
+
+        """
         wells = WellFrame.of(well_frame_fn(self.wf))["well_label"].unique().tolist()
         return self.highlight_wells(wells, color=chemfish_rc.video_plain_color)
 
     def highlight_controls_matching(self, **kwargs) -> SauronxVideo:
+        """
+
+
+        Args:
+          **kwargs:
+
+        Returns:
+
+        """
         wells = self.wf.with_controls(**kwargs)["well_label"].unique().tolist()
         return self.highlight_wells(wells, color=chemfish_rc.video_negative_control_color)
 
     def highlight_controls(self) -> SauronxVideo:
+        """ """
         wells = self.wf.with_controls(positive=True)["well_label"].unique().tolist()
         cp = self.highlight_wells(wells, color=chemfish_rc.video_positive_control_color)
         wells = self.wf.with_controls(positive=False)["well_label"].unique().tolist()
         return cp.highlight_wells(wells, color=chemfish_rc.video_negative_control_color)
 
     def highlight_with_all_compounds(self, compounds) -> SauronxVideo:
+        """
+
+
+        Args:
+          compounds:
+
+        Returns:
+
+        """
         wells = self.wf.with_all_compounds(compounds)["well_label"].unique().tolist()
         return self.highlight_wells(wells, color=chemfish_rc.video_plain_color)
 
@@ -189,6 +245,19 @@ class SauronxVideo:
         end_ms: Optional[int] = None,
         color=chemfish_rc.video_plain_color,
     ) -> SauronxVideo:
+        """
+
+
+        Args:
+          well1: str:
+          well2: str:
+          start_ms: int:  (Default value = 0)
+          end_ms: Optional[int]:  (Default value = None)
+          color:
+
+        Returns:
+
+        """
         a = self.roi_from_label(well1)
         b = self.roi_from_label(well2)
         return self.highlight_coords(
@@ -202,6 +271,18 @@ class SauronxVideo:
         end_ms: Optional[int] = None,
         color=chemfish_rc.video_plain_color,
     ) -> SauronxVideo:
+        """
+
+
+        Args:
+          labels:
+          start_ms: int:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          color:
+
+        Returns:
+
+        """
         if not Tools.is_true_iterable(labels):
             labels = [labels]
         cp = self
@@ -222,6 +303,21 @@ class SauronxVideo:
         start_ms=None,
         end_ms=None,
     ) -> SauronxVideo:
+        """
+
+
+        Args:
+          x0: int:  (Default value = None)
+          y0: int:  (Default value = None)
+          x1: int:  (Default value = None)
+          y1: int:  (Default value = None)
+          color:
+          start_ms:  (Default value = None)
+          end_ms:  (Default value = None)
+
+        Returns:
+
+        """
         try:
             r, g, b = to_rgb(color)
             color = (r * 255, g * 255, b * 255)
@@ -271,6 +367,13 @@ class SauronxVideo:
         Draws an ROI grid using the specified ROI ref.
         If no ref is supplied, will draw an ROI for every ref.
         This will be moderately slow.
+
+        Args:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+
+        Returns:
+
         """
         v = self
         for roi in self.rois.values():
@@ -287,22 +390,59 @@ class SauronxVideo:
         return v
 
     def crop_to_well(self, wb1: str) -> SauronxVideo:
-        """Crops to a single well."""
+        """
+        Crops to a single well.
+
+        Args:
+          wb1: str:
+
+        Returns:
+
+        """
         roi = self.roi_from_label(wb1)
         return self.crop_to_roi(roi)
 
     def crop_to_bound(self, label_1: str, label_2: str) -> SauronxVideo:
-        """Crop between two wells.
+        """
+        Crop between two wells.
         Ex: video.bound('A01', 'C04')
+
+        Args:
+          label_1: str:
+          label_2: str:
+
+        Returns:
+
         """
         a, b = self.roi_from_label(label_1), self.roi_from_label(label_2)
         return self.crop_to_coords(a.x0, a.y0, b.x1, b.y1)
 
     def crop_to_roi(self, label: str) -> SauronxVideo:
+        """
+
+
+        Args:
+          label: str:
+
+        Returns:
+
+        """
         roi = self.roi_from_label(label)
         return self.crop_to_coords(roi.x0, roi.y0, roi.x1, roi.y1)
 
     def crop_to_coords(self, x0: int, y0: int, x1: int, y1: int) -> SauronxVideo:
+        """
+
+
+        Args:
+          x0: int:
+          y0: int:
+          x1: int:
+          y1: int:
+
+        Returns:
+
+        """
         coords = x0 - self.x0, y0 - self.y0, x1 - self.x0, y1 - self.y0
         RoiTools.verify_coords(*coords, self.width, self.height)
         clip = crop_fx.crop(self.video, *coords)
@@ -326,25 +466,79 @@ class SauronxVideo:
         )
 
     def speedx(self, factor: float) -> SauronxVideo:
+        """
+
+
+        Args:
+          factor: float:
+
+        Returns:
+
+        """
         clip = self.copy(self.video.speedx(factor))
         clip.rate *= factor
         return clip
 
     def slice_to_assay(self, assay: AssayPositions) -> SauronxVideo:
+        """
+
+
+        Args:
+          assay: AssayPositions:
+
+        Returns:
+
+        """
         conv = ValarTools.assay_ms_per_stimframe(assay.assay)
         start_ms, end_ms = assay.start / conv, (assay.start + assay.length) / conv
         return self._verify_slice(start_ms, end_ms, assay)
 
     def slice_ms(self, start_ms: int, end_ms: int) -> SauronxVideo:
+        """
+
+
+        Args:
+          start_ms: int:
+          end_ms: int:
+
+        Returns:
+
+        """
         return self._verify_slice(start_ms, end_ms, None)
 
     def roi_from_index(self, wb1: int) -> Rois:
+        """
+
+
+        Args:
+          wb1: int:
+
+        Returns:
+
+        """
         return self._verify_crop(wb1, self.rois[self.wb1.index_to_label(wb1)])
 
     def roi_from_label(self, wb1: str) -> Rois:
+        """
+
+
+        Args:
+          wb1: str:
+
+        Returns:
+
+        """
         return self._verify_crop(wb1, self.rois[wb1])
 
     def roi_from_well_obj(self, well: Union[int, Wells]) -> Rois:
+        """
+
+
+        Args:
+          well:
+        Returns:
+
+        """
         well = Wells.fetch(well)
         roi = Tools.only(
             Rois.select(Rois).where(Rois.ref_id == self.roi_ref.id).where(Wells.id == well.id)
@@ -352,9 +546,27 @@ class SauronxVideo:
         return self._verify_crop(well, roi, well.run_id)
 
     def roi_from_roi(self, roi: Rois) -> Rois:
+        """
+
+
+        Args:
+          roi: Rois:
+
+        Returns:
+
+        """
         return self._verify_crop(roi, roi)
 
     def copy(self, video: SauronxVideo) -> SauronxVideo:
+        """
+
+
+        Args:
+          video: SauronxVideo:
+
+        Returns:
+
+        """
         video = self.video if video is not None else video
         return SauronxVideo(
             self.path,
@@ -375,23 +587,62 @@ class SauronxVideo:
         )
 
     def ipython_display(self, suppress: bool = True):
+        """
+
+
+        Args:
+          suppress:
+
+        Returns:
+
+        """
         logger.info(f"Displaying {self}")
         with logger.suppressed(suppress, universe=True):
             with Tools.silenced(suppress, suppress):
                 return ipython_display(self.video)
 
     def save_mkv(self, path: PathLike) -> None:
+        """
+
+
+        Args:
+          path: PathLike:
+
+        Returns:
+
+        """
         path = str(Tools.prepped_file(path).with_suffix(".mkv"))
         self.video.write_videofile(path, codec=codec, ffmpeg_params=custom_ffmpeg_params)
 
     def save_mp4(self, path: PathLike) -> None:
+        """
+
+
+        Args:
+          path: PathLike:
+
+        Returns:
+
+        """
         path = str(Tools.prepped_file(path).with_suffix(".mp4"))
         self.video.write_videofile(path, ffmpeg_params=custom_ffmpeg_params_mp4)
 
     def close(self) -> None:
+        """ """
         self.video.close()
 
     def _verify_slice(self, start_ms: int, end_ms: int, assay: Optional[AssayPositions]):
+        """
+
+
+        Args:
+          start_ms: int:
+          end_ms: int:
+          assay: Optional[AssayPositions]:
+
+        Returns:
+
+        """
         if start_ms < 0 or end_ms <= start_ms or end_ms > self.n_ms:
             raise OutOfRangeError(f"{start_ms}–{end_ms}")
         if assay is not None and (
@@ -423,6 +674,18 @@ class SauronxVideo:
     def _verify_crop(
         self, lookup: Any, roi: Rois, ref: Optional[int] = None, run: Optional[int] = None
     ) -> Rois:
+        """
+
+
+        Args:
+          lookup: Any:
+          roi: Rois:
+          ref:
+          run:
+
+        Returns:
+
+        """
         if len(self.crop_history) > 0:
             raise RefusingRequestError(f"Can't get ROI {lookup} for a cropped video")
         if ref is not None and ref != self.roi_ref.id:
@@ -439,18 +702,22 @@ class SauronxVideo:
 
     @property
     def n_rows(self) -> int:
+        """ """
         return self.wb1.n_rows
 
     @property
     def n_columns(self) -> int:
+        """ """
         return self.wb1.n_rows
 
     @property
     def width(self) -> int:
+        """ """
         return self.video.w
 
     @property
     def height(self) -> int:
+        """ """
         return self.video.h
 
     def __repr__(self):
@@ -472,8 +739,19 @@ class SauronxVideo:
 
 
 class SauronxVideos:
+    """ """
     @classmethod
     def of(cls, path: PathLike, run: Runs) -> SauronxVideo:
+        """
+
+
+        Args:
+          path: PathLike:
+          run: Runs:
+
+        Returns:
+
+        """
         run = Tools.run(run, join=True)
         generation = ValarTools.generation_of(run)
         roi_ref = "hardware:sauronx" if generation.is_sauronx() else "hardware:legacy"

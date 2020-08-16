@@ -12,9 +12,7 @@ from chemfish.model.wf_builders import *
 
 
 class TestWellFrameBuilder:
-    """
-    Tests for WellFrameBuilder.
-    """
+    """Tests for WellFrameBuilder."""
 
     def __init__(self):
         self.fake_run = None
@@ -22,9 +20,7 @@ class TestWellFrameBuilder:
 
     @pytest.fixture(scope="class")
     def setup(self) -> None:
-        """
-        Set-up method that initializes a fake_run and fake_well for the following two tests cases.
-        """
+        """Set-up method that initializes a fake_run and fake_well for the following two tests cases."""
         self.fake_run = Runs()
         run_attributes = [
             "id",
@@ -63,9 +59,7 @@ class TestWellFrameBuilder:
             setattr(self.fake_well, attr, val)
 
     def test_wells(self):
-        """
-        Tests wells constructor method for WellFrameBuilder.
-        """
+        """Tests wells constructor method for WellFrameBuilder."""
         with pytest.raises(ValarLookupError):
             WellFrameBuilder.wells(10000000)  # fake id provided
         with pytest.raises(XTypeError):
@@ -88,9 +82,7 @@ class TestWellFrameBuilder:
         assert wells_wf_ids == {1, 4}
 
     def test_runs(self):
-        """
-        Tests runs constructor method method for WellFrameBuilder.
-        """
+        """Tests runs constructor method method for WellFrameBuilder."""
         with pytest.raises(ValarLookupError):
             WellFrameBuilder.runs(100000)  # Nonexistent Run ID
         with pytest.raises(XTypeError):
@@ -123,10 +115,9 @@ class TestWellFrameBuilder:
 
 
 class TestWellFrameBuilderNoSetUp:
+    """ """
     def test_constructor(self):
-        """
-        Tests datetime constructor for WellFrameBuilder.
-        """
+        """Tests datetime constructor for WellFrameBuilder."""
         past_time = datetime.now() - timedelta(minutes=1)
         dt_wf_well_ids = set(WellFrameBuilder(past_time).build()["well"])
         dt_wells_ids = {w.id for w in Wells.select().where(Wells.created < past_time)}
@@ -141,9 +132,7 @@ class TestWellFrameBuilderNoSetUp:
         #     WellFrameBuilder(datetime.now())
 
     def test_where(self):
-        """
-        Tests where method for WellFrameBuilder.
-        """
+        """Tests where method for WellFrameBuilder."""
         wf_runs_where = (
             WellFrameBuilder.runs(1).where(Wells.id == 1).build()
         )  # WF retrieved by runs conditioned on where
@@ -168,9 +157,7 @@ class TestWellFrameBuilderNoSetUp:
         assert wf_sup_ex_where.equals(wf_sup_where)
 
     def test_with_feature(self):
-        """
-        Tests with_feature method for WellFrameBuilder.
-        """
+        """Tests with_feature method for WellFrameBuilder."""
         wf_runs_none = WellFrameBuilder.runs(1).with_feature(None).build()
         wf_runs = WellFrameBuilder.runs(1).build()
         act_well_one = (
@@ -191,9 +178,7 @@ class TestWellFrameBuilderNoSetUp:
             )  # Can only have one feature at a time
 
     def test_with_column(self):
-        """
-        Tests with_column method for WellFrameBuilder.
-        """
+        """Tests with_column method for WellFrameBuilder."""
         expected_tup = ("good supplier", "good supplier", "good supplier", "good supplier")
         ex_wf = (
             WellFrameBuilder.wells(1)
@@ -228,9 +213,7 @@ class TestWellFrameBuilderNoSetUp:
             ).build()
 
     def test_with_names(self):
-        """
-        Tests with_names method for WellFrameBuilder. Very simple. Just checks that the name column has expected name values.
-        """
+        """Tests with_names method for WellFrameBuilder. Very simple. Just checks that the name column has expected name values."""
         with pytest.raises(XTypeError):
             # noinspection PyTypeChecker
             WellFrameBuilder.runs(1).with_names("hello").build()
@@ -246,9 +229,7 @@ class TestWellFrameBuilderNoSetUp:
         assert list(namer(reg_df)) == list(named_wf["name"])
 
     def test_with_empty_display_names(self):
-        """
-        Tests that the display_names are just the names if no display_namer is set.
-        """
+        """Tests that the display_names are just the names if no display_namer is set."""
         reg_df = WellFrameBuilder.wells(1).build()
         namer = (
             WellNamerBuilder()
@@ -261,9 +242,7 @@ class TestWellFrameBuilderNoSetUp:
         assert list(namer(reg_df)) == list(named_wf["display_name"])
 
     def test_with_display_names(self):
-        """
-        Tests with_display_names method for WellFrameBuilder. Very simple. Just checks that the name column has expected values.
-        """
+        """Tests with_display_names method for WellFrameBuilder. Very simple. Just checks that the name column has expected values."""
         with pytest.raises(XTypeError):
             # noinspection PyTypeChecker
             WellFrameBuilder.runs(1).with_display_names("hello").build()
@@ -279,14 +258,21 @@ class TestWellFrameBuilderNoSetUp:
         assert namer(reg_df) == list(named_wf["display_name"])
 
     def test_with_packs(self):
-        """
-        Tests with_packs method for WellFrameBuilder. Very simple. Just checks that the pack column has expected pack values.
-        """
+        """Tests with_packs method for WellFrameBuilder. Very simple. Just checks that the pack column has expected pack values."""
         with pytest.raises(XTypeError):
             # noinspection PyTypeChecker
             WellFrameBuilder.runs(1).with_packs("hello").build()
 
         def pack_func(df):
+            """
+            
+
+            Args:
+              df: 
+
+            Returns:
+
+            """
             return "pack" + df["row"].astype(str)
 
         reg_df = WellFrameBuilder.wells(1).build()
@@ -294,9 +280,7 @@ class TestWellFrameBuilderNoSetUp:
         assert list(pack_wf["pack"]) == list(pack_func(reg_df))
 
     def test_with_compound_names(self):
-        """
-        Tests with_compound_names for WellFrameBuilder. Very simple. Just checks that the compound_name column has expected compound_name values.
-        """
+        """Tests with_compound_names for WellFrameBuilder. Very simple. Just checks that the compound_name column has expected compound_name values."""
         with pytest.raises(XTypeError):
             # noinspection PyTypeChecker
             WellFrameBuilder.runs(1).with_compound_names("hello").build()
@@ -305,9 +289,7 @@ class TestWellFrameBuilderNoSetUp:
         assert comp_df["compound_names"][0] == ("compound_one",)
 
     def test_build(self):
-        """
-        Tests build method for WellFrameBuilder. Makes sure no NaN values are returned.
-        """
+        """Tests build method for WellFrameBuilder. Makes sure no NaN values are returned."""
         no_nan_wfs = WellFrameBuilder.runs(
             1
         ).build()  # Should not contain any NaNs as all fields are populated correctly in chemfishtest for Run 1.

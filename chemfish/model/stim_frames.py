@@ -21,6 +21,11 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
                 This will be used if expand_audio_inplace is called, or Chemfish is set to store waveforms.
             In the first two cases, the first nonzero value dictates the volume, where 255 is the max volume allowed by SauronX,
             which is in turn determined by the audio card, the amplifier setting, and the settings configured in the Toml
+
+    Args:
+
+    Returns:
+
     """
 
     def expand_audio_inplace(
@@ -29,8 +34,16 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
         """
         Replaces position in the stimframes for audio stimuli with values from a waveform.
         Also sets all solenoids and soft solenoids to have intensity 255.
-        :param waveform_loader: A function mapping stimulus names to Waveform objects; The waveforms will be 'standardized' to range from 0 to 255.
-        :param is_legacy:
+
+        Args:
+          waveform_loader: A function mapping stimulus names to Waveform objects; The waveforms will be 'standardized' to range from 0 to 255.
+          is_legacy:
+          waveform_loader: Callable[[StimulusLike]:
+          Waveform]:
+          is_legacy: bool:
+
+        Returns:
+
         """
         for stim in self.columns:
             stim = Stimuli.fetch(stim)
@@ -47,9 +60,30 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
                     raise AlgorithmError(f"Failed to expand audio {orig_stim_name}") from e
 
     def with_nonzero(self, stim_or_type: Union[str, Stimuli, StimulusType]):
+        """
+
+
+        Args:
+          stim_or_type:
+
+        Returns:
+
+        """
         return self.with_at_least(stim_or_type, 0)
 
     def with_at_least(self, stim_or_type: Union[str, Stimuli, StimulusType], byteval: int):
+        """
+
+
+        Args:
+          stim_or_type: Union[str:
+          Stimuli:
+          StimulusType]:
+          byteval: int:
+
+        Returns:
+
+        """
         if byteval < 0 or byteval > 255:
             raise OutOfRangeError(f"{byteval} is not a byte", value=byteval)
         real_stim = Stimuli.fetch_or_none(stim_or_type)
@@ -70,6 +104,17 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
 
     @classmethod
     def _frame_df(cls, battery: Union[Batteries, int, str]) -> pd.DataFrame:
+        """
+
+
+        Args:
+          battery: Union[Batteries:
+          int:
+          str]:
+
+        Returns:
+
+        """
         battery = Batteries.fetch(battery)
         battery = Batteries.fetch(battery)
         stimuli_in_batteries = (
@@ -114,6 +159,18 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
     def _slice_stim(
         cls, stimframes, name: str, start_ms: Optional[int] = None, end_ms: Optional[int] = None
     ):
+        """
+
+
+        Args:
+          stimframes:
+          name: str:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+
+        Returns:
+
+        """
         stimframes_per_ms = 25 / 1000 if ValarTools.battery_is_legacy(name) else 1
         start_ms = 0 if start_ms is None else start_ms
         end_ms = len(stimframes) / stimframes_per_ms if end_ms is None else end_ms
@@ -124,9 +181,17 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
     def _generate_stimframes(
         cls, battery: Batteries, fps_for_sampling: Optional[int] = None
     ) -> pd.DataFrame:
-        """Construct a dataframe suitable for plotting stimframes alongside MIs.
-        :param battery: A name or ID of a battery
-        :param fps_for_sampling: Sample every x frames, starting at 0. This option should mostly be avoided.
+        """
+        Construct a dataframe suitable for plotting stimframes alongside MIs.
+
+        Args:
+          battery: A name or ID of a battery
+          fps_for_sampling: Sample every x frames, starting at 0. This option should mostly be avoided.
+          battery: Batteries:
+          fps_for_sampling: Optional[int]:  (Default value = None)
+
+        Returns:
+
         """
         fdf = StimFrame._frame_df(battery)
         if len(fdf) == 0:
@@ -164,12 +229,26 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
 
 
 class BatteryStimFrame(StimFrame):
+    """ """
     def slice_ms(
         self,
         battery: Union[Batteries, int, str],
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
     ) -> BatteryStimFrame:
+        """
+
+
+        Args:
+          battery: Union[Batteries:
+          int:
+          str]:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+
+        Returns:
+
+        """
         battery = battery if isinstance(battery, str) else Batteries.fetch(battery).name
         rdf = StimFrame._slice_stim(self, battery, start_ms, end_ms)
         rdf.__class__ = BatteryStimFrame
@@ -179,6 +258,11 @@ class BatteryStimFrame(StimFrame):
         """
         Returns a new stimframe with value 1 at the time the stimulus changed and 0 elsewhere.
         Calculates independently per stimulus.
+
+        Args:
+
+        Returns:
+
         """
         # noinspection PyTypeChecker,PyUnresolvedReferences
         df = (self.diff() > 0).astype(np.float32).fillna(0)
@@ -191,6 +275,20 @@ class BatteryStimFrame(StimFrame):
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
     ) -> BatteryStimFrame:
+        """
+
+
+        Args:
+          battery: Union[Batteries:
+          int:
+          str:
+          StimFrame]:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+
+        Returns:
+
+        """
         if isinstance(battery, BatteryStimFrame):
             return battery
         if isinstance(battery, pd.DataFrame):

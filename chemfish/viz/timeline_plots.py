@@ -7,6 +7,7 @@ from chemfish.viz.figures import *
 
 
 class TimelineLabelType(SmartEnum):
+    """ """
     NONE = enum.auto()
     TIMES = enum.auto()
     RUNS = enum.auto()
@@ -15,6 +16,15 @@ class TimelineLabelType(SmartEnum):
     DESCRIPTIONS = enum.auto()
 
     def process(self, runs: RunsLike) -> Optional[Sequence[str]]:
+        """
+
+
+        Args:
+          runs: RunsLike:
+
+        Returns:
+
+        """
         runs = Tools.runs(runs)
         if self is TimelineLabelType.NONE:
             return ["" for _ in runs]
@@ -33,6 +43,7 @@ class TimelineLabelType(SmartEnum):
 
 
 class DurationType(SmartEnum):
+    """ """
     WAIT = enum.auto()
     TREATMENT = enum.auto()
     ACCLIMATION = enum.auto()
@@ -41,6 +52,7 @@ class DurationType(SmartEnum):
 
     @property
     def description(self) -> str:
+        """ """
         if self is DurationType.TREATMENT_TO_START:
             return "time since treatment (min)"
         elif self is DurationType.PLATING_TO_START:
@@ -49,6 +61,15 @@ class DurationType(SmartEnum):
             return self.name.lower() + " duration"
 
     def get_minutes(self, run: RunLike) -> float:
+        """
+
+
+        Args:
+          run: RunLike:
+
+        Returns:
+
+        """
         run = Tools.run(run, join=True)
         if self is DurationType.WAIT:
             return ValarTools.wait_sec(run) / 60
@@ -72,6 +93,11 @@ class TimelinePlotter(KvrcPlotting):
     """
     Plots timelines, mostly for when plates were run.
     Colors are assigned per experiment, with a legend label each.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(
@@ -93,6 +119,17 @@ class TimelinePlotter(KvrcPlotting):
         experiments: Optional[Sequence[str]] = None,
         labels: Optional[Sequence[str]] = None,
     ):
+        """
+
+
+        Args:
+          dates: Sequence[datetime]:
+          experiments:
+          labels:
+
+        Returns:
+
+        """
         # fill in default values
         if experiments is None:
             experiments = ["" for _ in dates]
@@ -177,6 +214,7 @@ class TimelinePlotter(KvrcPlotting):
 
 
 class TimelinePlots:
+    """ """
     @classmethod
     def of(
         cls,
@@ -186,10 +224,19 @@ class TimelinePlots:
         **kwargs,
     ) -> Figure:
         """
-        :param runs:
-        :param label_with: How to label individual runs; common choices are 'runs', 'plates', and 'times'.
-        :param use_experiments: If True, chooses a different color (and legend item) per exeriment
-        :param kwargs: These are passed to the `TimelinePlotter` constructor
+
+
+        Args:
+          runs: param label_with: How to label individual runs; common choices are 'runs', 'plates', and 'times'.
+          use_experiments: If True, chooses a different color (and legend item) per exeriment (Default value = True)
+          kwargs: These are passed to the `TimelinePlotter` constructor
+          runs: RunsLike:
+          label_with: Union[str:
+          TimelineLabelType]:
+          **kwargs:
+
+        Returns:
+
         """
         runs = Tools.runs(runs)
         labels = TimelineLabelType.of(label_with).process(runs)
@@ -201,14 +248,21 @@ class TimelinePlots:
 
 
 class RunDurationPlotter:
-    """
-    Plotters for durations between events like treatment and running (a plate).
-    """
+    """Plotters for durations between events like treatment and running (a plate)."""
 
     def __init__(self, attribute: str):
         self._attribute = attribute
 
     def plot(self, kde_in_minutes: KdeData) -> Figure:
+        """
+
+
+        Args:
+          kde_in_minutes: KdeData:
+
+        Returns:
+
+        """
         figure = plt.figure()
         ax = figure.add_subplot(1, 1, 1)
         minute_durations, support, density = (
@@ -229,6 +283,7 @@ class RunDurationPlotter:
 
 
 class RunDurationPlots:
+    """ """
     @classmethod
     def of(
         cls,
@@ -236,6 +291,17 @@ class RunDurationPlots:
         kind: Union[DurationType, str],
         kde_params: Optional[Mapping[str, Any]] = None,
     ) -> Figure:
+        """
+
+
+        Args:
+          runs: RunsLike:
+          kind: Union[DurationType:
+          str]:
+          kde_params:
+        Returns:
+
+        """
         t = DurationType.of(kind)
         minutes = [t.get_minutes(r) for r in Tools.runs(runs)]
         kde = KdeData.from_samples(minutes, **({} if kde_params is None else kde_params))

@@ -6,6 +6,7 @@ from chemfish.viz.figures import FigureTools
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class ConfusionPlotter(KvrcPlotting):
+    """ """
     def __init__(
         self,
         vmin: float = 0,
@@ -20,6 +21,16 @@ class ConfusionPlotter(KvrcPlotting):
         self._label_colorbar = label_colorbar
 
     def plot(self, confusion, runs: Optional[Sequence[int]] = None) -> Figure:
+        """
+
+
+        Args:
+          confusion:
+          runs:
+
+        Returns:
+
+        """
         figure = plt.figure()
         ax = figure.add_subplot(111)
         # imshow
@@ -86,6 +97,7 @@ class ConfusionPlotter(KvrcPlotting):
 
 
 class ConfusionPlots:
+    """ """
     @classmethod
     def plot(
         cls,
@@ -96,15 +108,48 @@ class ConfusionPlots:
         renamer: Union[None, Mapping[str, str], Callable[[str], str]] = None,
         label_colors: Union[bool, Mapping[str, str]] = False,
     ) -> Figure:
+        """
+
+
+        Args:
+          confusion:
+          vmin:
+          vmax:
+          runs:
+          renamer: Union[None:
+          Mapping[str:
+          str]:
+          Callable[[str]:
+          str]]:  (Default value = False)
+          label_colors:
+        """
         # colors
         if label_colors is None or label_colors is False:
 
             def label_color_fn(s):
+                """
+
+
+                Args:
+                  s:
+
+                Returns:
+
+                """
                 return "black"
 
         elif label_colors is True:
 
             def label_color_fn(s):
+                """
+
+
+                Args:
+                  s:
+
+                Returns:
+
+                """
                 return chemfish_rc.pref_control_color_dict.get(
                     s, chemfish_rc.pref_name_color_dict.get(s, "black")
                 )
@@ -112,6 +157,15 @@ class ConfusionPlots:
         elif isinstance(label_colors, Mapping):
 
             def label_color_fn(s: str):
+                """
+
+
+                Args:
+                  s: str:
+
+                Returns:
+
+                """
                 return label_colors.get(s, "black")
 
         elif callable(label_colors):
@@ -122,11 +176,29 @@ class ConfusionPlots:
         if renamer is None:
 
             def renamer_fn(s):
+                """
+
+
+                Args:
+                  s:
+
+                Returns:
+
+                """
                 return s
 
         elif isinstance(renamer, Mapping):
 
             def renamer_fn(s: str):
+                """
+
+
+                Args:
+                  s: str:
+
+                Returns:
+
+                """
                 return renamer.get(s, s)
 
         elif callable(renamer):

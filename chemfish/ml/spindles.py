@@ -9,9 +9,20 @@ from chemfish.viz.accuracy_plots import *
 
 
 class SummarizedSpindleFrame(BaseScoreFrame):
+    """ """
     def to_dose_response(
         self, axis: int, splitter: Callable[[str], Tup[str, str]] = Tools.split_drug_dose
     ) -> DoseResponseFrame1D:
+        """
+
+
+        Args:
+          axis: int:
+          splitter: Callable[[str]:
+
+        Returns:
+
+        """
         summary = self.copy()
         all_controls = {s.name: s.name for s in ControlTypes.select()}
         all_controls.update(
@@ -93,31 +104,82 @@ class SpindleFrame(ScoreFrameWithPrediction):
     * label                (the true label of the well)
     * prediction           (the predicted label)
     * score                (probability for the true label)
+
+    Args:
+
+    Returns:
+
     """
 
     @classmethod
     @abcd.overrides
     def required_columns(cls) -> Sequence[str]:
+        """ """
         return ["label", "target", "repeat", "score", "prediction", "score_for_prediction"]
 
     def by_target(self, target: Union[str, int, ControlTypes]) -> SpindleFrame:
+        """
+
+
+        Args:
+          target:
+
+        Returns:
+
+        """
         target = ControlTypes.fetch(target) if not isinstance(target, str) else target
         # noinspection PyTypeChecker
         return self.__class__(self[self["target"] == target])
 
     def by_source(self, source: str) -> SpindleFrame:
+        """
+
+
+        Args:
+          source: str:
+
+        Returns:
+
+        """
         # noinspection PyTypeChecker
         return self.__class__(self[self["source"] == source])
 
     def source_to_label(self, source: str) -> SpindleFrame:
+        """
+
+
+        Args:
+          source: str:
+
+        Returns:
+
+        """
         # noinspection PyTypeChecker
         return self.__class__(self.drop("label", axis=1).rename(columns={"source": "label"}))
 
     def rocc(self, control_label: str) -> Figure:
+        """
+
+
+        Args:
+          control_label: str:
+
+        Returns:
+
+        """
         data = self.rocs(control_label)
         return MetricPlotter(MetricInfo.roc()).plot(data)
 
     def prc(self, control_label: str) -> Figure:
+        """
+
+
+        Args:
+          control_label: str:
+
+        Returns:
+
+        """
         data = self.prs(control_label)
         return MetricPlotter(MetricInfo.pr()).plot(data)
 
@@ -140,14 +202,24 @@ class SpindleFrame(ScoreFrameWithPrediction):
                 where dose can really be anything, such as number of animals or datetime run
             * make 'lower', 'middle', 'upper', and 'spread' columns for a positive control and a negative control:
                 negative => lower_1, etc; posive => lower_2, etc
-        :param negative_control: The name of the negative control (not checked), or a ControlTypes-lookupable object
-        :param positive_control: The name of the positive control (not checked), or a ControlTypes-lookupable object
-        :param splitter: A function that splits any label into a (label, dose-or-None) pair.
-        :param ci: 0.0-1.0, the confidence interval
-        :param center_fn: A function generating the middle_1 and middle_2 columns
-        :param spread_fn: A function generating the spread_1 and spread_2 columns
-        :param boot: If non-null, calculates a CI by bootstrap with this number of samples
-        :return: A DoseResponseFrame2D frame.
+
+        Args:
+          negative_control: The name of the negative control (not checked), or a ControlTypes-lookupable object
+          positive_control: The name of the positive control (not checked), or a ControlTypes-lookupable object
+          splitter: A function that splits any label into a (label, dose-or-None) pair.
+          ci: 0.0-1.0, the confidence interval
+          center_fn: A function generating the middle_1 and middle_2 columns (Default value = np.median)
+          spread_fn: A function generating the spread_1 and spread_2 columns (Default value = np.std)
+          boot: If non-null, calculates a CI by bootstrap with this number of samples
+          negative_control:
+          positive_control:
+          splitter:
+          ci:
+          boot:
+
+        Returns:
+          A DoseResponseFrame2D frame.
+
         """
         x = self.to_1d_dose_response(
             negative_control,
@@ -185,6 +257,21 @@ class SpindleFrame(ScoreFrameWithPrediction):
         """
         Similar to `to_2d_dose_response`; see that function.
         This just considers only 1 control type.
+
+        Args:
+          control:
+          ControlTypes]:  (Default value = "solvent (-)")
+          splitter: Callable[[str]:
+          Tup[str:
+          str]]:  (Default value = Tools.split_drug_dose)
+          ci:
+          center_fn:  (Default value = np.median)
+          spread_fn:  (Default value = np.std)
+          boot:
+          axis:
+
+        Returns:
+
         """
         if ci is None and boot is not None:
             raise XTypeError(f"CI is None but boot is {boot}")

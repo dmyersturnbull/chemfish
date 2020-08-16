@@ -7,21 +7,39 @@ from chemfish.viz.figures import FigureTools
 
 
 class UnsupportedPlotOption(UnsupportedOpError):
+    """ """
     pass
 
 
 class Position:
+    """ """
     def __init__(self, left: bool, right: bool, top: bool, bottom: bool, first: bool, last: bool):
         self.left, self.right, self.top, self.bottom = left, right, top, bottom
         self.first, self.last = first, last
 
 
 class Miniaxis:
+    """ """
     def __init__(self, ax: Axes, position: Position):
         self.ax, self.position = ax, position
         self.twin = self.ax.twinx()
 
     def plot(self, x, mean, upper, lower, label: str, color: str, twin: bool):
+        """
+        
+
+        Args:
+          x: 
+          mean: 
+          upper: 
+          lower: 
+          label: str: 
+          color: str: 
+          twin: bool: 
+
+        Returns:
+
+        """
         x, mean, upper, lower = self._mk2(x, mean, upper, lower)
         ax = self.twin if twin else self.ax
         if chemfish_rc.response_bound_alpha > 0:
@@ -42,6 +60,15 @@ class Miniaxis:
     def _mk2(self, x, v, u, w):
         """
         When there's only 1 point, turn it into 2 so we still get a line.
+
+        Args:
+          x: 
+          v: 
+          u: 
+          w: 
+
+        Returns:
+
         """
         if len(x) == len(v) == len(u) == len(w) == 1:
             x0 = next(iter(x))
@@ -51,6 +78,21 @@ class Miniaxis:
         return x, v, u, w
 
     def _plot(self, x, v, label, color, marker, alpha, twin):
+        """
+        
+
+        Args:
+          x: 
+          v: 
+          label: 
+          color: 
+          marker: 
+          alpha: 
+          twin: 
+
+        Returns:
+
+        """
         ax = self.twin if twin else self.ax
         if v is not None and alpha > 0:
             if chemfish_rc.response_bound_marker != "":
@@ -75,6 +117,25 @@ class Miniaxis:
         right_tick_labels: Sequence[str],
         force_ylim=None,
     ):
+        """
+        
+
+        Args:
+          label: str: 
+          x_label: str: 
+          left_label: str: 
+          right_label: str: 
+          x_ticks: Sequence[float]: 
+          x_tick_labels: Sequence[str]: 
+          y_ticks: Sequence[float]: 
+          y_tick_labels: Sequence[str]: 
+          right_ticks: Sequence[float]: 
+          right_tick_labels: Sequence[str]: 
+          force_ylim:  (Default value = None)
+
+        Returns:
+
+        """
         if right_label is None:
             right_label = ""
         if right_ticks is None:
@@ -131,6 +192,7 @@ class Miniaxis:
 
 
 class Grid:
+    """ """
     def __init__(
         self,
         n_rows: int,
@@ -172,6 +234,7 @@ class Grid:
         self._i = 0
 
     def spawn(self) -> Axes:
+        """ """
         i, row, col = self._i + 1, self._i // self.n_columns + 1, self._i % self.n_columns + 1
         drug = self._drugs[self._i]
         data = self.summary[self.summary["label"] == drug].copy()
@@ -197,6 +260,15 @@ class Grid:
         mini = Miniaxis(ax, position)
 
         def get(c):
+            """
+            
+
+            Args:
+              c: 
+
+            Returns:
+
+            """
             return data[c] if c in data.columns else None
 
         mean, upper, lower = get("score_1"), get("upper_1"), get("lower_1")
@@ -239,9 +311,7 @@ class Grid:
 
 
 class DoseResponsePlotter:
-    """
-    Plots a grid of input and response axes. The responses can include an axis on the right.
-    """
+    """Plots a grid of input and response axes. The responses can include an axis on the right."""
 
     def __init__(
         self,
@@ -269,8 +339,14 @@ class DoseResponsePlotter:
     def plot(self, summary: DoseResponseFrame) -> Figure:
         """
         Plot a grid of minplots.
-        :param summary: A DoseResponseFrame (dataframe subclass)
-        :return: A Figure
+
+        Args:
+          summary: A DoseResponseFrame (dataframe subclass)
+          summary: DoseResponseFrame: 
+
+        Returns:
+          A Figure
+
         """
         n_rows, n_cols = self.n_rows, self.n_cols
         summary = summary.sort_values(["label", "x_value"])
@@ -278,6 +354,15 @@ class DoseResponsePlotter:
         if self.y_ticks is None:
 
             def get_ticks(n):
+                """
+                
+
+                Args:
+                  n: 
+
+                Returns:
+
+                """
                 print(n)
                 top = np.max(
                     [

@@ -12,11 +12,22 @@ from chemfish.model.wf_builders import *
 
 
 class HitFrame(TypedDf):
+    """ """
     @classmethod
     def reserved_columns(cls):
+        """ """
         return ["run_name", "run_id", "well_id", "well_label", "score"]
 
     def with_runs(self, runs: RunsLike) -> HitFrame:
+        """
+
+
+        Args:
+          runs: RunsLike:
+
+        Returns:
+
+        """
         runs = [r.id for r in Tools.runs(runs)]
         return HitFrame(self[self["run"].isin(runs)])
 
@@ -43,6 +54,11 @@ class HitSearch:
                 .set_save_every(10)\
                 .limit(1000)
         hits = search.search('query_results.csv')  # type: HitFrame
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, as_of: datetime):
@@ -58,6 +74,12 @@ class HitSearch:
     def set_save_every(self, n: int) -> HitSearch:
         """
         Save every `n` number of iterations. The default is 1000.
+
+        Args:
+          n: int:
+
+        Returns:
+
         """
         self.save_every = n
         return self
@@ -65,10 +87,15 @@ class HitSearch:
     def set_feature(self, feature: Union[FeatureType, str]) -> HitSearch:
         """
         Sets the feature.
-        :param feature A FeatureType or its 'internal' name.
-            These are not just the feature names in Valar.
-            For example: "MI" is just non-interpolated MI, but "cd(10)_i" is interpolated cd(10).
-            When in doubt, you can pass in `quick.feature`.
+
+        Args:
+          feature: A FeatureType or its 'internal' name.
+        These are not just the feature names in Valar.
+        For example: "MI" is just non-interpolated MI, but "cd(10)_i" is interpolated cd(10).
+        When in doubt, you can pass in `quick.feature`.
+          feature:
+        Returns:
+
         """
         self.feature = FeatureTypes.of(feature)
         return self
@@ -76,8 +103,14 @@ class HitSearch:
     def where(self, expression: ExpressionLike) -> HitSearch:
         """
         Restrict the wells searched by a WHERE expression.
-        :param expression: A peewee WHERE expression such as `Experiments.id == 1`
-            Can be an expression of Runs, Plates, Experiments, Projects, PlateTypes, Batteries, SauronConfigs, or Saurons.
+
+        Args:
+          expression: A peewee WHERE expression such as `Experiments.id == 1`
+        Can be an expression of Runs, Plates, Experiments, Projects, PlateTypes, Batteries, SauronConfigs, or Saurons.
+          expression: ExpressionLike:
+
+        Returns:
+
         """
         self.wheres.append(expression)
         return self
@@ -85,10 +118,18 @@ class HitSearch:
     def set_primary_score(self, function: Callable[[np.array, Wells], float]) -> HitSearch:
         """
         Sets the primary scoring function used. It will be included as a column called 'score' in the results.
-        :param function: A function that accepts a numpy array and a Wells valarpy instance and returns a single number
-            Make sure the function returns HIGHER values for BETTER scores.
-            If necessary you can modify the function to return the negative; ex
-                `set_primary_score(lambda arr, well: -my_scoring_fn(arr, well))`
+
+        Args:
+          function: A function that accepts a numpy array and a Wells valarpy instance and returns a single number
+        Make sure the function returns HIGHER values for BETTER scores.
+        If necessary you can modify the function to return the negative; ex
+        `set_primary_score(lambda arr, well: -my_scoring_fn(arr, well))`
+          function: Callable[[np.array:
+          Wells]:
+          float]:
+
+        Returns:
+
         """
         self.primary_score_fn = function
         return self
@@ -98,8 +139,17 @@ class HitSearch:
     ) -> HitSearch:
         """
         Adds a secondary score, which will be included as an extra column.
-        :param function: The same format as in `set_primary_score`
-        :param name: The name that will be given to the column
+
+        Args:
+          function: The same format as in `set_primary_score`
+          name: The name that will be given to the column
+          function: Callable[[np.array:
+          Wells]:
+          float]:
+          name: str:
+
+        Returns:
+
         """
         if name in HitFrame.reserved_columns():
             raise ReservedError("Cannot use the name 'score', which is reserved")
@@ -111,8 +161,15 @@ class HitSearch:
     def set_min_score(self, value: float, name: str = "score") -> HitSearch:
         """
         After calculating the scores for a well, exclude it entirely if its score is below this value.
-        :param value: The minimum value. For primary scores, higher should always be better.
-        :param name: 'score' for the primary score or the name of a secondary score
+
+        Args:
+          value: The minimum value. For primary scores, higher should always be better.
+          name: score' for the primary score or the name of a secondary score
+          value: float:
+          name:
+
+        Returns:
+
         """
         if name != "score" and (name not in self.secondary_score_fns):
             raise LookupFailedError(f"Score {name} was not found")
@@ -123,6 +180,12 @@ class HitSearch:
         """
         Only search this number of wells. Stop abruptly after.
         This function is generally only used to help debug a phenosearch.
+
+        Args:
+          n: int:
+
+        Returns:
+
         """
         if n < 0:
             raise XValueError(f"Limit {n} is negative")
@@ -133,8 +196,14 @@ class HitSearch:
         """
         Perform the search over the whole query.
         Will save perodically in the background to file `path` if it is not None.
-        :param path: The file path; should end with '.csv'; if None will not save
-        :return: A HitFrame, a subclass of DataFrame
+
+        Args:
+          path: The file path; should end with '.csv'; if None will not save
+          path:
+
+        Returns:
+          A HitFrame, a subclass of DataFrame
+
         """
         if self.primary_score_fn is None:
             raise OpStateError("Primary scoring function is not set")
@@ -152,6 +221,16 @@ class HitSearch:
         return self._save_hits(results, path)
 
     def _save_hits(self, results, path: Optional[str]):
+        """
+
+
+        Args:
+          results:
+          path: Optional[str]:
+
+        Returns:
+
+        """
         df = HitFrame(results).reset_index()
         if path is not None:
             df.to_csv(path)
@@ -166,6 +245,11 @@ class HitSearch:
         Example usage:
             for series in search.iterate():
                 do_something(series)
+
+        Args:
+
+        Returns:
+
         """
         for i, wf in enumerate(self._build_query()):
             floats = self.feature.calc(wf, wf.well)
@@ -188,6 +272,7 @@ class HitSearch:
                 yield pd.Series(dct)
 
     def _build_query(self):
+        """ """
         query = WellFrameQuery().simple(self.as_of, self.feature.valar_feature, self.wheres)
         if self._limit is not None:
             query = query.limit(self._limit)
@@ -195,10 +280,18 @@ class HitSearch:
 
 
 class HitWellFrame(WellFrame):
+    """ """
     @classmethod
     def build(cls, hits: HitFrame, namer: WellNamer = WellNamers.general()) -> HitWellFrame:
         """
         Converts a HitFrame into a HitWellFrame, which contains well info.
+
+        Args:
+          hits: HitFrame:
+          namer:
+
+        Returns:
+
         """
         hitwells = set(hits.reset_index()["well_id"].unique())
         scores = hits.reset_index().set_index("well_id")["score"].to_dict()
@@ -214,6 +307,7 @@ class HitWellFrame(WellFrame):
 
 
 class HitSearchTools:
+    """ """
     @classmethod
     def stimuli_start_stop_ms(
         cls,
@@ -227,12 +321,25 @@ class HitSearchTools:
         Get a list of the times in stimframes (milliseconds for sauronx)that one or more stimuli of interest changed value.
         If multiple stimuli are passed, does not differentiate. In other words, if red LED is on at 200, then the blue turns on at 255,
             that start will be included (subject to min_duration_ms).
-        :param battery: The name, ID, or instance of a battery
-        :param stimuli: Either a stimulus or set of stimuli
-        :param start: Include times the stimulus increased in pwm (or volume)
-        :param stop: Include times the stimulus decreased in pwm or volume
-        :param min_duration_ms: WARNING: Uses the stimframes themselves, which have 25-fps-based values in legacy
-        :return: Restrict to a number of milliseconds where the stimulus is unchaged before that value, and the same with after
+
+        Args:
+          battery: The name, ID, or instance of a battery
+          stimuli: Either a stimulus or set of stimuli
+          start: Include times the stimulus increased in pwm (or volume)
+          stop: Include times the stimulus decreased in pwm or volume
+          min_duration_ms: WARNING: Uses the stimframes themselves, which have 25-fps-based values in legacy
+          battery: Union[int:
+          str:
+          Batteries]:
+          stimuli: Set[Union[int:
+          Stimuli]]:
+          start:
+          stop:
+          min_duration_ms: float:  (Default value = 1000)
+
+        Returns:
+          Restrict to a number of milliseconds where the stimulus is unchaged before that value, and the same with after
+
         """
         apps = AppFrame.of(battery)
         if ValarTools.battery_is_legacy(battery):
@@ -261,6 +368,16 @@ class HitSearchTools:
 
     @classmethod
     def triangle_weights(cls, stimframes: BatteryStimFrame, win_size: int = 1000) -> np.array:
+        """
+
+
+        Args:
+          stimframes: BatteryStimFrame:
+          win_size: int:  (Default value = 1000)
+
+        Returns:
+
+        """
         return stimframes.triangles(win_size).sum(axis=0).values
 
 
@@ -269,6 +386,11 @@ class TruncatingScorer:
     Wraps a similarity score to a query trace into an HitSearch scoring function that truncates to min(query length, target length),
     and warning if the lengths differ by more than 3.
     :return: A function mapping a feature array and a well row into a float where higher is better (more similar).
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, query: np.array, similarity: Callable[[np.array, Wells], float]):
@@ -313,11 +435,32 @@ class TruncatingScorer:
 
 
 class HitScores:
+    """ """
     @classmethod
     def pearson(
         cls, query: np.array, weights: Optional[np.array] = None
     ) -> Callable[[np.array, Wells], float]:
+        """
+
+
+        Args:
+          query: np.array:
+          weights:
+
+        Returns:
+
+        """
         def pearson(x, y):
+            """
+
+
+            Args:
+              x:
+              y:
+
+            Returns:
+
+            """
             return distance.correlation(x, y, weights)
 
         return TruncatingScorer(query, pearson)
@@ -337,27 +480,74 @@ class HitScores:
             - p=np.inf is the maximum
             - p=-np.inf is the minimum
 
+        Args:
+          query: np.array:
+          p: float:
+          weights:
+
+        Returns:
+
         """
         if weights is None:
             weights = 1
         if p == 0:
 
             def similarity(x, y):
+                """
+
+
+                Args:
+                  x:
+                  y:
+
+                Returns:
+
+                """
                 return np.power(2, np.sum(np.log2(weights * np.abs(x - y))))  # TODO check
 
         elif np.isneginf(p):
 
             def similarity(x, y):
+                """
+
+
+                Args:
+                  x:
+                  y:
+
+                Returns:
+
+                """
                 return -np.min(weights * np.abs(x - y))
 
         elif np.isposinf(p):
 
             def similarity(x, y):
+                """
+
+
+                Args:
+                  x:
+                  y:
+
+                Returns:
+
+                """
                 return -np.max(weights * np.abs(x - y))
 
         else:
 
             def similarity(x, y):
+                """
+
+
+                Args:
+                  x:
+                  y:
+
+                Returns:
+
+                """
                 return -np.power(np.power(weights * np.abs(x - y), p).sum(), 1 / p)
 
         similarity.__name__ = f"-minkowski(p={p})"

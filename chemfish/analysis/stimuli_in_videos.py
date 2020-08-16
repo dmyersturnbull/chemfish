@@ -11,10 +11,12 @@ from chemfish.viz.stim_plots import *
 
 
 class IncorrectVidDimensionsError(Exception):
+    """ """
     pass
 
 
 class VideoStimFrameDisplayer:
+    """ """
     def __init__(self, run_id: RunLike, input_dict: Dict = None, output_dict: Dict = None):
         self.inputdict = {} if not input_dict else input_dict
         self.outputdict = {} if not output_dict else output_dict
@@ -27,6 +29,16 @@ class VideoStimFrameDisplayer:
             raise SauronxOnlyError(f"Run r{self.run.id} is legacy")
 
     def _create_stimplot(self, start_ms: int, end_ms: int):
+        """
+        
+
+        Args:
+          start_ms: int: 
+          end_ms: int: 
+
+        Returns:
+
+        """
         # extract relevant batterystimframedata
         bsf = BatteryStimFrame.of(self.b_id, start_ms=start_ms, end_ms=end_ms)
         bsf.expand_audio_inplace(
@@ -44,6 +56,15 @@ class VideoStimFrameDisplayer:
         return fig_arr.reshape(stim_fig.canvas.get_width_height()[::-1] + (3,))
 
     def _check_vid_dims(self, cv_video: cv2.VideoCapture):
+        """
+        
+
+        Args:
+          cv_video: cv2.VideoCapture: 
+
+        Returns:
+
+        """
         vid_w = int(cv_video.get(cv2.CAP_PROP_FRAME_WIDTH))
         vid_h = int(cv_video.get(cv2.CAP_PROP_FRAME_HEIGHT))
         x0, y0, x1, y1 = ValarTools.toml_items(self.run)[
@@ -57,6 +78,16 @@ class VideoStimFrameDisplayer:
         return vid_w, vid_h
 
     def _init_vid_writer(self, cv_video: cv2.VideoCapture, out_path: str):
+        """
+        
+
+        Args:
+          cv_video: cv2.VideoCapture: 
+          out_path: str: 
+
+        Returns:
+
+        """
         vid_w, vid_h = self._check_vid_dims(cv_video)
         fps = int(cv_video.get(cv2.CAP_PROP_FPS))
         if "-framerate" not in self.inputdict:
@@ -85,6 +116,18 @@ class VideoStimFrameDisplayer:
         end_ms: Optional[int] = None,
         disp_prog: bool = True,
     ):
+        """
+        
+
+        Args:
+          video_output_path: str: 
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          disp_prog: bool:  (Default value = True)
+
+        Returns:
+
+        """
         cv_vid = cv2.VideoCapture(str(self.vid_path.resolve()))
         fps = int(cv_vid.get(cv2.CAP_PROP_FPS))
         # Get Start and End frames'

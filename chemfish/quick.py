@@ -56,6 +56,7 @@ generation_feature_preferences = {
 
 
 class AggType(SmartEnum):
+    """ """
     NONE = enum.auto()
     NAME = enum.auto()
     IMPORTANT = enum.auto()
@@ -63,6 +64,7 @@ class AggType(SmartEnum):
     RUN = enum.auto()
 
     def function(self) -> Callable[[WellFrame], WellFrame]:
+        """ """
         return {
             "none": lambda df: df,
             "name": lambda df: df.agg_by_name(),
@@ -72,6 +74,15 @@ class AggType(SmartEnum):
         }[self.name.lower()]
 
     def agg(self, df: WellFrame) -> WellFrame:
+        """
+
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
+        """
         return self.function()(df)
 
 
@@ -120,6 +131,11 @@ class Quick:
 
         * *singular* (ex `Quick.trace`), which call plt.show and return None.
         * *plural* (ex `Quick.traces`), which return the iterators and don't display them
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(
@@ -217,6 +233,24 @@ class Quick:
         always_plot_control: bool = False,
         agg_type: Union[AggType, str] = AggType.NAME,
     ) -> None:
+        """
+
+
+        Args:
+          run: QsLike:
+          smoothing:
+          namer:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          control_names:  (Default value = None)
+          control_types:  (Default value = None)
+          weights:
+          label_assays: bool:  (Default value = False)
+          always_plot_control: bool:  (Default value = False)
+          agg_type:
+        Returns:
+
+        """
         for name, figure in self.traces(
             run,
             smoothing=smoothing,
@@ -246,6 +280,24 @@ class Quick:
         always_plot_control: bool = False,
         agg_type: Union[AggType, str] = AggType.NAME,
     ) -> Iterator[Tup[str, Figure]]:
+        """
+
+
+        Args:
+          run: QsLike:
+          smoothing:
+          namer:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          control_names:  (Default value = None)
+          control_types:  (Default value = None)
+          weights:
+          label_assays: bool:  (Default value = False)
+          always_plot_control: bool:  (Default value = False)
+          agg_type:
+        Returns:
+
+        """
         (
             df,
             stimframes,
@@ -285,6 +337,16 @@ class Quick:
 
     '''
     def structures(self, *compounds, **kwargs) -> Image:
+        """
+
+
+        Args:
+          *compounds:
+          **kwargs:
+
+        Returns:
+
+        """
         return ChemGraphicsKit().draw_grid(compounds, **kwargs)
 
     def structures_on_plate(
@@ -292,15 +354,32 @@ class Quick:
     ) -> Image:
         """
         Plots a grid of the compound structures on the plate.
-        :param run: A run ID, instance, name, or tag, or submission hash or instance
-        :param simplify: Desalts and deduplicates structures
-        :param aggressive: Simplify 'aggressively', removing all but the largest connected component of each structure
-        :return: A Pillow Image
+
+        Args:
+          run: A run ID, instance, name, or tag, or submission hash or instance
+          simplify: Desalts and deduplicates structures
+          aggressive: Simplify 'aggressively', removing all but the largest connected component of each structure
+          run: RunLike:
+          simplify:
+          aggressive:
+
+        Returns:
+          A Pillow Image
+
         """
         run = ValarTools.run(run)
         kit = ChemGraphicsKit(ChemSimplifer(aggressive).simplify if simplify else lambda s: s)
 
         def nameit(wt: WellTreatments) -> str:
+            """
+
+
+            Args:
+              wt: WellTreatments:
+
+            Returns:
+
+            """
             if wt.batch.compound is None:
                 return "b" + str(wt.batch.id)
             vals = self.compound_namer.fetch(wt.batch.compound)
@@ -323,6 +402,25 @@ class Quick:
         weights: Optional[np.array] = None,
         label_assays: bool = False,
     ) -> None:
+        """
+
+
+        Args:
+          run: QsLike:
+          smoothing:
+          namer:
+          ci:
+          show_means: bool:  (Default value = False)
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          control_names:  (Default value = None)
+          control_types:  (Default value = None)
+          weights:
+          label_assays: bool:  (Default value = False)
+
+        Returns:
+
+        """
         for name, figure in self.smears(
             run,
             smoothing=smoothing,
@@ -353,6 +451,26 @@ class Quick:
         label_assays: bool = False,
         always_plot_control: bool = False,
     ) -> Iterator[Tup[str, Figure]]:
+        """
+
+
+        Args:
+          run: QsLike:
+          smoothing:
+          namer:
+          ci:
+          show_means: bool:  (Default value = False)
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          control_names:  (Default value = None)
+          control_types:  (Default value = None)
+          weights:
+          label_assays: bool:  (Default value = False)
+          always_plot_control: bool:  (Default value = False)
+
+        Returns:
+
+        """
         (
             df,
             stimframes,
@@ -405,6 +523,27 @@ class Quick:
         weights: Optional[np.array] = None,
         subtraction=None,
     ) -> None:
+        """
+
+
+        Args:
+          run: QsLike:
+          control_type: Union[None:
+          str:
+          int:
+          ControlTypes]:  (Default value = None)
+          control_name: Optional[str]:  (Default value = None)
+          smoothing:
+          namer:
+          ci:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          weights:
+          subtraction:
+
+        Returns:
+
+        """
         for name, figure in self.zmears(
             run,
             control_type=control_type,
@@ -433,6 +572,28 @@ class Quick:
         subtraction=None,
         label_assays: bool = False,
     ) -> Iterator[Tup[str, Figure]]:
+        """
+
+
+        Args:
+          run: QsLike:
+          control_type: Union[None:
+          str:
+          int:
+          ControlTypes]:  (Default value = None)
+          control_name: Optional[str]:  (Default value = None)
+          smoothing:
+          namer:
+          ci:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          weights:
+          subtraction:
+          label_assays: bool:  (Default value = False)
+
+        Returns:
+
+        """
         (
             df,
             stimframes,
@@ -492,6 +653,17 @@ class Quick:
             yield name, figure
 
     def _banders(self, ci, smoothing, show_means):
+        """
+
+
+        Args:
+          ci:
+          smoothing:
+          show_means:
+
+        Returns:
+
+        """
         top_bander = lambda group: group.agg_by_name(lambda s: s.quantile(ci)).smooth(
             window_size=smoothing
         )
@@ -522,17 +694,35 @@ class Quick:
         Makes a heatmap of z-scores with respect to controls.
         If neither control_type nor control_name are set, looks for a single negative control and uses that.
         If either is set, uses that one. Will raise a UserContradictionError if both are set.
-        :param show_name_lines: Show horizontal lines between different names
-        :param show_control_lines: Show horizontal lines between different control types
-        :param run: A run ID, name, or object
-        :param control_type: The name, ID, or object of a ControlTypes; or None
-        :param control_name: The name of an item in WellFrame.names(); or None
-        :param threshold: Show anything with a value +/- this as pure white
-        :param namer: A namer for WellFrameBuilder
-        :param start_ms: Cuts the dataframes, calculating milliseconds from the known framerate
-        :param end_ms: Cuts the dataframes, calculating milliseconds from the known framerate
-        :param ignore_controls: Don't plot any control wells
-        :return: The matplotlib Figure
+
+        Args:
+          show_name_lines: Show horizontal lines between different names
+          show_control_lines: Show horizontal lines between different control types
+          run: A run ID, name, or object
+          control_type: The name, ID, or object of a ControlTypes; or None
+          control_name: The name of an item in WellFrame.names(); or None
+          threshold: Show anything with a value +/- this as pure white
+          namer: A namer for WellFrameBuilder
+          start_ms: Cuts the dataframes, calculating milliseconds from the known framerate
+          end_ms: Cuts the dataframes, calculating milliseconds from the known framerate
+          ignore_controls: Don't plot any control wells
+          run: QsLike:
+          control_type: Union[None:
+          str:
+          int:
+          ControlTypes]:  (Default value = None)
+          control_name: Optional[str]:  (Default value = None)
+          threshold:
+          namer:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          show_control_lines: bool:  (Default value = True)
+          show_name_lines: bool:  (Default value = True)
+          ignore_controls: bool:  (Default value = False)
+
+        Returns:
+          The matplotlib Figure
+
         """
         df, stimframes = self.df_and_stims(run, namer, start_ms, end_ms, audio_waveform=None)
         fps = self._stimframes_per_second(df)
@@ -559,6 +749,19 @@ class Quick:
         end_ms: Optional[int] = None,
         show_name_lines: bool = True,
     ) -> Figure:
+        """
+
+
+        Args:
+          run: QsLike:
+          namer:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          show_name_lines: bool:  (Default value = True)
+
+        Returns:
+
+        """
         df, stimframes = self.df_and_stims(run, namer, start_ms, end_ms, audio_waveform=None)
         battery = df.only("battery_id")
         stimplotter = StimframesPlotter(fps=self._stimframes_per_second(df))
@@ -575,6 +778,21 @@ class Quick:
         path_stub: Optional[PathLike] = None,
         **kwargs,
     ) -> Tup[WellFrame, Figure]:
+        """
+
+
+        Args:
+          run: QsLike:
+          namer:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          outlier_stds: Optional[float]:  (Default value = 5)
+          path_stub: Optional[PathLike]:  (Default value = None)
+          **kwargs:
+
+        Returns:
+
+        """
         all_params = {"outlier_stds": outlier_stds, **kwargs}
         # noinspection PyTypeChecker
         transform = SklearnTransform(TSNE(**kwargs))
@@ -601,6 +819,23 @@ class Quick:
         end_ms: Optional[int] = None,
         path_stub: Optional[PathLike] = None,
     ) -> Tup[WellFrame, Figure]:
+        """
+
+
+        Args:
+          run: QsLike:
+          transform: WellTransform:
+          all_params: Mapping[str:
+          Any]:
+          recolor:
+          namer:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          path_stub: Optional[PathLike]:  (Default value = None)
+
+        Returns:
+
+        """
         df = self.df(run, namer=namer, start_ms=start_ms, end_ms=end_ms)
         trans = transform.fit(df)
         if path_stub is not None:
@@ -629,6 +864,24 @@ class Quick:
         load_only: bool = False,
         **kwargs,
     ) -> WellForestClassifier:
+        """
+
+
+        Args:
+          run: QsLike:
+          save_dir: Optional[PathLike]:  (Default value = None)
+          namer:
+          model_fn: SklearnWfClassifierWithOob:  (Default value = WellForestClassifier)
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          color:
+          sort:
+          load_only: bool:  (Default value = False)
+          **kwargs:
+
+        Returns:
+
+        """
         save_dir = Tools.prepped_dir(save_dir, exist_ok=False)
         save_dir = ClassifierPath(save_dir)
         df = self.df(run, namer=namer, start_ms=start_ms, end_ms=end_ms)
@@ -659,6 +912,17 @@ class Quick:
         end_ms: Optional[int] = None,
         sensors: Optional[Sequence[Union[SensorNames, str]]] = None,
     ) -> Figure:
+        """
+
+
+        Args:
+          run: RunLike:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          sensors: Optional[Sequence[
+        Returns:
+
+        """
         run = Tools.run(run, join=True)
         if sensors is None:
             sensors = ["thermistor", "photoresistor", "microphone"]
@@ -681,6 +945,16 @@ class Quick:
         )
 
     def durations(self, runs: RunsLike, kind: DurationType) -> Figure:
+        """
+
+
+        Args:
+          runs: RunsLike:
+          kind: DurationType:
+
+        Returns:
+
+        """
         return RunDurationPlots.of(runs, kind)
 
     def timeline(
@@ -690,6 +964,19 @@ class Quick:
         use_experiments: bool = True,
         **kwargs,
     ) -> Figure:
+        """
+
+
+        Args:
+          runs: QsLike:
+          label_with: Union[str:
+          TimelineLabelType]:  (Default value = TimelineLabelType.TIMES)
+          use_experiments: bool:  (Default value = True)
+          **kwargs:
+
+        Returns:
+
+        """
         return TimelinePlots.of(runs, label_with, use_experiments=use_experiments, **kwargs)
 
     def stim_plot(
@@ -702,16 +989,27 @@ class Quick:
         stimframes: Optional[BatteryStimFrame] = None,
     ) -> Figure:
         """
-        :param battery:
-        :param start_ms:
-        :param end_ms:
-        :param audio_waveform:
-        :param label_assays:
-        :param stimframes: If supplied:
-                - `audio_waveform` is ignored
-                - `start_ms` and `end_ms` will be attempted, BUT!
-                    If `stimframes` was already sliced, the result will be wrong
-        :return:
+
+
+        Args:
+          battery: param start_ms:
+          end_ms: param audio_waveform:
+          label_assays: param stimframes: If supplied:
+        - `audio_waveform` is ignored
+        - `start_ms` and `end_ms` will be attempted, BUT!
+        If `stimframes` was already sliced, the result will be wrong
+          battery: Union[StimFrame:
+          Batteries:
+          int:
+          str]:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+          audio_waveform: bool:  (Default value = True)
+          label_assays: bool:  (Default value = False)
+          stimframes:
+
+        Returns:
+
         """
         battery = Batteries.fetch(battery)
         assays = AssayFrame.of(battery)
@@ -740,15 +1038,20 @@ class Quick:
         See `Quick.df` and `Quick.stim` for more info.
         WARNING:
             If the battery is not unique for the passed WellFrame, will emit a warning and use the battery with the lowest ID.
-        :param run: Anything accepted by `Quick.df`
-        :param namer: A Namer to set `WellFrame['name']`, or None to use `self.default_namer`.
-        :param start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
-        :param end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
-        :param audio_waveform: Replace the audio stimuli with the values of a standardized waveform; great for plotting.
-                Generally only useful for plotting.
-                If None then set True iff the battery is SauronX.
-        :return: The WellFrame
-        :raises MultipleMatchesError: If multiple batteries were found
+
+        Args:
+          run: Anything accepted by `Quick.df`
+          namer: A Namer to set `WellFrame['name']`, or None to use `self.default_namer`.
+          start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
+          end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
+          audio_waveform: Replace the audio stimuli with the values of a standardized waveform; great for plotting. Generally only useful for plotting.
+
+        Returns:
+          The WellFrame
+
+        Raises:
+          MultipleMatchesError: If multiple batteries were found
+
         """
         df = self.df(run, namer, start_ms, end_ms)
         battery = df.only("battery_name")
@@ -756,9 +1059,25 @@ class Quick:
         return df, stimframes
 
     def assays(self, battery: Union[Batteries, int, str]) -> AssayFrame:
+        """
+
+
+        Args:
+          battery: Union[Batteries:
+          int:
+          str]:
+
+        Returns:
+
+        """
         return AssayFrame.of(battery)
 
     def apps(self, battery: Union[Batteries, int, str]) -> AppFrame:
+        """
+
+        Returns:
+
+        """
         return AppFrame.of(battery)
 
     def stim(
@@ -770,13 +1089,16 @@ class Quick:
     ) -> BatteryStimFrame:
         """
         Get a BatteryStimFrame for a battery
-        :param battery: A battery name, ID, or instance
-        :param start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
-        :param end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
-        :param audio_waveform: Replace the audio stimuli with the values of a standardized waveform; great for plotting.
-                Generally only useful for plotting.
-                If None then set True iff the battery is SauronX.
-        :return: BatteryStimFrame
+
+        Args:
+          battery: A battery name, ID, or instance
+          start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
+          end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
+          audio_waveform: Replace the audio stimuli with the values of a standardized waveform; great for plotting. Generally only useful for plotting. If None then set True iff the battery is SauronX.
+
+        Returns:
+          BatteryStimFrame
+
         """
         battery = Batteries.fetch(battery)
         if audio_waveform is None:
@@ -788,26 +1110,82 @@ class Quick:
         return stimframes.slice_ms(battery, start_ms, end_ms)
 
     def video(self, run: RunLike) -> SauronxVideo:
+        """
+
+
+        Args:
+          run: RunLike:
+
+        Returns:
+
+        """
         run = ValarTools.run(run)
         return self.video_cache.load(run)
 
     def microphone_waveform(
         self, run: RunLike, start_ms: Optional[int] = None, end_ms: Optional[int] = None
     ) -> MicrophoneWaveform:
+        """
+
+
+        Args:
+          run: RunLike:
+          start_ms:
+          end_ms:
+
+        Returns:
+
+        """
         run = ValarTools.run(run)
         x: MicrophoneWaveform = self.sensor_cache.load(SensorNames.MICROPHONE, run)
         return x.slice_ms(start_ms, end_ms)
 
     def stim_waveform(self, stimulus: StimulusLike) -> StimulusWaveform:
+        """
+
+
+        Args:
+          stimulus:
+
+        Returns:
+
+        """
         return self.audio_stimulus_cache.load_waveform(stimulus)
 
     def webcam_snap(self, run: RunLike) -> Image:
+        """
+
+
+        Args:
+          run: RunLike:
+
+        Returns:
+
+        """
         return self.sensor_cache.load(SensorNames.WEBCAM, run).sensor_data
 
     def roi_snap(self, run: RunLike) -> Image:
+        """
+
+
+        Args:
+          run: RunLike:
+
+        Returns:
+
+        """
         return self.sensor_cache.load(SensorNames.PREVIEW, run).sensor_data
 
     def battery_time_data(self, run: RunLike) -> BatteryTimeData:
+        """
+
+
+        Args:
+          run: RunLike:
+
+        Returns:
+
+        """
         return self.sensor_cache.bt_data(run)
 
     def df(
@@ -836,11 +1214,16 @@ class Quick:
             1) If `self.enable_checks` is True, will output warnings about the data to stdout.
             2) If `self.auto_fix` is True, will apply data standardization and fixes. These will happen after slicing (if applicable).
             2) If `self.discard_trash_controls` is not False, will discard those wells (if fresh).
-        :param run: Any of the above
-        :param namer: A Namer to set `WellFrame['name']`, or None to use `self.default_namer` unless passing a WellFrame (in which case the existing names are used).
-        :param start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
-        :param end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
-        :return: The WellFrame
+
+        Args:
+          run: Any of the above
+          namer: A Namer to set `WellFrame['name']`, or None to use `self.default_namer` unless passing a WellFrame (in which case the existing names are used).
+          start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
+          end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
+
+        Returns:
+          The WellFrame
+
         """
         return self._df(run, namer, start_ms, end_ms)
 
@@ -848,8 +1231,15 @@ class Quick:
         """
         Raises errors for issues with this WellFrame.
         Called internally by `Quick.df`, but may also be useful outside.
-        :raises MultipleGenerationsError
-        :raises IncompatibleGenerationError
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
+        Raises:
+          MultipleGenerationsError: raises IncompatibleGenerationError
+
         """
         used_generations = {ValarTools.generation_of(run) for run in df.unique_runs()}
         if len(used_generations) > 1:
@@ -872,6 +1262,15 @@ class Quick:
         """
         Finds `Concern`s on runs matching the conditions `wheres` (which are processed by `Quick.query_runs`).
         Saves the information as a CSV spreadsheet periodically (every 10 runs) while processing.
+
+        Args:
+          wheres: ExpressionsLike:
+          min_severity: Severity:  (Default value = Severity.GOOD)
+          as_of: Optional[datetime]:  (Default value = None)
+          path:
+
+        Returns:
+
         """
         q0 = copy(self)
         q0.enable_checks = False
@@ -897,10 +1296,15 @@ class Quick:
 
     def query_runs(self, wheres: Union[RunsLike, ExpressionsLike]) -> List[Runs]:
         """
-        Return a list of `Run`s matching all of the expressions given.
-        The following tables are joined on.
-            Runs, Experiments, Projects, ProjectTypes, Batteries, Submissions, SauronConfigs, Saurons, Users, Plates
-        Ex: `query_runs([Batteries.id == 99, Saurons.id == 4)]`
+
+
+        Args:
+          wheres:
+        Returns:
+          The following tables are joined on.
+          Runs, Experiments, Projects, ProjectTypes, Batteries, Submissions, SauronConfigs, Saurons, Users, Plates
+          Ex: `query_runs([Batteries.id == 99, Saurons.id == 4)]`
+
         """
         wheres = InternalTools.listify(wheres)
         try:
@@ -944,6 +1348,13 @@ class Quick:
         """
         Emit logger messages for concerns in this WellFrame, only for level >= `min_severity`.
         Also see `Quick.concerns`.
+
+        Args:
+          df: WellFrame:
+          min_severity: Severity:  (Default value = Severity.CAUTION)
+
+        Returns:
+
         """
         c = Concerns.of(df, self.feature, self.sensor_cache, as_of=None, min_severity=min_severity)
         Concerns.log_warnings(c)
@@ -956,6 +1367,12 @@ class Quick:
             - 0s between assays for legacy run
             - NaN "unification": If any well has a NaN in a position, sets all wells to have NaN there
             - Discarding "trash" wells, IF discard_trash is set
+
+        Args:
+          df:
+
+        Returns:
+
         """
         if (
             self.auto_fix
@@ -1004,6 +1421,18 @@ class Quick:
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
     ) -> WellFrame:
+        """
+
+
+        Args:
+          run: QsLike:
+          namer:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+
+        Returns:
+
+        """
         try:
             df, is_fresh = self._fetch_df(run)
             if is_fresh:
@@ -1034,6 +1463,15 @@ class Quick:
         return df
 
     def _no_such_features_message(self, run):
+        """
+
+
+        Args:
+          run:
+
+        Returns:
+
+        """
         if isinstance(run, (str, int, float, Runs, Submissions)):
             return "The feature {} is not defined on run r{}. These are: {}".format(
                 self.feature, run, ", ".join(ValarTools.features_on(run))
@@ -1068,6 +1506,15 @@ class Quick:
             )
 
     def _fetch_df(self, run) -> Tup[WellFrame, bool]:
+        """
+
+
+        Args:
+          run:
+
+        Returns:
+
+        """
         # ignore limit and generation if fresh
         if isinstance(run, WellFrame) or isinstance(run, pd.DataFrame):
             return WellFrame.of(run), False
@@ -1099,7 +1546,22 @@ class Quick:
     def _everything(
         self, run, namer, start_ms, end_ms, control_names, control_types, weights, label_assays
     ):
-        """Only for plotting."""
+        """
+        Only for plotting.
+
+        Args:
+          run:
+          namer:
+          start_ms:
+          end_ms:
+          control_names:
+          control_types:
+          weights:
+          label_assays:
+
+        Returns:
+
+        """
         df, stimframes = self.df_and_stims(run, namer, start_ms, end_ms, audio_waveform=True)
         control_names = self._control_names(df, control_names, control_types)
         fps = self._stimframes_per_second(df)
@@ -1110,6 +1572,17 @@ class Quick:
         return df, stimframes, assays, control_names, fps, stimplotter, extra_gs, extra_fn
 
     def _control_names(self, df, control_names, control_types):
+        """
+
+
+        Args:
+          df:
+          control_names:
+          control_types:
+
+        Returns:
+
+        """
         if control_names is not None and control_types is not None:
             raise ContradictoryRequestError("Can't supply both control_names and control_types")
         if control_types is not None:
@@ -1125,6 +1598,18 @@ class Quick:
         control_name: Optional[str],
         subtraction=None,
     ) -> WellFrame:
+        """
+
+
+        Args:
+          df: WellFrame:
+          control_type: Optional[str]:
+          control_name: Optional[str]:
+          subtraction:
+
+        Returns:
+
+        """
         # use z-score by default
         if subtraction is None:
             subtraction = lambda case, control: (case - control.mean()) / case.std()
@@ -1142,6 +1627,15 @@ class Quick:
             return df.control_subtract(subtraction, control_type)
 
     def _stimframes_per_second(self, df: WellFrame) -> int:
+        """
+
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
+        """
         if all((Tools.is_empty(z) for z in df["submission"].unique())):
             return 25
         elif all((not Tools.is_empty(z) for z in df["submission"].unique())):
@@ -1150,6 +1644,15 @@ class Quick:
             raise MultipleFrameratesError("Can't combine legacy and SauronX data")
 
     def _weighter(self, weights: Optional[np.array]):
+        """
+
+
+        Args:
+          weights: Optional[np.array]:
+
+        Returns:
+
+        """
         if weights is None:
             return None, None
         else:
@@ -1166,6 +1669,18 @@ class Quick:
         start_ms: Optional[int],
         end_ms: Optional[int],
     ):
+        """
+
+
+        Args:
+          df: WellFrame:
+          weights: Optional[np.array]:
+          start_ms: Optional[int]:
+          end_ms: Optional[int]:
+
+        Returns:
+
+        """
         if weights is None:
             return None
         fpses = {ValarTools.frames_per_second(r) for r in df["run"].unique()}
@@ -1180,6 +1695,17 @@ class Quick:
         ]
 
     def delete(self, runs: Union[RunsLike, peewee.Query, ExpressionLike]) -> None:
+        """
+
+
+        Args:
+          runs: Union[RunsLike:
+          peewee.Query:
+          ExpressionLike]:
+
+        Returns:
+
+        """
         return self.__delitem__(runs)
 
     def __delitem__(self, runs: Union[RunsLike, peewee.Query, ExpressionLike]) -> None:
@@ -1212,24 +1738,77 @@ class Quick:
 
 @abcd.external
 class Quicks:
+    """ """
     @classmethod
     def pointgrey(cls, as_of: Optional[datetime], **kwargs):
+        """
+
+
+        Args:
+          as_of: Optional[datetime]:
+          **kwargs:
+
+        Returns:
+
+        """
         return cls.choose(DataGeneration.POINTGREY, as_of=as_of, **kwargs)
 
     @classmethod
     def pike_sauronx(cls, as_of: Optional[datetime], **kwargs):
+        """
+
+
+        Args:
+          as_of: Optional[datetime]:
+          **kwargs:
+
+        Returns:
+
+        """
         return cls.choose(DataGeneration.PIKE_SAURONX, as_of=as_of, **kwargs)
 
     @classmethod
     def pike_legacy(cls, as_of: Optional[datetime], **kwargs):
+        """
+
+
+        Args:
+          as_of: Optional[datetime]:
+          **kwargs:
+
+        Returns:
+
+        """
         return cls.choose(DataGeneration.PIKE_LEGACY, as_of=as_of, **kwargs)
 
     @classmethod
     def pike_mgh(cls, as_of: Optional[datetime], **kwargs):
+        """
+
+
+        Args:
+          as_of: Optional[datetime]:
+          **kwargs:
+
+        Returns:
+
+        """
         return cls.choose(DataGeneration.PIKE_MGH, as_of=as_of, **kwargs)
 
     @classmethod
     def choose(cls, generation: Union[str, DataGeneration], as_of: Optional[datetime], **kwargs):
+        """
+
+
+        Args:
+          generation: Union[str:
+          DataGeneration]:
+          as_of: Optional[datetime]:
+          **kwargs:
+
+        Returns:
+
+        """
         generation = DataGeneration.of(generation)
         feature, kwargs = InternalTools.from_kwargs(
             kwargs, "feature", generation_feature_preferences[generation]

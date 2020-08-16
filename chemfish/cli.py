@@ -21,13 +21,24 @@ logger.setLevel(logging.INFO)
 
 
 class ChemfishCmd(SmartEnum):
+    """ """
     init = enum.auto()
     parrot = enum.auto()
     video = enum.auto()
 
 
 class ChemfishProcessor:
+    """ """
     def run(self, args) -> None:
+        """
+        
+
+        Args:
+          args: 
+
+        Returns:
+
+        """
         import argparse
 
         parser = argparse.ArgumentParser("""Install, update, or initialize Chemfish""")
@@ -38,6 +49,16 @@ class ChemfishProcessor:
         self.process(opts.cmd, opts.args)
 
     def process(self, cmd: ChemfishCmd, args) -> None:
+        """
+        
+
+        Args:
+          cmd: ChemfishCmd: 
+          args: 
+
+        Returns:
+
+        """
         if cmd is ChemfishCmd.init:
             self.init()
         elif cmd is ChemfishCmd.video:
@@ -47,6 +68,7 @@ class ChemfishProcessor:
 
     # noinspection PyTypeChecker
     def init(self) -> None:
+        """ """
         logger.notice("Setting up chemfish configuration...")
         n_created = sum(
             [
@@ -78,6 +100,15 @@ class ChemfishProcessor:
             logger.notice("Finished. You already have all required config files.")
 
     def download_video(self, args):
+        """
+        
+
+        Args:
+          args: 
+
+        Returns:
+
+        """
         from chemfish.caches.video_caches import VideoCache
 
         cache = VideoCache()
@@ -87,6 +118,16 @@ class ChemfishProcessor:
         logger.notice(f"Downloaded {n_exists} videos.")
 
     def _copy_if(self, dest: Path, source: Path) -> bool:
+        """
+        
+
+        Args:
+          dest: Path: 
+          source: Path: 
+
+        Returns:
+
+        """
         import shutil
 
         if not dest.exists():
@@ -102,6 +143,7 @@ class ChemfishProcessor:
 
 
 def main():
+    """ """
     # noinspection PyBroadException
     try:
         ChemfishProcessor().run(None)

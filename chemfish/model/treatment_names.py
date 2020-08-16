@@ -5,22 +5,27 @@ from chemfish.model.treatments import Treatment
 
 
 class UnknownVariableError(UnrecognizedKeyError):
+    """ """
     pass
 
 
 class TreatmentNamer:
-    """
-    A way to format a Treatment.
-    """
+    """A way to format a Treatment."""
 
     @abcd.abstractmethod
     def display(self, treatment: Treatment, name: Union[None, str, Mapping[int, str]]) -> str:
         """
         Returns a dict mapping treatments to their display strings
-        :param treatment: A Treatment instance
-        :param name: None, a name, or a map from compound IDs to compound names.
-                Does not need to include every compound ID, and may even be empty.
-        :return: The display name of the Treatment
+
+        Args:
+          treatment: A Treatment instance
+          name: None, a name, or a map from compound IDs to compound names.
+        Does not need to include every compound ID, and may even be empty.
+          treatment: Treatment:
+          name:
+        Returns:
+          The display name of the Treatment
+
         """
         raise NotImplementedError()
 
@@ -28,6 +33,15 @@ class TreatmentNamer:
         return self.display(treatment, name)
 
     def _convert(self, t: Treatment, names: Union[None, str, Mapping[int, str]]) -> Optional[str]:
+        """
+
+
+        Args:
+          t: Treatment:
+          names:
+        Returns:
+
+        """
         if names is None:
             return None
         elif isinstance(names, str):
@@ -61,7 +75,12 @@ class StringTreatmentNamer(TreatmentNamer):
     A displayer built from a formatting expression with variables ${um}, ${bid}, etc.
     The result of display() will be the literal expression, but with certain fields substituted.
     Example usage:
-        >>> # example 1
+
+    Args:
+
+    Returns:
+
+    >>> # example 1
         >>> displayer = StringTreatmentNamer('${id} (${dose.2})') # '.2'  means 2 decimal places
         >>> displayer(Treatment.from_info(4, 5048.6))  # returns 'c13 (5.05mM)'
         >>> # example 2
@@ -131,6 +150,15 @@ class StringTreatmentNamer(TreatmentNamer):
             raise UnknownVariableError(f"The expressions {bad} were not recognized")
 
     def display(self, t: Treatment, name: Union[None, str, Mapping[int, str]]) -> str:
+        """
+
+
+        Args:
+          t: Treatment:
+          name:
+        Returns:
+
+        """
         name = self._convert(t, name)
         return self._format(
             str(t), t.id, t.compound_id, t.tag, t.dose, name, t.inchikey, t.chembl, t.chemspider
@@ -148,33 +176,131 @@ class StringTreatmentNamer(TreatmentNamer):
         chembl,
         chemspider,
     ) -> str:
+        """
+
+
+        Args:
+          t_str: str:
+          bid: int:
+          cid: int:
+          tag: Optional[str]:
+          dose: float:
+          name: Optional[str]:
+          inchikey:
+          chembl:
+          chemspider:
+
+        Returns:
+
+        """
         def inchikeyit(gs):
+            """
+
+
+            Args:
+              gs:
+
+            Returns:
+
+            """
             return self._fall(gs[0], cid, bid) if inchikey is None else inchikey
 
         def chemblit(gs):
+            """
+
+
+            Args:
+              gs:
+
+            Returns:
+
+            """
             return self._fall(gs[0], cid, bid) if chembl is None else chembl
 
         def chemspiderit(gs):
+            """
+
+
+            Args:
+              gs:
+
+            Returns:
+
+            """
             return self._fall(gs[0], cid, bid) if chemspider is None else chemspider
 
         def nameit(gs):
+            """
+
+
+            Args:
+              gs:
+
+            Returns:
+
+            """
             return self._parse(cid, bid, name, gs[0], gs[1], gs[2], gs[3])
 
         def tagit(gs):
+            """
+
+
+            Args:
+              gs:
+
+            Returns:
+
+            """
             return self._parse(cid, bid, tag, gs[0], gs[1], gs[2], gs[3])
 
         def idit(gs):
+            """
+
+
+            Args:
+              gs:
+
+            Returns:
+
+            """
             return "b" + str(bid) if cid is None else ("c" + str(cid))
 
         def get_dose_kwargs(gs) -> Tup[Optional[int], Optional[bool]]:
+            """
+
+
+            Args:
+              gs:
+
+            Returns:
+
+            """
             use_sigfigs = gs[0] == ":"
             round_figs = None if gs[1] is None else int(gs[1])
             return use_sigfigs, round_figs
 
         def doseit(gs):
+            """
+
+
+            Args:
+              gs:
+
+            Returns:
+
+            """
             return self._dosify(dose, True, *get_dose_kwargs(gs))
 
         def rumit(gs):
+            """
+
+
+            Args:
+              gs:
+
+            Returns:
+
+            """
             return self._dosify(dose, False, *get_dose_kwargs(gs))
 
         e = self.expression
@@ -192,6 +318,18 @@ class StringTreatmentNamer(TreatmentNamer):
         return e
 
     def _dosify(self, dose, adjust, use_sigfigs, round_figs):
+        """
+
+
+        Args:
+          dose:
+          adjust:
+          use_sigfigs:
+          round_figs:
+
+        Returns:
+
+        """
         if round_figs is None:
             round_figs = 5
         elif round_figs == "*":
@@ -200,6 +338,17 @@ class StringTreatmentNamer(TreatmentNamer):
         return Tools.nice_dose(dose, round_figs, adjust_units=adjust, use_sigfigs=use_sigfigs)
 
     def _fall(self, allowed, cid, bid):
+        """
+
+
+        Args:
+          allowed:
+          cid:
+          bid:
+
+        Returns:
+
+        """
         if allowed is None:
             return
         fallback = None if allowed is None else allowed.rstrip("|")
@@ -209,6 +358,17 @@ class StringTreatmentNamer(TreatmentNamer):
             return "b" + str(bid)
 
     def _replace(self, e0, reg, rep):
+        """
+
+
+        Args:
+          e0:
+          reg:
+          rep:
+
+        Returns:
+
+        """
         for match in reg.finditer(e0):
             rep1 = rep(match.groups())
             e0 = e0.replace(match[0], "" if rep1 is None else str(rep1))
@@ -224,6 +384,21 @@ class StringTreatmentNamer(TreatmentNamer):
         cap_rule: Optional[str],
         if_null_rule: Optional[str],
     ):
+        """
+
+
+        Args:
+          cid:
+          bid:
+          name: Optional[str]:
+          fallback_rule: str:
+          truncate_rule: Optional[str]:
+          cap_rule: Optional[str]:
+          if_null_rule: Optional[str]:
+
+        Returns:
+
+        """
         if_null_rule = "" if if_null_rule is None else if_null_rule
         if name is None:
             name = self._fall(fallback_rule, cid, bid)
@@ -237,6 +412,16 @@ class StringTreatmentNamer(TreatmentNamer):
         return name
 
     def _capitalize(self, name: str, rule: Optional[str]) -> str:
+        """
+
+
+        Args:
+          name: str:
+          rule: Optional[str]:
+
+        Returns:
+
+        """
         if rule is None:
             return name
         if rule == "lower":
@@ -268,36 +453,53 @@ class StringTreatmentNamer(TreatmentNamer):
 
 
 class TreatmentNamers:
+    """ """
     @classmethod
     def of(cls, s: str):
+        """
+
+
+        Args:
+          s: str:
+
+        Returns:
+
+        """
         return StringTreatmentNamer(s)
 
     @classmethod
     def id(cls):
+        """ """
         return StringTreatmentNamer("${id}")
 
     @classmethod
     def id_with_dose(cls):
+        """ """
         return StringTreatmentNamer("${id} (${dose})")
 
     @classmethod
     def name_with_dose(cls):
+        """ """
         return StringTreatmentNamer("${id|name} (${dose})")
 
     @classmethod
     def name(cls):
+        """ """
         return StringTreatmentNamer("${id|name}")
 
     @classmethod
     def name_with_id(cls):
+        """ """
         return StringTreatmentNamer("${name} [${id}]")
 
     @classmethod
     def name_with_id_with_dose(cls):
+        """ """
         return StringTreatmentNamer("${name} [${id}] (${dose})")
 
     @classmethod
     def chembl(cls):
+        """ """
         return StringTreatmentNamer("${id|chembl}")
 
 

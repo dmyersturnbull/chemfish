@@ -11,6 +11,11 @@ class ImportancePlotter(CakeComponent, KvrcPlotting):
     Plots weight (often importance) across a time-series,
     either as a thin heatmap with no y axis (a sequence of vertical lines),
     or as a scatter plot.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(
@@ -29,6 +34,18 @@ class ImportancePlotter(CakeComponent, KvrcPlotting):
         vmin: Optional[float] = None,
         vmax: Optional[float] = None,
     ) -> Figure:
+        """
+
+
+        Args:
+          weights:
+          ax:
+          vmin:
+          vmax:
+
+        Returns:
+
+        """
         if vmin is None:
             vmin = np.quantile(weights, 1 - self._vmax_quantile)
         if vmax is None:

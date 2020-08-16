@@ -4,11 +4,10 @@ from chemfish.core.environment import *
 
 
 class TestEnvironmentSetUpRequired:
-    """
-    Tests for ChemfishEnvironment.
-    """
+    """Tests for ChemfishEnvironment."""
 
     def test_load(self):
+        """ """
         # TODO
         env = ChemfishEnvironment()
 

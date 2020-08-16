@@ -10,8 +10,17 @@ from chemfish.model.well_frames import *
 
 
 class MultiTrainerUtils:
+    """ """
     @classmethod
     def to_spindle(cls, items: Iterable[Tup[DecisionFrame, TrainableCc]]):
+        """
+
+
+        Args:
+          items:
+        Returns:
+
+        """
         accs = []
         for dec, cc in items:
             acc = dec.accuracy().reset_index()
@@ -34,6 +43,11 @@ class MultiTrainer:
     """
     A model to train case-vs-control classifiers for all cases and all controls (using a `TrainableCcIterator`).
     Knows the model used to train, the dir to save to, and an iterator over `TrainableCc`s.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(
@@ -57,6 +71,13 @@ class MultiTrainer:
         """
         Iterates through comparisons as though they were to be trained (including those that were already trained).
         Prints info about each comparison to stdout.
+
+        Args:
+          df: WellFrame:
+          max_iters: Optional[int]:  (Default value = None)
+
+        Returns:
+
         """
         from IPython.display import display
 
@@ -83,6 +104,12 @@ class MultiTrainer:
     def iterate(self, df: WellFrame) -> Generator[TrainableCc, None, None]:
         """
         Just iterates over `TrainableCc`s to be trained (even if they were already trained).
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
         """
         for tt, subdir, n_trained in self._iterate(df):
             yield tt
@@ -90,8 +117,15 @@ class MultiTrainer:
     def just_train(self, df: WellFrame, store_for_spindle: bool = False) -> None:
         """
         Train the whole model.
-        :param df: Must correspond to the iterator; this can't be verified
-        :param store_for_spindle: Store results as they're trained. This will consume increasing memory with successive models, but will save time at the end.
+
+        Args:
+          df: Must correspond to the iterator; this can't be verified
+          store_for_spindle: Store results as they're trained. This will consume increasing memory with successive models, but will save time at the end.
+          df: WellFrame:
+          store_for_spindle: bool:  (Default value = False)
+
+        Returns:
+
         """
         for _ in self.train(df, store_for_spindle=store_for_spindle):
             pass
@@ -102,8 +136,15 @@ class MultiTrainer:
     ) -> Generator[Tup[DecisionFrame, TrainableCc], None, None]:
         """
         Train the models, yielding one at a time after they're trained.
-        :param df: Must correspond to the iterator; this can't be verified
-        :param store_for_spindle: Store results as they're trained. This will consume increasing memory with successive models, but will save a spindle at the end.
+
+        Args:
+          df: Must correspond to the iterator; this can't be verified
+          store_for_spindle: Store results as they're trained. This will consume increasing memory with successive models, but will save a spindle at the end.
+          df: WellFrame:
+          store_for_spindle: bool:  (Default value = False)
+
+        Returns:
+
         """
         decisions = []
         for tt, subdir, n_trained in self._iterate(df):
@@ -128,6 +169,15 @@ class MultiTrainer:
     def _iterate(
         self, df: WellFrame
     ) -> Generator[Tup[TrainableCc, ClassifierPath, int], None, None]:
+        """
+
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
+        """
         it = self.iterator_fn()
         self._startup_messages(it, df)
         n_trained = -1
@@ -143,6 +193,16 @@ class MultiTrainer:
         logger.info("Finished training!")
 
     def _train_one(self, tt: TrainableCc, subdir: ClassifierPath) -> Tup[DecisionFrame, int]:
+        """
+
+
+        Args:
+          tt: TrainableCc:
+          subdir: ClassifierPath:
+
+        Returns:
+
+        """
         model = self.model_type.build()
         model.train(tt.smalldf)
         model.save(subdir.model_pkl)
@@ -154,6 +214,11 @@ class MultiTrainer:
         """
         Reads the `spindle.csv`.
         Fast.
+
+        Args:
+
+        Returns:
+
         """
         sf = SpindleFrame.read_csv(self.spindle_path)
         if "index" in sf.columns:
@@ -161,9 +226,7 @@ class MultiTrainer:
         return SpindleFrame(sf)
 
     def load_spindle(self) -> SpindleFrame:
-        """
-        Reads the `spindle.csv` if it exists (fast). Otherwise loads from decisions (slow).
-        """
+        """Reads the `spindle.csv` if it exists (fast). Otherwise loads from decisions (slow)."""
         if self.spindle_path.exists():
             return self.read_spindle()
         else:
@@ -173,6 +236,11 @@ class MultiTrainer:
         """
         Reads in `DecisionFrame`s
         Slow.
+
+        Args:
+
+        Returns:
+
         """
         logger.minor(f"Loading decisions at {self.save_dir}")
         for path, cc in Tools.loop(
@@ -185,7 +253,14 @@ class MultiTrainer:
         """
         Returns the paths and corresponding control comparisons.
         Slow.
-        :raises PathDoesNotExistError If any model wasn't fully trained, including an associated decision.csv
+
+        Args:
+
+        Returns:
+
+        Raises:
+          PathDoesNotExistError: If any model wasn't fully trained, including an associated decision.csv
+
         """
         for path, cc in self.paths():
             path.verify_exists_with_decision()
@@ -196,12 +271,27 @@ class MultiTrainer:
         Returns the paths and corresponding control comparisons.
         Slow.
         The paths MAY OR MAY NOT BE TRAINED.
+
+        Args:
+
+        Returns:
+
         """
         for cc in iter(self.iterator_fn()):
             path = ClassifierPath(self.save_dir / cc.directory)
             yield path, cc
 
     def _startup_messages(self, it: TrainableCcIterator, df):
+        """
+
+
+        Args:
+          it: TrainableCcIterator:
+          df:
+
+        Returns:
+
+        """
         logger.debug(f"Iterator has length {len(it)}")
         fn_strs = [
             Tools.pretty_function(it.treatment_selector),
@@ -218,10 +308,12 @@ class MultiTrainer:
 
     @property
     def info_path(self) -> Path:
+        """ """
         return self.save_dir / "info.properties"
 
     @property
     def spindle_path(self) -> Path:
+        """ """
         return self.save_dir / "spindle.csv"
 
     def __len__(self):
@@ -229,6 +321,7 @@ class MultiTrainer:
 
 
 class MultiTrainers:
+    """ """
     @classmethod
     def vs_control(
         cls,
@@ -241,7 +334,24 @@ class MultiTrainers:
         subsample_to: Optional[int] = None,
         controls: Optional[Iterable[str]] = None,
     ):
+        """
+
+
+        Args:
+          df: WellFrame:
+          save_dir: PathLike:
+          model_type: SklearnWfClassifierWithOob:
+          n_repeats: int:  (Default value = 1)
+          restrict_to_same:
+          restrict_include_null: bool:  (Default value = False)
+          subsample_to: Optional[int]:  (Default value = None)
+          controls:
+
+        Returns:
+
+        """
         def it_gen():
+            """ """
             return CcIterators.vs_control(
                 df,
                 n_repeats=n_repeats,
@@ -267,7 +377,27 @@ class MultiTrainers:
         seed: int = 0,
         controls: Optional[Iterable[str]] = None,
     ):
+        """
+
+
+        Args:
+          df: WellFrame:
+          save_dir: PathLike:
+          model_type: SklearnWfClassifierWithOob:
+          n_repeats: int:  (Default value = 1)
+          restrict_to_same:
+          Set[str]]:  (Default value = None)
+          restrict_include_null: bool:  (Default value = False)
+          low:
+          high:
+          seed:
+          controls:
+
+        Returns:
+
+        """
         def it_gen():
+            """ """
             return CcIterators.vs_control_rand(
                 df,
                 n_repeats=n_repeats,
@@ -290,7 +420,21 @@ class MultiTrainers:
         n_repeats: int = 1,
         subsample_to: Optional[int] = None,
     ):
+        """
+
+
+        Args:
+          df: WellFrame:
+          save_dir: PathLike:
+          model_type: SklearnWfClassifierWithOob:
+          n_repeats: int:  (Default value = 1)
+          subsample_to: Optional[int]:  (Default value = None)
+
+        Returns:
+
+        """
         def it_gen():
+            """ """
             return CcIterators.vs_self(df, n_repeats=n_repeats, subsample_to=subsample_to)
 
         return MultiTrainer(save_dir, model_type, it_gen)
@@ -306,7 +450,23 @@ class MultiTrainers:
         high: Optional[int] = None,
         seed: int = 0,
     ):
+        """
+
+
+        Args:
+          df: WellFrame:
+          save_dir: PathLike:
+          model_type: SklearnWfClassifierWithOob:
+          n_repeats: int:  (Default value = 1)
+          low:
+          high:
+          seed:
+
+        Returns:
+
+        """
         def it_gen():
+            """ """
             return CcIterators.vs_self_random(
                 df, n_repeats=n_repeats, low=low, high=high, seed=seed
             )
@@ -324,7 +484,23 @@ class MultiTrainers:
         restrict_include_null: bool = False,
         subsample_to: Optional[int] = None,
     ):
+        """
+
+
+        Args:
+          df: WellFrame:
+          save_dir: PathLike:
+          model_type: SklearnWfClassifierWithOob:
+          n_repeats: int:  (Default value = 1)
+          restrict_to_same:
+          restrict_include_null: bool:  (Default value = False)
+          subsample_to: Optional[int]:  (Default value = None)
+
+        Returns:
+
+        """
         def it_gen():
+            """ """
             return CcIterators.vs_other(
                 df,
                 n_repeats=n_repeats,

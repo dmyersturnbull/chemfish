@@ -23,10 +23,12 @@ DEFINITELY_BAD_CONTROLS = {c: control_types[c] for c in {"no drug transfer", "lo
 
 
 class ConcernFrame(UntypedDf):
+    """ """
     pass
 
 
 class TargetTimeKind(Enum):
+    """ """
     ACCLIMATION = 1
     WAIT = 2
     TREATMENT = 3
@@ -66,18 +68,22 @@ class Severity(enum.Enum):
     ```
     def lateness(concern: TargetTimeConcern) -> Severity:
         if concern.kind is not TargetTimeKind.TREATMENT:
-            raise ValueError(f"Not defined on kind {concern.kind}")
-        if concern.actual > 2*60*60 or concern.actual < 0.5*60*60:  # 2 hours late or 30 min early
-            return Severity.CRITICAL
-        else:
-        return Severity.NOTE
-    ```
 
-    A good rule of thumb:
-        * DANGER or CRITCAL  -- discard or fix
-        * WARNING            -- examine and decide
-        * CAUTION            -- examine and confirm
-        * GOOD or NOTE       -- ignore these
+    Args:
+
+    Returns:
+      ```
+
+      A good rule of thumb:
+      * DANGER or CRITCAL  -- discard or fix
+      * WARNING            -- examine and decide
+      * CAUTION            -- examine and confirm
+      * GOOD or NOTE       -- ignore these
+
+    Raises:
+      if: concern
+      return: Severity
+      else:
 
     """
 
@@ -97,14 +103,17 @@ class Severity(enum.Enum):
 
     @property
     def to_enum_value(self) -> str:
+        """ """
         return self.value + ":" + self.name.lower()
 
     @property
     def log_fn(self):
+        """ """
         return getattr(logger, self.log_level.lower())
 
     @property
     def log_level(self) -> str:
+        """ """
         return {
             9: "ERROR",
             4: "WARNING",
@@ -132,6 +141,11 @@ class Severity(enum.Enum):
             The no entry symbol has Ambiguous East Asian width.
             The rest have smaller widths.
         To work around this, hair spaces are appended. But that's not enough.
+
+        Args:
+
+        Returns:
+
         """
         return {
             9: Chars.donotenter,
@@ -150,6 +164,12 @@ class Severity(enum.Enum):
             - the name of a Severity (case-insensitive)
             - the name of an Annotation or BatchAnnotation level (case-insensitive)
             - the numerical value of a Severity
+
+        Args:
+          level:
+
+        Returns:
+
         """
         if hasattr(level, "value"):
             # TODO not good, but can't check for isinstance with enum
@@ -170,7 +190,15 @@ class Severity(enum.Enum):
     def parse(cls, level: str) -> Severity:
         """
         Parses a 'level' value from Annotations or BatchAnnotations.
-        :raises LookupFailedError
+
+        Args:
+          level: str:
+
+        Returns:
+
+        Raises:
+          LookupFailedError:
+
         """
         level = level.lower()
         if level == "to_fix":
@@ -184,10 +212,12 @@ class Severity(enum.Enum):
 
     @classmethod
     def bad_values(cls) -> Sequence[Severity]:
+        """ """
         return [Severity.CAUTION, Severity.WARNING, Severity.DANGER, Severity.CRITICAL]
 
     @classmethod
     def key_str(cls) -> str:
+        """ """
         return Chars.dangled(
             "  ".join([s.name + ":" + s.emoji.strip() for s in Severity.bad_values()])
         )
@@ -198,6 +228,11 @@ class Concern(metaclass=abc.ABCMeta):
     """
     A result from a quality test on behavioral data on a run (or well).
     Might indicate an issue or potential issue. Refer to its `severity`.
+
+    Args:
+
+    Returns:
+
     """
 
     run: Runs
@@ -205,15 +240,19 @@ class Concern(metaclass=abc.ABCMeta):
 
     @property
     def name(self):
+        """ """
         return self.__class__.__name__.replace("Concern", "")
 
     def as_dict(self) -> Mapping[str, Any]:
+        """ """
         raise NotImplementedError()
 
     def description(self) -> str:
+        """ """
         raise NotImplementedError()
 
     def _main_dict(self) -> Mapping[str, Any]:
+        """ """
         return {
             "kind": self.name,
             "severity": self.severity.name,
@@ -224,43 +263,49 @@ class Concern(metaclass=abc.ABCMeta):
 
 @dataclass
 class LoadConcern(Concern):
-    """
-    The data could not be loaded at all.
-    """
+    """The data could not be loaded at all."""
 
     error: BaseException
     tb: FrameSummary
 
     def as_dict(self) -> Mapping[str, Any]:
+        """ """
         return {**self._main_dict(), "message": str(self.error)}
 
     def description(self) -> str:
+        """ """
         return "Load failed with {self.run.id} / {type(self.error)}"
 
 
 @dataclass
 class ImpossibleTimeConcern(Concern):
+    """ """
     kind: str
     value: str
 
     def as_dict(self) -> Mapping[str, Any]:
+        """ """
         return {**self._main_dict(), "kind": self.kind, "value": self.value}
 
     def description(self) -> str:
+        """ """
         return f"{self.kind} time is {self.value}"
 
 
 @dataclass
 class MissingSensorConcern(Concern):
+    """ """
     generation: DataGeneration
     expected: Set[Sensors]
     actual: Set[Sensors]
 
     @property
     def missing(self) -> Set[Sensors]:
+        """ """
         return self.expected - self.actual
 
     def as_dict(self) -> Mapping[str, Any]:
+        """ """
         return {
             **self._main_dict(),
             "defined": frozenset([s.name for s in self.actual]),
@@ -268,6 +313,7 @@ class MissingSensorConcern(Concern):
         }
 
     def description(self) -> str:
+        """ """
         if len(self.missing) > 1:
             return f"Missing sensors: {', '.join([s.name for s in self.missing])}"
         elif len(self.missing) == 1:
@@ -278,17 +324,21 @@ class MissingSensorConcern(Concern):
 
 @dataclass
 class WellConcern(Concern):
+    """ """
     trash: Mapping[ControlTypes, int]
 
     @property
     def name(self):
+        """ """
         return "WellConcern"
 
     def as_dict(self) -> Mapping[str, Any]:
+        """ """
         x = Tools.join_kv(self.trash, ",")
         return {**self._main_dict(), "counts": "-" if len(x) == 0 else x}
 
     def description(self) -> str:
+        """ """
         if len(self.trash) > 0:
             return "Hazard well(s) present: " + ", ".join(
                 k.name + Chars.bracketed("n=" + str(v)) for k, v in self.trash.items()
@@ -299,10 +349,12 @@ class WellConcern(Concern):
 
 @dataclass
 class BatchConcern(Concern):
+    """ """
     batch: Batches
     annotation: BatchAnnotations
 
     def as_dict(self) -> Mapping[str, Any]:
+        """ """
         return {
             **self._main_dict(),
             "id": self.annotation.id,
@@ -311,14 +363,17 @@ class BatchConcern(Concern):
         }
 
     def description(self) -> str:
+        """ """
         return f"Suspicious batch b{self.batch.id}: '{self.annotation.name}'"
 
 
 @dataclass
 class _AnnotationConcern(Concern, metaclass=abc.ABCMeta):
+    """ """
     annotation: Annotations
 
     def as_dict(self) -> Mapping[str, Any]:
+        """ """
         return {
             **self._main_dict(),
             "id": self.annotation.id,
@@ -330,23 +385,28 @@ class _AnnotationConcern(Concern, metaclass=abc.ABCMeta):
 
 @dataclass
 class _ErrorConcern(Concern, metaclass=abc.ABCMeta):
+    """ """
     expected: float
     actual: float
 
     @property
     def raw_diff(self) -> float:
+        """ """
         return self.actual - self.expected
 
     @property
     def raw_error(self) -> float:
+        """ """
         return abs(self.raw_diff)
 
     @property
     def relative_error(self) -> float:
+        """ """
         return abs(self.relative_diff)
 
     @property
     def relative_diff(self) -> float:
+        """ """
         if not hasattr(self, "__relative_diff"):
             if self.expected == 0 or np.isinf(self.expected):
                 logger.debug(f"Expected value is {self.expected}. Setting relative_diff=+inf")
@@ -358,6 +418,7 @@ class _ErrorConcern(Concern, metaclass=abc.ABCMeta):
 
     @property
     def log2_diff(self) -> float:
+        """ """
         if not hasattr(self, "__log2diff"):
             if self.expected == 0 or np.isinf(self.expected):
                 logger.debug(f"Expected value is {self.expected}. Setting log2_diff=+inf")
@@ -371,6 +432,7 @@ class _ErrorConcern(Concern, metaclass=abc.ABCMeta):
         return self.__log2diff
 
     def as_dict(self) -> Mapping[str, Any]:
+        """ """
         return {
             **self._main_dict(),
             "raw_diff": self.raw_diff,
@@ -383,29 +445,36 @@ class _ErrorConcern(Concern, metaclass=abc.ABCMeta):
 
 @dataclass
 class SensorLengthConcern(_ErrorConcern):
+    """ """
     generation: DataGeneration
     sensor: Sensors
 
     def as_dict(self) -> Mapping[str, Any]:
+        """ """
         return {**super().as_dict(), "sensor": self.sensor.id}
 
     def description(self) -> str:
+        """ """
         return f"Sensor {self.sensor.name} severity: {self.severity.name.lower()}: {self.expected} → {self.actual}"
 
 
 @dataclass
 class TargetTimeConcern(_ErrorConcern):
+    """ """
     kind: TargetTimeKind
     annotation: Optional[Annotations]
 
     @property
     def name(self):
+        """ """
         return self.kind.name.capitalize() + "Sec"
 
     def as_dict(self) -> Mapping[str, Any]:
+        """ """
         return {**super().as_dict(), "annotation_id": Tools.look(self.annotation, "id")}
 
     def description(self) -> str:
+        """ """
         diff = Tools.pretty_float(self.log2_diff, 2)
         actual = Tools.pretty_float(self.actual, None).lstrip("+")
         expected = Tools.pretty_float(self.expected, None).lstrip("+")
@@ -416,7 +485,9 @@ class TargetTimeConcern(_ErrorConcern):
 
 @dataclass
 class AnnotationConcern(_AnnotationConcern):
+    """ """
     def description(self) -> str:
+        """ """
         return (
             "Annotation: "
             + Chars.squoted(self.annotation.name)
@@ -427,9 +498,11 @@ class AnnotationConcern(_AnnotationConcern):
 
 @dataclass
 class ToFixConcern(_AnnotationConcern):
+    """ """
     fixed_with: Optional[Annotations]
 
     def description(self) -> str:
+        """ """
         return "{} to_fix {} ({}; id={}): {}".format(
             "Unfixed" if self.fixed_with is None else "Fixed",
             Chars.squoted(self.annotation.name),
@@ -441,19 +514,24 @@ class ToFixConcern(_AnnotationConcern):
 
 @dataclass
 class NFeaturesConcern(_ErrorConcern):
+    """ """
     def as_dict(self) -> Mapping[str, Any]:
+        """ """
         return super().as_dict()
 
     def description(self) -> str:
+        """ """
         return f"Feature length: {self.expected} → {self.actual}"
 
 
 @dataclass
 class GenerationConcern(Concern):
+    """ """
     expected_generations: Set[DataGeneration]
     actual_generation: DataGeneration
 
     def as_dict(self) -> Mapping[str, Any]:
+        """ """
         return {
             **self._main_dict(),
             "expected_generations": tuple(self.expected_generations),
@@ -461,6 +539,7 @@ class GenerationConcern(Concern):
         }
 
     def description(self) -> str:
+        """ """
         return "Generation(s) {} (expected) → {}".format(
             Tools.join(self.expected_generations, ",", attr="name"), self.actual_generation.name
         )

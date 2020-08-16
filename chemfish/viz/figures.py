@@ -28,6 +28,7 @@ class Corner:
         self.verticalalignment = "top" if bottom else "bottom"
 
     def params(self) -> Mapping[str, Any]:
+        """ """
         return {
             "x": self.x,
             "y": self.y,
@@ -55,11 +56,21 @@ class Corners:
 
 
 class FigureTools:
+    """ """
     darken_palette = _iku.darken_palette
     darken_color = _iku.darken_color
 
     @classmethod
     def cm2in(cls, tup):
+        """
+
+
+        Args:
+          tup:
+
+        Returns:
+
+        """
         if Tools.is_true_iterable(tup):
             return [x / 2.54 for x in tup]
         else:
@@ -67,9 +78,7 @@ class FigureTools:
 
     @classmethod
     def open_figs(cls) -> Sequence[Figure]:
-        """
-        Returns all currently open figures.
-        """
+        """Returns all currently open figures."""
         return [plt.figure(num=i) for i in plt.get_fignums()]
 
     @classmethod
@@ -77,6 +86,11 @@ class FigureTools:
         """
         Returns all currently open figures as a dict mapping their labels `Figure.label` to their instances.
         Note that `Figure.label` is often empty in practice.
+
+        Args:
+
+        Returns:
+
         """
         return {label: plt.figure(label=label) for label in plt.get_figlabels()}
 
@@ -86,7 +100,13 @@ class FigureTools:
         """
         Context manager to clear and close all figures created during its lifespan.
         When the context manager exits, calls `clf` and `close` on all figures created under it.
-        :param yes: If False, does nothing
+
+        Args:
+          yes: If False, does nothing
+          yes:
+
+        Returns:
+
         """
         oldfigs = copy(plt.get_fignums())
         yield
@@ -100,7 +120,13 @@ class FigureTools:
     def hiding(cls, yes: bool = True) -> Generator[None, None, None]:
         """
         Context manager to hide figure display by setting `plt.interactive(False)`.
-        :param yes: If False, does nothing
+
+        Args:
+          yes: If False, does nothing
+          yes:
+
+        Returns:
+
         """
         isint = plt.isinteractive()
         if yes:
@@ -114,9 +140,16 @@ class FigureTools:
     def using(cls, *args, **kwargs) -> Generator[None, None, None]:
         """
         Provided for convenience as a shorthand to using both chemfish_rc.using, Figs.hiding, and Figs.clearing.
-        :param args: Passed to chemfish_rc.using
-        :param kwargs: Passed to chemfish_rc.using, except for 'path', 'hide', and 'clear'
-        :return: A context manager
+
+        Args:
+          args: Passed to chemfish_rc.using
+          kwargs: Passed to chemfish_rc.using, except for 'path', 'hide', and 'clear'
+          *args:
+          **kwargs:
+
+        Returns:
+          A context manager
+
         """
         path, hide, clear, reload = (
             str(kwargs.get("path")),
@@ -137,6 +170,15 @@ class FigureTools:
         """
         Save a figure or sequence of figures to `FigureSaver`.
         See that class for more info.
+
+        Args:
+          figure: FigureSeqLike:
+          path: PathLike:
+          names:
+          **kwargs:
+
+        Returns:
+
         """
         path = str(path).replace("/", os.sep)
         FigureSaver(**kwargs).save(figure, path, names=names)
@@ -155,6 +197,19 @@ class FigureTools:
         """
         Plots a 1D array and returns the axes.
         kwargs are passed to `Axes.plot`.
+
+        Args:
+          values: np.array:
+          figsize: Optional[Tup[float:
+          float]]:  (Default value = None)
+          x0:  (Default value = None)
+          y0:  (Default value = None)
+          x1:  (Default value = None)
+          y1:  (Default value = None)
+          **kwargs:
+
+        Returns:
+
         """
         figure = plt.figure(figsize=figsize)
         ax = figure.add_subplot(1, 1, 1)  # Axes
@@ -173,11 +228,18 @@ class FigureTools:
         Technically description: Adds a new `Axes` on the right side with width `size`%.
         If chemfish_rc.general_colorbar_on is False, will add the colorbar and make it invisible.
         (This is weirdly necessary to work around a matplotlib bug.)
-        :param ax: The Axes, modified in-place
-        :param mat: This must be the return value from `matshow` or `imshow`
-        :param size: The width of the colorbar
-        :param number_format: Formatting string for the text labels on the colorbar (passed to `ax.figure.colorbar`)
-        :return:
+
+        Args:
+          ax: The Axes, modified in-place
+          mat: This must be the return value from `matshow` or `imshow`
+          size: The width of the colorbar
+          number_format: Formatting string for the text labels on the colorbar (passed to `ax.figure.colorbar`)
+          ax: Axes:
+          size:
+          number_format: Optional[str]:  (Default value = None)
+
+        Returns:
+
         """
         #
         # of ax and the padding between cax and ax will be fixed at 0.05 inch.
@@ -209,12 +271,24 @@ class FigureTools:
     ) -> None:
         """
         Adds a matrix of text.
-        :param ax: Axes
-        :param data: The matrix of any text values; will be converted to strings and empty strings will be ignored
-        :param color_fn: An optional function mapping (pre-conversion-to-str) values to colors
-        :param adjust_x: Add this value to the x coordinates
-        :param adjust_y: Add this value to the y coordinates
-        :param kwargs: Passed to `ax.text`
+
+        Args:
+          ax: Axes
+          data: The matrix of any text values; will be converted to strings and empty strings will be ignored
+          color_fn: An optional function mapping (pre-conversion-to-str) values to colors
+          adjust_x: Add this value to the x coordinates
+          adjust_y: Add this value to the y coordinates
+          kwargs: Passed to `ax.text`
+          ax: Axes:
+          data: pd.DataFrame:
+          color_fn: Optional[Callable[[str]:
+          str]]:  (Default value = None)
+          adjust_x: float:  (Default value = 0)
+          adjust_y: float:  (Default value = 0)
+          **kwargs:
+
+        Returns:
+
         """
         for r, row in enumerate(data.index):
             for c, col in enumerate(data.columns):
@@ -242,6 +316,17 @@ class FigureTools:
         Creates legend handles manually and adds them as the legend on the Axes.
         This is unfortunately necessary in cases where, for ex, only a handle per color is wanted -- not a handle per color and marker shape.
         Applies `FigureTools.fix_labels` and applies chemfish_rc defaults unless they're overridden in kwargs.
+
+        Args:
+          ax: Axes:
+          labels: Sequence[str]:
+          colors: Sequence[str]:
+          patch_size: float:  (Default value = chemfish_rc.legend_marker_size)
+          patch_alpha:  (Default value = 1.0)
+          **kwargs:
+
+        Returns:
+
         """
         labels, colors = list(labels), list(colors)
         kwargs = copy(kwargs)
@@ -272,6 +357,16 @@ class FigureTools:
         Also see `FigureTools.manual_legend`.
         This is unfortunately necessary in cases where, for ex, only a handle per color is wanted -- not a handle per color and marker shape.
         Applies `FigureTools.fix_labels`.
+
+        Args:
+          labels: Sequence[str]:
+          colors: Sequence[str]:
+          patch_size: float:  (Default value = chemfish_rc.legend_marker_size)
+          patch_alpha:  (Default value = 1.0)
+          **patch_properties:
+
+        Returns:
+
         """
         assert len(labels) == len(colors), f"{len(labels)} labels but {len(colors)} colors"
         legend_dict = {e: colors[i] for i, e in enumerate(labels)}
@@ -299,10 +394,27 @@ class FigureTools:
             - --> is changed to →
             - __a and __b are made nicer
             - math is escaped in TeX if necessary
+
+        Args:
+          name: Union[Iterable[str]:
+          str]:
+          inplace:
+
+        Returns:
+
         """
 
         # noinspection PyProtectedMember
         def fix_u(s: str) -> str:
+            """
+
+
+            Args:
+              s: str:
+
+            Returns:
+
+            """
             return (
                 str(s)
                 .replace("(-)", "(−)")
@@ -315,6 +427,15 @@ class FigureTools:
             )
 
         def fix_ltext(s: str) -> str:
+            """
+
+
+            Args:
+              s: str:
+
+            Returns:
+
+            """
             # escape: # $ % & ~ _ ^ \ { } \( \) \[ \]
             return (
                 Tools.strip_paired(s, [("$", "$")])
@@ -329,6 +450,15 @@ class FigureTools:
             )
 
         def fix_lmath(s: str) -> str:
+            """
+
+
+            Args:
+              s: str:
+
+            Returns:
+
+            """
             return (
                 ("$" + Tools.strip_paired(s, [("$", "$")]) + "$")
                 .replace("killed (+)", "lethal (+)")
@@ -344,6 +474,15 @@ class FigureTools:
             )
 
         def choose_fix(s: str) -> str:
+            """
+
+
+            Args:
+              s: str:
+
+            Returns:
+
+            """
             if not plt.rcParams["text.usetex"]:
                 return fix_u(s)
             elif (
@@ -364,6 +503,15 @@ class FigureTools:
                 return s
 
         def fix(s0: str) -> str:
+            """
+
+
+            Args:
+              s0: str:
+
+            Returns:
+
+            """
             is_label = hasattr(s0, "get_text")
             if is_label:
                 # noinspection PyUnresolvedReferences
@@ -392,6 +540,12 @@ class FigureTools:
     def despine(cls, ax: Axes) -> Axes:
         """
         Removes all spines and ticks on an Axes.
+
+        Args:
+          ax: Axes:
+
+        Returns:
+
         """
         ax.set_yticks([])
         ax.set_yticks([])
@@ -411,7 +565,12 @@ class FigureTools:
         Removes all matplotlib figures from memory.
         Here because it's confusing to remember.
         Logs an error if not all figures were closed.
-        :returns The number of closed figures
+
+        Args:
+
+        Returns:
+          The number of closed figures
+
         """
         n = len(plt.get_fignums())
         plt.clf()
@@ -425,6 +584,7 @@ class FigureTools:
 
     @classmethod
     def font_paths(cls) -> Sequence[str]:
+        """ """
         return matplotlib.font_manager.findSystemFonts(fontpaths=None)
 
     @classmethod
@@ -432,6 +592,16 @@ class FigureTools:
         """
         Adds text without a box, using chemfish_rc['general_note_font_size'] (unless overridden in kwargs).
         `x` and `y` are in coordinates (0, 1).
+
+        Args:
+          ax: Axes:
+          x: float:
+          y: float:
+          s: str:
+          **kwargs:
+
+        Returns:
+
         """
         fontsize, kwargs = InternalTools.from_kwargs(
             kwargs, "fontsize", chemfish_rc.general_note_font_size
@@ -445,6 +615,16 @@ class FigureTools:
         """
         Adds text without a box, using chemfish_rc['general_note_font_size'] (unless overridden in kwargs).
         `x` and `y` are in data coordinates.
+
+        Args:
+          ax: Axes:
+          x: float:
+          y: float:
+          s: str:
+          **kwargs:
+
+        Returns:
+
         """
         fontsize, kwargs = InternalTools.from_kwargs(
             kwargs, "fontsize", chemfish_rc.general_note_font_size
@@ -460,6 +640,15 @@ class FigureTools:
         ```
         FigureTools.stamp(ax, 'hello', Corners.TOP_RIGHT)
         ```
+
+        Args:
+          ax: Axes:
+          text: str:
+          corner: Corner:
+          **kwargs:
+
+        Returns:
+
         """
         return FigureTools._text(ax, text, corner, **kwargs)
 
@@ -468,6 +657,13 @@ class FigureTools:
         """
         Stamps the run ID(s) in the upper-left corner.
         Only shows if chemfish_rc.stamp_on is True AND len(run_ids) <= chemfish_rc.stamp_max_runs.
+
+        Args:
+          ax: Axes:
+          run_ids: Iterable[int]:
+
+        Returns:
+
         """
         if chemfish_rc.stamp_on:
             run_ids = InternalTools.fetch_all_ids_unchecked(Runs, run_ids)
@@ -480,6 +676,12 @@ class FigureTools:
     def stamp_time(cls, ax: Axes) -> Axes:
         """
         If chemfish_rc.stamp_on is on, stamps the datetime to the top right corner.
+
+        Args:
+          ax: Axes:
+
+        Returns:
+
         """
         if chemfish_rc.stamp_on:
             text = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -487,6 +689,18 @@ class FigureTools:
 
     @classmethod
     def _text(cls, ax: Axes, text: str, corner: Corner, **kwargs) -> Axes:
+        """
+
+
+        Args:
+          ax: Axes:
+          text: str:
+          corner: Corner:
+          **kwargs:
+
+        Returns:
+
+        """
         fontsize, kwargs = InternalTools.from_kwargs(
             kwargs, "fontsize", chemfish_rc.stamp_font_size
         )
@@ -501,6 +715,11 @@ class _Pub:
     Provides a context manager that yields a FigureSaver.
     Clears all figures (inc. pre-existing) before entering and on every save.
     Hides all display.
+
+    Args:
+
+    Returns:
+
     """
 
     @contextmanager

@@ -14,6 +14,7 @@ from chemfish.viz.stim_plots import *
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class TraceBase(CakeLayer, KvrcPlotting):
+    """ """
     def __init__(
         self,
         top_bander: Callable[[WellFrame], pd.DataFrame] = lambda group: group.agg_by_name(
@@ -53,6 +54,25 @@ class TraceBase(CakeLayer, KvrcPlotting):
         starts_at_ms: int,
         run_dict: Optional[Mapping[str, str]],
     ) -> Axes:
+        """
+
+
+        Args:
+          subdf: WellFrame:
+          s: str:
+          control_names: Sequence[str]:
+          ax1: Axes:
+          colors: Mapping[str:
+          str]:
+          alphas: Mapping[str:
+          float]:
+          y_bounds: Optional[Tup[float:
+          float]]:
+          starts_at_ms: int:
+          run_dict:
+        Returns:
+
+        """
         ax1.set_rasterization_zorder(1)
         ax1.grid(b=False)
         ax1.set_facecolor("white")
@@ -99,6 +119,20 @@ class TraceBase(CakeLayer, KvrcPlotting):
         return ax1
 
     def _plot_single(self, group, name, color, alpha, ax1, y_bounds):
+        """
+
+
+        Args:
+          group:
+          name:
+          color:
+          alpha:
+          ax1:
+          y_bounds:
+
+        Returns:
+
+        """
         viz_name = FigureTools.fix_labels(name)
         if self._banded and len(group) > 2:
             if self._mean_bander is None:
@@ -156,6 +190,7 @@ class TraceBase(CakeLayer, KvrcPlotting):
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class TracePlotter(KvrcPlotting):
+    """ """
     def __init__(
         self,
         stimframes_plotter: Optional[StimframesPlotter] = None,
@@ -202,6 +237,32 @@ class TracePlotter(KvrcPlotting):
         run_dict: Optional[Mapping[str, str]] = None,
         battery: Union[None, Batteries, int, str] = None,
     ) -> Iterator[Tup[str, Figure]]:
+        """
+
+
+        Args:
+          df: WellFrame:
+          stimframes:
+          control_names: Union[Sequence[str]:
+          str:
+          None:
+          Sequence[str]]:
+          Set[str]]]:  (Default value = None)
+          starts_at_ms: Optional[int]:  (Default value = None)
+          extra: Optional[Callable[[Figure:
+          GridSpec]:
+          None]]:  (Default value = None)
+          assays:
+          run_dict: Optional[Mapping[str:
+          str]]:  (Default value = None)
+          battery: Union[None:
+          Batteries:
+          int:
+          str]:  (Default value = None)
+
+        Returns:
+
+        """
         # prep
         t0 = time.monotonic()
         if starts_at_ms is None:
@@ -255,6 +316,19 @@ class TracePlotter(KvrcPlotting):
     def _assign_control_names(
         self, df: Union[WellFrame, Sequence[str], Set[str], str], control_names
     ) -> Mapping[str, Sequence[str]]:
+        """
+
+
+        Args:
+          df: Union[WellFrame:
+          Sequence[str]:
+          Set[str]:
+          str]:
+          control_names:
+
+        Returns:
+
+        """
         if control_names is None:
             cn = {n: [] for n in df.names().unique()}
         elif isinstance(control_names, list) or isinstance(control_names, set):
@@ -273,6 +347,15 @@ class TracePlotter(KvrcPlotting):
         return cn
 
     def _assign_sizes(self, n_extra_slots: int) -> Tup[Tup[float, float], float, float]:
+        """
+
+
+        Args:
+          n_extra_slots: int:
+
+        Returns:
+
+        """
         trace_height, stim_height = (
             chemfish_rc.trace_height,
             chemfish_rc.trace_layer_const_height + chemfish_rc.trace_layer_height * n_extra_slots,
@@ -296,6 +379,27 @@ class TracePlotter(KvrcPlotting):
         y_bounds,
         battery,
     ):
+        """
+
+
+        Args:
+          sub: WellFrame:
+          name:
+          starts_at_ms:
+          control_names: Sequence[str]:
+          stimframes:
+          assays:
+          run_dict:
+          extra:
+          figsize:
+          trace_height:
+          stim_height:
+          y_bounds:
+          battery:
+
+        Returns:
+
+        """
         logger.debug(f"Plotting trace for {name}")
         all_names = [*sub.unique_names(), *control_names]
         all_is_control = [s if s in control_names else None for s in all_names]
@@ -329,6 +433,16 @@ class TracePlotter(KvrcPlotting):
         return name, member.get_figure()
 
     def _select(self, df: WellFrame, name: str, control_names: Mapping[str, Sequence[str]]):
+        """
+
+
+        Args:
+          df: WellFrame:
+          name: str:
+          control_names:
+        Returns:
+
+        """
         z = WellFrame.of(
             pd.concat(
                 [
@@ -344,6 +458,16 @@ class TracePlotter(KvrcPlotting):
         return z
 
     def _assign_alphas(self, control_names: Sequence[str], name: str) -> Dict[str, float]:
+        """
+
+
+        Args:
+          control_names: Sequence[str]:
+          name: str:
+
+        Returns:
+
+        """
         return {
             **{
                 control_name: chemfish_rc.band_control_alpha

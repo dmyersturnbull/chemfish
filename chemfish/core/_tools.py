@@ -14,6 +14,11 @@ class InternalTools:
     The most useful functions are:
         - Tools.run: Gets a run from a run ID, tag, name, instance, or submission hash or instance
         - Tools.runs: Delegates to Tools.run for either of the types accepted by Tools.run, or an iterable over them
+
+    Args:
+
+    Returns:
+
     """
 
     @classmethod
@@ -23,8 +28,14 @@ class InternalTools:
         Will always return None for legacy data.
         In pre-PointGrey data, these are the timestamps that MATLAB received the frames.
         In PointGrey data, these are the timestamps that the image was taken (according to the camera firmware).
-        :param run_id: The ID of a runs row, only
-        :return: The numpy array of floats, or None
+
+        Args:
+          run_id: The ID of a runs row, only
+          run_id: int:
+
+        Returns:
+          The numpy array of floats, or None
+
         """
         return InternalTools.convert_sensor_data(
             SensorData.select()
@@ -38,8 +49,14 @@ class InternalTools:
         """
         Downloads the timestamps that SauronX recorded for the stimuli, or None if the sensor was not defined.
         Will always return None for legacy data.
-        :param run_id: The ID of a runs row, only
-        :return: The numpy array of floats, or None
+
+        Args:
+          run_id: The ID of a runs row, only
+          run_id: int:
+
+        Returns:
+          The numpy array of floats, or None
+
         """
         return InternalTools.convert_sensor_data(
             SensorData.select()
@@ -53,8 +70,14 @@ class InternalTools:
         """
         Downloads and converts sensor data.
         See `InternalTools.convert_sensor_data_from_bytes` for details.
-        :param data: The ID or instance of a row in sensor_data
-        :return: The converted data
+
+        Args:
+          data: The ID or instance of a row in sensor_data
+          data: SensorData:
+
+        Returns:
+          The converted data
+
         """
         data = SensorData.fetch(data)
         return InternalTools.convert_sensor_data_from_bytes(data.sensor, data.floats)
@@ -67,9 +90,16 @@ class InternalTools:
         Convert the sensor data to its appropriate type as defined by `sensors.data_type`.
         WARNING:
             Currently does not handle `sensors.data_type=='utf8_char'`. Currently there are no sensors in Valar with this data type.
-        :param sensor: The name, ID, or instance of the sensors row
-        :param data: The data from `sensor_data.floats`; despite the name this is blob represented as bytes and may not correspond to floats at all
-        :return: The converted data, or None if `data` is None
+
+        Args:
+          sensor: The name, ID, or instance of the sensors row
+          data: The data from `sensor_data.floats`; despite the name this is blob represented as bytes and may not correspond to floats at all
+          sensor:
+          data: bytes:
+
+        Returns:
+          The converted data, or None if `data` is None
+
         """
         sensor = Sensors.fetch(sensor)
         dt = sensor.data_type
@@ -100,6 +130,16 @@ class InternalTools:
 
     @classmethod
     def verify_class_has_attrs(cls, class_, *attributes: Union[str, Iterable[str]]) -> None:
+        """
+
+
+        Args:
+          class_:
+          *attributes:
+
+        Returns:
+
+        """
         attributes = InternalTools.flatten_smart(attributes)
         bad_attributes = [not hasattr(class_, k) for k in attributes]
         if any(bad_attributes):
@@ -107,6 +147,16 @@ class InternalTools:
 
     @classmethod
     def warn_overlap(cls, a: Collection[Any], b: Collection[Any]) -> Set[Any]:
+        """
+
+
+        Args:
+          a: Collection[Any]:
+          b: Collection[Any]:
+
+        Returns:
+
+        """
         bad = set(a).intersection(set(b))
         if len(bad) > 0:
             logger.error(f"Values {', '.join(bad)} are present in both sets")
@@ -114,6 +164,17 @@ class InternalTools:
 
     @classmethod
     def from_kwargs(cls, kwargs, key: str, fallback: Any) -> Tup[Any, Dict[str, Any]]:
+        """
+
+
+        Args:
+          kwargs:
+          key: str:
+          fallback: Any:
+
+        Returns:
+
+        """
         # we'll get an error if this appears twice, so let's remove the one in kwargs
         value = kwargs[key] if key in kwargs else fallback
         return value, {k: v for k, v in kwargs.items() if k != key}
@@ -131,6 +192,15 @@ class InternalTools:
         Sequence[str],
         Mapping[str, str],
     ]:
+        """
+
+
+        Args:
+          *parts: Sequence[str]:
+
+        Returns:
+
+        """
         path = ChemfishResources.path(*parts)
         return Tools.read_any(path)
 
@@ -139,10 +209,18 @@ class InternalTools:
         """
         Fetches a single row from a table, returning the row IDs.
         Each returned row is guaranteed to exist in the table at the time the query is executed.
-        :param thing_class: The table (peewee model)
-        :param things: A list of lookup values -- each is an ID or unique varchar/char/enum field value
-        :raises A ValarLookupError If the row was not found
-        :return: The ID of the row
+
+        Args:
+          thing_class: The table (peewee model)
+          things: A list of lookup values -- each is an ID or unique varchar/char/enum field value
+          thing_class: Type[BaseModel]:
+
+        Returns:
+          The ID of the row
+
+        Raises:
+          A: ValarLookupError If the row was not found
+
         """
         things = InternalTools.listify(things)
         return [thing_class.fetch(thing).id for thing in things]
@@ -152,11 +230,20 @@ class InternalTools:
         """
         Fetches a single row from a table, returning the row IDs.
         If just IDs are passed, just returns them -- this means that the return value is NOT GUARANTEED to be a valid row ID.
-        :param thing_class: The table (peewee model)
-        :param things: A list of lookup values -- each is an ID or unique varchar/char/enum field value
-        :param keep_none: Include None values
-        :raises A ValarLookupError If the row was not found
-        :return: The ID of the row
+
+        Args:
+          thing_class: The table (peewee model)
+          things: A list of lookup values -- each is an ID or unique varchar/char/enum field value
+          keep_none: Include None values
+          thing_class: Type[BaseModel]:
+          keep_none: bool:  (Default value = False)
+
+        Returns:
+          The ID of the row
+
+        Raises:
+          A: ValarLookupError If the row was not found
+
         """
         things = InternalTools.listify(things)
         # noinspection PyTypeChecker
@@ -172,15 +259,32 @@ class InternalTools:
         """
         Fetches a single row from a table, returning only the ID.
         If an ID is passed, just returns that -- this means that the return value is NOT GUARANTEED to be a valid row ID.
-        :param thing_class: The table (peewee model)
-        :param thing: The lookup value -- an ID or unique varchar/char/enum field value
-        :raises A ValarLookupError If the row was not found
-        :return: The ID of the row
+
+        Args:
+          thing_class: The table (peewee model)
+          thing: The lookup value -- an ID or unique varchar/char/enum field value
+          thing_class: Type[BaseModel]:
+
+        Returns:
+          The ID of the row
+
+        Raises:
+          A: ValarLookupError If the row was not found
+
         """
         return thing if isinstance(thing, int) else thing_class.fetch(thing).id
 
     @classmethod
     def flatten(cls, seq: Iterable[Any]) -> Sequence[Any]:
+        """
+
+
+        Args:
+          seq: Iterable[Any]:
+
+        Returns:
+
+        """
         y = []
         for z in seq:
             y.extend(z)
@@ -188,6 +292,15 @@ class InternalTools:
 
     @classmethod
     def flatten_smart(cls, seq: Iterable[Any]) -> Sequence[Any]:
+        """
+
+
+        Args:
+          seq: Iterable[Any]:
+
+        Returns:
+
+        """
         if not Tools.is_true_iterable(seq):
             return [seq]
         y = []
@@ -204,8 +317,14 @@ class InternalTools:
         Makes a singleton list of a single element or returns the iterable.
         Will return (a list from) the sequence as-is if it is Iterable, not a string, and not a bytes object.
         The order of iteration from the sequence is preserved.
-        :param sequence_or_element: A single element of any type, or an untyped Iterable of elements.
-        :return: A list
+
+        Args:
+          sequence_or_element: A single element of any type, or an untyped Iterable of elements.
+          sequence_or_element: Any:
+
+        Returns:
+          A list
+
         """
         return list(InternalTools.iterify(sequence_or_element))
 
@@ -214,8 +333,13 @@ class InternalTools:
         """
         Makes a singleton Iterator of a single element or returns the iterable.
         Will return (an iterator from) the sequence as-is if it is Iterable, not a string, and not a bytes object.
-        :param sequence_or_element: A single element of any type, or an untyped Iterable of elements.
-        :return: An Iterator
+
+        Args:
+          sequence_or_element: A single element of any type, or an untyped Iterable of elements.
+
+        Returns:
+          An Iterator
+
         """
         if Tools.is_true_iterable(sequence_or_element):
             return iter(sequence_or_element)
@@ -227,8 +351,13 @@ class InternalTools:
         """
         Fetchs a well and its run in a single query.
         In contrast, calling Wells.fetch().run will perform two queries.
-        :param well A well ID or instance
-        :returns A wells instance
+
+        Args:
+          well: A well ID or instance
+          well:
+        Returns:
+          A wells instance
+
         """
         well = Wells.select(Wells, Runs).join(Runs).where(Wells.id == well).first()
         if well is None:
@@ -247,12 +376,28 @@ class InternalTools:
             - False if the attribute of every element is not None.
             - None if the attribute is not defined on one or more elements.
             - None if the attribute is TNonerue on some elements and not None on others
-        :param collection: Any iterable of objects that might have `attr` defined on them
-        :param attr: The name of the attribute; if None will use the elements themselves
-        :return: A boolean or None
+
+        Args:
+          collection: Any iterable of objects that might have `attr` defined on them
+          attr: The name of the attribute; if None will use the elements themselves
+          collection: Collection[Any]:
+          attr: Optional[str]:
+
+        Returns:
+          A boolean or None
+
         """
 
         def isnull(x):
+            """
+
+
+            Args:
+              x:
+
+            Returns:
+
+            """
             return x is None if attr is None else getattr(x, attr) is None
 
         if all(isnull(r) for r in collection):
@@ -273,9 +418,16 @@ class InternalTools:
             - False if the attribute of every element is false.
             - None if the attribute is not defined on one or more elements.
             - None if the attribute is True on some elements and False on others
-        :param collection: Any iterable of objects that might have `attr` defined on them
-        :param attr: The name of the attribute; if None will use the elements themselves
-        :return: A boolean or None
+
+        Args:
+          collection: Any iterable of objects that might have `attr` defined on them
+          attr: The name of the attribute; if None will use the elements themselves
+          collection: Collection[Any]:
+          attr: Optional[str]:
+
+        Returns:
+          A boolean or None
+
         """
         if attr is not None:
             if all(getattr(r, attr) for r in collection):

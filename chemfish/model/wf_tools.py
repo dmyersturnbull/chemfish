@@ -6,17 +6,33 @@ from .treatments import Treatment, Treatments
 
 
 def _w(attrs: str):
+    """
+    
+
+    Args:
+      attrs: str: 
+
+    Returns:
+
+    """
     return lambda w, ts: Tools.look(w, attrs)
 
 
 def _r(attrs: str):
+    """
+    
+
+    Args:
+      attrs: str: 
+
+    Returns:
+
+    """
     return lambda w, ts: Tools.look(w, "run." + attrs)
 
 
 class WellFrameColumns:
-    """
-    The functions that are used to generate the WellFrame columns.
-    """
+    """The functions that are used to generate the WellFrame columns."""
 
     experiment_id = "experiment_id", _w("run.experiment.id")
     experiment_name = "experiment_name", _w("run.experiment.name")
@@ -128,6 +144,7 @@ class WellFrameColumns:
 
 
 class WellFrameColumnTools:
+    """ """
     int32_cols = {
         "well",
         "well_index",
@@ -206,7 +223,15 @@ class WellFrameColumnTools:
 
     @classmethod
     def from_nan(cls, df):
-        """Temporarily replace NaNs and Nones to little-used values."""
+        """
+        Temporarily replace NaNs and Nones to little-used values.
+
+        Args:
+          df: 
+
+        Returns:
+
+        """
         for c in WellFrameColumnTools._o_int_cols:
             if c in df.columns:
                 df[c] = df[c].fillna(-1)
@@ -221,7 +246,15 @@ class WellFrameColumnTools:
 
     @classmethod
     def to_nan(cls, df):
-        """Undoes WellFrameColumnTools._from_nan"""
+        """
+        Undoes WellFrameColumnTools._from_nan
+
+        Args:
+          df: 
+
+        Returns:
+
+        """
         for c in WellFrameColumnTools._o_int_cols:
             if c in df.columns:
                 df[c] = df[c].replace(-1, np.nan)

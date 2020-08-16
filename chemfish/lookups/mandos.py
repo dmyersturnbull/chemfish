@@ -9,6 +9,7 @@ from chemfish.lookups import *
 
 
 class MandosLookups(LookupTool):
+    """ """
     @classmethod
     def predicates(
         cls,
@@ -16,6 +17,20 @@ class MandosLookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          MandosPredicates]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         query = MandosPredicates.select(MandosPredicates, Refs).join(Refs)
         # there is no unique key on name or external (because it depends on ref), so search on either
         # TODO this fails for iterables of mixed types
@@ -44,6 +59,20 @@ class MandosLookups(LookupTool):
         like: bool = False,
         regex: bool = False,
     ) -> Lookup:
+        """
+
+
+        Args:
+          *wheres: Union[ExpressionsLike:
+          int:
+          str:
+          MandosObjects]:
+          like:
+          regex:
+
+        Returns:
+
+        """
         # there is no unique key on name or external (because it depends on ref), so search on either
         wheres = InternalTools.flatten_smart(wheres)
         # TODO this fails for iterables of mixed types

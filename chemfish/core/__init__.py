@@ -29,16 +29,44 @@ warnings.filterwarnings(
 
 
 class ChemfishResources:
+    """ """
     @classmethod
     def path(cls, *parts) -> Path:
+        """
+        
+
+        Args:
+          *parts: 
+
+        Returns:
+
+        """
         return Path(Path(__file__).parent.parent, "resources", *parts)
 
     @classmethod
     def text(cls, *parts) -> str:
+        """
+        
+
+        Args:
+          *parts: 
+
+        Returns:
+
+        """
         return ChemfishResources.path(*parts).read_text(encoding="utf8")
 
     @classmethod
     def binary(cls, *parts) -> bytes:
+        """
+        
+
+        Args:
+          *parts: 
+
+        Returns:
+
+        """
         return ChemfishResources.path(*parts).read_bytes()
 
 

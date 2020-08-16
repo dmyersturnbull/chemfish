@@ -18,9 +18,7 @@ DEFAULT_CACHE_DIR = chemfish_env.cache_dir / "wells"
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class WellCache(AWellCache):
-    """
-    A cache for WellFrames with a particular feature.
-    """
+    """A cache for WellFrames with a particular feature."""
 
     def __init__(
         self, feature: FeatureTypeLike, cache_dir: PathLike = DEFAULT_CACHE_DIR, dtype=None
@@ -35,37 +33,89 @@ class WellCache(AWellCache):
         """
         Returns a copy with dtype set.
         Features will be converted when loaded using `pd.as_type(dtype)`.
+
+        Args:
+          dtype: 
+
+        Returns:
+
         """
         return WellCache(self.feature, self._cache_dir, dtype)
 
     @property
     def cache_dir(self) -> Path:
+        """ """
         return self._cache_dir
 
     @abcd.overrides
     def path_of(self, run: RunLike) -> Path:
+        """
+        
+
+        Args:
+          run: RunLike: 
+
+        Returns:
+
+        """
         run = Tools.run(run)
         return self.cache_dir / (str(run.id) + ".h5")
 
     @abcd.overrides
     def key_from_path(self, path: PathLike) -> RunLike:
+        """
+        
+
+        Args:
+          path: PathLike: 
+
+        Returns:
+
+        """
         path = Path(path).relative_to(self.cache_dir)
         return int(re.compile(r"^([0-9]+)\.h5$").fullmatch(path.name).group(1))
 
     @abcd.overrides
     def load_multiple(self, runs: RunsLike) -> WellFrame:
+        """
+        
+
+        Args:
+          runs: RunsLike: 
+
+        Returns:
+
+        """
         runs = Tools.runs(runs)
         self.download(*runs)
         return WellFrame.concat(*[self.load(r) for r in runs])
 
     @abcd.overrides
     def load(self, run: RunLike) -> WellFrame:
+        """
+        
+
+        Args:
+          run: RunLike: 
+
+        Returns:
+
+        """
         run = Tools.run(run)
         self.download(run)
         return self._load(run)
 
     @abcd.overrides
     def download(self, *runs: RunsLike) -> None:
+        """
+        
+
+        Args:
+          *runs: RunsLike: 
+
+        Returns:
+
+        """
         # TODO this is broken!!!
         runs = {r for r in Tools.runs(runs) if r not in self}
         if len(runs) > 10:
@@ -84,9 +134,27 @@ class WellCache(AWellCache):
                     self._save(wf)
 
     def _load(self, runs: RunsLike) -> WellFrame:
+        """
+        
+
+        Args:
+          runs: RunsLike: 
+
+        Returns:
+
+        """
         runs = ValarTools.runs(runs)
 
         def read(r):
+            """
+            
+
+            Args:
+              r: 
+
+            Returns:
+
+            """
             with Tools.silenced(no_stderr=True, no_stdout=True):
                 try:
                     df = pd.read_hdf(self.path_of(r), "df")
@@ -107,8 +175,15 @@ class WellCache(AWellCache):
         return WellFrame(pd.concat([read(r) for r in runs], sort=False))
 
     def _save(self, df: WellFrame) -> None:
-        """Saves a well-by-well dataframe as HDF5.
-        :param df: Use large_dfs.fetch_wells
+        """
+        Saves a well-by-well dataframe as HDF5.
+
+        Args:
+          df: Use large_dfs.fetch_wells
+          df: WellFrame: 
+
+        Returns:
+
         """
         for run in df["run"].unique():
             dfc = WellFrame.vanilla(df[df["run"] == run].copy())

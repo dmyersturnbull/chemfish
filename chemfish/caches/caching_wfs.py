@@ -14,6 +14,11 @@ class CachingWellFrameBuilder(WellFrameBuilder):
     A WellFrameBuilder backed by a FrameCache.
     The FrameCache saves WellFrames for full runs, but WellFrameBuilder will return only the wells of interest.
     If include_full_runs is set, WellFrameBuilder will return every well on runs where at least one well was queried.
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, cache: WellCache, before_datetime: Optional[datetime]):
@@ -27,7 +32,16 @@ class CachingWellFrameBuilder(WellFrameBuilder):
     def wells(
         cls, wells: Union[Union[int, Wells], Iterable[Union[int, Wells, str]]], cache: WellCache
     ) -> CachingWellFrameBuilder:
-        """Convenience factory method to query by an exact set of wells with no addition WHEREs."""
+        """
+        Convenience factory method to query by an exact set of wells with no addition WHEREs.
+
+        Args:
+          wells:
+          cache: WellCache:
+
+        Returns:
+
+        """
         if isinstance(wells, str) or isinstance(wells, int) or isinstance(wells, Wells):
             wells = {Wells.fetch(wells).id}
         else:
@@ -42,7 +56,16 @@ class CachingWellFrameBuilder(WellFrameBuilder):
         runs: Union[Union[int, Runs, str, Submissions], Iterable[Union[int, Runs, str]]],
         cache: WellCache,
     ) -> CachingWellFrameBuilder:
-        """Convenience factory method to query by an exact set of runs with no addition WHEREs."""
+        """
+        Convenience factory method to query by an exact set of runs with no addition WHEREs.
+
+        Args:
+          runs:
+          cache: WellCache:
+
+        Returns:
+
+        """
         if (
             isinstance(runs, str)
             or isinstance(runs, int)
@@ -60,6 +83,11 @@ class CachingWellFrameBuilder(WellFrameBuilder):
         """
         Makes CachingWellFrameBuilder.build() return all of the wells on a run if a single well matched the query.
         This won't make the actual querying any slower because the whole runs are cached to disk, not just the matching wells.
+
+        Args:
+
+        Returns:
+
         """
         self._include_full_runs = True
         return self
@@ -69,8 +97,16 @@ class CachingWellFrameBuilder(WellFrameBuilder):
     ) -> CachingWellFrameBuilder:
         """
         In CachingWellFrameBuilder this is useless because it MUST be the same as the cache feature.
-        :param feature: The FeatureType; for CachingWellFrameBuilder MUST be the same as the feature
-        :param dtype:
+
+        Args:
+          feature: The FeatureType; for CachingWellFrameBuilder MUST be the same as the feature
+          dtype:
+          feature: Union[None:
+          str:
+          FeatureType]:
+
+        Returns:
+
         """
         feature = FeatureTypes.of(feature)
         if feature != self._cache.feature:
@@ -84,6 +120,11 @@ class CachingWellFrameBuilder(WellFrameBuilder):
         """
         Builds the WellFrame.
         Either loads the runs from disk and filters the wells by the query, or queries, caches, and returns.
+
+        Args:
+
+        Returns:
+
         """
         query = WellFrameQuery().build(WellFrameQuery.no_fields())
         for where in self._wheres:

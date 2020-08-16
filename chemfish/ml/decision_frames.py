@@ -12,10 +12,16 @@ class DecisionFrame(TypedDf):
     The single index column is named 'correct_label', and the single column name is named 'label'.
     Practically, this is a Pandas wrapper around a scikit-learn decision_function
     that also has the predicted and correct class labels.
+
+    Args:
+
+    Returns:
+
     """
 
     @classmethod
     def required_index_names(cls) -> Sequence[str]:
+        """ """
         return ["label", "sample_id"]
 
     @classmethod
@@ -28,13 +34,22 @@ class DecisionFrame(TypedDf):
     ) -> DecisionFrame:
         """
         Wraps a decision function numpy array into a DecisionFrame instance complete with labels as names and columns.
-        :param correct_labels: A length-n list of the correct labels for each of the n samples
-        :param labels: A length-m list of class labels matching the predictions (columns) on `probabilities`
-        :param decision_function: An n × m matrix of probabilities (or scores) from the classifier.
-                The rows are samples, and the columns are predictions.
-                scikit-learn decision_functions (ex model.predict_proba) will output this.
-        :param sample_ids: IDs (or names) of training examples for later reference; should be unique
-        :return: A DecisionFrame
+
+        Args:
+          correct_labels: A length-n list of the correct labels for each of the n samples
+          labels: A length-m list of class labels matching the predictions (columns) on `probabilities`
+          decision_function: An n × m matrix of probabilities (or scores) from the classifier.
+        The rows are samples, and the columns are predictions.
+        scikit-learn decision_functions (ex model.predict_proba) will output this.
+          sample_ids: IDs (or names) of training examples for later reference; should be unique
+          correct_labels: Sequence[str]: 
+          labels: Sequence[str]: 
+          decision_function: np.array: 
+          sample_ids: Sequence[Any]: 
+
+        Returns:
+          A DecisionFrame
+
         """
         decision_function = pd.DataFrame(decision_function)
         decision_function.index = [correct_labels, sample_ids]
@@ -43,6 +58,7 @@ class DecisionFrame(TypedDf):
         return cls.convert(decision_function)
 
     def confusion(self) -> ConfusionMatrix:
+        """ """
         labels = self.columns
         correct_labels = self.index.get_level_values("label")
         if self.shape[0] != len(correct_labels):
@@ -64,6 +80,7 @@ class DecisionFrame(TypedDf):
         return ConfusionMatrix(correct_confused_with)
 
     def accuracy(self) -> AccuracyFrame:
+        """ """
         actual_labels = self.index.get_level_values("label").values
         sample_ids = self.index.get_level_values("sample_id").values
         stripped = self.reset_index().drop("sample_id", axis=1).set_index("label")
@@ -82,10 +99,32 @@ class DecisionFrame(TypedDf):
 
     @classmethod
     def read_csv(cls, path: PathLike, *args, **kwargs) -> DecisionFrame:
+        """
+        
+
+        Args:
+          path: PathLike: 
+          *args: 
+          **kwargs: 
+
+        Returns:
+
+        """
         df = pd.read_csv(Path(path)).set_index(cls.required_index_names())
         return cls(df)
 
     def to_csv(self, path: PathLike, *args, **kwargs):
+        """
+        
+
+        Args:
+          path: PathLike: 
+          *args: 
+          **kwargs: 
+
+        Returns:
+
+        """
         self.to_vanilla().to_csv(path, index_label=self.__class__.required_index_names())
 
 

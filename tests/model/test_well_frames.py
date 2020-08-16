@@ -14,6 +14,12 @@ from chemfish.model.wf_builders import *
 def float_or_string(draw):
     """
     Helper function that either returns an integer of string strategy. Used to create 'mixed' index column values.
+
+    Args:
+      draw: 
+
+    Returns:
+
     """
     fs = draw(strategies.booleans())
     if fs:
@@ -26,6 +32,12 @@ def float_or_string(draw):
 def wf_strategy(draw):
     """
     Creates a list of parameters that can be used to create a WellFrame filled with dummy data.
+
+    Args:
+      draw: 
+
+    Returns:
+
     """
     rows = draw(strategies.integers(min_value=1, max_value=20))
     cols = draw(strategies.integers(min_value=1, max_value=20))
@@ -52,19 +64,16 @@ def wf_strategy(draw):
 
 
 class TestWellFrames:
+    """ """
     def __init__(self):
         self.reg_wf = None
 
     def setUp(self) -> None:
-        """
-        Sets up WellFrame to use in tests.
-        """
+        """Sets up WellFrame to use in tests."""
         self.reg_wf = WellFrameBuilder.wells([1, 2, 3, 4]).with_feature("MI").build()
 
     def test_well_frames_basic(self):
-        """
-        Tests WellFrame constructor and get_item method.
-        """
+        """Tests WellFrame constructor and get_item method."""
         empty_wf = WellFrame()
         wf_two = self.reg_wf[self.reg_wf["name"] == "2"]
         feat_five = self.reg_wf[list(range(0, 5))]
@@ -76,9 +85,7 @@ class TestWellFrames:
         assert set(feat_five.columns) == {0, 1, 2, 3, 4}
 
     def test_astype(self):
-        """
-        Tests as_type method. Makes sure it creates a new view and that only the feature columns are affected.
-        """
+        """Tests as_type method. Makes sure it creates a new view and that only the feature columns are affected."""
         self.reg_wf = WellFrameBuilder.wells([1, 2, 3, 4]).with_feature("MI").build()
         copy_reg_wf = self.reg_wf.copy(deep=True)
         int_wf = self.reg_wf.astype(np.dtype(np.int32))
@@ -98,9 +105,7 @@ class TestWellFrames:
             WellFrame().astype()
 
     def test_features_only(self):
-        """
-        Tests features_only method.
-        """
+        """Tests features_only method."""
         feats_wf = self.reg_wf
         feats_two_meta_wf = self.reg_wf.features_only(["well", "name"])
         copy_reg_wf = self.reg_wf.copy(deep=True)
@@ -130,13 +135,12 @@ class TestWellFrames:
 
 
 class TestWellFramesHDF:
+    """ """
     def __init__(self):
         self.hdf_path = None
 
     def setUp(self) -> None:
-        """
-        Setup to create hdf path file. This is used so that the tearDown method can be used.
-        """
+        """Setup to create hdf path file. This is used so that the tearDown method can be used."""
         self.hdf_path = Path("wf.h5")
 
     @given(wf_strategy())
@@ -144,6 +148,12 @@ class TestWellFramesHDF:
         """
         Tests invariant involving to_hdf and read_hdf methods. Converting a WellFrame with to_hdf and then reading that
         hdf should return the WellFrame you started with.
+
+        Args:
+          data: 
+
+        Returns:
+
         """
         if (
             len(data[0]) > 1
@@ -162,9 +172,7 @@ class TestWellFramesHDF:
             WellFrame().read_hdf(path=None)
 
     def tearDown(self) -> None:
-        """
-        This method is called after the test is run even if it fails. This can only be called if setUp succeeds.
-        """
+        """This method is called after the test is run even if it fails. This can only be called if setUp succeeds."""
         if self.hdf_path.exists():
             self.hdf_path.unlink()
         os.remove(self.hdf_path)

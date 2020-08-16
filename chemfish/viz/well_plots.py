@@ -7,15 +7,35 @@ from chemfish.viz.figures import *
 
 
 class WellPlotter(KvrcPlotting):
+    """ """
     def plot(self, df: WellFrame) -> Figure:
+        """
+
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
 
 class TwoDWellPlotter(WellPlotter):
+    """ """
     def __init__(self, alpha: float = 0.8):
         self.alpha = alpha
 
     def plot(self, df: WellFrame) -> Figure:
+        """
+
+
+        Args:
+          df: WellFrame:
+
+        Returns:
+
+        """
         if df.feature_length() != 2:
             raise LengthMismatchError(
                 f"{self.__class__.__name__} only applies to WellFrames with precisely 2 features"
@@ -80,12 +100,21 @@ class TwoDWellPlotter(WellPlotter):
 
 
 class WellPlotters:
+    """ """
     @classmethod
     def basic(cls, df: WellFrame, recolor: bool = False, **kwargs) -> Figure:
         """
         Plots a standard 2D well plot such as t-SNE or PCA.
-        :param df: WellFrame with exactly 2 features
-        :param recolor: Overrides the color column of the WellFrame, selecting 1 color per name and accounting for control types
+
+        Args:
+          df: WellFrame with exactly 2 features
+          recolor: Overrides the color column of the WellFrame, selecting 1 color per name and accounting for control types
+          df: WellFrame:
+          recolor:
+          **kwargs:
+
+        Returns:
+
         """
         if recolor:
             df = df.set_meta_col(

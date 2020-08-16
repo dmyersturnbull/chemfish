@@ -3,6 +3,7 @@ from chemfish.model.audio import Waveform
 
 
 class AudioExpansion:
+    """ """
     @classmethod
     def expand(
         cls,
@@ -13,11 +14,17 @@ class AudioExpansion:
     ) -> np.array:
         """
         Embedds a waveform into a stimframes array.
-        :param stimseries:
-        :param stim:
-        :param waveform:
-        :param is_legacy:
-        :return:
+
+        Args:
+          stimseries: param stim:
+          waveform: param is_legacy:
+          stimseries: pd.Series:
+          stim:
+          waveform: Waveform:
+          is_legacy: bool:
+
+        Returns:
+
         """
         stim = Stimuli.fetch(stim)
         logger.info(f"Expanding audio on {stim.name}{'(legacy)' if is_legacy else ''}")

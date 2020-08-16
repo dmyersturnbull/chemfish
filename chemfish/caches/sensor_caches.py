@@ -11,19 +11,26 @@ bdata_names = {"sauronx-microphone-wav", "preview", "webcam"}
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class SensorCache(ASensorCache):
-    """
-    A cache for sensor data from a given run
-    """
+    """A cache for sensor data from a given run"""
 
     def __init__(self, cache_dir: PathLike = DEFAULT_CACHE_DIR):
         self._cache_dir = Tools.prepped_dir(cache_dir)
 
     @property
     def cache_dir(self) -> Path:
+        """ """
         return self._cache_dir
 
     @abcd.overrides
     def path_of(self, tup: Tup[SensorLike, RunLike]) -> Path:
+        """
+
+
+        Args:
+          tup:
+        Returns:
+
+        """
         sensor, run = tup
         sensor = Sensors.fetch(sensor)
         ext = ".flac" if "microphone-wav" in sensor.name else ".bytes"
@@ -31,6 +38,15 @@ class SensorCache(ASensorCache):
 
     @abcd.overrides
     def key_from_path(self, path: PathLike) -> Tup[SensorLike, RunLike]:
+        """
+
+
+        Args:
+          path: PathLike:
+
+        Returns:
+
+        """
         path = Path(path).relative_to(self.cache_dir)
         run = int(re.compile(r"^r([0-9]+)$").fullmatch(path.parent.name).group(1))
         sensor = re.compile(r"^r([a-z0-9\-_]+)\..+$").fullmatch(path.name).group(1)
@@ -38,15 +54,40 @@ class SensorCache(ASensorCache):
 
     @abcd.overrides
     def download(self, *sensors: Iterable[Tup[SensorLike, RunLike]]):
+        """
+
+
+        Args:
+          *sensors:
+        Returns:
+
+        """
         for sensor, run in sensors:
             self._download(sensor, run)
 
     def bt_data(self, run: RunLike) -> BatteryTimeData:
+        """
+
+
+        Args:
+          run: RunLike:
+
+        Returns:
+
+        """
         millis = self._download("sauronx-stimulus-ms", run)
         return BatteryTimeData(run, millis[0], millis[-1])
 
     @abcd.overrides
     def load(self, tup: Tup[SensorNames, RunLike]):
+        """
+
+
+        Args:
+          tup:
+        Returns:
+
+        """
         sensor_name, run = tup
         sensor_name = SensorNames.of(sensor_name)
         run = ValarTools.run(run)
@@ -85,9 +126,15 @@ class SensorCache(ASensorCache):
     def _download(self, sensor: SensorLike, run: RunLike) -> bytes:
         """
         Fetches sensor data if cache is available. Downloads if cache not present.
-        :param sensor:
-        :param run:
-        :return: Raw/Converted Sensor Data
+
+        Args:
+          sensor: param run:
+          sensor: SensorLike:
+          run: RunLike:
+
+        Returns:
+          Raw/Converted Sensor Data
+
         """
         sensor = Sensors.fetch(sensor)
         run = ValarTools.run(run)

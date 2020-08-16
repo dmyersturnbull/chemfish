@@ -14,20 +14,46 @@ class KvrcColorSchemes:
     Each is a list of hex color codes.
     Most are not used directly in chemfish, but are here for convenience.
     The "tol" palettes (ex `qualitative_tol_vibrant_7`) are safe for red-green color blindness.
+
+    Args:
+
+    Returns:
+
     """
 
     @classmethod
     def darken_color(cls, color, shading: float):
+        """
+        
+
+        Args:
+          color: 
+          shading: float: 
+
+        Returns:
+
+        """
         color = mcolors.colorConverter.to_rgb(color)
         h, l, s = colorsys.rgb_to_hls(*mcolors.to_rgb(color))
         return colorsys.hls_to_rgb(h, shading * 1, s)
 
     @classmethod
     def darken_palette(cls, palette: Iterable[str], shading: float) -> Sequence[str]:
+        """
+        
+
+        Args:
+          palette: Iterable[str]: 
+          shading: float: 
+
+        Returns:
+
+        """
         return [KvrcColorSchemes.darken_color(c, shading) for c in palette]
 
     @classmethod
     def grayscales(cls) -> Sequence[str]:
+        """ """
         return [
             "#000000",
             "#555555",
@@ -45,9 +71,7 @@ class KvrcColorSchemes:
 
     @classmethod
     def qualitiative_26(cls) -> Sequence[str]:
-        """
-        Special color scheme of 26.
-        """
+        """Special color scheme of 26."""
         # the first 11 of these were *[c for c in InternalKvrcUtils.darken_palette(qualitative.Set3_12.hex_colors, 0.38) if c != '#787878']
         # some were slightly modified to work better with the rest
         return [
@@ -84,6 +108,11 @@ class KvrcColorSchemes:
         """
         "Dark" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         No black and reordered red and yellow.
+
+        Args:
+
+        Returns:
+
         """
         return ["#222255", "#225555", "#225522", "#663333", "#666633", "#551144"]
 
@@ -92,6 +121,11 @@ class KvrcColorSchemes:
         """
         "High-contrast" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         Reordered. No gray.
+
+        Args:
+
+        Returns:
+
         """
         return ["#0077bb", "#ee3377", "#33bbee", "#cc3311", "#009988", "#ee7733"]
 
@@ -100,6 +134,11 @@ class KvrcColorSchemes:
         """
         "Vibrant" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         Reordered: black was moved to the front.
+
+        Args:
+
+        Returns:
+
         """
         return ["#000000", "#0077BB", "#CC3311", "#009988", "#EE7733", "#33BBEE", "#EE3377"]
 
@@ -108,6 +147,11 @@ class KvrcColorSchemes:
         """
         "Vibrant" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         Gray was removed.
+
+        Args:
+
+        Returns:
+
         """
         return ["#0077BB", "#CC3311", "#009988", "#EE7733", "#33BBEE", "#EE3377"]
 
@@ -116,6 +160,11 @@ class KvrcColorSchemes:
         """
         "Vibrant" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         Gray was removed and gray was added to the front.
+
+        Args:
+
+        Returns:
+
         """
         return ["#000000", "#0077BB", "#CC3311", "#009988", "#EE7733", "#33BBEE", "#EE3377"]
 
@@ -124,6 +173,11 @@ class KvrcColorSchemes:
         """
         "Muted" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         Gray was removed.
+
+        Args:
+
+        Returns:
+
         """
         return [
             "#332288",
@@ -142,6 +196,11 @@ class KvrcColorSchemes:
         """
         "Muted" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         Black was added to the front and gray was removed.
+
+        Args:
+
+        Returns:
+
         """
         return [
             "#000000",
@@ -168,6 +227,11 @@ class FancyCmaps:
     For ex, 'Greys' doesn't go from pure white to pure black!
     So colormaps to consider avoiding include Greys, Blues, Greens, (etc), bwr, and seismic.
     Matplotlib still has good built-in colormaps, including viridis and plasma.
+
+    Args:
+
+    Returns:
+
     """
 
     @classmethod

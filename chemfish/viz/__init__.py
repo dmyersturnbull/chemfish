@@ -10,12 +10,23 @@ from chemfish.core.core_imports import *
 
 
 class CakeComponent(metaclass=abc.ABCMeta):
+    """ """
     pass
 
 
 class CakeLayer(metaclass=abc.ABCMeta):
+    """ """
     @abcd.abstractmethod
     def plot(self, **kwargs) -> Axes:
+        """
+        
+
+        Args:
+          **kwargs: 
+
+        Returns:
+
+        """
         raise NotImplementedError()
 
 
@@ -24,6 +35,16 @@ __oldsubplots = copy(plt.subplots)
 
 
 def fix_fig(fig: Figure, **kwargs):
+    """
+    
+
+    Args:
+      fig: Figure: 
+      **kwargs: 
+
+    Returns:
+
+    """
     # using kwargs.get('figsize', plt.rcParams['figure.figsize']) if figsize is passed as None
     if kwargs.get("figsize") is None:
         w, h = plt.rcParams["figure.figsize"]
@@ -42,12 +63,30 @@ def fix_fig(fig: Figure, **kwargs):
 
 
 def new_fig(**kwargs):
+    """
+    
+
+    Args:
+      **kwargs: 
+
+    Returns:
+
+    """
     fig = __oldfig(**kwargs)
     fix_fig(fig, **kwargs)
     return fig
 
 
 def subplots(**kwargs):
+    """
+    
+
+    Args:
+      **kwargs: 
+
+    Returns:
+
+    """
     fig, ax = __oldsubplots(**kwargs)
     fix_fig(fig, **kwargs)
     return fig, ax

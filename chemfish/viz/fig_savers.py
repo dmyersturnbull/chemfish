@@ -22,6 +22,11 @@ class FigureSaver:
         - False    ==> do nothing
         - True     ==> clear it
         - callable ==> call it with the Figure instance
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(
@@ -61,6 +66,14 @@ class FigureSaver:
         - an iterable over (name, Figure) pairs, where `name` is a string that provides the filename (under the directory `path`)
         If it's the first case and `names` is set, will use those to provide the filenames.
         Otherwise, falls back to numbering them (ex: directory/1.png, etc)
+
+        Args:
+          figure: FigureSeqLike:
+          path:
+          names:
+
+        Returns:
+
         """
         if Tools.is_true_iterable(figure) and path.endswith(".pdf"):
             self.save_all_as_pdf(figure, path, names=names)
@@ -74,6 +87,14 @@ class FigureSaver:
     ) -> None:
         """
         Save a single PDF with potentially many figures.
+
+        Args:
+          figures: FigureSeqLike:
+          path: PathLike:
+          names:
+
+        Returns:
+
         """
         # note! this is weird
         cp = copy(self)
@@ -91,15 +112,46 @@ class FigureSaver:
         directory: PathLike = "",
         names: Optional[Iterator[str]] = None,
     ) -> None:
+        """
+
+
+        Args:
+          figures:
+          directory:
+          names:
+
+        Returns:
+
+        """
         for name, figure in self._enumerate(figures, names):
             # DO NOT prepend self.__save_under here!! It's done in save_one.
             path = Path(directory) / Tools.sanitize_path_node(name, is_file=True)
             self._save_one(figure, path)  # clears if needed
 
     def save_one(self, figure: Figure, path: PathLike) -> None:
+        """
+
+
+        Args:
+          figure:
+          path:
+
+        Returns:
+
+        """
         self._save_one(figure, path)
 
     def _save_one(self, figure: Figure, path: PathLike) -> None:
+        """
+
+
+        Args:
+          figure: Figure:
+          path: PathLike:
+
+        Returns:
+
+        """
         path = self._sanitized_file(path)
         figure.savefig(path, **self._kwargs)
         self._clean_up(figure)
@@ -107,6 +159,16 @@ class FigureSaver:
     def _enumerate(
         self, figures, names: Optional[Sequence[str]]
     ) -> Generator[Tup[str, Figure], None, None]:
+        """
+
+
+        Args:
+          figures:
+          names:
+
+        Returns:
+
+        """
         if isinstance(figures, Mapping):
             figures = figures.items()
         for i, figure in enumerate(figures):
@@ -118,6 +180,15 @@ class FigureSaver:
                 yield str(i), figure
 
     def _clean_up(self, figure: Figure) -> None:
+        """
+
+
+        Args:
+          figure: Figure:
+
+        Returns:
+
+        """
         if self._clear is None:
             pass
         elif self._clear is True:
@@ -132,8 +203,14 @@ class FigureSaver:
         Sanitizes a file path:
             - prepends self._save_under if needed
             - warns about issues
-        :param path: The path, including directory, but excluding self._save_under
-        :return: The Path
+
+        Args:
+          path: The path, including directory, but excluding self._save_under
+          path: PathLike:
+
+        Returns:
+          The Path
+
         """
         path = Path(path)
         if self._save_under is not None and Path(path).is_absolute():

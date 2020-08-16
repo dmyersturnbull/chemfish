@@ -99,7 +99,17 @@ class SauronxOnlyError(IncompatibleGenerationError):
 
 
 class ChemfishJsonEncoder(json.JSONEncoder):
+    """ """
     def default(self, obj):
+        """
+        
+
+        Args:
+          obj: 
+
+        Returns:
+
+        """
         try:
             # noinspection PyUnresolvedReferences
             import peewee

@@ -12,34 +12,68 @@ DEFAULT_CACHE_DIR = chemfish_env.cache_dir / "stimuli"
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class AudioStimulusCache(AnAudioStimulusCache):
-    """
-    A cache for audio files for stimuli.
-    """
+    """A cache for audio files for stimuli."""
 
     def __init__(self, cache_dir: PathLike = DEFAULT_CACHE_DIR):
         self._cache_dir = Tools.prepped_dir(cache_dir)
 
     @property
     def cache_dir(self) -> Path:
+        """ """
         return self._cache_dir
 
     @abcd.overrides
     def path_of(self, stimulus: StimulusLike) -> Path:
+        """
+        
+
+        Args:
+          stimulus: StimulusLike: 
+
+        Returns:
+
+        """
         return self.cache_dir / (stimulus.name + ".wav")
 
     @abcd.overrides
     def key_from_path(self, path: PathLike) -> StimulusLike:
+        """
+        
+
+        Args:
+          path: PathLike: 
+
+        Returns:
+
+        """
         pass
 
     @abcd.overrides
     def load(self, stimulus: StimulusLike) -> Path:
-        """Returns the local path, downloading if necessary."""
+        """
+        Returns the local path, downloading if necessary.
+
+        Args:
+          stimulus: StimulusLike: 
+
+        Returns:
+
+        """
         stimulus = Stimuli.fetch(stimulus)
         self.download(stimulus)
         return self.path_of(stimulus)
 
     @abcd.overrides
     def download(self, *keys: StimulusLike) -> None:
+        """
+        
+
+        Args:
+          *keys: StimulusLike: 
+
+        Returns:
+
+        """
         for stimulus in keys:
             stimulus = Stimuli.fetch(stimulus)
             tmpfile = self.path_of(stimulus)
@@ -61,6 +95,15 @@ class AudioStimulusCache(AnAudioStimulusCache):
 
     @abcd.overrides
     def load_moviepy(self, stimulus: StimulusLike) -> AudioClip:
+        """
+        
+
+        Args:
+          stimulus: StimulusLike: 
+
+        Returns:
+
+        """
         fetched = self.load(stimulus)
         try:
             return AudioFileClip(fetched)
@@ -69,6 +112,15 @@ class AudioStimulusCache(AnAudioStimulusCache):
 
     @abcd.overrides
     def load_pydub(self, stimulus: StimulusLike) -> pydub.AudioSegment:
+        """
+        
+
+        Args:
+          stimulus: StimulusLike: 
+
+        Returns:
+
+        """
         path = self.load(stimulus)
         try:
             return pydub.AudioSegment.from_file(path)
@@ -77,6 +129,15 @@ class AudioStimulusCache(AnAudioStimulusCache):
 
     @abcd.overrides
     def load_waveform(self, stimulus: StimulusLike) -> StimulusWaveform:
+        """
+        
+
+        Args:
+          stimulus: StimulusLike: 
+
+        Returns:
+
+        """
         stimulus = Stimuli.fetch(stimulus)
         path = self.load(stimulus)
         try:

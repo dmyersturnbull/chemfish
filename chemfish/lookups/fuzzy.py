@@ -18,6 +18,18 @@ class Fuzzy:
 
     @classmethod
     def projects(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
+        """
+
+
+        Args:
+          s: str:
+          ref:
+          min_score: int:  (Default value = 75)
+          limit:
+
+        Returns:
+
+        """
         logger.debug(f"Searching project names for '{s}'...")
         query = Projects.select()
         data = list(query)
@@ -35,6 +47,18 @@ class Fuzzy:
     def experiments(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
     ):
+        """
+
+
+        Args:
+          s: str:
+          ref:
+          min_score: int:  (Default value = 75)
+          limit:
+
+        Returns:
+
+        """
         logger.debug(f"Searching experiment names for '{s}'...")
         query = Experiments.select()
         data = list(query)
@@ -52,6 +76,18 @@ class Fuzzy:
     def batteries(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
     ):
+        """
+
+
+        Args:
+          s: str:
+          ref:
+          min_score: int:  (Default value = 75)
+          limit:
+
+        Returns:
+
+        """
         logger.debug(f"Searching batteries for '{s}'...")
         query = Batteries.select()
         data = list(query)
@@ -67,6 +103,18 @@ class Fuzzy:
 
     @classmethod
     def assays(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
+        """
+
+
+        Args:
+          s: str:
+          ref:
+          min_score: int:  (Default value = 75)
+          limit:
+
+        Returns:
+
+        """
         logger.debug(f"Searching assays for '{s}'...")
         query = Assays.select()
         data = list(query)
@@ -82,6 +130,18 @@ class Fuzzy:
 
     @classmethod
     def runs(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
+        """
+
+
+        Args:
+          s: str:
+          ref:
+          min_score: int:  (Default value = 75)
+          limit:
+
+        Returns:
+
+        """
         logger.debug(f"Searching run descriptions for '{s}'...")
         query = Runs.select()
         data = list(query)
@@ -97,6 +157,18 @@ class Fuzzy:
 
     @classmethod
     def variants(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
+        """
+
+
+        Args:
+          s: str:
+          ref:
+          min_score: int:  (Default value = 75)
+          limit:
+
+        Returns:
+
+        """
         logger.debug(f"Searching variant names for '{s}'...")
         query = GeneticVariants.select()
         data = list(query)
@@ -114,6 +186,18 @@ class Fuzzy:
     def constructs(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
     ):
+        """
+
+
+        Args:
+          s: str:
+          ref:
+          min_score: int:  (Default value = 75)
+          limit:
+
+        Returns:
+
+        """
         logger.debug(f"Searching constructs for '{s}'...")
         query = GeneticConstructs.select()
         data = list(query)
@@ -131,6 +215,18 @@ class Fuzzy:
     def compounds(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
     ):
+        """
+
+
+        Args:
+          s: str:
+          ref:
+          min_score: int:  (Default value = 75)
+          limit:
+
+        Returns:
+
+        """
         logger.debug(f"Searching compound labels for '{s}'...")
         query = CompoundLabels.select()
         if ref is not None:
@@ -148,6 +244,18 @@ class Fuzzy:
 
     @classmethod
     def batches(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 70, limit: int = 100):
+        """
+
+
+        Args:
+          s: str:
+          ref:
+          min_score: int:  (Default value = 70)
+          limit:
+
+        Returns:
+
+        """
         logger.debug(f"Searching batch labels for '{s}'...")
         query = BatchLabels.select()
         if ref is not None:
@@ -167,6 +275,18 @@ class Fuzzy:
     def mandos_objects(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: Optional[int] = 100
     ):
+        """
+
+
+        Args:
+          s: str:
+          ref:
+          min_score: int:  (Default value = 75)
+          limit:
+
+        Returns:
+
+        """
         logger.debug("Searching mandos_object_tags for '{s}'...")
         query = MandosObjectTags.select()
         if ref is not None:

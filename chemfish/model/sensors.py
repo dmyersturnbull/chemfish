@@ -12,9 +12,7 @@ from chemfish.model.audio import *
 
 @enum.unique
 class SensorNames(SmartEnum):
-    """
-    Enum of SensorNames. Put all Sensors that are involved in sensor_caches in here.
-    """
+    """Enum of SensorNames. Put all Sensors that are involved in sensor_caches in here."""
 
     PHOTORESISTOR = 1
     THERMISTOR = 2
@@ -26,6 +24,7 @@ class SensorNames(SmartEnum):
 
 
 class MicrophoneWaveform(Waveform):
+    """ """
     pass
 
 
@@ -36,6 +35,11 @@ class BatteryTimeData:
     """
     BatteryTimeData object (contains start/end timestamps, length of battery, etc.) for a given run.
     These are the emperical values, not the expected ones!
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, run: RunLike, start_ms: int, end_ms: int):
@@ -43,14 +47,17 @@ class BatteryTimeData:
 
     @property
     def start_end_dts(self) -> Tup[datetime, datetime]:
+        """ """
         return self.start_dt, self.end_dt
 
     @property
     def start_dt(self) -> datetime:
+        """ """
         return self.run.datetime_run + timedelta(milliseconds=self.start_ms)
 
     @property
     def end_dt(self) -> datetime:
+        """ """
         return self.run.datetime_run + timedelta(milliseconds=self.end_ms)
 
     def __len__(self) -> int:
@@ -59,36 +66,47 @@ class BatteryTimeData:
 
 class ChemfishSensor:
     def __init__(self, run: RunLike, sensor_data: SensorDataLike):
-        """
-        Sensor wrapper object that holds converted sensor_data for a given run.
-        :param run: Run ID, Submission ID, Submission Object, or Run Object
-        :param sensor_data: Converted Sensor_data
-        """
+    """
+    Sensor wrapper object that holds converted sensor_data for a given run.
+
+    Args:
+      run: Run ID, Submission ID, Submission Object, or Run Object
+      sensor_data: Converted Sensor_data
+
+    Returns:
+
+    """
         self._sensor_data = sensor_data
         self._run = ValarTools.run(run)
 
     @property
     def run(self) -> Runs:
+        """ """
         return self._run
 
     @property
     def data(self) -> SensorData:
+        """ """
         return self._sensor_data
 
     @property
     def sensor_data(self) -> SensorDataLike:
+        """ """
         return self._sensor_data
 
     @property
     def name(self) -> str:
+        """ """
         return Tools.strip_off_end(self.__class__.__name__.lower(), "sensor")
 
     @property
     def abbrev(self) -> str:
+        """ """
         raise NotImplementedError()
 
     @property
     def symbol(self) -> str:
+        """ """
         raise NotImplementedError()
 
     def __str__(self):
@@ -104,6 +122,11 @@ class TimeData(ChemfishSensor, metaclass=abc.ABCMeta):
     """
     BatteryTimeData object (contains start/end timestamps, length of battery, etc.) for a given run.
     These are the emperical values, not the expected ones!
+
+    Args:
+
+    Returns:
+
     """
 
     def __init__(self, run: RunLike, battery_data: np.array):
@@ -111,26 +134,40 @@ class TimeData(ChemfishSensor, metaclass=abc.ABCMeta):
         self.planned_battery_n_ms = run.experiment.battery.length
 
     def timestamps(self) -> Sequence[datetime]:
+        """ """
         return [self.run.datetime_run + timedelta(milliseconds=int(ms)) for ms in self.sensor_data]
 
     def timestamp_at(self, ind: int) -> datetime:
+        """
+
+
+        Args:
+          ind: int:
+
+        Returns:
+
+        """
         return self.run.datetime_run + timedelta(milliseconds=int(self.sensor_data[ind]))
 
     @property
     def start_ms(self) -> int:
+        """ """
         return self._sensor_data[0]
 
     @property
     def end_ms(self) -> int:
+        """ """
         return self._sensor_data[-1]
 
     @property
     def n_ms(self) -> float:
+        """ """
         # noinspection PyUnresolvedReferences
         return (self._sensor_data[1] - self._sensor_data[0]).total_seconds() * 1000
 
     @property
     def start_end_dts(self) -> Tup[datetime, datetime]:
+        """ """
         return self.timestamp_at(0), self.timestamp_at(-1)
 
     def __len__(self) -> int:
@@ -138,32 +175,43 @@ class TimeData(ChemfishSensor, metaclass=abc.ABCMeta):
 
 
 class StimulusTimeData(TimeData):
+    """ """
     @property
     def abbrev(self) -> str:
+        """ """
         return "stim"
 
     @property
     def symbol(self) -> str:
+        """ """
         return "⚑"
 
 
 class CameraTimeData(TimeData):
+    """ """
     @property
     def abbrev(self) -> str:
+        """ """
         return "frame"
 
     @property
     def symbol(self) -> str:
+        """ """
         return "🎥"
 
 
 class ImageSensor(ChemfishSensor):
     def __init__(self, run: RunLike, sensor_data: SensorDataLike):
-        """
-        Sensor that holds Image sensor data (Webcam and Preview). Applies grid if it holds preview data.
-        :param run: Run ID, Submission ID, Submission Object, or Run Object
-        :param sensor_data: Converted image sensor data (Webcam/Preview)
-        """
+    """
+    Sensor that holds Image sensor data (Webcam and Preview). Applies grid if it holds preview data.
+
+    Args:
+      run: Run ID, Submission ID, Submission Object, or Run Object
+      sensor_data: Converted image sensor data (Webcam/Preview)
+
+    Returns:
+
+    """
         super().__init__(run, sensor_data)
         self._sensor_data = Image.open(io.BytesIO(sensor_data))
 
@@ -172,9 +220,18 @@ class ImageSensor(ChemfishSensor):
     ) -> ChemfishSensor:
         """
         Draws a grid, returing a new ImageSensor.
-        :param color: A color code recognized by PIL (Python Imaging Library), such as a hex code starting with #
-        :param roi_ref: The reference from which to obtain the ROIs; the default is the sauronx ROI set from the TOML, which may or may not exist
-        :return: A copy of this ImageSensor
+
+        Args:
+          color: A color code recognized by PIL (Python Imaging Library), such as a hex code starting with #
+          roi_ref: The reference from which to obtain the ROIs; the default is the sauronx ROI set from the TOML, which may or may not exist
+          color:
+          roi_ref: Union[int:
+          str:
+          Refs]:  (Default value = 63)
+
+        Returns:
+          A copy of this ImageSensor
+
         """
         new = deepcopy(self)
         draw = ImageDraw.Draw(new)
@@ -194,14 +251,17 @@ class ImageSensor(ChemfishSensor):
 
     @property
     def abbrev(self) -> str:
+        """ """
         return "roi"
 
     @property
     def symbol(self) -> str:
+        """ """
         return "📷"
 
 
 class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
+    """ """
     def __init__(
         self,
         run: RunLike,
@@ -225,26 +285,36 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
 
     @property
     def samples_per_sec(self) -> int:
+        """ """
         return self._samples_per_sec
 
     @property
     def values_per_ms(self) -> int:
+        """ """
         raise NotImplementedError()
 
     @property
     def timing_data(self) -> SensorDataLike:
+        """ """
         return self._timing_data
 
     @property
     def bt_data(self) -> BatteryTimeData:
+        """ """
         return self._bt_data
 
     def slice_ms(self, start_ms: Optional[int], end_ms: Optional[int]) -> TimeDepChemfishSensor:
         """
         Slices Sensor data
-        :param start_ms:
-        :param end_ms:
-        :return: a copy of this class
+
+        Args:
+          start_ms: param end_ms:
+          start_ms: Optional[int]:
+          end_ms: Optional[int]:
+
+        Returns:
+          a copy of this class
+
         """
         started = (
             self.bt_data.start_ms + start_ms if start_ms is not None else self.bt_data.start_ms
@@ -290,34 +360,43 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
 
 
 class PhotoresistorSensor(TimeDepChemfishSensor):
+    """ """
     @property
     def abbrev(self) -> str:
+        """ """
         return "photo"
 
     @property
     def symbol(self) -> str:
+        """ """
         return "🌣"
 
     @property
     def values_per_ms(self) -> int:
+        """ """
         return 1
 
 
 class ThermistorSensor(TimeDepChemfishSensor):
+    """ """
     @property
     def abbrev(self) -> str:
+        """ """
         return "therm"
 
     @property
     def symbol(self) -> str:
+        """ """
         return "🌡"
 
     @property
     def values_per_ms(self) -> int:
+        """ """
         return 1
 
 
 class MicrophoneWaveFormSensor(TimeDepChemfishSensor):
+    """ """
     # TODO: Not sure if this is right... Don't know what it's supposed to be doing either...
     def __init__(
         self,
@@ -340,33 +419,51 @@ class MicrophoneWaveFormSensor(TimeDepChemfishSensor):
 
     @property
     def abbrev(self) -> str:
+        """ """
         return "wav"
 
     @property
     def symbol(self) -> str:
+        """ """
         return "🔊"
 
     @property
     def values_per_ms(self) -> float:
+        """ """
         return self.samples_per_sec / 1000
 
 
 class MicrophoneRawSensor(TimeDepChemfishSensor):
+    """ """
     @property
     def abbrev(self) -> str:
+        """ """
         return "mic"
 
     @property
     def symbol(self) -> str:
+        """ """
         return "🎤"
 
     @property
     def values_per_ms(self) -> float:
+        """ """
         return 44.1  # TODO really? At 44100khz?
 
     def waveform(
         self, ds_rate: int, start_ms: Optional[int] = None, end_ms: Optional[int] = None
     ) -> MicrophoneWaveFormSensor:
+        """
+
+
+        Args:
+          ds_rate: int:
+          start_ms: Optional[int]:  (Default value = None)
+          end_ms: Optional[int]:  (Default value = None)
+
+        Returns:
+
+        """
         sliced_sensor = self.slice_ms(start_ms, end_ms)
         return MicrophoneWaveFormSensor(
             self.run,
