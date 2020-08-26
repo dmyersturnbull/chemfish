@@ -235,12 +235,12 @@ class TieredCompoundNamer(CompoundNamer):
     """Checks sources in order, preferring sources with lower index."""
 
     # high-precedence, manual, drugbank:5.0.10:secondary_id, chembl:api:fda_name, chembl:api:inn_name, chembl:api:usan_name, valinor, dmso_stocks, chembl:api:preferred_name
-    elegant_sources: Sequence[RefLike] = Refs.fetch_all(
+    elegant_sources: Sequence[RefLike] = [x for x in Refs.fetch_all_or_none(
         InternalTools.load_resource("chem", "refs_few.lines")
-    )
-    elegant_sources_extended: Sequence[RefLike] = Refs.fetch_all(
+    ) if x is not None]
+    elegant_sources_extended: Sequence[RefLike] = [x for x in Refs.fetch_all_or_none(
         InternalTools.load_resource("chem", "refs_more.lines")
-    )
+    ) if x is not None]
 
     def __init__(
         self,

@@ -25,21 +25,22 @@ def _build_stim_colors():
 def _build_stim_names():
     """ """
     dct = {s.name: s.name for s in Stimuli.select()}
-    resource = InternalTools.load_resource("core", "stim_names.json")[0]
-    dct.update(resource)
+    dct.update(InternalTools.load_resource("core", "stim_names.json"))
     return dct
 
 
 _stimulus_display_colors = _build_stim_colors()
 _stimulus_replace = _build_stim_names()
 
+# TODO
 _pointgrey_sensors = set(Sensors.list_where((Sensors.id > 2) & (Sensors.id != 7)))
 _sauronx_sensors = set(Sensors.list_where((Sensors.id > 2) & (Sensors.id != 7)))
 _required_sauronx_sensors = set(Sensors.list_where((Sensors.id > 2) & (Sensors.id < 7)))
 _legacy_sensors = set(Sensors.list_where(Sensors.id < 3))
 _required_legacy_sensors = set(Sensors.list_where(Sensors.id == 2))
 
-MANUAL_REF_HIGH_ID = Refs.fetch("manual:high").id
+MANUAL_HIGH_REF = Refs.fetch_or_none("manual:high")
+MANUAL_REF = Refs.fetch("manual")
 
 
 class StimulusType(SmartEnum):
@@ -408,7 +409,7 @@ class ValarTools:
             )
 
     @classmethod
-    def determine_solvent_names_slow(cls) -> Mapping[int, Optional[str]]:
+    def determine_solvent_names_slow(cls, before: datetime) -> Mapping[int, Optional[str]]:
         """
         Queries valar to determine names of solvents used in batches and map them to their names with ref manual:high.
         This is very slow and should be used only to update the known list.
@@ -434,7 +435,10 @@ class ValarTools:
             row = (
                 CompoundLabels.select()
                 .where(CompoundLabels.compound == solvent)
-                .where(CompoundLabels.ref == MANUAL_REF_HIGH_ID)
+                .where(CompoundLabels.ref == (MANUAL_REF if MANUAL_HIGH_REF is None else MANUAL_HIGH_REF))
+                .where(CompoundLabels.created < before)
+                .where(Compounds.created < before)
+                .order_by(CompoundLabels.id)
             ).first()
             return None if row is None else row.name
 

@@ -482,8 +482,7 @@ class KvrcConfig:
 
         Args:
           key: str:
-          fallback: Optional[Dict[str:
-          str]]:
+          fallback
           desc:
 
         Returns:

@@ -2,7 +2,7 @@
 description-file = "README.md"
 
 [build-system]
-requires = ["poetry>=1.0", "coverage[toml]"]
+requires = ["poetry>=1,<2", "coverage[toml]>=5,<6"]
 build-backend = "poetry.masonry.api"
 
 
@@ -14,8 +14,6 @@ build-backend = "poetry.masonry.api"
 align = true
 
 [tool.tyrannosaurus.sources]
-# use a literal value ('') or refer to a pyproject setting
-# ${today} is the date you run it at, and ${now} is the datetime
 status             = "'Development'"
 date               = "'${today}'"
 copyright          = "'Copyright ${today.year}'"
@@ -38,7 +36,6 @@ recipe             = "'recipes/${name}/meta.yml'"
 environment        = "'environment.yml'"
 
 [tool.tyrannosaurus.targets]
-# these are file and directory names, without filename extensions
 pyproject    = true
 init         = true
 tox          = true
@@ -80,7 +77,6 @@ documentation = "https://chemfish.readthedocs.io"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Natural Language :: English",
-    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.8",
 	"Intended Audience :: Developers",
@@ -93,7 +89,7 @@ classifiers = [
 ]
 
 [tool.poetry.urls]
-CI = "https://travis-ci.org/dmyersturnbull/chemfish"
+CI = "https://github.com/dmyersturnbull/chemfish/actions"
 Issues = "https://github.com/dmyersturnbull/chemfish/issues"
 
 
@@ -106,38 +102,38 @@ chemfish = "chemfish.cli:cli"
 
 
 [tool.poetry.dependencies]
-python                         = ">=3.7, <4"
+python                         = ">=3.8, <4"
 typer                          = ">=0.3, <1.0"
 requests                       = "^2"
 cycler                         = ">=0.10, <1.0"
 dill                           = "^0.3"
 jsonpickle                     = "^1.4"
 h5py                           = "^2.10"
-imageio                        = "^2.9"
-ipywidgets                     = "^7"
+#imageio                        = "^2.9"
+#ipywidgets                     = "^7"
 joblib                         = "^0.16"
 matplotlib                     = ">=3.3, <4.0"
 natsort                        = "^7"
 numpy                          = "^1.18"
 pandas                         = ">=1.1, <2.0"
 pillow                         = "^7"
-psutil                         = "^5"
+#psutil                         = "^5"
 scipy                          = ">=1.4, <2.0"
-scikit-image                   = ">=0.17, <1.0"
+#scikit-image                   = ">=0.17, <1.0"
 scikit-learn                   = "^0.23"
-seaborn                        = ">=0.10, <1.0"
+#seaborn                        = ">=0.10, <1.0"
 fuzzywuzzy                     = ">=0.18, <1.0"
 humanfriendly                  = "^8"
 tables                         = "^3"
 pydub                          = ">=0.24, <1.0"
-pyzmq                          = "^19"
-imageio-ffmpeg                 = ">=0.4, <1.0"
-scikit-video                   = "^1"
+#pyzmq                          = "^19"
+#imageio-ffmpeg                 = ">=0.4, <1.0"
+#scikit-video                   = "^1"
 librosa                        = "^0.8"
 clana                          = "^0.4"
-peewee                         = "^3"
+peewee                         = ">=3.13, <4.0"
 soundfile                      = ">=0.10, <1.0"
-cairosvg                       = "^2"
+#cairosvg                       = "^2"
 #graphviz                       = ">=0.14, <1.0"
 #ChemSpiPy                      = "^2.0"
 #moviepy                        = "^1.0"
@@ -150,10 +146,10 @@ cairosvg                       = "^2"
 #tensorflow-gpu                 = {optional = true, version = "^2.3"}
 #tensorflow-gpu-estimator       = {optional = true, version = "^2.3"}
 #opencv-contrib-python-headless = {optional = true, version = "^4.3"}
-decorateme                     = ">=0.1, <1.0"
+decorateme                     = ">=0.1.1, <1.0"
 typeddfs                       = ">=0.2, <1.0"
 pocketutils                    = ">=0.1, <1.0"
-valarpy                        = "^2"
+valarpy                        = "^2.1"
 
 [tool.poetry.dev-dependencies]
 pre-commit               = "^2"
@@ -174,10 +170,8 @@ coveralls                = "^2"
 tomlkit                  = ">=0.5, <1.0"
 
 [tool.poetry.extras]
-# manually listed
 #notebook = ["jupyterlab", "ipympl"]
 #deep = ["tensorflow-gpu", "tensorflow-gpu-estimator"]
-# auto-filled from dev-deps
 dev     = [
         "pre-commit", "pytest", "coverage", "pytest-cov", "hypothesis",
         "sphinx", "sphinx-autodoc-typehints", "sphinx-autoapi",

@@ -12,7 +12,7 @@ from matplotlib.figure import Figure
 from chemfish.core.core_imports import *
 from chemfish.viz.confusion_plots import *
 
-logger = logging.getLogger("dscience")
+logger = logging.getLogger("chemfish")
 
 
 class ConfusionMatrix(UntypedDf):

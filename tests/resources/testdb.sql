@@ -24,7 +24,7 @@ CREATE TABLE `annotations` (
   `id` mediumint(8) unsigned not null auto_increment,
   `name` varchar(255) default null,
   `value` varchar(255) default null,
-  `level` enum (
+  `level` enum(
       '0:good', '1:note', '2:caution', '3:warning', '4:danger', '9:deleted', 'to_fix', 'fixed'
    ) not null default '1:note',
   `run_id` mediumint(8) unsigned default null,
@@ -150,7 +150,7 @@ CREATE TABLE `audio_files` (
 CREATE TABLE `batch_annotations` (
   `id` int(10) unsigned not null auto_increment,
   `batch_id` mediumint(8) unsigned not null,
-  `level` enum (
+  `level` enum(
       '0:good', '1:note', '2:caution', '3:warning', '4:danger', '9:deleted'
    ) COLLATE utf8mb4_unicode_ci not null default '1:note',
   `name` varchar(50) COLLATE utf8mb4_unicode_ci default null,
@@ -397,7 +397,7 @@ CREATE TABLE `features` (
   `name` varchar(50) not null,
   `description` varchar(250) not null,
   `dimensions` varchar(20) not null,
-  `data_type` enum (
+  `data_type` enum(
       'byte', 'short', 'int',
       'float', 'double',
       'unsigned_byte', 'unsigned_short', 'unsigned_int', 'unsigned_float', 'unsigned_double',
@@ -722,7 +722,7 @@ CREATE TABLE `sensors` (
   `id` tinyint(3) unsigned not null auto_increment,
   `name` varchar(50) not null,
   `description` varchar(250) default null,
-  `data_type` enum (
+  `data_type` enum(
       'byte', 'short', 'int',
       'float', 'double',
       'unsigned_byte', 'unsigned_short', 'unsigned_int', 'unsigned_float', 'unsigned_double',
@@ -796,7 +796,7 @@ CREATE TABLE `submission_params` (
 
 
 --
--- Table structure for table `submission_statuses`
+-- Table structure for table `submission_record_status`
 --
 CREATE TABLE `submission_statuses` (
     `id` tinyint(3) unsigned not null auto_increment,
@@ -998,7 +998,6 @@ CREATE TABLE `template_wells` (
   CONSTRAINT `tw_to_control_type` FOREIGN KEY (`control_type_id`) REFERENCES `control_types` (`id`),
   CONSTRAINT `tw_to_tp` FOREIGN KEY (`template_plate_id`) REFERENCES `template_plates` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
 
 
 --
@@ -1264,6 +1263,142 @@ CREATE TABLE `mandos_rules` (
   CONSTRAINT `mo_to_pred` FOREIGN KEY (`predicate_id`) REFERENCES `mandos_predicates` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
+INSERT INTO refs (
+    id, name, datetime_downloaded, external_version, description, url
+) VALUES (
+    1, 'manual', '2019-01-29 12:48:12', NULL, 'official manual',
+    'https://www.nonexistentreffour.com'
+);
+INSERT INTO refs (
+    id, name, datetime_downloaded, external_version, description, url
+) VALUES (
+    2, 'manual:high', '2019-01-29 12:48:12', NULL, 'official manual high',
+    'https://www.nonexistentreffour.com'
+);
+
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    1, 'sauron:active:initializing', 0, 0, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    2, 'sauron:active:capturing', 0, 0, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    3, 'sauron:active:postprocessing', 0, 1, 0, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    4, 'sauron:active:uploading', 0, 1, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    5, 'sauron:failure:initializing', 1, 0, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    6, 'sauron:failure:capturing', 1, 0, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    7, 'sauron:failure:postprocessing', 1, 1, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    8, 'sauron:failure:uploading', 1, 1, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    9, 'sauron:cancelled:initializing', 1, 0, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    10, 'sauron:cancelled:capturing', 1, 0, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    11, 'sauron:cancelled:postprocessing', 1, 1, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    12, 'sauron:cancelled:uploading', 1, 1, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    13, 'server:at:uploaded', 0, 1, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    14, 'server:active:inserting:run', 0, 1, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    15, 'server:active:inserting:sensors', 0, 1, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    16, 'server:active:inserting:features', 0, 1, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    17, 'server:at:finished', 0, 1, 1, 1
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    18, 'server:failure:inserting:run', 1, 1, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    19, 'server:failure:inserting:sensors', 1, 1, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    20, 'server:failure:inserting:features', 1, 1, 1, 0
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    21, 'server:active:archiving', 0, 1, 1, 1
+);
+INSERT INTO submission_statuses (
+    id, name, is_failure, is_recoverable, is_on_sauron, is_finished
+) VALUES (
+    22, 'server:failure:archiving', 0, 1, 1, 1
+);
+
+INSERT INTO control_types (
+    id, name, description, positive, drug_related, genetics_related
+) VALUES (
+    1, 'solvent (-)', 'Solvent for negative drug control with no genetic considerations.', 0, 1, 0
+);
+INSERT INTO control_types (
+    id, name, description, positive, drug_related, genetics_related
+) VALUES (
+    2, 'lethal (-)', 'Lethal drug treatment for confirmation (+) or comparison (-).', 1, 1, 0
+);
+
+
 
 INSERT INTO refs (
     id, name, datetime_downloaded, external_version, description, url
@@ -1271,7 +1406,6 @@ INSERT INTO refs (
     4, 'ref_four', '2019-01-29 12:48:12', 'ref_four_external_version', 'this is ref four',
     'https://www.nonexistentreffour.com'
 );
-
 
 INSERT INTO users (
     id, username, first_name, last_name, write_access, bcrypt_hash
@@ -1340,13 +1474,6 @@ INSERT INTO genetic_variants (
     4, 'genetic variant four', 7, 5, 'cross', now(), 'notes for gene four', 1, 0
 );
 
-INSERT INTO refs (
-    id, name, datetime_downloaded, external_version, description, url
-) VALUES (
-    4, 'ref_four', '2019-01-29 12:48:12', 'ref_four_external_version', 'this is ref four',
-    'https://www.nonexistentreffour.com'
-);
-
 INSERT INTO sensors (
     id, name, description, data_type, blob_type, n_between
 ) VALUES (
@@ -1373,10 +1500,21 @@ INSERT INTO wells (
     9, 1, 7, 2, 5, 'well group one', 6, 15
 );
 
+INSERT INTO features (
+    id, name, description, dimensions, data_type
+) VALUES (
+    1, 'MI', 'motion index', '[t-1]', 'float'
+);
+INSERT INTO features (
+    id, name, description, dimensions, data_type
+) VALUES (
+    2, 'cd(10)', 'cd(10)', '[t-1]', 'float'
+);
+
 INSERT INTO well_features (
     id, well_id, type_id, floats, sha1
 ) VALUES (
-    6, 2, 2, 1929014393149134898314981349831498134981341311234143, cast(2111 as Binary(20))
+    6, 9, 1, 1929014393149134898314981349831498134981341311234143, cast(2111 as Binary(20))
 );
 
 INSERT INTO stimuli (

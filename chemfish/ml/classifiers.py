@@ -6,7 +6,7 @@ import joblib
 from sklearn.ensemble import RandomForestClassifier
 
 from chemfish.core.core_imports import *
-from chemfish.ml import ClassifierPath
+from chemfish.ml import ClassifierPath, SaveableTrainable
 from chemfish.ml.decision_frames import *
 from chemfish.model.wf_builders import *
 from chemfish.viz.figures import *

@@ -185,11 +185,36 @@ class _Diff(_ConsecutiveFrameFeature):
 class FeatureTypes:
     """The feature types in valar.features."""
 
-    MI = _Mi(False)
-    cd_10 = _Diff("cd", 10, 1, "", False)
-    MI_i = _Mi(True)
-    cd_10_i = _Diff("cd", 10, 1, "", True)
-    known = [MI, cd_10, MI_i, cd_10_i]
+    @classmethod
+    @property
+    def known(cls) -> Sequence[FeatureType]:
+        features = []
+        for f in ['MI', 'cd_10', 'MI_i', 'cd_10_i']:
+            try:
+                features.append(getattr(cls, f))
+            except:
+                logger.warning(f"{f} not found")
+        return features
+
+    @classmethod
+    @property
+    def MI(cls) -> FeatureType:
+        return _Mi(False)
+
+    @classmethod
+    @property
+    def MI_i(cls) -> FeatureType:
+        return _Mi(True)
+
+    @classmethod
+    @property
+    def cd_10(cls) -> FeatureType:
+        return _Diff("cd", 10, 1, "", False)
+
+    @classmethod
+    @property
+    def cd_10_i(cls) -> FeatureType:
+        return _Diff("cd", 10, 1, "", True)
 
     @classmethod
     def of(cls, f: Union[FeatureType, str]) -> FeatureType:

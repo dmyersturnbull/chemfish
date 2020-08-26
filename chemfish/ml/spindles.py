@@ -260,10 +260,7 @@ class SpindleFrame(ScoreFrameWithPrediction):
 
         Args:
           control:
-          ControlTypes]:  (Default value = "solvent (-)")
-          splitter: Callable[[str]:
-          Tup[str:
-          str]]:  (Default value = Tools.split_drug_dose)
+          splitter:
           ci:
           center_fn:  (Default value = np.median)
           spread_fn:  (Default value = np.std)

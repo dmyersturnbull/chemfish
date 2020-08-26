@@ -34,10 +34,10 @@ class AbstractSaveLoad(metaclass=abc.ABCMeta):
     """ """
     def save(self, path: PathLike) -> None:
         """
-        
+
 
         Args:
-          path: PathLike: 
+          path: PathLike:
 
         Returns:
 
@@ -47,10 +47,10 @@ class AbstractSaveLoad(metaclass=abc.ABCMeta):
     # noinspection PyAttributeOutsideInit
     def load(self, path: PathLike):
         """
-        
+
 
         Args:
-          path: PathLike: 
+          path: PathLike:
 
         Returns:
 
@@ -75,10 +75,10 @@ class SaveableTrainable(AbstractSaveLoad):
 
     def save(self, path: PathLike) -> None:
         """
-        
+
 
         Args:
-          path: PathLike: 
+          path: PathLike:
 
         Returns:
 
@@ -87,10 +87,10 @@ class SaveableTrainable(AbstractSaveLoad):
 
     def load(self, path: PathLike):
         """
-        
+
 
         Args:
-          path: PathLike: 
+          path: PathLike:
 
         Returns:
 
@@ -100,11 +100,11 @@ class SaveableTrainable(AbstractSaveLoad):
 
         def fix(key, value):
             """
-            
+
 
             Args:
-              key: 
-              value: 
+              key:
+              value:
 
             Returns:
 
@@ -124,10 +124,10 @@ class SaveableTrainableCsv(SaveableTrainable, metaclass=abc.ABCMeta):
     """ """
     def save(self, path: PathLike):
         """
-        
+
 
         Args:
-          path: PathLike: 
+          path: PathLike:
 
         Returns:
 
@@ -139,10 +139,10 @@ class SaveableTrainableCsv(SaveableTrainable, metaclass=abc.ABCMeta):
     # noinspection PyAttributeOutsideInit
     def load(self, path: PathLike):
         """
-        
+
 
         Args:
-          path: PathLike: 
+          path: PathLike:
 
         Returns:
 
@@ -165,10 +165,10 @@ class SaveLoadCsv(AbstractSaveLoad, metaclass=abc.ABCMeta):
     @data.setter
     def data(self, df: pd.DataFrame):
         """
-        
+
 
         Args:
-          df: pd.DataFrame: 
+          df: pd.DataFrame:
 
         Returns:
 
@@ -182,10 +182,10 @@ class SaveLoadCsv(AbstractSaveLoad, metaclass=abc.ABCMeta):
 
     def save(self, path: PathLike):
         """
-        
+
 
         Args:
-          path: PathLike: 
+          path: PathLike:
 
         Returns:
 
@@ -197,10 +197,10 @@ class SaveLoadCsv(AbstractSaveLoad, metaclass=abc.ABCMeta):
 
     def load(self, path: PathLike):
         """
-        
+
 
         Args:
-          path: PathLike: 
+          path: PathLike:
 
         Returns:
 
@@ -212,7 +212,7 @@ class SaveLoadCsv(AbstractSaveLoad, metaclass=abc.ABCMeta):
 class ClassifierPath:
     """
     A path with standard subpaths for trained model, decision functions, and standard plots.
-    Santiize the path beforehand -- it's not done here.
+    Sanitize the path beforehand -- it's not done here.
     The classifier might not support all of the paths.
     For example::
     ```
@@ -242,10 +242,10 @@ class ClassifierPath:
 
     def save_info(self, info):
         """
-        
+
 
         Args:
-          info: 
+          info:
 
         Returns:
 

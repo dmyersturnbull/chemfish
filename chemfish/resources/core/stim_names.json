@@ -1,5 +1,4 @@
-[
-    {
+{
     "black LED": "black",
     "purple LED": "violet (400nm)",
     "green LED": "green (523nm)",
@@ -39,5 +38,4 @@
     "fs_10_300ms": "gunshot",
     "fs_9_1.2s": "ring",
     "windows10 ring": "Windows 10 ring"
-    }
-]
+}

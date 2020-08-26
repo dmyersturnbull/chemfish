@@ -1699,9 +1699,7 @@ class Quick:
 
 
         Args:
-          runs: Union[RunsLike:
-          peewee.Query:
-          ExpressionLike]:
+          runs:
 
         Returns:
 
@@ -1801,8 +1799,7 @@ class Quicks:
 
 
         Args:
-          generation: Union[str:
-          DataGeneration]:
+          generation:
           as_of: Optional[datetime]:
           **kwargs:
 

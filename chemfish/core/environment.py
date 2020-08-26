@@ -12,7 +12,7 @@ MAIN_DIR = Path.home() / ".chemfish"
 CONFIG_PATH = os.environ.get("CHEMFISH_CONFIG", MAIN_DIR / "chemfish.config")
 if CONFIG_PATH is None:
     raise FileDoesNotExistError(f"No config file at {CONFIG_PATH}")
-VIZ_PATH = MAIN_DIR / "chemfish_viz.properties"
+VIZ_PATH = MAIN_DIR / "chemfish_viz.properties" if (MAIN_DIR / "chemfish_viz.properties").exists() else ChemfishResources.path("styles", "default.properties")
 
 
 @abcd.auto_repr_str()
@@ -68,7 +68,10 @@ class ChemfishEnvironment:
         if self.username is None:
             raise MissingConfigKeyError(f"Must specify username in {self.config_file}")
         self.user = Users.fetch(self.username)
-        self.user_ref = Refs.fetch("manual:" + self.username)
+        self.user_ref = Refs.fetch_or_none("manual:" + self.username)
+        if self.user_ref is None:
+            logger.warning(r"manual:{self.username} is not in `refs`. Using 'manual'.")
+        self.user_ref = Refs.fetch_or_none("manual")
         self.chemfish_log_level = _try("chemfish_log_level", "INFO")
         self.global_log_level = _try("global_log_level", "INFO")
         self.cache_dir = _try("cache", Path.home() / "valar-cache")
