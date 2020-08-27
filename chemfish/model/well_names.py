@@ -18,6 +18,7 @@ class WellNamer:
 
 class CompositeWellNamer(WellNamer):
     """ """
+
     def __init__(self, *namers):
         self.namers = namers
 
@@ -56,6 +57,7 @@ class SimpleMappingWellNamer(WellNamer):
 
 class BuiltWellNamer(WellNamer):
     """ """
+
     def __init__(self):
         self._bits = []
         self._labels = []

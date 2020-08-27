@@ -10,6 +10,7 @@ from chemfish.lookups import *
 
 class MandosLookups(LookupTool):
     """ """
+
     @classmethod
     def predicates(
         cls,
@@ -21,12 +22,9 @@ class MandosLookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          MandosPredicates]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -63,12 +61,9 @@ class MandosLookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          MandosObjects]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 

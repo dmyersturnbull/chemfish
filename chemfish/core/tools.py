@@ -17,14 +17,13 @@ from chemfish.core.valar_singleton import *
 
 class IncomptabileNumpyArrayDataType(XTypeError):
     """ """
+
     pass
-
-
-_hash_regex = re.compile("[0-9a-f]{12}$")
 
 
 class ChemfishValarTools:
     """ """
+
     @classmethod
     def query(cls, query: peewee.BaseQuery) -> pd.DataFrame:
         """
@@ -47,11 +46,11 @@ class ChemfishValarTools:
         To get them back, we read them into a signed byte Numpy array, cast to ints to avoid overflow, add 128, then convert to unsigned ints.
 
         Args:
-          data: Bytes from Scala-inserted values in Valar blobs
-          data: bytes:
+            data: Bytes from Scala-inserted values in Valar blobs
+            data: bytes:
 
         Returns:
-          A Numpy ubyte (uint8) array
+            A Numpy ubyte (uint8) array
 
         """
         return (np.frombuffer(data, dtype=np.byte).astype(np.int32) + 128).astype(np.ubyte)
@@ -142,7 +141,7 @@ class ChemfishValarTools:
     @classmethod
     def runs(cls, runs: RunsLike) -> Sequence[Runs]:
         """
-        Fetchs one or more runs from flexible formats.
+        Fetches one or more runs from flexible formats.
         Currently performs one query on Valar per run. In the future will only perform one query for all of them.
 
         Args:
@@ -233,7 +232,7 @@ class ChemfishValarTools:
     @classmethod
     def run(cls, run: RunLike, join: bool = False) -> Runs:
         """
-        Fetchs a run from a flexible format.
+        Fetches a run from a flexible format.
         Fetches from Valar once. Use Tools.runs if you want to fetch multiple runs in a single query.
 
         Args:
@@ -315,26 +314,15 @@ class ChemfishValarTools:
           Whether the string could be a submission hash (is formatted correctly)
 
         """
-        return submission_hash == "_" * 12 or _hash_regex.match(submission_hash) is not None
-
-    @classmethod
-    def tables(cls) -> Sequence[str]:
-        """
-        Lists the tables in Valar.
-        :return: The names of tables in Valar
-
-        Args:
-
-        Returns:
-
-        """
-        from valarpy.model import database
-
-        return database.get_tables()
+        return (
+            submission_hash == "_" * 12
+            or re.compile("[0-9a-f]{12}$").match(submission_hash) is not None
+        )
 
 
 class Tools(_Tools, ChemfishValarTools):
     """ """
+
     @classmethod
     def parallel(
         cls, things, function, n_jobs: Optional[int] = chemfish_env.n_cores, verbosity: int = 1

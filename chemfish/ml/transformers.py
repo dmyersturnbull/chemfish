@@ -40,11 +40,13 @@ class WellTransform(abcd.ABC):
 
 class TrimmingWellTransform(WellTransform, metaclass=abc.ABCMeta):
     """ """
+
     pass
 
 
 class TwoDWellTransform(WellTransform, metaclass=abc.ABCMeta):
     """ """
+
     def validate(self, df: WellFrame) -> None:
         """
 
@@ -63,6 +65,7 @@ class TwoDWellTransform(WellTransform, metaclass=abc.ABCMeta):
 
 class OutlierStdTransform(TrimmingWellTransform):
     """ """
+
     def __init__(self, n_stds: float = 2):
         self.n_stds = n_stds
         self.trimmed_wells = None
@@ -100,6 +103,7 @@ class OutlierStdTransform(TrimmingWellTransform):
 
 class OutlierDistanceTransform(TrimmingWellTransform):
     """ """
+
     def __init__(self, distance_fn, max_distance: float):
         self.distance_fn, self.max_distance = distance_fn, max_distance
         self.trimmed_wells = None
@@ -136,6 +140,7 @@ class OutlierDistanceTransform(TrimmingWellTransform):
 
 class RotationTransform(TwoDWellTransform):
     """ """
+
     def __init__(self, degrees: float):
         self.degrees = degrees
 
@@ -158,6 +163,7 @@ class RotationTransform(TwoDWellTransform):
 
 class SklearnTransform(WellTransform, metaclass=abc.ABCMeta):
     """ """
+
     def __init__(self, model: TransformerMixin):
         self.model = model
 
@@ -181,6 +187,7 @@ class SklearnTransform(WellTransform, metaclass=abc.ABCMeta):
 
 class CompositeTransform(WellTransform):
     """ """
+
     def __init__(self, *transformations: WellTransform):
         self.transformations = transformations
 
@@ -299,4 +306,3 @@ __all__ = [
     "RotationTransform",
     "WellTransforms",
 ]
-

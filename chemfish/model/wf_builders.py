@@ -11,6 +11,7 @@ from chemfish.model.wf_tools import *
 
 class WellFrameBuildError(ConstructionError):
     """ """
+
     pass
 
 
@@ -127,6 +128,7 @@ class WellFrameQuery:
 
 class AbstractWellFrameBuilder:
     """ """
+
     def build(self) -> WellFrame:
         """ """
         raise NotImplementedError()
@@ -555,6 +557,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         Returns:
 
         """
+
         def capture(well: Wells, well_ts: Sequence[WellTreatments]) -> Mapping[int, np.array]:
             """
 

@@ -28,6 +28,7 @@ class SensorCache(ASensorCache):
 
         Args:
           tup:
+
         Returns:
 
         """
@@ -59,6 +60,7 @@ class SensorCache(ASensorCache):
 
         Args:
           *sensors:
+
         Returns:
 
         """
@@ -84,7 +86,8 @@ class SensorCache(ASensorCache):
 
 
         Args:
-          tup:
+            tup:
+
         Returns:
 
         """
@@ -143,7 +146,7 @@ class SensorCache(ASensorCache):
             if sensor.name in bdata_names:
                 return path.read_bytes()
             else:
-                return InternalTools.convert_sensor_data_from_bytes(sensor, path.read_bytes())
+                return ValarTools.convert_sensor_data_from_bytes(sensor, path.read_bytes())
         Tools.prep_file(path, exist_ok=False)
         logger.minor(f"Downloading {sensor.name} for run r{run.id} from Valar...")
         data = (
@@ -158,7 +161,7 @@ class SensorCache(ASensorCache):
         if sensor.name in bdata_names:
             return data.floats
         else:
-            return InternalTools.convert_sensor_data_from_bytes(sensor, data.floats)
+            return ValarTools.convert_sensor_data_from_bytes(sensor, data.floats)
 
 
 __all__ = ["SensorCache"]

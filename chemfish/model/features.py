@@ -4,6 +4,7 @@ from chemfish.core.core_imports import *
 
 class FeatureType:
     """ """
+
     def __init__(
         self,
         valar_feature: Features,
@@ -106,6 +107,7 @@ class FeatureType:
 
 class _ConsecutiveFrameFeature(FeatureType, metaclass=abcd.ABCMeta):
     """ """
+
     def from_blob(self, blob: bytes, well: Union[Wells, int], stringent: bool = False):
         """
 
@@ -137,6 +139,7 @@ class _ConsecutiveFrameFeature(FeatureType, metaclass=abcd.ABCMeta):
 
 class _Mi(_ConsecutiveFrameFeature):
     """ """
+
     def __init__(self, interpolated: bool):
         v = Features.select().where(Features.name == "MI").first()
         super().__init__(v, True, 4, 1000, "(10³)", interpolated, DataGeneration.all_generations())
@@ -156,6 +159,7 @@ class _Mi(_ConsecutiveFrameFeature):
 
 class _Diff(_ConsecutiveFrameFeature):
     """ """
+
     def __init__(
         self, name: str, tau: int, recommended_scale: int, recommended_unit: str, interpolated: bool
     ):
@@ -185,36 +189,11 @@ class _Diff(_ConsecutiveFrameFeature):
 class FeatureTypes:
     """The feature types in valar.features."""
 
-    @classmethod
-    @property
-    def known(cls) -> Sequence[FeatureType]:
-        features = []
-        for f in ['MI', 'cd_10', 'MI_i', 'cd_10_i']:
-            try:
-                features.append(getattr(cls, f))
-            except:
-                logger.warning(f"{f} not found")
-        return features
-
-    @classmethod
-    @property
-    def MI(cls) -> FeatureType:
-        return _Mi(False)
-
-    @classmethod
-    @property
-    def MI_i(cls) -> FeatureType:
-        return _Mi(True)
-
-    @classmethod
-    @property
-    def cd_10(cls) -> FeatureType:
-        return _Diff("cd", 10, 1, "", False)
-
-    @classmethod
-    @property
-    def cd_10_i(cls) -> FeatureType:
-        return _Diff("cd", 10, 1, "", True)
+    MI = _Mi(False)
+    cd_10 = _Diff("cd", 10, 1, "", False)
+    MI_i = _Mi(True)
+    cd_10_i = _Diff("cd", 10, 1, "", True)
+    known = [MI, cd_10, MI_i, cd_10_i]
 
     @classmethod
     def of(cls, f: Union[FeatureType, str]) -> FeatureType:
@@ -222,10 +201,9 @@ class FeatureTypes:
         Fetches a feature from its INTERNAL name.
 
         Args:
-          f: A value in FeatureType.internal_name in one of the FeatureType entries in FeatureTypes.known
-          f:
+            f: A value in FeatureType.internal_name in one of the FeatureType entries in FeatureTypes.known
         Returns:
-          The FeatureType
+            The FeatureType
 
         """
         if isinstance(f, Features):

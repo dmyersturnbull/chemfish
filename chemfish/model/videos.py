@@ -3,14 +3,11 @@ from __future__ import annotations
 import moviepy.video.fx.crop as crop_fx
 from matplotlib.colors import to_rgb
 from moviepy.audio.AudioClip import CompositeAudioClip
-from moviepy.audio.io.AudioFileClip import AudioClip, AudioFileClip
 from moviepy.video.io.html_tools import ipython_display
 from moviepy.video.io.VideoFileClip import VideoFileClip
-from pocketutils.core.exceptions import RefusingRequestError
 
 from chemfish.core.core_imports import *
-from chemfish.core.video_core import *
-from chemfish.model.app_frames import *
+from chemfish.core.video_core import VideoCore
 from chemfish.model.roi_tools import *
 from chemfish.model.wf_builders import *
 from chemfish.viz.kvrc import *
@@ -129,10 +126,6 @@ class SauronxVideo:
         - video.highlight_by:                   Highlight by an arbitrary function of WellFrame meta column series objects
         - video.draw_roi_grid:                  Show the well ROIs as a grid
         - video.draw_rectangle:                 Draw an arbitrary rectangle
-
-    Args:
-
-    Returns:
 
     """
 
@@ -612,7 +605,9 @@ class SauronxVideo:
 
         """
         path = str(Tools.prepped_file(path).with_suffix(".mkv"))
-        self.video.write_videofile(path, codec=codec, ffmpeg_params=custom_ffmpeg_params)
+        self.video.write_videofile(
+            path, codec=VideoCore.codec, ffmpeg_params=VideoCore.hevc_params.split(" ")
+        )
 
     def save_mp4(self, path: PathLike) -> None:
         """
@@ -625,7 +620,7 @@ class SauronxVideo:
 
         """
         path = str(Tools.prepped_file(path).with_suffix(".mp4"))
-        self.video.write_videofile(path, ffmpeg_params=custom_ffmpeg_params_mp4)
+        self.video.write_videofile(path, ffmpeg_params=VideoCore.mp4_params)
 
     def close(self) -> None:
         """ """
@@ -740,6 +735,7 @@ class SauronxVideo:
 
 class SauronxVideos:
     """ """
+
     @classmethod
     def of(cls, path: PathLike, run: Runs) -> SauronxVideo:
         """

@@ -52,12 +52,13 @@ class AssayFrame(TypedDf):
     ) -> AssayFrame:
         """
         Get rows by substrings (or whole strings) of the assay names
+
         Examples:
             - `assays.by_substring('red')`
             - `assays.by_substring(['red', Assays.fetch('VSR1')])`
 
         Args:
-          superstrings:
+            superstrings:
 
         Returns:
           A copy
@@ -78,7 +79,8 @@ class AssayFrame(TypedDf):
         Returns a DataFrame of the assay name, start, and end in a battery.
 
         Args:
-          battery:
+            battery:
+
         Returns:
 
         """

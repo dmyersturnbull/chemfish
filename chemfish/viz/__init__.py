@@ -11,18 +11,20 @@ from chemfish.core.core_imports import *
 
 class CakeComponent(metaclass=abc.ABCMeta):
     """ """
+
     pass
 
 
 class CakeLayer(metaclass=abc.ABCMeta):
     """ """
+
     @abcd.abstractmethod
     def plot(self, **kwargs) -> Axes:
         """
-        
+
 
         Args:
-          **kwargs: 
+          **kwargs:
 
         Returns:
 
@@ -36,11 +38,11 @@ __oldsubplots = copy(plt.subplots)
 
 def fix_fig(fig: Figure, **kwargs):
     """
-    
+
 
     Args:
-      fig: Figure: 
-      **kwargs: 
+      fig: Figure:
+      **kwargs:
 
     Returns:
 
@@ -64,10 +66,10 @@ def fix_fig(fig: Figure, **kwargs):
 
 def new_fig(**kwargs):
     """
-    
+
 
     Args:
-      **kwargs: 
+      **kwargs:
 
     Returns:
 
@@ -79,10 +81,10 @@ def new_fig(**kwargs):
 
 def subplots(**kwargs):
     """
-    
+
 
     Args:
-      **kwargs: 
+      **kwargs:
 
     Returns:
 

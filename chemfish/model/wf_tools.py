@@ -7,10 +7,10 @@ from .treatments import Treatment, Treatments
 
 def _w(attrs: str):
     """
-    
+
 
     Args:
-      attrs: str: 
+      attrs: str:
 
     Returns:
 
@@ -20,10 +20,10 @@ def _w(attrs: str):
 
 def _r(attrs: str):
     """
-    
+
 
     Args:
-      attrs: str: 
+      attrs: str:
 
     Returns:
 
@@ -145,6 +145,7 @@ class WellFrameColumns:
 
 class WellFrameColumnTools:
     """ """
+
     int32_cols = {
         "well",
         "well_index",
@@ -227,7 +228,7 @@ class WellFrameColumnTools:
         Temporarily replace NaNs and Nones to little-used values.
 
         Args:
-          df: 
+          df:
 
         Returns:
 
@@ -250,7 +251,7 @@ class WellFrameColumnTools:
         Undoes WellFrameColumnTools._from_nan
 
         Args:
-          df: 
+          df:
 
         Returns:
 

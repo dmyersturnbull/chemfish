@@ -116,6 +116,7 @@ class CompoundNamer(metaclass=abc.ABCMeta):
 @abcd.auto_eq()
 class BatchNamer(metaclass=abc.ABCMeta):
     """ """
+
     def __init__(self, as_of: Optional[datetime] = datetime.now()):
         self.as_of = as_of
 
@@ -180,6 +181,7 @@ class BatchNamerWrapping(BatchNamer):
 
 class BatchNamerTag(BatchNamer):
     """ """
+
     def fetch(self, batches: BatchesLike) -> Mapping[int, str]:
         """
 
@@ -195,6 +197,7 @@ class BatchNamerTag(BatchNamer):
 
 class CidCompoundNamer(CompoundNamer):
     """ """
+
     def fetch(self, compound_ids: CompoundsLike) -> Mapping[int, str]:
         """
 
@@ -210,6 +213,7 @@ class CidCompoundNamer(CompoundNamer):
 
 class SingleThingCompoundNamer(CompoundNamer):
     """ """
+
     def __init__(self, attribute: str, as_of: datetime = datetime.now()):
         super().__init__(as_of)
         self.attribute = attribute
@@ -235,12 +239,16 @@ class TieredCompoundNamer(CompoundNamer):
     """Checks sources in order, preferring sources with lower index."""
 
     # high-precedence, manual, drugbank:5.0.10:secondary_id, chembl:api:fda_name, chembl:api:inn_name, chembl:api:usan_name, valinor, dmso_stocks, chembl:api:preferred_name
-    elegant_sources: Sequence[RefLike] = [x for x in Refs.fetch_all_or_none(
-        InternalTools.load_resource("chem", "refs_few.lines")
-    ) if x is not None]
-    elegant_sources_extended: Sequence[RefLike] = [x for x in Refs.fetch_all_or_none(
-        InternalTools.load_resource("chem", "refs_more.lines")
-    ) if x is not None]
+    elegant_sources: Sequence[RefLike] = [
+        x
+        for x in Refs.fetch_all_or_none(InternalTools.load_resource("chem", "refs_few.lines"))
+        if x is not None
+    ]
+    elegant_sources_extended: Sequence[RefLike] = [
+        x
+        for x in Refs.fetch_all_or_none(InternalTools.load_resource("chem", "refs_more.lines"))
+        if x is not None
+    ]
 
     def __init__(
         self,
@@ -310,6 +318,7 @@ class TieredCompoundNamer(CompoundNamer):
 
 class CompoundNamerEmpty(BatchNamer):
     """ """
+
     def fetch(self, compound_ids: CompoundsLike) -> Mapping[int, str]:
         """
 
@@ -325,6 +334,7 @@ class CompoundNamerEmpty(BatchNamer):
 
 class BatchNamerEmpty(BatchNamer):
     """ """
+
     def fetch(self, batches: BatchesLike) -> Mapping[int, str]:
         """
 
@@ -341,6 +351,7 @@ class BatchNamerEmpty(BatchNamer):
 @abcd.copy_docstring(TieredCompoundNamer)
 class CleaningTieredCompoundNamer(TieredCompoundNamer):
     """ """
+
     def __init__(
         self,
         sources: Sequence[int] = None,
@@ -358,7 +369,7 @@ class CleaningTieredCompoundNamer(TieredCompoundNamer):
 class CompoundNameCleaner:
     """
     Contains an ordered list of substrings of compound names to discard.
-    By default, will use resources/chem/unimportant_substrings.lines.txt
+    By default, will use resources/chem/unimportant_substrings.lines
     Also replaces names of Greek letters with their Unicode equivalents.
 
     Args:
@@ -370,9 +381,7 @@ class CompoundNameCleaner:
     def __init__(self, to_discard: Optional[Set[str]] = None):
         self.to_discard = to_discard
         if self.to_discard is None:
-            self.to_discard = InternalTools.load_resource(
-                "chem", "unimportant_substrings.lines.txt"
-            )
+            self.to_discard = InternalTools.load_resource("chem", "unimportant_substrings.lines")
 
     def clean(self, thestring: Optional[str]) -> Optional[str]:
         """
@@ -407,6 +416,7 @@ class CompoundNameCleaner:
 
 class CompoundNamers:
     """ """
+
     @classmethod
     def empty(cls) -> CompoundNamerEmpty:
         """ """
@@ -505,6 +515,7 @@ class CompoundNamers:
 
 class BatchNamers:
     """ """
+
     @classmethod
     def empty(cls) -> BatchNamerEmpty:
         """ """

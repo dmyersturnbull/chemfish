@@ -39,15 +39,6 @@ class TestValarTools:
     # TODO
     @given(arrays(np.float32, (integers(1, 1000)), elements=floats(0, 256)))
     def test_signed_floats_to_blob_inverts(self, data):
-        """
-        
-
-        Args:
-          data: 
-
-        Returns:
-
-        """
         "
         Tests the invariant that involves both the signed_floats_to_blob and the blob_to_signed_floats.
         "
@@ -114,6 +105,7 @@ class TestValarTools:
 
 class TestValarToolsMethodNoSetUp:
     """ """
+
     def test_looks_like_submission_hash(self):
         """Tests that only 12 digit hex strings return true for looks_like_submission_hash method"""
         f = ValarTools.looks_like_submission_hash

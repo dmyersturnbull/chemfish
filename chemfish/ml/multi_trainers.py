@@ -11,6 +11,7 @@ from chemfish.model.well_frames import *
 
 class MultiTrainerUtils:
     """ """
+
     @classmethod
     def to_spindle(cls, items: Iterable[Tup[DecisionFrame, TrainableCc]]):
         """
@@ -322,6 +323,7 @@ class MultiTrainer:
 
 class MultiTrainers:
     """ """
+
     @classmethod
     def vs_control(
         cls,
@@ -350,6 +352,7 @@ class MultiTrainers:
         Returns:
 
         """
+
         def it_gen():
             """ """
             return CcIterators.vs_control(
@@ -396,6 +399,7 @@ class MultiTrainers:
         Returns:
 
         """
+
         def it_gen():
             """ """
             return CcIterators.vs_control_rand(
@@ -433,6 +437,7 @@ class MultiTrainers:
         Returns:
 
         """
+
         def it_gen():
             """ """
             return CcIterators.vs_self(df, n_repeats=n_repeats, subsample_to=subsample_to)
@@ -465,6 +470,7 @@ class MultiTrainers:
         Returns:
 
         """
+
         def it_gen():
             """ """
             return CcIterators.vs_self_random(
@@ -499,6 +505,7 @@ class MultiTrainers:
         Returns:
 
         """
+
         def it_gen():
             """ """
             return CcIterators.vs_other(

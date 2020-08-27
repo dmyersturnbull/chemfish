@@ -6,6 +6,7 @@ from chemfish.model.metrics import *
 
 class DoseResponseFrame(TypedDf):
     """ """
+
     def without_controls(self):
         """ """
         return self.__class__(self[self["control"].isna()])
@@ -15,7 +16,7 @@ class DoseResponseFrame(TypedDf):
         Returns a DataFrame of the scores for just one 'axis' (usually 1 or 2 to denote negative and positive controls, respectively).
 
         Args:
-          i: int: 
+          i: int:
 
         Returns:
 
@@ -48,7 +49,7 @@ class DoseResponseFrame(TypedDf):
         Sorts these names first, keeping the rest in the same order.
 
         Args:
-          names: Sequence[str]: 
+          names: Sequence[str]:
 
         Returns:
 
@@ -117,7 +118,7 @@ class DoseResponseFrame2D(DoseResponseFrame):
         Returns a BaseScoreFrame of the scores for just one 'axis' (usually 1 or 2 to denote negative and positive controls, respectively).
 
         Args:
-          i: int: 
+          i: int:
 
         Returns:
 

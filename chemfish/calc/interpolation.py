@@ -5,6 +5,7 @@ from chemfish.core.core_imports import *
 
 class InterpolationFailedError(AlgorithmError):
     """ """
+
     def __init__(self, msg: str, feature: str, well: int):
         super().__init__(msg)
         self.feature = feature
@@ -13,6 +14,7 @@ class InterpolationFailedError(AlgorithmError):
 
 class FeatureTimestampMismatchError(InterpolationFailedError):
     """ """
+
     def __init__(self, feature: str, well: int, n_features: int, n_timestamps: int, n_ideal: int):
         feature = Features.fetch(feature).name
         msg = f"Could not interpolate {feature}: {n_features} features != {n_timestamps} timestamps; ideal is {n_ideal}"
@@ -24,6 +26,7 @@ class FeatureTimestampMismatchError(InterpolationFailedError):
 
 class FeatureInterpolation:
     """ """
+
     def __init__(self, feature: Features):
         self.feature = feature
 
@@ -40,9 +43,6 @@ class FeatureInterpolation:
           feature_arr: The array of the feature; not affected
           well: The well instance or ID
           stringent: Raise exceptions for small errors
-          feature_arr: np.array:
-          well:
-          stringent:
 
         Returns:
           The interpolated features
@@ -50,8 +50,8 @@ class FeatureInterpolation:
         """
         run = InternalTools.well(well).run
         ideal_framerate = ValarTools.frames_per_second(run)
-        all_frames_ms = InternalTools.download_frame_timestamps(run)
-        stimtimes = InternalTools.download_stimulus_timestamps(run)
+        all_frames_ms = ValarTools.download_frame_timestamps(run)
+        stimtimes = ValarTools.download_stimulus_timestamps(run)
         battery = run.experiment.battery
         actual_battery_start_ms, actual_battery_stop_ms = stimtimes[0], stimtimes[-1]
         expected_stop_ms = actual_battery_start_ms + battery.length
@@ -98,21 +98,18 @@ class FeatureInterpolation:
         Interpolates using scipy.interpolate.interp1d with kind='previous', fill_value='extrapolate', bounds_error=False, and assume_sorted=True
 
         Args:
-          feature_arr: The array of the feature; not affected
-          frames_ms: The millisecond timestamps, which can be float-typed.
-        This is NOT set to start with the battery start.
-        However, the milliseconds for battery_start, battery_end, and frames_ms must all be with respect to a single (unspecified) start time.
-        This will normally be the the start time of the run.
-          battery_start_ms: The millisecond at which the battery started (see `frames_ms`)
-          battery_stop_ms: The millisecond at which the battery finished (see `frames_ms`)
-          ideal_framerate: The framerate that was set in the camera config. The interpolation will use this to determine the resulting number of frames.
-          feature_arr: np.array:
-          frames_ms: np.array:
-          battery_start_ms: int:
-          battery_stop_ms: int:
-          ideal_framerate: int:
-          well: int:
-          stringent: bool:
+            feature_arr: The array of the feature; not affected
+            frames_ms: The millisecond timestamps, which can be float-typed.
+                       This is NOT set to start with the battery start.
+                       However, the milliseconds for battery_start, battery_end,
+                       and frames_ms must all be with respect to a single (unspecified) start time.
+                       This will normally be the the start time of the run.
+            battery_start_ms: The millisecond at which the battery started (see `frames_ms`)
+            battery_stop_ms: The millisecond at which the battery finished (see `frames_ms`)
+            ideal_framerate: The framerate that was set in the camera config.
+                             The interpolation will use this to determine the resulting number of frames.
+            well: int:
+            stringent: bool:
 
         Returns:
 

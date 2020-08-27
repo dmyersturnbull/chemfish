@@ -20,6 +20,7 @@ DEFINITELY_BAD_CONTROLS = {c: control_types[c] for c in {"no drug transfer", "lo
 
 class ConcernRule:
     """ """
+
     @property
     def clazz(self) -> Type[Concern]:
         """ """
@@ -68,6 +69,7 @@ class ConcernRule:
 
 class MissingSensorConcernRule(ConcernRule):
     """ """
+
     def __init__(self, as_of: datetime):
         self.as_of = as_of
 
@@ -122,18 +124,14 @@ class MissingSensorConcernRule(ConcernRule):
             run = Runs.fetch(run)
             # TODO check registry
             generation = ValarTools.generation_of(run)
-            if generation is DataGeneration.POINTGREY:
-                expected = ValarTools.pointgrey_required_sensors()
-            elif generation.is_sauronx():
-                expected = ValarTools.sauronx_required_sensors()
-            else:
-                expected = ValarTools.legacy_required_sensors()
+            expected = ValarTools.required_sensors(generation)
             actual = ValarTools.sensors_on(run)
             yield self._new(run, generation, expected, actual)
 
 
 class SensorLengthConcernRule(ConcernRule):
     """ """
+
     def __init__(self, as_of: datetime, sensor_cache):
         self.as_of = as_of
         self.sensor_cache = sensor_cache
@@ -422,6 +420,7 @@ class TargetTimeConcernRule(ConcernRule):
 
 class BatchConcernRule(ConcernRule):
     """ """
+
     def __init__(self, as_of: datetime):
         self.as_of = as_of
 
@@ -466,6 +465,7 @@ class BatchConcernRule(ConcernRule):
 
 class AnnotationConcernRule(ConcernRule):
     """ """
+
     def __init__(self, as_of: datetime):
         self.as_of = as_of
 
@@ -516,6 +516,7 @@ class AnnotationConcernRule(ConcernRule):
 
 class ToFixConcernRule(ConcernRule):
     """ """
+
     def __init__(self, as_of: datetime):
         self.as_of = as_of
 
@@ -584,6 +585,7 @@ class ToFixConcernRule(ConcernRule):
 
 class GenerationConcernRule(ConcernRule):
     """ """
+
     def __init__(self, as_of: datetime, feature: Union[FeatureType, str]):
         self.as_of = as_of
         self.feature = FeatureTypes.of(feature)
@@ -626,6 +628,7 @@ class GenerationConcernRule(ConcernRule):
 
 class ImpossibleTimeConcernRule(ConcernRule):
     """ """
+
     def __init__(self, as_of: datetime):
         self.as_of = as_of
 
@@ -671,7 +674,9 @@ class ImpossibleTimeConcernRule(ConcernRule):
                 yield self._new(run, "datetime_plated", "None")
             if len(batches) > 0 and run.datetime_dosed is None:
                 yield self._new(
-                    run, "datetime_dosed", f"None [batches {','.join([str(b) for b in batches])}]",
+                    run,
+                    "datetime_dosed",
+                    f"None [batches {','.join([str(b) for b in batches])}]",
                 )
             if len(batches) == 0 and run.datetime_dosed is not None:
                 yield self._new(
@@ -693,6 +698,7 @@ class ImpossibleTimeConcernRule(ConcernRule):
 
 class NFeaturesConcernRule(ConcernRule):
     """ """
+
     def __init__(self, as_of: datetime, feature: Union[None, FeatureType, str]):
         self.as_of = as_of
         self.feature = None if feature is None else FeatureTypes.of(feature)
@@ -752,6 +758,7 @@ class NFeaturesConcernRule(ConcernRule):
 
 class WellConcernRule(ConcernRule):
     """ """
+
     def __init__(self, as_of: datetime):
         self.as_of = as_of
 
@@ -794,6 +801,7 @@ class WellConcernRule(ConcernRule):
         Returns:
 
         """
+
         def counts(dfx):
             """
 
@@ -814,6 +822,7 @@ class WellConcernRule(ConcernRule):
 
 class ConcernRuleCollection:
     """ """
+
     def __init__(
         self,
         feature: Union[FeatureType, str],
@@ -864,6 +873,7 @@ class ConcernRuleCollection:
 
 class SimpleConcernRuleCollection(ConcernRuleCollection):
     """ """
+
     @property
     def rules(self) -> Sequence[ConcernRule]:
         """ """
@@ -883,6 +893,7 @@ class SimpleConcernRuleCollection(ConcernRuleCollection):
 
 class SensorConcernRuleCollection(ConcernRuleCollection):
     """ """
+
     @property
     def rules(self) -> Sequence[ConcernRule]:
         """ """
@@ -892,6 +903,7 @@ class SensorConcernRuleCollection(ConcernRuleCollection):
 
 class Concerns:
     """ """
+
     @classmethod
     def default_collection(
         cls,

@@ -14,16 +14,19 @@ from chemfish.viz.figures import *
 
 class ClassifierFailedError(AlgorithmError):
     """ """
+
     pass
 
 
 class ClassifierTrainFailedError(ClassifierFailedError):
     """ """
+
     pass
 
 
 class ClassifierPredictFailedError(ClassifierFailedError):
     """ """
+
     pass
 
 
@@ -33,11 +36,13 @@ class TrainTestOverlapWarning(StrangeRequestWarning):
 
 class NotTrainedError(OpStateError):
     """ """
+
     pass
 
 
 class AlreadyTrainedError(OpStateError):
     """ """
+
     pass
 
 
@@ -187,6 +192,7 @@ class WellClassifier(SaveableTrainable):
 
 class HasOob(WellClassifier, metaclass=abc.ABCMeta):
     """ """
+
     @property
     @abcd.abstractmethod
     def oob_score(self) -> float:
@@ -202,6 +208,7 @@ class HasOob(WellClassifier, metaclass=abc.ABCMeta):
 
 class HasWeights(WellClassifier, metaclass=abc.ABCMeta):
     """ """
+
     @property
     @abcd.abstractmethod
     def weights(self) -> Sequence[float]:
@@ -454,6 +461,7 @@ class SklearnWfClassifierWithOob(
     SklearnWellClassifier, HasOob, BuildableWellClassifier, metaclass=abc.ABCMeta
 ):
     """ """
+
     def __init__(self, model: AnySklearnClassifier):
         model.oob_score = True  # ignore user preference so that oob_score() is defined
         super().__init__(model)
@@ -534,6 +542,7 @@ class SklearnWfClassifierWithOob(
 
 class SklearnWfClassifierWithWeights(SklearnWellClassifier, HasWeights, metaclass=abc.ABCMeta):
     """ """
+
     def __init__(self, model: AnySklearnClassifier):
         super().__init__(model)
         self._weights = None
@@ -566,6 +575,7 @@ class Ut:
 
 class WellForestClassifier(SklearnWfClassifierWithOob, SklearnWfClassifierWithWeights):
     """ """
+
     cached_name = "WellForestClassifier"
 
     @classmethod
@@ -596,6 +606,7 @@ class WellForestClassifier(SklearnWfClassifierWithOob, SklearnWfClassifierWithWe
 
 class WellClassifiers:
     """ """
+
     _classifier_cache = {RandomForestClassifier.__qualname__: WellForestClassifier}
 
     @classmethod
@@ -638,6 +649,7 @@ class WellClassifiers:
 
         class X(*supers):
             """ """
+
             @classmethod
             def model_class(cls) -> Type[AnySklearnClassifier]:
                 """ """

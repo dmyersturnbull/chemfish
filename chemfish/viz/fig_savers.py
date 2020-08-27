@@ -23,10 +23,6 @@ class FigureSaver:
         - True     ==> clear it
         - callable ==> call it with the Figure instance
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(

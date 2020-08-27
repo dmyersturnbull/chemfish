@@ -7,7 +7,7 @@ from chemfish.viz.figures import *
 
 
 class TimelineLabelType(SmartEnum):
-    """ """
+
     NONE = enum.auto()
     TIMES = enum.auto()
     RUNS = enum.auto()
@@ -43,7 +43,7 @@ class TimelineLabelType(SmartEnum):
 
 
 class DurationType(SmartEnum):
-    """ """
+
     WAIT = enum.auto()
     TREATMENT = enum.auto()
     ACCLIMATION = enum.auto()
@@ -118,7 +118,7 @@ class TimelinePlotter(KvrcPlotting):
         dates: Sequence[datetime],
         experiments: Optional[Sequence[str]] = None,
         labels: Optional[Sequence[str]] = None,
-    ):
+    ) -> Figure:
         """
 
 
@@ -215,6 +215,7 @@ class TimelinePlotter(KvrcPlotting):
 
 class TimelinePlots:
     """ """
+
     @classmethod
     def of(
         cls,
@@ -284,6 +285,7 @@ class RunDurationPlotter:
 
 class RunDurationPlots:
     """ """
+
     @classmethod
     def of(
         cls,

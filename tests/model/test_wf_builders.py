@@ -1,3 +1,4 @@
+import os
 from datetime import timedelta
 
 import pytest
@@ -116,6 +117,7 @@ class TestWellFrameBuilder:
 
 class TestWellFrameBuilderNoSetUp:
     """ """
+
     def test_constructor(self):
         """Tests datetime constructor for WellFrameBuilder."""
         past_time = datetime.now() - timedelta(minutes=1)
@@ -265,10 +267,10 @@ class TestWellFrameBuilderNoSetUp:
 
         def pack_func(df):
             """
-            
+
 
             Args:
-              df: 
+              df:
 
             Returns:
 

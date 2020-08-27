@@ -20,6 +20,7 @@ from chemfish.viz.smart_dimensions import RefDims
 @total_ordering
 class TimeUnit:
     """ """
+
     def __init__(self, unit: str, abbrev: str, singlular: str, n_ms: int):
         self.unit, self.abbrev, self.singular, self.plural, self.n_ms = (
             unit,
@@ -56,6 +57,7 @@ class TimeUnit:
 
 class TimeUnits:
     """ """
+
     MS = TimeUnit("ms", "ms", "millisecond", 1)
     SEC = TimeUnit("s", "sec", "second", 1000)
     MIN = TimeUnit("min", "min", "minute", 1000 * 60)
@@ -99,7 +101,7 @@ class KvrcDefaults:
 
     trace_pref_tick_ms_interval = InternalTools.load_resource("viz", "ms_ticks.ints")
 
-    markers = InternalTools.load_resource("viz", "markers.strs")
+    markers = InternalTools.load_resource("viz", "markers.strings")
 
     dark_colors = KvrcColorSchemes.qualitiative_26()
     light_colors = KvrcColorSchemes.qualitiative_26()
@@ -315,6 +317,7 @@ class KvrcConfig:
         Returns:
 
         """
+
         def find(v):
             """
 
@@ -344,6 +347,7 @@ class KvrcConfig:
         Returns:
 
         """
+
         def en(v):
             """
 
@@ -424,6 +428,7 @@ class KvrcConfig:
         Returns:
 
         """
+
         def lam(v):
             """
 
@@ -584,6 +589,7 @@ class KvrcConfig:
         Returns:
 
         """
+
         def ftup(v) -> Tup[float, float]:
             """
 
@@ -654,6 +660,7 @@ class KvrcConfig:
         Returns:
 
         """
+
         def fw(value):
             """
 
@@ -750,6 +757,7 @@ class KvrcConfig:
         Returns:
 
         """
+
         def alphas(v: str):
             """
 
@@ -1034,11 +1042,8 @@ class KvrcCore:
             if matplotlib_style_path is None
             else Tools.read_lines_file(matplotlib_style_path, ignore_comments=True)
         )
-        if not chemfish_env.quiet:
-            logger.info(
-                f"Loaded {len(mpl_read)} matplotlib RC settings from {matplotlib_style_path}"
-            )
-            logger.debug(f"Set matplotlib settings {mpl_read}")
+        logger.info(f"Loaded {len(mpl_read)} matplotlib RC settings from {matplotlib_style_path}")
+        logger.debug(f"Set matplotlib settings {mpl_read}")
 
     def _load_kvrc(self, kvrc_style_path: PathLike) -> None:
         """
@@ -1085,20 +1090,19 @@ class KvrcCore:
             ):
                 raise UnrecognizedKeyError(f"Viz key '{k}' was not recognized")
         # log important info
-        if not chemfish_env.quiet:
-            logger.info(f"Loaded {len(config.passed)} Chemfish viz settings from {kvrc_style_path}")
-            if len(self.widths) + len(self.heights) > 0:
-                logger.info(
-                    "Set {} reference widths and heights. Pad is ({}, {}). Gutter is {}.".format(
-                        len(self.widths) + len(self.heights),
-                        self.widths.get("pad", 0.0),
-                        self.heights.get("pad", 0.0),
-                        self.widths.get("gutter", 0.0),
-                    )
+        logger.info(f"Loaded {len(config.passed)} Chemfish viz settings from {kvrc_style_path}")
+        if len(self.widths) + len(self.heights) > 0:
+            logger.info(
+                "Set {} reference widths and heights. Pad is ({}, {}). Gutter is {}.".format(
+                    len(self.widths) + len(self.heights),
+                    self.widths.get("pad", 0.0),
+                    self.heights.get("pad", 0.0),
+                    self.widths.get("gutter", 0.0),
                 )
-            else:
-                logger.info("No reference widths or heights set.")
-            logger.debug(f"Set chemfish_rc settings {viz_params}")
+            )
+        else:
+            logger.info("No reference widths or heights set.")
+        logger.debug(f"Set chemfish_rc settings {viz_params}")
 
     def _load_settings(self, config: KvrcConfig):
         """

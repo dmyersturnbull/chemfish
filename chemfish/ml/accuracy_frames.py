@@ -9,6 +9,7 @@ from chemfish.viz.accuracy_plots import *
 
 class AccuracyCountFrame(BaseScoreFrame):
     """ """
+
     pass
 
 

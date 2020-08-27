@@ -18,10 +18,6 @@ class RefDims(dict):
     The size is then rounded to sigfigs after -- normally 6 sigfigs, but overridden with width_sigfigs / height_sigfigs.
     The sum / difference is applied after.
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(self, axis: str, n_sigfigs: int = 6):
@@ -37,7 +33,7 @@ class RefDims(dict):
         It's best for this to match plt.rcParams[figure.figsize], but this is not required.
 
         Args:
-          item: str: 
+          item: str:
 
         Returns:
 

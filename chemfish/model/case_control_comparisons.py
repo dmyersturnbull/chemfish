@@ -14,7 +14,9 @@ class ControlComparison:
     """
     A comparison between `name` and `control` for some repeat `repeat`.
     This is intended to be used when many comparisons between wells are made.
-    'Name' and 'control' can be any strings -- 'control' may simply reflect something 'different' from 'name' and not actually controls.
+    'Name' and 'control' can be any strings.
+    'control' may simply reflect something 'different' from 'name' and not actually controls.
+
     Examples:
         - name=='optovin' and control=='solvent (-)'  where separation is a good thing
         - name=='optovin' and name=='optovin',        as a negative control experiment
@@ -45,9 +47,9 @@ class ControlComparison:
 @abcd.auto_repr_str(lambda s: s == "smalldf", lambda s: s == "smalldf", lambda s: s == "smalldf")
 class TrainableCc:
     """
-    An equivalent to `ControlComparison` that also contains an attribute `smalldf`,
+    An equivalent to ``ControlComparison`` that also contains an attribute ``smalldf``,
     which contains selected wells to intended for the comparison.
-    `smalldf` always has exactly 2 `name` values (`len(smalldf.unique_names()) == 2`).
+    ``smalldf`` always has exactly 2 `name` values (``len(smalldf.unique_names()) == 2``).
 
     Args:
 
@@ -164,6 +166,7 @@ class CcTreatmentSelectors:
         Returns:
 
         """
+
         def keepn(cc: ControlComparison, df: WellFrame) -> WellFrame:
             """
 
@@ -496,6 +499,7 @@ class CcShouldProceeds:
 
 class TrainableCcIterator(SizedIterator):
     """ """
+
     def __init__(
         self,
         df: WellFrame,

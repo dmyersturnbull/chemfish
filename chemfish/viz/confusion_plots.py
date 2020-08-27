@@ -6,7 +6,8 @@ from chemfish.viz.figures import FigureTools
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class ConfusionPlotter(KvrcPlotting):
-    """ """
+    """"""
+
     def __init__(
         self,
         vmin: float = 0,
@@ -98,6 +99,7 @@ class ConfusionPlotter(KvrcPlotting):
 
 class ConfusionPlots:
     """ """
+
     @classmethod
     def plot(
         cls,

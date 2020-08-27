@@ -1,11 +1,5 @@
 from __future__ import annotations
 
-import logging
-from copy import deepcopy
-from typing import Callable, Mapping, Sequence, Set, Union
-
-import numpy as np
-import pandas as pd
 from clana.visualize_cm import simulated_annealing
 from matplotlib.figure import Figure
 
@@ -327,6 +321,7 @@ class ConfusionMatrix(UntypedDf):
 
 class ConfusionMatrices:
     """ """
+
     @classmethod
     def average(cls, matrices: Sequence[ConfusionMatrix]) -> ConfusionMatrix:
         """

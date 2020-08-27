@@ -8,6 +8,7 @@ from chemfish.core.core_imports import *
 
 class StatTools:
     """ """
+
     @classmethod
     def kde(
         cls, a: np.array, kernel: str = "gau", bw: str = "normal_reference"
@@ -313,8 +314,10 @@ class BaseScoreFrame(TypedDf):
         Returns:
 
         """
+
         class X(cls):
             """ """
+
             pass
 
         X.__name__ = class_name

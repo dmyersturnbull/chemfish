@@ -9,6 +9,7 @@ from chemfish.model.wf_tools import *
 
 class InvalidWellFrameError(ConstructionError):
     """ """
+
     pass
 
 
@@ -1296,6 +1297,7 @@ class WellFrame(TypedDf):
         Returns:
 
         """
+
         def gsize(ts: Treatments):
             """
 

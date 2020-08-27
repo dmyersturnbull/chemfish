@@ -15,22 +15,16 @@ class KvrcColorSchemes:
     Most are not used directly in chemfish, but are here for convenience.
     The "tol" palettes (ex `qualitative_tol_vibrant_7`) are safe for red-green color blindness.
 
-    Args:
-
-    Returns:
-
     """
 
     @classmethod
     def darken_color(cls, color, shading: float):
         """
-        
+
 
         Args:
-          color: 
-          shading: float: 
-
-        Returns:
+          color:
+          shading: float:
 
         """
         color = mcolors.colorConverter.to_rgb(color)
@@ -40,11 +34,11 @@ class KvrcColorSchemes:
     @classmethod
     def darken_palette(cls, palette: Iterable[str], shading: float) -> Sequence[str]:
         """
-        
+
 
         Args:
-          palette: Iterable[str]: 
-          shading: float: 
+          palette: Iterable[str]:
+          shading: float:
 
         Returns:
 
@@ -227,10 +221,6 @@ class FancyCmaps:
     For ex, 'Greys' doesn't go from pure white to pure black!
     So colormaps to consider avoiding include Greys, Blues, Greens, (etc), bwr, and seismic.
     Matplotlib still has good built-in colormaps, including viridis and plasma.
-
-    Args:
-
-    Returns:
 
     """
 

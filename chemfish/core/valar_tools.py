@@ -12,56 +12,22 @@ from chemfish.core.data_generations import DataGeneration
 from chemfish.core.tools import *
 from chemfish.core.valar_singleton import *
 
-
-def _build_stim_colors():
-    """ """
-    dct = {
-        s.name: "#" + s.default_color if s.audio_file is None else "black" for s in Stimuli.select()
-    }
-    dct.update(InternalTools.load_resource("core", "stim_colors.json"))
-    return dct
-
-
-def _build_stim_names():
-    """ """
-    dct = {s.name: s.name for s in Stimuli.select()}
-    dct.update(InternalTools.load_resource("core", "stim_names.json"))
-    return dct
-
-
-_stimulus_display_colors = _build_stim_colors()
-_stimulus_replace = _build_stim_names()
-
-# TODO
-_pointgrey_sensors = set(Sensors.list_where((Sensors.id > 2) & (Sensors.id != 7)))
-_sauronx_sensors = set(Sensors.list_where((Sensors.id > 2) & (Sensors.id != 7)))
-_required_sauronx_sensors = set(Sensors.list_where((Sensors.id > 2) & (Sensors.id < 7)))
-_legacy_sensors = set(Sensors.list_where(Sensors.id < 3))
-_required_legacy_sensors = set(Sensors.list_where(Sensors.id == 2))
-
-MANUAL_HIGH_REF = Refs.fetch_or_none("manual:high")
-MANUAL_REF = Refs.fetch("manual")
+_stimulus_display_colors = {
+    s.name: "#" + s.default_color if s.audio_file is None else "black" for s in Stimuli.select()
+}
+_stimulus_display_colors.update(InternalTools.load_resource("core", "stim_colors.json"))
+_stimulus_replace = {s.name: s.name for s in Stimuli.select()}
+_stimulus_replace.update(InternalTools.load_resource("core", "stim_names.json"))
 
 
 class StimulusType(SmartEnum):
     """ """
+
     LED = enum.auto()
     AUDIO = enum.auto()
     SOLENOID = enum.auto()
     NONE = enum.auto()
     IR = enum.auto()
-
-
-_saurons = list(Saurons.select())
-# use for mapping after converting to a lowercase str
-_sauron_str_name_map: Mapping[str, str] = {
-    **{str(s.id): "S" + s.name for s in _saurons if len(s.name) == 1},
-    **{str(s.id): s.name for s in _saurons if len(s.name) > 1},
-    **{s.name.lower(): "S" + s.name for s in _saurons if len(s.name) == 1},
-    **{s.name.lower(): s.name for s in _saurons if len(s.name) > 1},
-    **{"s" + str(s.id): "S" + s.name for s in _saurons if len(s.name) == 1},
-    **{"s" + str(s.id): s.name for s in _saurons if len(s.name) > 1},
-}
 
 
 class ValarTools:
@@ -70,11 +36,123 @@ class ValarTools:
     For example, uses our definition of a library plate ID.
     Some of these functions simply call their equivalent Tools or InternalTools functions.
 
-    Args:
-
-    Returns:
-
     """
+
+    MANUAL_HIGH_REF = Refs.fetch_or_none("manual:high")
+    MANUAL_REF = Refs.fetch("manual")
+
+    @classmethod
+    def download_frame_timestamps(cls, run: RunLike) -> np.array:
+        """
+        Downloads the timestamps that SauronX recorded for the frame capture times, or None if the sensor was not defined.
+        Will always return None for legacy data.
+        In pre-PointGrey data, these are the timestamps that MATLAB received the frames.
+        In PointGrey data, these are the timestamps that the image was taken (according to the camera firmware).
+
+        Args:
+            run: The run
+
+        Returns:
+            The numpy array of floats, or None
+
+        """
+        run = Runs.fetch(run)
+        sensor = ValarTools.standard_sensor("camera_millis_sensor", ValarTools.generation_of(run))
+        return ValarTools.convert_sensor_data(
+            SensorData.select()
+            .where(SensorData.run_id == run.id)
+            .where(SensorData.sensor_id == sensor.id)
+            .first()
+        )
+
+    @classmethod
+    def standard_sensor(cls, name: str, generation: DataGeneration) -> Sensors:
+        data: Mapping[str, Any] = InternalTools.load_resource("core", "generations.json")[
+            generation.name
+        ]
+        return Sensors.fetch(data[name])
+
+    @classmethod
+    def download_stimulus_timestamps(cls, run: RunLike) -> Optional[np.array]:
+        """
+        Downloads the timestamps that SauronX recorded for the stimuli, or None if the sensor was not defined.
+        Will always return None for legacy data.
+
+        Args:
+            run: The run
+
+        Returns:
+            The numpy array of floats, or None
+
+        """
+        run = Runs.fetch(run)
+        sensor = ValarTools.standard_sensor("stimulus_millis_sensor", ValarTools.generation_of(run))
+        return ValarTools.convert_sensor_data(
+            SensorData.select()
+            .where(SensorData.run_id == run.id)
+            .where(SensorData.sensor_id == sensor.id)
+            .first()
+        )
+
+    @classmethod
+    def convert_sensor_data(cls, data: SensorData) -> Union[None, np.array, bytes, str]:
+        """
+        Downloads and converts sensor data.
+        See `InternalTools.convert_sensor_data_from_bytes` for details.
+
+        Args:
+          data: The ID or instance of a row in sensor_data
+
+        Returns:
+          The converted data
+
+        """
+        data = SensorData.fetch(data)
+        return ValarTools.convert_sensor_data_from_bytes(data.sensor, data.floats)
+
+    @classmethod
+    def convert_sensor_data_from_bytes(
+        cls, sensor: Union[str, int, Sensors], data: bytes
+    ) -> Union[None, np.array, bytes, str]:
+        """
+        Convert the sensor data to its appropriate type as defined by `sensors.data_type`.
+        WARNING:
+            Currently does not handle `sensors.data_type=='utf8_char'`. Currently there are no sensors in Valar with this data type.
+
+        Args:
+          sensor: The name, ID, or instance of the sensors row
+          data: The data from `sensor_data.floats`; despite the name this is blob represented as bytes and may not correspond to floats at all
+
+        Returns:
+          The converted data, or None if `data` is None
+
+        """
+        sensor = Sensors.fetch(sensor)
+        dt = sensor.data_type
+        if data is None:
+            return None
+        if dt == "byte":
+            return np.frombuffer(data, dtype=np.byte)
+        if dt == "unsigned_byte":
+            return np.frombuffer(data, dtype=np.byte) + 2 ** 7
+        if dt == "short":
+            return np.frombuffer(data, dtype=">i2").astype(np.int64)
+        if dt == "unsigned_short":
+            return np.frombuffer(data, dtype=">i2").astype(np.int64) + 2 ** 15
+        if dt == "int":
+            return np.frombuffer(data, dtype=">i4").astype(np.int64)
+        if dt == "unsigned_int":
+            return np.frombuffer(data, dtype=">i4").astype(np.int64) + 2 ** 31
+        if dt == "float":
+            return np.frombuffer(data, dtype=">f4").astype(np.float64)
+        if dt == "double":
+            return np.frombuffer(data, dtype=">f8").astype(np.float64)
+        if dt == "utf8_char":
+            return str(dt, encoding="utf-8")
+        elif dt == "other":
+            return data
+        else:
+            raise UnsupportedOpError(f"Oh no! Sensor cache doesn't recognize dtype {dt}")
 
     @classmethod
     def stimulus_wavelength_colors(cls) -> Mapping[str, str]:
@@ -248,29 +326,16 @@ class ValarTools:
         return f.text
 
     @classmethod
-    def pointgrey_required_sensors(cls) -> Set[Sensors]:
-        """ """
-        return copy(_pointgrey_sensors)
+    def required_sensors(cls, generation: DataGeneration) -> Set[Sensors]:
+        generations: Mapping[str, Any] = InternalTools.load_resource("core", "generations.json")
+        # noinspection PyTypeChecker
+        return Sensors.fetch_all(generations[generation.name]["required_sensors"])
 
     @classmethod
-    def sauronx_sensors(cls) -> Set[Sensors]:
-        """ """
-        return copy(_sauronx_sensors)
-
-    @classmethod
-    def sauronx_required_sensors(cls) -> Set[Sensors]:
-        """ """
-        return copy(_required_sauronx_sensors)
-
-    @classmethod
-    def legacy_sensors(cls) -> Set[Sensors]:
-        """ """
-        return copy(_legacy_sensors)
-
-    @classmethod
-    def legacy_required_sensors(cls) -> Set[Sensors]:
-        """ """
-        return copy(_required_legacy_sensors)
+    def optional_sensors(cls, generation: DataGeneration) -> Set[Sensors]:
+        generations: Mapping[str, Any] = InternalTools.load_resource("core", "generations.json")
+        # noinspection PyTypeChecker
+        return Sensors.fetch_all(generations[generation.name]["optional_sensors"])
 
     @classmethod
     def treatment_sec(cls, run: RunLike) -> float:
@@ -329,12 +394,12 @@ class ValarTools:
             return (run.datetime_dosed - plate.datetime_plated).total_seconds()
 
     @classmethod
-    def download_file(cls, remote_path: PLike, local_path: str, overwrite: bool = False) -> None:
+    def download_file(cls, remote_path: PathLike, local_path: str, overwrite: bool = False) -> None:
         """
 
 
         Args:
-          remote_path: PLike:
+          remote_path: PathLike:
           local_path: str:
           overwrite:
 
@@ -350,12 +415,12 @@ class ValarTools:
             )
 
     @classmethod
-    def download_dir(cls, remote_path: PLike, local_path: str, overwrite: bool = False) -> None:
+    def download_dir(cls, remote_path: PathLike, local_path: str, overwrite: bool = False) -> None:
         """
 
 
         Args:
-          remote_path: PLike:
+          remote_path: PathLike:
           local_path: str:
           overwrite:
 
@@ -371,13 +436,13 @@ class ValarTools:
             )
 
     @classmethod
-    def _download(cls, remote_path: str, path: PLike, is_dir: bool, overwrite: bool) -> None:
+    def _download(cls, remote_path: str, path: PathLike, is_dir: bool, overwrite: bool) -> None:
         """
 
 
         Args:
           remote_path: str:
-          path: PLike:
+          path: PathLike:
           is_dir: bool:
           overwrite: bool:
 
@@ -385,17 +450,23 @@ class ValarTools:
 
         """
         path = str(path)
-        # TODO check overwrite and prep
-        logger.debug("Downloading {remote_path} -> {path}")
+        logger.debug(f"Downloading {remote_path} -> {path}")
         Tools.prep_file(path, exist_ok=overwrite)
-        # TODO check regex for drive letters
-        if os.name == "nt" and (remote_path.startswith(r"\\") or remote_path.startswith("Z:\\")):
+        try:
             shutil.copyfile(remote_path, path)
-        elif os.name == "nt":
-            subprocess.check_output(["scp", remote_path, path])
-        elif is_dir:
+            return
+        except OSError:
+            logger.error(f"Failed to copy {remote_path} to {path} using copyfile", exc_info=False)
+            logger.debug(f"Copy failed.", exc_info=True)
+        has_rsync = False
+        try:
+            subprocess.check_call(["rsync", "--help"])
+            has_rsync = True
+        except subprocess.SubprocessError:
+            logger.debug("Did not find rsync", exc_info=True)
+        if is_dir and has_rsync:
             subprocess.check_output(["rsync", "--ignore-existing", "-avz", remote_path, path])
-        else:
+        elif has_rsync:
             subprocess.check_output(
                 [
                     "rsync",
@@ -407,6 +478,8 @@ class ValarTools:
                     path,
                 ]
             )
+        else:
+            subprocess.check_output(["scp", remote_path, path])
 
     @classmethod
     def determine_solvent_names_slow(cls, before: datetime) -> Mapping[int, Optional[str]]:
@@ -423,19 +496,17 @@ class ValarTools:
         """
 
         def get_label(solvent):
-            """
-
-
-            Args:
-              solvent:
-
-            Returns:
-
-            """
             row = (
                 CompoundLabels.select()
                 .where(CompoundLabels.compound == solvent)
-                .where(CompoundLabels.ref == (MANUAL_REF if MANUAL_HIGH_REF is None else MANUAL_HIGH_REF))
+                .where(
+                    CompoundLabels.ref
+                    == (
+                        ValarTools.MANUAL_REF
+                        if ValarTools.MANUAL_HIGH_REF is None
+                        else ValarTools.MANUAL_HIGH_REF
+                    )
+                )
                 .where(CompoundLabels.created < before)
                 .where(Compounds.created < before)
                 .order_by(CompoundLabels.id)
@@ -570,7 +641,6 @@ class ValarTools:
 
         Args:
           run: A runs instance, ID, name, tag, or submission hash or instance
-          run: RunLike:
 
         Returns:
           A DataGeneration instance
@@ -592,24 +662,12 @@ class ValarTools:
         return Tools.only(matches)
 
     @classmethod
-    def __generation(cls, sauron_id, sauron_name, has_sub):
-        df: pd.DataFrame = InternalTools.load_resource("core", "sauron_generations.csv")
-        df = df[df["has_sub"] == "yes" if has_sub else "no"]
-        df = df[df["name"] == sauron_name]
-        if len(df) == 0:
-            raise ValueError(f"Did not detect a generation for Sauron {sauron_name}")
-        elif len(df) > 1:
-            raise ValueError("Multiple generation matches for Sauron {sauron_name}")
-        return DataGeneration.of(df["generation"][0])
-
-    @classmethod
     def features_on(cls, run: RunLike) -> Set[str]:
         """
         Finds all unique features involved in all the wells for a given run.
 
         Args:
           run: A run ID, name, tag, instance, or submission hash or instance
-          run: RunLike:
 
         Returns:
           The set of features involved in a given run.
@@ -640,7 +698,6 @@ class ValarTools:
 
         Args:
           run: A run ID, name, tag, instance, or submission hash or instance
-          run: RunLike:
 
         Returns:
           The set of sensor names that have sensor data for a given run.
@@ -663,7 +720,6 @@ class ValarTools:
 
         Args:
           submission_hash: Any string
-          submission_hash: str:
 
         Returns:
           Whether the string could be a submission hash (is formatted correctly)
@@ -678,7 +734,6 @@ class ValarTools:
 
         Args:
           battery: The battery ID, name, or instance
-          battery:
 
         Returns:
           Whether the battery is a _true_ legacy battery; i.e. can't be run with SauronX
@@ -694,7 +749,6 @@ class ValarTools:
 
         Args:
           assay: The assay ID, name, or instance
-          assay:
 
         Returns:
           Whether the assay is a _true_ legacy battery; i.e. can't be run with SauronX
@@ -710,9 +764,6 @@ class ValarTools:
 
         Args:
           assay: The assay ID, name, or instance
-          assay: Union[Assays:
-          str:
-          int]:
 
         Returns:
           Whether the assay contains real stimuli; the query is relatively fast
@@ -733,17 +784,15 @@ class ValarTools:
 
         Args:
           sauron: A Sauron instance, ID, or name
-          sauron:
 
         Returns:
 
         """
-        if isinstance(sauron, Saurons):
-            sauron = sauron.name
-        sauron = str(sauron).lower()
-        if sauron not in _sauron_str_name_map:
-            raise ValarLookupError(f"No sauron {sauron}")
-        return _sauron_str_name_map[sauron]
+        sauron = Saurons.fetch(sauron)
+        if re.compile(r"[0-9]+").fullmatch(sauron.name) is None:
+            return sauron.name
+        else:
+            return "S" + sauron.name
 
     @classmethod
     def sauron_config_name(cls, sc) -> str:
@@ -841,8 +890,6 @@ class ValarTools:
         Args:
           run: A run ID, name, tag, submission hash, submission instance or run instance
           tag_name: The value in run_tags.name
-          run: RunLike:
-          tag_name: str:
 
         Returns:
           The value as an str
@@ -862,8 +909,6 @@ class ValarTools:
         Args:
           run: A run ID, name, tag, submission hash, submission instance or run instance
           tag_name: The value in run_tags.name
-          run: RunLike:
-          tag_name: str:
 
         Returns:
           The value as an str, or None if it doesn't exist
@@ -885,7 +930,6 @@ class ValarTools:
 
         Args:
           stimulus: A stimulus ID, name, or instance
-          stimulus:
 
         Returns:
           The name as a string
@@ -922,8 +966,6 @@ class ValarTools:
         Args:
           ms: The array of millisecond values
           fps: The frames per second
-          ms: np.array:
-          fps: int:
 
         Returns:
           The unique frame seconds, unique, in order
@@ -953,6 +995,7 @@ class ValarTools:
 
         Args:
           sxt:
+
         Returns:
 
         """
@@ -968,7 +1011,6 @@ class ValarTools:
 
         Args:
           user: The name, ID, or instance in the users table
-          user:
 
         Returns:
           The initials as a string, in caps
@@ -978,7 +1020,6 @@ class ValarTools:
             user = Users.select().where(Users.id == user).first()
         if isinstance(user, str):
             user = Users.select().where(Users.username == user).first()
-        s = ""
         if user.first_name.islower():
             user.first_name = user.first_name.capitalize()
         if user.last_name.islower():
@@ -989,13 +1030,11 @@ class ValarTools:
     def users_to_initials(cls) -> Mapping[Users, str]:
         """
         Returns the initials of all Users in database.
-        :return: Dictionary of all Users with keys corresponding to User Instances and values corresponding to
-        initials as strings in caps
 
         Args:
 
         Returns:
-
+            Dictionary of all Users with keys corresponding to User Instances and values corresponding to
         """
         return {user: ValarTools.initials(user) for user in Users.select()}
 
@@ -1027,7 +1066,6 @@ class ValarTools:
 
         Args:
           run: A run ID, name, tag, instance, or submission hash or instance
-          run:
 
         Returns:
           ValarTools.frames_per_second.
@@ -1077,9 +1115,7 @@ class ValarTools:
 
 
         Args:
-          sauron: Union[Saurons:
-          int:
-          str]:
+          sauron:
           fps: int:
 
         Returns:
@@ -1190,7 +1226,6 @@ class ValarTools:
 
         Args:
           run: A run ID, name, tag, instance, or submission hash or instance
-          run: RunLike:
 
         Returns:
           A Python int
@@ -1236,10 +1271,6 @@ class ValarTools:
 
         Args:
           run: A run ID, name, tag, instance, or submission hash or instance
-          run: Union[int:
-          str:
-          Runs:
-          Submissions]:
 
         Returns:
 
@@ -1275,8 +1306,6 @@ class ValarTools:
         Args:
           submission: Submission Identifier
           param_name: Ex '$...drug'
-          submission:
-          param_name: str:
 
         Returns:
           Submission Paramater value
@@ -1360,7 +1389,6 @@ class ValarTools:
 
         Args:
           ref: The library Refs table ID, name, or instance
-          ref:
 
         Returns:
           The unique library plate IDs, from the legacy_internal fields
@@ -1388,8 +1416,6 @@ class ValarTools:
         Args:
           submission: The submission ID, hash, or instance
           var_name: The submission_params variable name, often something like '$...drug'
-          submission:
-          var_name: Optional[str]:  (Default value = None)
 
         Returns:
           library plate id for new style submissions and truncated legacy_internal_id values for old style submissions.
@@ -1436,10 +1462,6 @@ class ValarTools:
 
         Args:
           runs: An iterable consisting of run ID(s), name(s), tag(s), instance(s), or submission hash(es) or instance(s)
-          runs: Union[int:
-          str:
-          Runs:
-          Submissions:
 
         Returns:
           An iterable consisting of runs associated with given run identifiers.
@@ -1454,7 +1476,6 @@ class ValarTools:
 
         Args:
           run: A run ID, name, tag, instance, or submission hash or instance
-          run:
 
         Returns:
           A run associated with the given ID, name, tag, instance, or submission hash or instance
@@ -1465,14 +1486,13 @@ class ValarTools:
     @classmethod
     def assay_name_simplifier(cls) -> Callable[[str], str]:
         """
-
+            Strips out the legacy assay qualifiers like `(variant:...)` and the user/experiment info.
+            Also removes text like '#legacy' and 'sauronx-', and 'sys :: light ::'.
 
         Args:
 
         Returns:
-          Strips out the legacy assay qualifiers like `(variant:...)` and the user/experiment info.
-          Also removes text like '#legacy' and 'sauronx-', and 'sys :: light ::'.
-          :return: A function mapping assay names to new names
+          A function mapping assay names to new names
 
         """
         _usernames = {u.username for u in Users.select(Users.username)}
@@ -1482,15 +1502,6 @@ class ValarTools:
         )
 
         def _simplify_name(name: str) -> str:
-            """
-
-
-            Args:
-              name: str:
-
-            Returns:
-
-            """
             prefixes = dict(InternalTools.load_resource("core", "assay_prefixes.json")[0])
             s = _qualifier.sub("", _end.sub("", name))
             for k, v in prefixes.items():
@@ -1525,9 +1536,6 @@ class ValarTools:
           feature: The FeatureType to select
           start_frame: Starts at 0 as per our convention (note that MySQL itself starts at 1)
           end_frame: Starts at 0 as per our convention (note that MySQL itself starts at 1)
-          feature: Features:
-          start_frame: int:
-          end_frame: int:
 
         Returns:
 

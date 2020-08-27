@@ -68,7 +68,6 @@ from chemfish.caches.datasets import *
 # caches
 from chemfish.caches.sensor_caches import *
 from chemfish.caches.stim_caches import *
-from chemfish.caches.video_caches import *
 from chemfish.caches.wf_caches import *
 
 # core
@@ -110,7 +109,6 @@ from chemfish.model.sensors import *
 from chemfish.model.stim_frames import *
 from chemfish.model.treatment_names import *
 from chemfish.model.treatments import *
-from chemfish.model.videos import *
 from chemfish.model.well_frames import *
 from chemfish.model.well_names import *
 from chemfish.model.wf_builders import *
@@ -156,13 +154,9 @@ __filterer.substring_never(".*libuv only supports.*")
 # startup messages
 ################################
 
-if not chemfish_env.quiet:
-    logger.notice(
-        f"Chemfish version {chemfish_version.strip()}. Started in {round(time.monotonic() - chemfish_start_clock)}s."
-    )
-    logger.debug(f"Figure dimensions: {chemfish_rc.height}×{chemfish_rc.width}")
-    logger.info("Severity key: " + Severity.key_str())
-if not chemfish_env.quiet and matplotlib.get_backend().endswith("backend_inline"):
-    logger.error("Using inline backend. Use '%matplotlib widget' instead.")
-else:
-    logger.debug(f"Using backen  {matplotlib.get_backend()}")
+logger.notice(
+    f"Chemfish version {chemfish_version.strip()}. Started in {round(time.monotonic() - chemfish_start_clock)}s."
+)
+logger.debug(f"Figure dimensions: {chemfish_rc.height}×{chemfish_rc.width}")
+logger.info("Severity key: " + Severity.key_str())
+logger.debug(f"Using backend  {matplotlib.get_backend()}")

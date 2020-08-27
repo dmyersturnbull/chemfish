@@ -25,6 +25,7 @@ class SensorNames(SmartEnum):
 
 class MicrophoneWaveform(Waveform):
     """ """
+
     pass
 
 
@@ -66,16 +67,16 @@ class BatteryTimeData:
 
 class ChemfishSensor:
     def __init__(self, run: RunLike, sensor_data: SensorDataLike):
-    """
-    Sensor wrapper object that holds converted sensor_data for a given run.
+        """
+        Sensor wrapper object that holds converted sensor_data for a given run.
 
-    Args:
-      run: Run ID, Submission ID, Submission Object, or Run Object
-      sensor_data: Converted Sensor_data
+        Args:
+          run: Run ID, Submission ID, Submission Object, or Run Object
+          sensor_data: Converted Sensor_data
 
-    Returns:
+        Returns:
 
-    """
+        """
         self._sensor_data = sensor_data
         self._run = ValarTools.run(run)
 
@@ -176,6 +177,7 @@ class TimeData(ChemfishSensor, metaclass=abc.ABCMeta):
 
 class StimulusTimeData(TimeData):
     """ """
+
     @property
     def abbrev(self) -> str:
         """ """
@@ -189,6 +191,7 @@ class StimulusTimeData(TimeData):
 
 class CameraTimeData(TimeData):
     """ """
+
     @property
     def abbrev(self) -> str:
         """ """
@@ -202,16 +205,16 @@ class CameraTimeData(TimeData):
 
 class ImageSensor(ChemfishSensor):
     def __init__(self, run: RunLike, sensor_data: SensorDataLike):
-    """
-    Sensor that holds Image sensor data (Webcam and Preview). Applies grid if it holds preview data.
+        """
+        Sensor that holds Image sensor data (Webcam and Preview). Applies grid if it holds preview data.
 
-    Args:
-      run: Run ID, Submission ID, Submission Object, or Run Object
-      sensor_data: Converted image sensor data (Webcam/Preview)
+        Args:
+          run: Run ID, Submission ID, Submission Object, or Run Object
+          sensor_data: Converted image sensor data (Webcam/Preview)
 
-    Returns:
+        Returns:
 
-    """
+        """
         super().__init__(run, sensor_data)
         self._sensor_data = Image.open(io.BytesIO(sensor_data))
 
@@ -262,6 +265,7 @@ class ImageSensor(ChemfishSensor):
 
 class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
     """ """
+
     def __init__(
         self,
         run: RunLike,
@@ -361,6 +365,7 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
 
 class PhotoresistorSensor(TimeDepChemfishSensor):
     """ """
+
     @property
     def abbrev(self) -> str:
         """ """
@@ -379,6 +384,7 @@ class PhotoresistorSensor(TimeDepChemfishSensor):
 
 class ThermistorSensor(TimeDepChemfishSensor):
     """ """
+
     @property
     def abbrev(self) -> str:
         """ """
@@ -397,6 +403,7 @@ class ThermistorSensor(TimeDepChemfishSensor):
 
 class MicrophoneWaveFormSensor(TimeDepChemfishSensor):
     """ """
+
     # TODO: Not sure if this is right... Don't know what it's supposed to be doing either...
     def __init__(
         self,
@@ -435,6 +442,7 @@ class MicrophoneWaveFormSensor(TimeDepChemfishSensor):
 
 class MicrophoneRawSensor(TimeDepChemfishSensor):
     """ """
+
     @property
     def abbrev(self) -> str:
         """ """

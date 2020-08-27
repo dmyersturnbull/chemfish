@@ -14,14 +14,15 @@ FigureSeqLike = Union[Figure, Iterator[Figure], Iterator[Tup[str, Figure]], Mapp
 
 class InternalVizTools:
     """ """
+
     @classmethod
     def preferred_units_per_sec(cls, mark_every_ms: int, total_ms: float) -> Tup[str, float]:
         """
-        
+
 
         Args:
-          mark_every_ms: int: 
-          total_ms: float: 
+          mark_every_ms: int:
+          total_ms: float:
 
         Returns:
 
@@ -43,10 +44,10 @@ class InternalVizTools:
     @classmethod
     def preferred_tick_ms_interval(cls, n_ms_total):
         """
-        
+
 
         Args:
-          n_ms_total: 
+          n_ms_total:
 
         Returns:
 
@@ -63,10 +64,10 @@ class InternalVizTools:
     @classmethod
     def assign_colors(cls, categories: Sequence[str]) -> Sequence[str]:
         """
-        
+
 
         Args:
-          categories: Sequence[str]: 
+          categories: Sequence[str]:
 
         Returns:
 
@@ -79,11 +80,11 @@ class InternalVizTools:
         cls, names: Sequence[str], controls: Sequence[Optional[str]], recycle_ok: bool = False
     ) -> Sequence[str]:
         """
-        
+
 
         Args:
-          names: Sequence[str]: 
-          controls: Sequence[Optional[str]]: 
+          names: Sequence[str]:
+          controls: Sequence[Optional[str]]:
           recycle_ok: bool:  (Default value = False)
 
         Returns:
@@ -97,11 +98,11 @@ class InternalVizTools:
         cls, names: Sequence[str], controls: Sequence[Optional[str]], recycle_ok: bool = False
     ) -> Mapping[str, str]:
         """
-        
+
 
         Args:
-          names: Sequence[str]: 
-          controls: Sequence[Optional[str]]: 
+          names: Sequence[str]:
+          controls: Sequence[Optional[str]]:
           recycle_ok: bool:  (Default value = False)
 
         Returns:
@@ -139,10 +140,10 @@ class InternalVizTools:
     @classmethod
     def assign_color_dict(cls, categories: Sequence[str]) -> Mapping[str, str]:
         """
-        
+
 
         Args:
-          categories: Sequence[str]: 
+          categories: Sequence[str]:
 
         Returns:
 
@@ -152,10 +153,10 @@ class InternalVizTools:
     @classmethod
     def assign_markers(cls, categories: Sequence[str]) -> Sequence[str]:
         """
-        
+
 
         Args:
-          categories: Sequence[str]: 
+          categories: Sequence[str]:
 
         Returns:
 
@@ -166,10 +167,10 @@ class InternalVizTools:
     @classmethod
     def assign_marker_dict(cls, categories: Sequence[str]) -> Mapping[str, str]:
         """
-        
+
 
         Args:
-          categories: Sequence[str]: 
+          categories: Sequence[str]:
 
         Returns:
 
@@ -179,11 +180,11 @@ class InternalVizTools:
     @classmethod
     def assign(cls, categories: Sequence[str], available: Sequence[str]) -> Mapping[str, str]:
         """
-        
+
 
         Args:
-          categories: Sequence[str]: 
-          available: Sequence[str]: 
+          categories: Sequence[str]:
+          available: Sequence[str]:
 
         Returns:
 
@@ -201,6 +202,7 @@ class InternalVizTools:
 
 class KvrcPlotting:
     """ """
+
     pass
 
 

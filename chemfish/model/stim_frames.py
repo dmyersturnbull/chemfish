@@ -22,10 +22,6 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
             In the first two cases, the first nonzero value dictates the volume, where 255 is the max volume allowed by SauronX,
             which is in turn determined by the audio card, the amplifier setting, and the settings configured in the Toml
 
-    Args:
-
-    Returns:
-
     """
 
     def expand_audio_inplace(
@@ -64,7 +60,7 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
 
 
         Args:
-          stim_or_type:
+            stim_or_type:
 
         Returns:
 
@@ -76,10 +72,7 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
 
 
         Args:
-          stim_or_type: Union[str:
-          Stimuli:
-          StimulusType]:
-          byteval: int:
+            stim_or_type:
 
         Returns:
 
@@ -108,9 +101,7 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
 
 
         Args:
-          battery: Union[Batteries:
-          int:
-          str]:
+            battery:
 
         Returns:
 
@@ -163,10 +154,10 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
 
 
         Args:
-          stimframes:
-          name: str:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
+            stimframes:
+            name: str:
+            start_ms:
+            end_ms:
 
         Returns:
 
@@ -230,6 +221,7 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
 
 class BatteryStimFrame(StimFrame):
     """ """
+
     def slice_ms(
         self,
         battery: Union[Batteries, int, str],
@@ -240,11 +232,9 @@ class BatteryStimFrame(StimFrame):
 
 
         Args:
-          battery: Union[Batteries:
-          int:
-          str]:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
+            battery:
+            start_ms:
+            end_ms:
 
         Returns:
 
@@ -279,12 +269,9 @@ class BatteryStimFrame(StimFrame):
 
 
         Args:
-          battery: Union[Batteries:
-          int:
-          str:
-          StimFrame]:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
+              battery:
+              start_ms:
+              end_ms:
 
         Returns:
 

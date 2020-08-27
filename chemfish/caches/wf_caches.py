@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import warnings
 
-from pocketutils.support.df_mem_cache import *
-
 from chemfish.core.core_imports import *
 from chemfish.model.cache_interfaces import AWellCache
 from chemfish.model.features import FeatureType, FeatureTypes
@@ -35,7 +33,7 @@ class WellCache(AWellCache):
         Features will be converted when loaded using `pd.as_type(dtype)`.
 
         Args:
-          dtype: 
+          dtype:
 
         Returns:
 
@@ -50,10 +48,10 @@ class WellCache(AWellCache):
     @abcd.overrides
     def path_of(self, run: RunLike) -> Path:
         """
-        
+
 
         Args:
-          run: RunLike: 
+          run: RunLike:
 
         Returns:
 
@@ -64,10 +62,10 @@ class WellCache(AWellCache):
     @abcd.overrides
     def key_from_path(self, path: PathLike) -> RunLike:
         """
-        
+
 
         Args:
-          path: PathLike: 
+          path: PathLike:
 
         Returns:
 
@@ -78,10 +76,10 @@ class WellCache(AWellCache):
     @abcd.overrides
     def load_multiple(self, runs: RunsLike) -> WellFrame:
         """
-        
+
 
         Args:
-          runs: RunsLike: 
+          runs: RunsLike:
 
         Returns:
 
@@ -93,10 +91,10 @@ class WellCache(AWellCache):
     @abcd.overrides
     def load(self, run: RunLike) -> WellFrame:
         """
-        
+
 
         Args:
-          run: RunLike: 
+          run: RunLike:
 
         Returns:
 
@@ -108,10 +106,10 @@ class WellCache(AWellCache):
     @abcd.overrides
     def download(self, *runs: RunsLike) -> None:
         """
-        
+
 
         Args:
-          *runs: RunsLike: 
+          *runs: RunsLike:
 
         Returns:
 
@@ -135,10 +133,10 @@ class WellCache(AWellCache):
 
     def _load(self, runs: RunsLike) -> WellFrame:
         """
-        
+
 
         Args:
-          runs: RunsLike: 
+          runs: RunsLike:
 
         Returns:
 
@@ -147,10 +145,10 @@ class WellCache(AWellCache):
 
         def read(r):
             """
-            
+
 
             Args:
-              r: 
+              r:
 
             Returns:
 
@@ -179,8 +177,7 @@ class WellCache(AWellCache):
         Saves a well-by-well dataframe as HDF5.
 
         Args:
-          df: Use large_dfs.fetch_wells
-          df: WellFrame: 
+          df:
 
         Returns:
 

@@ -8,6 +8,7 @@ from chemfish.viz.figures import *
 
 class WellPlotter(KvrcPlotting):
     """ """
+
     def plot(self, df: WellFrame) -> Figure:
         """
 
@@ -23,6 +24,7 @@ class WellPlotter(KvrcPlotting):
 
 class TwoDWellPlotter(WellPlotter):
     """ """
+
     def __init__(self, alpha: float = 0.8):
         self.alpha = alpha
 
@@ -101,6 +103,7 @@ class TwoDWellPlotter(WellPlotter):
 
 class WellPlotters:
     """ """
+
     @classmethod
     def basic(cls, df: WellFrame, recolor: bool = False, **kwargs) -> Figure:
         """

@@ -14,10 +14,6 @@ class SpindlePlotter:
     Plots difference from a negative control on the x-axis and difference from a positive control on the y-axis.
     WARNING: CURRENTLY NOT GUARANTEED TO WORK.
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(
@@ -32,10 +28,10 @@ class SpindlePlotter:
 
     def plot(self, df: DoseResponseFrame2D):
         """
-        
+
 
         Args:
-          df: DoseResponseFrame2D: 
+          df: DoseResponseFrame2D:
 
         Returns:
 
@@ -110,10 +106,10 @@ class SpindlePlotter:
 
     def _line(self, thresh):
         """
-        
+
 
         Args:
-          thresh: 
+          thresh:
 
         Returns:
 

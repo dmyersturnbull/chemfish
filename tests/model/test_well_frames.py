@@ -16,7 +16,7 @@ def float_or_string(draw):
     Helper function that either returns an integer of string strategy. Used to create 'mixed' index column values.
 
     Args:
-      draw: 
+      draw:
 
     Returns:
 
@@ -34,7 +34,7 @@ def wf_strategy(draw):
     Creates a list of parameters that can be used to create a WellFrame filled with dummy data.
 
     Args:
-      draw: 
+      draw:
 
     Returns:
 
@@ -65,6 +65,7 @@ def wf_strategy(draw):
 
 class TestWellFrames:
     """ """
+
     def __init__(self):
         self.reg_wf = None
 
@@ -136,6 +137,7 @@ class TestWellFrames:
 
 class TestWellFramesHDF:
     """ """
+
     def __init__(self):
         self.hdf_path = None
 
@@ -150,10 +152,7 @@ class TestWellFramesHDF:
         hdf should return the WellFrame you started with.
 
         Args:
-          data: 
-
-        Returns:
-
+          data:
         """
         if (
             len(data[0]) > 1

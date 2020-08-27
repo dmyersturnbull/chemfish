@@ -24,11 +24,13 @@ DEFINITELY_BAD_CONTROLS = {c: control_types[c] for c in {"no drug transfer", "lo
 
 class ConcernFrame(UntypedDf):
     """ """
+
     pass
 
 
 class TargetTimeKind(Enum):
     """ """
+
     ACCLIMATION = 1
     WAIT = 2
     TREATMENT = 3
@@ -280,6 +282,7 @@ class LoadConcern(Concern):
 @dataclass
 class ImpossibleTimeConcern(Concern):
     """ """
+
     kind: str
     value: str
 
@@ -295,6 +298,7 @@ class ImpossibleTimeConcern(Concern):
 @dataclass
 class MissingSensorConcern(Concern):
     """ """
+
     generation: DataGeneration
     expected: Set[Sensors]
     actual: Set[Sensors]
@@ -325,6 +329,7 @@ class MissingSensorConcern(Concern):
 @dataclass
 class WellConcern(Concern):
     """ """
+
     trash: Mapping[ControlTypes, int]
 
     @property
@@ -350,6 +355,7 @@ class WellConcern(Concern):
 @dataclass
 class BatchConcern(Concern):
     """ """
+
     batch: Batches
     annotation: BatchAnnotations
 
@@ -370,6 +376,7 @@ class BatchConcern(Concern):
 @dataclass
 class _AnnotationConcern(Concern, metaclass=abc.ABCMeta):
     """ """
+
     annotation: Annotations
 
     def as_dict(self) -> Mapping[str, Any]:
@@ -386,6 +393,7 @@ class _AnnotationConcern(Concern, metaclass=abc.ABCMeta):
 @dataclass
 class _ErrorConcern(Concern, metaclass=abc.ABCMeta):
     """ """
+
     expected: float
     actual: float
 
@@ -446,6 +454,7 @@ class _ErrorConcern(Concern, metaclass=abc.ABCMeta):
 @dataclass
 class SensorLengthConcern(_ErrorConcern):
     """ """
+
     generation: DataGeneration
     sensor: Sensors
 
@@ -461,6 +470,7 @@ class SensorLengthConcern(_ErrorConcern):
 @dataclass
 class TargetTimeConcern(_ErrorConcern):
     """ """
+
     kind: TargetTimeKind
     annotation: Optional[Annotations]
 
@@ -486,6 +496,7 @@ class TargetTimeConcern(_ErrorConcern):
 @dataclass
 class AnnotationConcern(_AnnotationConcern):
     """ """
+
     def description(self) -> str:
         """ """
         return (
@@ -499,6 +510,7 @@ class AnnotationConcern(_AnnotationConcern):
 @dataclass
 class ToFixConcern(_AnnotationConcern):
     """ """
+
     fixed_with: Optional[Annotations]
 
     def description(self) -> str:
@@ -515,6 +527,7 @@ class ToFixConcern(_AnnotationConcern):
 @dataclass
 class NFeaturesConcern(_ErrorConcern):
     """ """
+
     def as_dict(self) -> Mapping[str, Any]:
         """ """
         return super().as_dict()
@@ -527,6 +540,7 @@ class NFeaturesConcern(_ErrorConcern):
 @dataclass
 class GenerationConcern(Concern):
     """ """
+
     expected_generations: Set[DataGeneration]
     actual_generation: DataGeneration
 

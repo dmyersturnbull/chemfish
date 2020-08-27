@@ -7,6 +7,7 @@ from chemfish.viz.breakdown_plots import BreakdownBarPlotter, BreakdownPiePlotte
 
 class MandosFrame(UntypedDf):
     """ """
+
     @classmethod
     def required_columns(cls) -> Sequence[str]:
         """ """
@@ -122,6 +123,7 @@ class MandosFrame(UntypedDf):
 
 class ChemInfoFrame(TypedDf):
     """ """
+
     @classmethod
     def required_columns(cls) -> Sequence[str]:
         """ """
@@ -130,6 +132,7 @@ class ChemInfoFrame(TypedDf):
 
 class GoTermFrame(TypedDf):
     """ """
+
     @classmethod
     def required_columns(cls) -> Sequence[str]:
         """ """
@@ -141,6 +144,7 @@ class GoTermFrame(TypedDf):
 @abcd.auto_html()
 class MandosSearch:
     """ """
+
     def __init__(self, kind: str, as_of: datetime):
         self.kind = kind
         self.wheres = []
@@ -443,6 +447,7 @@ class MandosSearch:
 
 class MandosSearches:
     """ """
+
     @classmethod
     def info(cls, compounds: Union[Compounds, int, str]) -> ChemInfoFrame:
         """

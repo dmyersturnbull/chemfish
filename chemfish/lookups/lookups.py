@@ -24,12 +24,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          Annotations]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -97,10 +94,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          BatchAnnotations]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -138,10 +134,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          SubmissionLike]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -194,9 +189,7 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[Plates:
-          int:
-          ExpressionsLike]:
+            *wheres:
 
         Returns:
 
@@ -223,10 +216,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[RunsLike:
-          ExpressionsLike]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -240,7 +232,7 @@ class Lookups(LookupTool):
 
 
             Args:
-              *any_of:
+                *any_of:
 
             Returns:
 
@@ -318,7 +310,7 @@ class Lookups(LookupTool):
 
 
         Args:
-          with_assays: bool:
+            with_assays: bool:
 
         Returns:
 
@@ -361,7 +353,7 @@ class Lookups(LookupTool):
 
 
         Args:
-          with_assays: bool:
+            with_assays: bool:
 
         Returns:
 
@@ -415,9 +407,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          with_assays: bool:
-          with_batches: bool:
-          with_compounds: bool:
+            with_assays: bool:
+            with_batches: bool:
+            with_compounds: bool:
 
         Returns:
 
@@ -488,11 +480,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          Wells]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -516,15 +506,6 @@ class Lookups(LookupTool):
         )
 
         def label(row):
-            """
-
-
-            Args:
-              row:
-
-            Returns:
-
-            """
             pt = PlateTypes.fetch(row.plate_type)
             return WB1(pt.n_rows, pt.n_columns).index_to_label(row.position)
 
@@ -542,13 +523,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[None:
-          Projects:
-          str:
-          int:
-          ExpressionsLike]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -591,13 +568,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[None:
-          Experiments:
-          str:
-          int:
-          ExpressionsLike]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -662,27 +635,9 @@ class Lookups(LookupTool):
         runs = Tools.multidict(runs, "experiment_id")
 
         def n_runs(e):
-            """
-
-
-            Args:
-              e:
-
-            Returns:
-
-            """
             return len(runs[e])
 
         def first_run(e):
-            """
-
-
-            Args:
-              e:
-
-            Returns:
-
-            """
             return Tools.first(
                 sorted(
                     (
@@ -693,15 +648,6 @@ class Lookups(LookupTool):
             )
 
         def last_run(e):
-            """
-
-
-            Args:
-              e:
-
-            Returns:
-
-            """
             return Tools.first(
                 reversed(
                     sorted(
@@ -714,39 +660,12 @@ class Lookups(LookupTool):
             )
 
         def generations(e):
-            """
-
-
-            Args:
-              e:
-
-            Returns:
-
-            """
             return frozenset((ValarTools.generation_of(r) for r in runs[e]))
 
         def saurons(e):
-            """
-
-
-            Args:
-              e:
-
-            Returns:
-
-            """
             return frozenset((ValarTools.sauron_name(r.sauron_config.sauron) for r in runs[e]))
 
         def sauron_configs(e):
-            """
-
-
-            Args:
-              e:
-
-            Returns:
-
-            """
             return frozenset((ValarTools.sauron_config_name(r.sauron_config) for r in runs[e]))
 
         if len(df) > 0:  # TODO shouldn't be needed
@@ -764,11 +683,8 @@ class Lookups(LookupTool):
         Search for compounds matching names.
 
         Args:
-          names: Names to search for in CompoundLabels
-          where: kwargs with a key of EITHER 'where' or 'wheres', which are lists of additional expressions
-          *names: Union[Sequence[str]:
-          str]:
-          **where:
+            *names: Names to search for in CompoundLabels
+            **where: kwargs with a key of EITHER 'where' or 'wheres', which are lists of additional expressions
 
         Returns:
 
@@ -790,10 +706,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[CompoundLike:
-          ExpressionsLike]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -834,11 +749,8 @@ class Lookups(LookupTool):
         Search for batches matching names.
 
         Args:
-          names: Names to search for in CompoundLabels and BatchLabels
-          where: kwargs with a key of EITHER 'where' or 'wheres', which are lists of additional expressions
-          *names: Union[Sequence[str]:
-          str]:
-          **where:
+            *names: Names to search for in CompoundLabels and BatchLabels
+            **where: kwargs with a key of EITHER 'where' or 'wheres', which are lists of additional expressions
 
         Returns:
 
@@ -860,10 +772,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[BatchLike:
-          ExpressionsLike]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -974,10 +885,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          compounds: Union[CompoundLike:
-          Iterable[CompoundLike]]:
-          like:
-          regex:
+            compounds:
+            like:
+            regex:
 
         Returns:
 
@@ -1019,12 +929,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          TransferPlates]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1071,12 +978,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          Users]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1108,18 +1012,24 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          ProjectTypes]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
         """
         query = ProjectTypes.select()
-        df = Lookups._simple(ProjectTypes, query, like, regex, wheres, "id", "name", "description",)
+        df = Lookups._simple(
+            ProjectTypes,
+            query,
+            like,
+            regex,
+            wheres,
+            "id",
+            "name",
+            "description",
+        )
         projects = Tools.multidict(
             Projects.select().where(Projects.id << df["id"].unique().tolist()), "project_type"
         )
@@ -1151,12 +1061,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          AudioFiles]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1187,12 +1094,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          Suppliers]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1211,12 +1115,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          Refs]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1248,12 +1149,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          Features]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1284,12 +1182,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          Sensors]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1321,12 +1216,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          Stimuli]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1361,11 +1253,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          str:
-          PlateTypes]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1398,12 +1288,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          Saurons]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1419,10 +1306,8 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          SauronConfigs]:
-          **kwargs:
+            *wheres:
+            **kwargs:
 
         Returns:
 
@@ -1455,12 +1340,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          ControlTypes]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1491,12 +1373,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          Locations]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1529,10 +1408,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          BatteryLike]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1568,10 +1446,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          AssayLike]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 
@@ -1608,12 +1485,9 @@ class Lookups(LookupTool):
 
 
         Args:
-          *wheres: Union[ExpressionsLike:
-          int:
-          str:
-          GeneticVariants]:
-          like:
-          regex:
+            *wheres:
+            like:
+            regex:
 
         Returns:
 

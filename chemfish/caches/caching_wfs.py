@@ -101,9 +101,6 @@ class CachingWellFrameBuilder(WellFrameBuilder):
         Args:
           feature: The FeatureType; for CachingWellFrameBuilder MUST be the same as the feature
           dtype:
-          feature: Union[None:
-          str:
-          FeatureType]:
 
         Returns:
 

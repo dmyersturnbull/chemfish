@@ -36,19 +36,15 @@ class DecisionFrame(TypedDf):
         Wraps a decision function numpy array into a DecisionFrame instance complete with labels as names and columns.
 
         Args:
-          correct_labels: A length-n list of the correct labels for each of the n samples
-          labels: A length-m list of class labels matching the predictions (columns) on `probabilities`
-          decision_function: An n × m matrix of probabilities (or scores) from the classifier.
-        The rows are samples, and the columns are predictions.
-        scikit-learn decision_functions (ex model.predict_proba) will output this.
-          sample_ids: IDs (or names) of training examples for later reference; should be unique
-          correct_labels: Sequence[str]: 
-          labels: Sequence[str]: 
-          decision_function: np.array: 
-          sample_ids: Sequence[Any]: 
+            correct_labels: A length-n list of the correct labels for each of the n samples
+            labels: A length-m list of class labels matching the predictions (columns) on `probabilities`
+            decision_function: An n × m matrix of probabilities (or scores) from the classifier.
+                               The rows are samples, and the columns are predictions.
+                               scikit-learn decision_functions (ex model.predict_proba) will output this.
+            sample_ids: IDs (or names) of training examples for later reference; should be unique
 
         Returns:
-          A DecisionFrame
+            A DecisionFrame
 
         """
         decision_function = pd.DataFrame(decision_function)
@@ -100,12 +96,12 @@ class DecisionFrame(TypedDf):
     @classmethod
     def read_csv(cls, path: PathLike, *args, **kwargs) -> DecisionFrame:
         """
-        
+
 
         Args:
-          path: PathLike: 
-          *args: 
-          **kwargs: 
+            path: PathLike:
+            *args:
+            **kwargs:
 
         Returns:
 
@@ -115,12 +111,12 @@ class DecisionFrame(TypedDf):
 
     def to_csv(self, path: PathLike, *args, **kwargs):
         """
-        
+
 
         Args:
-          path: PathLike: 
-          *args: 
-          **kwargs: 
+            path: PathLike:
+            *args:
+            **kwargs:
 
         Returns:
 

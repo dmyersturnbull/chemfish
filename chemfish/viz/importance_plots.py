@@ -1,7 +1,7 @@
 from chemfish.core.core_imports import *
 from chemfish.viz import CakeComponent
 from chemfish.viz._internal_viz import *
-from chemfish.viz.figures import *
+from chemfish.viz.color_schemes import *
 
 
 @abcd.auto_eq()
@@ -11,10 +11,6 @@ class ImportancePlotter(CakeComponent, KvrcPlotting):
     Plots weight (often importance) across a time-series,
     either as a thin heatmap with no y axis (a sequence of vertical lines),
     or as a scatter plot.
-
-    Args:
-
-    Returns:
 
     """
 

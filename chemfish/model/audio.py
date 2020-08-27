@@ -9,6 +9,7 @@ from chemfish.core.core_imports import *
 
 class AudioTools:
     """ """
+
     @classmethod
     def listen(cls, path: Union[str, PurePath, bytes]):
         """
@@ -17,11 +18,10 @@ class AudioTools:
         Will raise an ImportError if IPython cannot be imported.
 
         Args:
-          path: The local path to the audio file
-          path:
+            path: The local path to the audio file
 
         Returns:
-          A jupyter notebook ipd.Audio object
+            A jupyter notebook ipd.Audio object
 
         """
         # noinspection PyPackageRequirements
@@ -39,7 +39,7 @@ class AudioTools:
 
 
         Args:
-          path: PathLike:
+            path: PathLike:
 
         Returns:
 
@@ -56,7 +56,7 @@ class AudioTools:
 
 
         Args:
-          path: PathLike:
+            path: PathLike:
 
         Returns:
 
@@ -69,10 +69,6 @@ class Waveform:
     """
     Contains an array representing an audio waveform.
     Aso has a sampling rate, a name, an optional description, and optional file path.
-
-    Args:
-
-    Returns:
 
     """
 
@@ -108,11 +104,9 @@ class Waveform:
           minimum: Normally 0
           maximum: Normally 255
           ms_freq: Normally 1000, though possibly 25 or 50 for legacy data
-          minimum:
-          maximum:
 
         Returns:
-          The same Waveform as a copy
+            The same Waveform as a copy
 
         """
         return self._standardize(minimum, maximum)
@@ -123,14 +117,12 @@ class Waveform:
         This is useful for various purposes in Chemfish, such as embedding into plots.
 
         Args:
-          minimum: Normally 0
-          maximum: Normally 255
-          ms_freq: Normally 1000, though possibly 25 or 50 for legacy data
-          minimum:
-          maximum:
+            minimum: Normally 0
+            maximum: Normally 255
+            ms_freq: Normally 1000, though possibly 25 or 50 for legacy data
 
         Returns:
-          The same Waveform as a copy
+            The same Waveform as a copy
 
         """
         return self._standardize(minimum, maximum, ms_freq=25)
@@ -142,9 +134,9 @@ class Waveform:
 
 
         Args:
-          minimum:
-          maximum:
-          ms_freq: int:  (Default value = 1000)
+             minimum:
+             maximum:
+            ms_freq:
 
         Returns:
 
@@ -163,13 +155,11 @@ class Waveform:
         Constraints values between -1 and 1.
 
         Args:
-          minimum: Normally -1
-          maximum: Normally 1
-          minimum:
-          maximum:
+            minimum: Normally -1
+            maximum: Normally 1
 
         Returns:
-          The same Waveform as a copy
+            The same Waveform as a copy
 
         """
         y = (self.data - self.data.min()) * (maximum - minimum) / (
@@ -184,12 +174,10 @@ class Waveform:
         Alternative to downsampling. Splits data into discrete chunks and then calculates mean for those chunks.
 
         Args:
-          a: Numpy array of data that you wish to reduce the size of
-          new_sampling_hertz: rate of sampling
-          new_sampling_hertz: float:
+            new_sampling_hertz: rate of sampling
 
         Returns:
-          numpy array of orr
+            numpy array of orr
 
         """
         if new_sampling_hertz > self.sampling_rate:
@@ -214,11 +202,10 @@ class Waveform:
         Downsamples to a new rate using librosa.resample.
 
         Args:
-          new_sampling_hertz: A float such as 44100
-          new_sampling_hertz: float:
+            new_sampling_hertz: A float such as 44100
 
         Returns:
-          The same Waveform as a copy
+            The same Waveform as a copy
 
         """
         if new_sampling_hertz > self.sampling_rate:
@@ -244,14 +231,12 @@ class Waveform:
         Smooths with a sliding window over time.
 
         Args:
-          window_size: The number of elements in the window
-          function:
-          window_type: See Pandas pd.Series.rolling win_type
-          window_size: int:
-          window_type: Optional[str]:  (Default value = "triang")
+            window_size: The number of elements in the window
+            function:
+            window_type: See Pandas pd.Series.rolling win_type
 
         Returns:
-          The same Waveform as a copy
+            The same Waveform as a copy
 
         """
         data = function(
@@ -272,10 +257,8 @@ class Waveform:
         Gets a section of the waveform.
 
         Args:
-          start_ms: The start milliseconds
-          end_ms: The end milliseconds
-          start_ms: int:
-          end_ms: int:
+            start_ms: The start milliseconds
+            end_ms: The end milliseconds
 
         Returns:
           The same Waveform as a copy

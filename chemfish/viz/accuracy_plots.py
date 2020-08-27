@@ -7,7 +7,9 @@ from chemfish.viz.figures import FigureTools
 
 
 class MetricPlotter:
-    """Plots ROC and Precision-Recall curves as 2D line plots."""
+    """
+    Plots ROC and Precision-Recall curves as 2D line plots.
+    """
 
     def __init__(self, metric_info: MetricInfo):
         self.info = metric_info
@@ -46,6 +48,7 @@ class MetricPlotter:
 @enum.unique
 class AccuracyPlotStyle(enum.Enum):
     """ """
+
     SWARM = 1
     VIOLIN = 2
     BAR = 3
@@ -72,9 +75,8 @@ class AccuracyPlotStyle(enum.Enum):
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class AccuracyPlotter(KvrcPlotting):
-    """
+    """"""
 
-    """
     def __init__(
         self,
         style: Union[str, AccuracyPlotStyle],

@@ -30,13 +30,14 @@ warnings.filterwarnings(
 
 class ChemfishResources:
     """ """
+
     @classmethod
     def path(cls, *parts) -> Path:
         """
-        
+
 
         Args:
-          *parts: 
+          *parts:
 
         Returns:
 
@@ -46,10 +47,10 @@ class ChemfishResources:
     @classmethod
     def text(cls, *parts) -> str:
         """
-        
+
 
         Args:
-          *parts: 
+          *parts:
 
         Returns:
 
@@ -59,10 +60,10 @@ class ChemfishResources:
     @classmethod
     def binary(cls, *parts) -> bytes:
         """
-        
+
 
         Args:
-          *parts: 
+          *parts:
 
         Returns:
 

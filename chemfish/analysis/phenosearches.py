@@ -13,6 +13,7 @@ from chemfish.model.wf_builders import *
 
 class HitFrame(TypedDf):
     """ """
+
     @classmethod
     def reserved_columns(cls):
         """ """
@@ -281,6 +282,7 @@ class HitSearch:
 
 class HitWellFrame(WellFrame):
     """ """
+
     @classmethod
     def build(cls, hits: HitFrame, namer: WellNamer = WellNamers.general()) -> HitWellFrame:
         """
@@ -308,6 +310,7 @@ class HitWellFrame(WellFrame):
 
 class HitSearchTools:
     """ """
+
     @classmethod
     def stimuli_start_stop_ms(
         cls,
@@ -436,6 +439,7 @@ class TruncatingScorer:
 
 class HitScores:
     """ """
+
     @classmethod
     def pearson(
         cls, query: np.array, weights: Optional[np.array] = None
@@ -450,6 +454,7 @@ class HitScores:
         Returns:
 
         """
+
         def pearson(x, y):
             """
 

@@ -1,5 +1,5 @@
 from chemfish.core.core_imports import *
-from chemfish.core.video_core import *
+from chemfish.core.video_core import VideoCore
 from chemfish.model.cache_interfaces import AVideoCache
 from chemfish.model.videos import *
 
@@ -8,6 +8,7 @@ DEFAULT_SHIRE_STORE = PurePath(chemfish_env.shire_path) / "store"
 
 class VideoDownloadError(DownloadError):
     """ """
+
     pass
 
 
@@ -26,8 +27,8 @@ class VideoCache(AVideoCache):
 
     def __init__(
         self,
-        cache_dir: PLike = chemfish_env.video_cache_dir,
-        shire_store: PLike = DEFAULT_SHIRE_STORE,
+        cache_dir: PathLike = chemfish_env.video_cache_dir,
+        shire_store: PathLike = DEFAULT_SHIRE_STORE,
     ):
         """
         :param cache_dir: The directory to save video files under.
@@ -45,24 +46,24 @@ class VideoCache(AVideoCache):
     @abcd.overrides
     def path_of(self, run: RunLike) -> Path:
         """
-        
+
 
         Args:
-          run: RunLike: 
+          run: RunLike:
 
         Returns:
 
         """
         run = Tools.run(run)
-        return self.cache_dir / str(run.id) / (str(run.id) + video_ext)
+        return self.cache_dir / str(run.id) / (str(run.id) + VideoCore.video_ext)
 
     @abcd.overrides
-    def key_from_path(self, path: PLike) -> RunLike:
+    def key_from_path(self, path: PathLike) -> RunLike:
         """
-        
+
 
         Args:
-          path: PLike: 
+          path: PathLike:
 
         Returns:
 
@@ -77,7 +78,7 @@ class VideoCache(AVideoCache):
 
         Args:
           run: A run ID, instance, name, tag, or submission hash or instance
-          run: RunLike: 
+          run: RunLike:
 
         Returns:
           A SauronxVideo
@@ -89,10 +90,10 @@ class VideoCache(AVideoCache):
     @abcd.overrides
     def download(self, *runs: RunLike) -> None:
         """
-        
+
 
         Args:
-          *runs: RunLike: 
+          *runs: RunLike:
 
         Returns:
 
@@ -105,7 +106,7 @@ class VideoCache(AVideoCache):
             else:
                 generation = ValarTools.generation_of(run)
                 logger.info(f"Downloading {generation.name} video of r{run.id} to {video_path} ...")
-                remote_path = self.shire_store / get_video_path_on_shire(run, full_dir=False)
+                remote_path = self.shire_store / VideoCore.get_remote_path(run)
                 self._copy_from_shire(remote_path, video_path)
                 # TODO check for properties file
                 logger.notice(
@@ -118,7 +119,7 @@ class VideoCache(AVideoCache):
 
         Args:
           run: A run ID, instance, name, tag, or submission hash or instance
-          run: RunLike: 
+          run: RunLike:
 
         Returns:
           A SauronxVideo
@@ -131,22 +132,22 @@ class VideoCache(AVideoCache):
         Raises a HashValidationFailedException if the hash doesn't validate.
 
         Args:
-          run: RunLike: 
+          run: RunLike:
 
         Returns:
 
         """
         path = self.path_of(run)
-        if not video_hasher.check_hash(path):
+        if not VideoCore.video_hasher.check_hash(path):
             raise HashValidationFailedError(f"Video at {path} did not validate")
 
     def _copy_from_shire(self, remote_path, local_path):
         """
-        
+
 
         Args:
-          remote_path: 
-          local_path: 
+          remote_path:
+          local_path:
 
         Returns:
 

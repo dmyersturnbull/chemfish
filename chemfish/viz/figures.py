@@ -57,6 +57,7 @@ class Corners:
 
 class FigureTools:
     """ """
+
     darken_palette = _iku.darken_palette
     darken_color = _iku.darken_color
 

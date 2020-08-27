@@ -25,10 +25,10 @@ class AudioStimulusCache(AnAudioStimulusCache):
     @abcd.overrides
     def path_of(self, stimulus: StimulusLike) -> Path:
         """
-        
+
 
         Args:
-          stimulus: StimulusLike: 
+          stimulus: StimulusLike:
 
         Returns:
 
@@ -38,10 +38,10 @@ class AudioStimulusCache(AnAudioStimulusCache):
     @abcd.overrides
     def key_from_path(self, path: PathLike) -> StimulusLike:
         """
-        
+
 
         Args:
-          path: PathLike: 
+          path: PathLike:
 
         Returns:
 
@@ -54,7 +54,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
         Returns the local path, downloading if necessary.
 
         Args:
-          stimulus: StimulusLike: 
+          stimulus: StimulusLike:
 
         Returns:
 
@@ -66,10 +66,10 @@ class AudioStimulusCache(AnAudioStimulusCache):
     @abcd.overrides
     def download(self, *keys: StimulusLike) -> None:
         """
-        
+
 
         Args:
-          *keys: StimulusLike: 
+          *keys: StimulusLike:
 
         Returns:
 
@@ -96,10 +96,10 @@ class AudioStimulusCache(AnAudioStimulusCache):
     @abcd.overrides
     def load_moviepy(self, stimulus: StimulusLike) -> AudioClip:
         """
-        
+
 
         Args:
-          stimulus: StimulusLike: 
+          stimulus: StimulusLike:
 
         Returns:
 
@@ -113,10 +113,10 @@ class AudioStimulusCache(AnAudioStimulusCache):
     @abcd.overrides
     def load_pydub(self, stimulus: StimulusLike) -> pydub.AudioSegment:
         """
-        
+
 
         Args:
-          stimulus: StimulusLike: 
+          stimulus: StimulusLike:
 
         Returns:
 
@@ -130,10 +130,10 @@ class AudioStimulusCache(AnAudioStimulusCache):
     @abcd.overrides
     def load_waveform(self, stimulus: StimulusLike) -> StimulusWaveform:
         """
-        
+
 
         Args:
-          stimulus: StimulusLike: 
+          stimulus: StimulusLike:
 
         Returns:
 

@@ -11,12 +11,10 @@ from chemfish.viz._internal_viz import *
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class StimframesPlotter(CakeLayer, KvrcPlotting):
-    """ """
     def __init__(
         self,
         should_label: bool = True,
         mark_every_n_ms: Optional[int] = None,
-        fps: int = 1000,
         audio_waveform: bool = True,
         assay_labels: bool = False,
         legacy: bool = False,

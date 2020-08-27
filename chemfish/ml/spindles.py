@@ -10,6 +10,7 @@ from chemfish.viz.accuracy_plots import *
 
 class SummarizedSpindleFrame(BaseScoreFrame):
     """ """
+
     def to_dose_response(
         self, axis: int, splitter: Callable[[str], Tup[str, str]] = Tools.split_drug_dose
     ) -> DoseResponseFrame1D:
@@ -25,9 +26,7 @@ class SummarizedSpindleFrame(BaseScoreFrame):
         """
         summary = self.copy()
         all_controls = {s.name: s.name for s in ControlTypes.select()}
-        all_controls.update(
-            {ValarTools.control_display_name(s): s.name for s in ControlTypes.select()}
-        )
+        all_controls.update({s: s.name for s in ControlTypes.select()})
         split = [splitter(name) for name in summary["label"]]
         summary["label"] = [i[0] for i in split]
         summary["x_raw"] = [
@@ -195,30 +194,25 @@ class SpindleFrame(ScoreFrameWithPrediction):
     ) -> DoseResponseFrame2D:
         """
         Summarize this SpindleFrame, averaging over replicate (source, target) pairs with and:
-            * calculate 4 summary statistics for each pair: 'lower', 'middle', 'upper', and 'spread',
+            - calculate 4 summary statistics for each pair: 'lower', 'middle', 'upper', and 'spread',
                 where middle is generally the median, lower and upper are the bounds of a confidence interval,
                 and spread is the standard deviation.
-            * split the labels into (treatment, dose) pairs,
+            - split the labels into (treatment, dose) pairs,
                 where dose can really be anything, such as number of animals or datetime run
-            * make 'lower', 'middle', 'upper', and 'spread' columns for a positive control and a negative control:
+            - make 'lower', 'middle', 'upper', and 'spread' columns for a positive control and a negative control:
                 negative => lower_1, etc; posive => lower_2, etc
 
         Args:
-          negative_control: The name of the negative control (not checked), or a ControlTypes-lookupable object
-          positive_control: The name of the positive control (not checked), or a ControlTypes-lookupable object
-          splitter: A function that splits any label into a (label, dose-or-None) pair.
-          ci: 0.0-1.0, the confidence interval
-          center_fn: A function generating the middle_1 and middle_2 columns (Default value = np.median)
-          spread_fn: A function generating the spread_1 and spread_2 columns (Default value = np.std)
-          boot: If non-null, calculates a CI by bootstrap with this number of samples
-          negative_control:
-          positive_control:
-          splitter:
-          ci:
-          boot:
+            negative_control: The name of the negative control (not checked), or a ControlTypes-lookupable object
+            positive_control: The name of the positive control (not checked), or a ControlTypes-lookupable object
+            splitter: A function that splits any label into a (label, dose-or-None) pair.
+            ci: 0.0-1.0, the confidence interval
+            center_fn: A function generating the middle_1 and middle_2 columns (Default value = np.median)
+            spread_fn: A function generating the spread_1 and spread_2 columns (Default value = np.std)
+            boot: If non-null, calculates a CI by bootstrap with this number of samples
 
         Returns:
-          A DoseResponseFrame2D frame.
+            A DoseResponseFrame2D frame.
 
         """
         x = self.to_1d_dose_response(

@@ -2,8 +2,8 @@ import argparse
 import traceback
 
 from chemfish.core.core_imports import *
-from chemfish.model.concerns import *
 from chemfish.model.concern_rules import *
+from chemfish.model.concerns import *
 from chemfish.model.sensors import *
 from chemfish.model.well_frames import *
 from chemfish.model.well_names import *
@@ -14,6 +14,7 @@ from chemfish.viz.figures import *
 @abcd.auto_repr_str()
 class AutoScreenTracer:
     """ """
+
     def __init__(
         self,
         quick: Quick,
@@ -102,10 +103,7 @@ class AutoScreenTracer:
 
         Args:
           where:
-          control: Union[None:
-          ControlTypes:
-          str:
-          int]:  (Default value = "solvent (-)")
+          control:
 
         Returns:
 
@@ -128,10 +126,7 @@ class AutoScreenTracer:
 
         Args:
           run: Runs:
-          control: Union[None:
-          ControlTypes:
-          str:
-          int]:  (Default value = "solvent (-)")
+          control:
 
         Returns:
 
@@ -301,6 +296,7 @@ class AutoScreenTracer:
 
 class AutoScreenTraces:
     """ """
+
     @classmethod
     def run(cls, args):
         """

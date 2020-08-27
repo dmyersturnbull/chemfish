@@ -39,10 +39,10 @@ class StimframeCache(AStimCache):
     @abcd.overrides
     def path_of(self, battery: BatteryLike) -> Path:
         """
-        
+
 
         Args:
-          battery: BatteryLike: 
+          battery: BatteryLike:
 
         Returns:
 
@@ -54,10 +54,10 @@ class StimframeCache(AStimCache):
     @abcd.overrides
     def key_from_path(self, path: PathLike) -> BatteryLike:
         """
-        
+
 
         Args:
-          path: PathLike: 
+          path: PathLike:
 
         Returns:
 
@@ -68,10 +68,10 @@ class StimframeCache(AStimCache):
     @abcd.overrides
     def load(self, battery: BatteryLike) -> BatteryStimFrame:
         """
-        
+
 
         Args:
-          battery: BatteryLike: 
+          battery: BatteryLike:
 
         Returns:
 
@@ -82,10 +82,10 @@ class StimframeCache(AStimCache):
     @abcd.overrides
     def download(self, *batteries: BatteryLike) -> None:
         """
-        
+
 
         Args:
-          *batteries: BatteryLike: 
+          *batteries: BatteryLike:
 
         Returns:
 
@@ -102,10 +102,10 @@ class StimframeCache(AStimCache):
 
     def _load(self, battery: BatteryLike) -> BatteryStimFrame:
         """
-        
+
 
         Args:
-          battery: BatteryLike: 
+          battery: BatteryLike:
 
         Returns:
 
@@ -120,11 +120,11 @@ class StimframeCache(AStimCache):
 
     def _save(self, battery, bsf):
         """
-        
+
 
         Args:
-          battery: 
-          bsf: 
+          battery:
+          bsf:
 
         Returns:
 

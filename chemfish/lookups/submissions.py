@@ -12,7 +12,7 @@ class SubmissionLookups(LookupTool):
 
 
         Args:
-          wheres:
+            wheres:
 
         Returns:
 
@@ -39,7 +39,7 @@ class SubmissionLookups(LookupTool):
 
 
         Args:
-          wheres:
+            wheres:
 
         Returns:
 
@@ -65,9 +65,7 @@ class SubmissionLookups(LookupTool):
 
 
         Args:
-          wheres: Union[ExpressionsLike:
-          Submissions:
-          str]:
+            wheres:
 
         Returns:
 
@@ -111,7 +109,7 @@ class SubmissionLookups(LookupTool):
 
 
         Args:
-          wheres:
+            wheres:
 
         Returns:
 

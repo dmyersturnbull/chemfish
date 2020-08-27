@@ -8,11 +8,13 @@ from chemfish.viz.figures import FigureTools
 
 class UnsupportedPlotOption(UnsupportedOpError):
     """ """
+
     pass
 
 
 class Position:
     """ """
+
     def __init__(self, left: bool, right: bool, top: bool, bottom: bool, first: bool, last: bool):
         self.left, self.right, self.top, self.bottom = left, right, top, bottom
         self.first, self.last = first, last
@@ -20,22 +22,23 @@ class Position:
 
 class Miniaxis:
     """ """
+
     def __init__(self, ax: Axes, position: Position):
         self.ax, self.position = ax, position
         self.twin = self.ax.twinx()
 
     def plot(self, x, mean, upper, lower, label: str, color: str, twin: bool):
         """
-        
+
 
         Args:
-          x: 
-          mean: 
-          upper: 
-          lower: 
-          label: str: 
-          color: str: 
-          twin: bool: 
+          x:
+          mean:
+          upper:
+          lower:
+          label: str:
+          color: str:
+          twin: bool:
 
         Returns:
 
@@ -62,10 +65,10 @@ class Miniaxis:
         When there's only 1 point, turn it into 2 so we still get a line.
 
         Args:
-          x: 
-          v: 
-          u: 
-          w: 
+          x:
+          v:
+          u:
+          w:
 
         Returns:
 
@@ -79,16 +82,16 @@ class Miniaxis:
 
     def _plot(self, x, v, label, color, marker, alpha, twin):
         """
-        
+
 
         Args:
-          x: 
-          v: 
-          label: 
-          color: 
-          marker: 
-          alpha: 
-          twin: 
+          x:
+          v:
+          label:
+          color:
+          marker:
+          alpha:
+          twin:
 
         Returns:
 
@@ -118,19 +121,19 @@ class Miniaxis:
         force_ylim=None,
     ):
         """
-        
+
 
         Args:
-          label: str: 
-          x_label: str: 
-          left_label: str: 
-          right_label: str: 
-          x_ticks: Sequence[float]: 
-          x_tick_labels: Sequence[str]: 
-          y_ticks: Sequence[float]: 
-          y_tick_labels: Sequence[str]: 
-          right_ticks: Sequence[float]: 
-          right_tick_labels: Sequence[str]: 
+          label: str:
+          x_label: str:
+          left_label: str:
+          right_label: str:
+          x_ticks: Sequence[float]:
+          x_tick_labels: Sequence[str]:
+          y_ticks: Sequence[float]:
+          y_tick_labels: Sequence[str]:
+          right_ticks: Sequence[float]:
+          right_tick_labels: Sequence[str]:
           force_ylim:  (Default value = None)
 
         Returns:
@@ -193,6 +196,7 @@ class Miniaxis:
 
 class Grid:
     """ """
+
     def __init__(
         self,
         n_rows: int,
@@ -261,10 +265,10 @@ class Grid:
 
         def get(c):
             """
-            
+
 
             Args:
-              c: 
+              c:
 
             Returns:
 
@@ -342,7 +346,7 @@ class DoseResponsePlotter:
 
         Args:
           summary: A DoseResponseFrame (dataframe subclass)
-          summary: DoseResponseFrame: 
+          summary: DoseResponseFrame:
 
         Returns:
           A Figure
@@ -355,10 +359,10 @@ class DoseResponsePlotter:
 
             def get_ticks(n):
                 """
-                
+
 
                 Args:
-                  n: 
+                  n:
 
                 Returns:
 

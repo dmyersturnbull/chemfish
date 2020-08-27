@@ -12,7 +12,11 @@ MAIN_DIR = Path.home() / ".chemfish"
 CONFIG_PATH = os.environ.get("CHEMFISH_CONFIG", MAIN_DIR / "chemfish.config")
 if CONFIG_PATH is None:
     raise FileDoesNotExistError(f"No config file at {CONFIG_PATH}")
-VIZ_PATH = MAIN_DIR / "chemfish_viz.properties" if (MAIN_DIR / "chemfish_viz.properties").exists() else ChemfishResources.path("styles", "default.properties")
+VIZ_PATH = (
+    MAIN_DIR / "chemfish_viz.properties"
+    if (MAIN_DIR / "chemfish_viz.properties").exists()
+    else ChemfishResources.path("styles", "default.properties")
+)
 
 
 @abcd.auto_repr_str()
@@ -30,7 +34,6 @@ class ChemfishEnvironment:
         : audio_waveform: Chemfish will **save** StimFrame objects to the cache with audio waveforms; Enabling this will cause audio_waveform= arguments to be always true
         : matplotlib_style: The path to a Matplotlib stylesheet; defaults to Matplotlib default
         : use_multicore_tsne: Enable the multicore_tsne package
-        : pickle_protocol: Protocol used in Python pickle; see https://docs.python.org/3/library/pickle.html#pickle.HIGHEST_PROTOCOL; 4 by default
         : joblib_compression_level: Used in joblib.dump compress parameter if the filename ends with one of (‘.z’, ‘.gz’, ‘.bz2’, ‘.xz’ or ‘.lzma’); 3 by default
         : chemfish_log_level: The log level recommended to be used for logging statements within Chemfish; set up by jupyter.py
         : global_log_level: The log level recommended to be used for logging statements globally; set up by jupyter.py
@@ -81,7 +84,7 @@ class ChemfishEnvironment:
         self.shire_path = _try("shire_path", "valinor:/shire/")
         self.audio_waveform = CommonTools.parse_bool(_try("save_with_audio_waveform", False))
         self.matplotlib_style = Path(
-            _try("matplotlib_style", ChemfishResources.path("styles", "basic.mplstyle"))
+            _try("matplotlib_style", ChemfishResources.path("styles", "default.mplstyle"))
         ).expanduser()
         self.use_multicore_tsne = CommonTools.parse_bool(_try("multicore_tsne", False))
         self.joblib_compression_level = int(_try("joblib_compression_level", 3))

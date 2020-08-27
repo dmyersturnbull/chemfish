@@ -4,17 +4,6 @@ Can depend on core, model, viz, and calc.
 """
 from __future__ import annotations
 
-import abc
-from datetime import datetime
-from pathlib import Path
-from typing import Type
-
-import numpy as np
-import pandas as pd
-from dscience.core import PathLike
-from dscience.tools.filesys_tools import FilesysTools
-from pocketutils.core import PathLike
-from pocketutils.core.exceptions import PathError
 from pocketutils.tools.filesys_tools import FilesysTools
 from pocketutils.tools.path_tools import PathTools
 
@@ -23,6 +12,7 @@ from chemfish.core.core_imports import *
 
 class ErrorBehavior(SmartEnum):
     """ """
+
     FAIL = 1
     LOG_ERROR = 2
     LOG_WARNING = 3
@@ -32,6 +22,7 @@ class ErrorBehavior(SmartEnum):
 
 class AbstractSaveLoad(metaclass=abc.ABCMeta):
     """ """
+
     def save(self, path: PathLike) -> None:
         """
 
@@ -60,13 +51,9 @@ class AbstractSaveLoad(metaclass=abc.ABCMeta):
 
 class SaveableTrainable(AbstractSaveLoad):
     """
-    A simpler saveable.=
+    A simpler saveable.
     Saves and loads a .info file with these properties.
     To implement, just override save() and load(), and have each call its supermethod
-
-    Args:
-
-    Returns:
 
     """
 
@@ -122,6 +109,7 @@ class SaveableTrainable(AbstractSaveLoad):
 
 class SaveableTrainableCsv(SaveableTrainable, metaclass=abc.ABCMeta):
     """ """
+
     def save(self, path: PathLike):
         """
 

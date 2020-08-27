@@ -15,6 +15,7 @@ from chemfish.viz.stim_plots import *
 @abcd.auto_repr_str()
 class TraceBase(CakeLayer, KvrcPlotting):
     """ """
+
     def __init__(
         self,
         top_bander: Callable[[WellFrame], pd.DataFrame] = lambda group: group.agg_by_name(
@@ -191,6 +192,7 @@ class TraceBase(CakeLayer, KvrcPlotting):
 @abcd.auto_repr_str()
 class TracePlotter(KvrcPlotting):
     """ """
+
     def __init__(
         self,
         stimframes_plotter: Optional[StimframesPlotter] = None,
@@ -241,24 +243,13 @@ class TracePlotter(KvrcPlotting):
 
 
         Args:
-          df: WellFrame:
-          stimframes:
-          control_names: Union[Sequence[str]:
-          str:
-          None:
-          Sequence[str]]:
-          Set[str]]]:  (Default value = None)
-          starts_at_ms: Optional[int]:  (Default value = None)
-          extra: Optional[Callable[[Figure:
-          GridSpec]:
-          None]]:  (Default value = None)
-          assays:
-          run_dict: Optional[Mapping[str:
-          str]]:  (Default value = None)
-          battery: Union[None:
-          Batteries:
-          int:
-          str]:  (Default value = None)
+            df: WellFrame:
+            stimframes:
+            control_names:
+            starts_at_ms:
+            extra:
+            assays:
+            battery:
 
         Returns:
 
@@ -320,10 +311,7 @@ class TracePlotter(KvrcPlotting):
 
 
         Args:
-          df: Union[WellFrame:
-          Sequence[str]:
-          Set[str]:
-          str]:
+          df:
           control_names:
 
         Returns:
@@ -440,6 +428,7 @@ class TracePlotter(KvrcPlotting):
           df: WellFrame:
           name: str:
           control_names:
+
         Returns:
 
         """

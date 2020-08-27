@@ -22,6 +22,7 @@ logger.setLevel(logging.INFO)
 
 class ChemfishCmd(SmartEnum):
     """ """
+
     init = enum.auto()
     parrot = enum.auto()
     video = enum.auto()
@@ -29,12 +30,13 @@ class ChemfishCmd(SmartEnum):
 
 class ChemfishProcessor:
     """ """
+
     def run(self, args) -> None:
         """
-        
+
 
         Args:
-          args: 
+          args:
 
         Returns:
 
@@ -50,11 +52,11 @@ class ChemfishProcessor:
 
     def process(self, cmd: ChemfishCmd, args) -> None:
         """
-        
+
 
         Args:
-          cmd: ChemfishCmd: 
-          args: 
+          cmd: ChemfishCmd:
+          args:
 
         Returns:
 
@@ -86,7 +88,7 @@ class ChemfishProcessor:
                 ),
                 self._copy_if(
                     Path.home() / ".chemfish" / "chemfish.mplstyle",
-                    ChemfishResources.path("styles/basic.mplstyle"),
+                    ChemfishResources.path("styles/default.mplstyle"),
                 ),
                 self._copy_if(
                     Path.home() / ".chemfish" / "chemfish_viz.properties",
@@ -101,10 +103,10 @@ class ChemfishProcessor:
 
     def download_video(self, args):
         """
-        
+
 
         Args:
-          args: 
+          args:
 
         Returns:
 
@@ -119,11 +121,11 @@ class ChemfishProcessor:
 
     def _copy_if(self, dest: Path, source: Path) -> bool:
         """
-        
+
 
         Args:
-          dest: Path: 
-          source: Path: 
+          dest: Path:
+          source: Path:
 
         Returns:
 

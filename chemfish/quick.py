@@ -51,12 +51,12 @@ DEFAULT_NAMER = WellNamers.elegant()
 generation_feature_preferences = {
     **{g: FeatureTypes.MI for g in DataGeneration.pike_generations()},
     **{g: FeatureTypes.cd_10_i for g in DataGeneration.pointgrey_generations()},
-    DataGeneration.HIGHSPEED_LEGACY: FeatureTypes.MI,
 }
 
 
 class AggType(SmartEnum):
     """ """
+
     NONE = enum.auto()
     NAME = enum.auto()
     IMPORTANT = enum.auto()
@@ -696,8 +696,6 @@ class Quick:
         If either is set, uses that one. Will raise a UserContradictionError if both are set.
 
         Args:
-          show_name_lines: Show horizontal lines between different names
-          show_control_lines: Show horizontal lines between different control types
           run: A run ID, name, or object
           control_type: The name, ID, or object of a ControlTypes; or None
           control_name: The name of an item in WellFrame.names(); or None
@@ -705,29 +703,17 @@ class Quick:
           namer: A namer for WellFrameBuilder
           start_ms: Cuts the dataframes, calculating milliseconds from the known framerate
           end_ms: Cuts the dataframes, calculating milliseconds from the known framerate
+          show_name_lines: Show horizontal lines between different names
+          show_control_lines: Show horizontal lines between different control types
           ignore_controls: Don't plot any control wells
-          run: QsLike:
-          control_type: Union[None:
-          str:
-          int:
-          ControlTypes]:  (Default value = None)
-          control_name: Optional[str]:  (Default value = None)
-          threshold:
-          namer:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          show_control_lines: bool:  (Default value = True)
-          show_name_lines: bool:  (Default value = True)
-          ignore_controls: bool:  (Default value = False)
 
         Returns:
           The matplotlib Figure
 
         """
         df, stimframes = self.df_and_stims(run, namer, start_ms, end_ms, audio_waveform=None)
-        fps = self._stimframes_per_second(df)
         battery = df.only("battery_id")
-        stimplotter = StimframesPlotter(fps=fps)
+        stimplotter = StimframesPlotter()
         zscores = self._control_subtract(df, control_type, control_name).threshold_zeros(threshold)
         if ignore_controls:
             zscores = zscores.without_controls_matching()
@@ -764,7 +750,7 @@ class Quick:
         """
         df, stimframes = self.df_and_stims(run, namer, start_ms, end_ms, audio_waveform=None)
         battery = df.only("battery_id")
-        stimplotter = StimframesPlotter(fps=self._stimframes_per_second(df))
+        stimplotter = StimframesPlotter()
         heater = HeatPlotter(stimframes_plotter=stimplotter, name_sep_line=show_name_lines)
         return heater.plot(df, stimframes, starts_at_ms=start_ms, battery=battery)
 
@@ -825,8 +811,7 @@ class Quick:
         Args:
           run: QsLike:
           transform: WellTransform:
-          all_params: Mapping[str:
-          Any]:
+          all_params:
           recolor:
           namer:
           start_ms: Optional[int]:  (Default value = None)
@@ -927,10 +912,7 @@ class Quick:
         if sensors is None:
             sensors = ["thermistor", "photoresistor", "microphone"]
         stimframes = self.stim(run.experiment.battery, start_ms, end_ms, audio_waveform=True)
-        stimplotter = StimframesPlotter(
-            audio_waveform=True,
-            fps=ValarTools.battery_stimframes_per_second(run.experiment.battery),
-        )
+        stimplotter = StimframesPlotter(audio_waveform=True)
         sensor_data = []
         for sensor in sensors:
             sensor = SensorNames.of(sensor)
@@ -992,36 +974,24 @@ class Quick:
 
 
         Args:
-          battery: param start_ms:
-          end_ms: param audio_waveform:
-          label_assays: param stimframes: If supplied:
-        - `audio_waveform` is ignored
-        - `start_ms` and `end_ms` will be attempted, BUT!
-        If `stimframes` was already sliced, the result will be wrong
-          battery: Union[StimFrame:
-          Batteries:
-          int:
-          str]:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          audio_waveform: bool:  (Default value = True)
-          label_assays: bool:  (Default value = False)
-          stimframes:
+            battery: param start_ms:
+            end_ms: param audio_waveform:
+            label_assays: param stimframes: If supplied:
+                - `audio_waveform` is ignored
+                - `start_ms` and `end_ms` will be attempted, BUT!
+                   If `stimframes` was already sliced, the result will be wrong
 
         Returns:
 
         """
         battery = Batteries.fetch(battery)
         assays = AssayFrame.of(battery)
-        sfps = ValarTools.battery_stimframes_per_second(battery)
         if stimframes is None:
             stimframes = self.stim(battery, start_ms, end_ms, audio_waveform)
         else:
             stimframes = stimframes.slice_ms(battery, start_ms, end_ms)
             audio_waveform = False
-        plotter = StimframesPlotter(
-            fps=sfps, audio_waveform=audio_waveform, assay_labels=label_assays
-        )
+        plotter = StimframesPlotter(audio_waveform=audio_waveform, assay_labels=label_assays)
         ax = plotter.plot(stimframes, assays=assays, starts_at_ms=start_ms, battery=battery)
         return ax.get_figure()
 
@@ -1063,9 +1033,7 @@ class Quick:
 
 
         Args:
-          battery: Union[Batteries:
-          int:
-          str]:
+          battery:
 
         Returns:
 
@@ -1389,7 +1357,7 @@ class Quick:
             # So, replace the NaNs with -1.0, then call WellFrame.completion, then fill the NaNs again.
             # For simplicity, we'll do all three steps even if there are no assay gaps.
             n_unified = df.unify_last_nans_inplace(fill_value=-1.0)
-            if self.feature.internal_name == FeatureTypes.MI.internal_name:
+            if self.feature.internal_name == FeatureTypes.MI().internal_name:
                 n_zeros = (df.values == 0).astype(int).sum()
                 if n_zeros.any() > 0:
                     logger.warning("MI trace contains 0s and might have breaks between assays.")
@@ -1567,7 +1535,7 @@ class Quick:
         fps = self._stimframes_per_second(df)
         weights = self._slice_weight_ms(df, weights, start_ms, end_ms)
         extra_gs, extra_fn = self._weighter(weights)
-        stimplotter = StimframesPlotter(fps=fps, assay_labels=label_assays, audio_waveform=True)
+        stimplotter = StimframesPlotter(assay_labels=label_assays, audio_waveform=True)
         assays = AssayFrame.of(df.only("battery_name"))
         return df, stimframes, assays, control_names, fps, stimplotter, extra_gs, extra_fn
 
@@ -1737,6 +1705,7 @@ class Quick:
 @abcd.external
 class Quicks:
     """ """
+
     @classmethod
     def pointgrey(cls, as_of: Optional[datetime], **kwargs):
         """
@@ -1807,8 +1776,11 @@ class Quicks:
 
         """
         generation = DataGeneration.of(generation)
-        feature, kwargs = InternalTools.from_kwargs(
-            kwargs, "feature", generation_feature_preferences[generation]
+        kwargs = dict(kwargs)
+        feature = (
+            kwargs.pop("feature")
+            if "feature" in kwargs
+            else generation_feature_preferences[generation]
         )
         if "namer" in kwargs and "well_namer" not in kwargs:
             kwargs["well_namer"] = kwargs["namer"]

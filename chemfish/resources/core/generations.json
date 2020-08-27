@@ -45,17 +45,11 @@
             "sauronx-stimulus-ms",
             "sauronx-stimulus-value"
         ],
-        "optional_sensors": [
-            "sauronx-decibels",
-            "sauronx-microphone-ms",
-            "sauronx-microphone-wav",
-            "sauronx-tinkerkit-photosensor-ms",
-            "sauronx-tinkerkit-photosensor-values",
-            "sauronx-tinkerkit-thermosensor-ms",
-            "sauronx-tinkerkit-thermosensor-values",
-            "webcam",
-            "preview"
-        ]
+        "optional_sensors": [],
+        "camera_millis_sensor": "sauronx-snapshot-ms",
+        "stimulus_millis_sensor": "sauronx-stimulus-ms",
+        "stimulus_ids_sensor": "sauronx-stimulus-id",
+        "stimulus_values_sensor": "sauronx-stimulus_value"
     },
     {
         "name": "POINTGREY_ALPHA",
@@ -81,7 +75,14 @@
             "sauronx-tinkerkit-thermosensor-values",
             "webcam",
             "preview"
-        ]
+        ],
+        "camera_millis_sensor": "sauronx-snapshot-ms",
+        "stimulus_millis_sensor": "sauronx-stimulus-ms",
+        "stimulus_ids_sensor": "sauronx-stimulus-id",
+        "stimulus_values_sensor": "sauronx-stimulus_value",
+        "secondary_camera_sensor": "webcam",
+        "preview_frame_sensor": "preview",
+        "microphone_sensor": "sauronx-microphone-wav"
     },
     {
         "name": "POINTGREY",
@@ -107,6 +108,13 @@
             "sauronx-tinkerkit-thermosensor-values",
             "webcam",
             "preview"
-        ]
+        ],
+        "camera_millis_sensor": "sauronx-snapshot-ms",
+        "stimulus_millis_sensor": "sauronx-stimulus-ms",
+        "stimulus_ids_sensor": "sauronx-stimulus-id",
+        "stimulus_values_sensor": "sauronx-stimulus_value",
+        "secondary_camera_sensor": "webcam",
+        "preview_frame_sensor": "preview",
+        "microphone_sensor": "sauronx-microphone-wav"
     }
 ]

@@ -6,6 +6,7 @@ from chemfish.model.treatments import Treatment
 
 class UnknownVariableError(UnrecognizedKeyError):
     """ """
+
     pass
 
 
@@ -18,11 +19,10 @@ class TreatmentNamer:
         Returns a dict mapping treatments to their display strings
 
         Args:
-          treatment: A Treatment instance
-          name: None, a name, or a map from compound IDs to compound names.
-        Does not need to include every compound ID, and may even be empty.
-          treatment: Treatment:
-          name:
+            treatment: A Treatment instance
+            name: None, a name, or a map from compound IDs to compound names.
+                  Does not need to include every compound ID, and may even be empty.
+
         Returns:
           The display name of the Treatment
 
@@ -37,8 +37,9 @@ class TreatmentNamer:
 
 
         Args:
-          t: Treatment:
-          names:
+            t:
+            names:
+
         Returns:
 
         """
@@ -193,6 +194,7 @@ class StringTreatmentNamer(TreatmentNamer):
         Returns:
 
         """
+
         def inchikeyit(gs):
             """
 
@@ -454,6 +456,7 @@ class StringTreatmentNamer(TreatmentNamer):
 
 class TreatmentNamers:
     """ """
+
     @classmethod
     def of(cls, s: str):
         """

@@ -9,6 +9,7 @@ from chemfish.model.well_names import *
 
 class ChemfishDatasetTools:
     """ """
+
     @classmethod
     def filter_fewer(cls, df: WellFrame, cutoff: int) -> WellFrame:
         """
@@ -17,8 +18,8 @@ class ChemfishDatasetTools:
         Args:
           df: A WellFrame with 0 or 1 compounds per well
           cutoff: Minimum
-          df: WellFrame: 
-          cutoff: int: 
+          df: WellFrame:
+          cutoff: int:
 
         Returns:
           The filtered WellFrame
@@ -42,10 +43,10 @@ class ChemfishDatasetTools:
     @classmethod
     def qc_compound_namer(cls, today: datetime) -> CompoundNamer:
         """
-        
+
 
         Args:
-          today: datetime: 
+          today: datetime:
 
         Returns:
 
@@ -55,10 +56,10 @@ class ChemfishDatasetTools:
     @classmethod
     def qc_namer(cls, today: datetime) -> WellNamer:
         """
-        
+
 
         Args:
-          today: datetime: 
+          today: datetime:
 
         Returns:
 
@@ -73,10 +74,10 @@ class ChemfishDatasetTools:
     @classmethod
     def qc_dr_namer(cls, today: datetime) -> WellNamer:
         """
-        
+
 
         Args:
-          today: datetime: 
+          today: datetime:
 
         Returns:
 
@@ -91,10 +92,10 @@ class ChemfishDatasetTools:
     @classmethod
     def biomol_compound_namer(cls, today: datetime) -> CompoundNamer:
         """
-        
+
 
         Args:
-          today: datetime: 
+          today: datetime:
 
         Returns:
 
@@ -104,10 +105,10 @@ class ChemfishDatasetTools:
     @classmethod
     def biomol_namer(cls, today: datetime) -> WellNamer:
         """
-        
+
 
         Args:
-          today: datetime: 
+          today: datetime:
 
         Returns:
 
@@ -122,10 +123,10 @@ class ChemfishDatasetTools:
     @classmethod
     def biomol_display_namer(cls, today: datetime) -> WellNamer:
         """
-        
+
 
         Args:
-          today: datetime: 
+          today: datetime:
 
         Returns:
 
@@ -135,10 +136,10 @@ class ChemfishDatasetTools:
     @classmethod
     def dmt_simple_namer(cls, today: datetime) -> WellNamer:
         """
-        
+
 
         Args:
-          today: datetime: 
+          today: datetime:
 
         Returns:
 
@@ -158,6 +159,7 @@ class ChemfishDatasetTools:
 
 class ChemfishDataset(metaclass=abc.ABCMeta):
     """ """
+
     def __call__(self):
         logger.info(f"Downloading {self.name}...")
         df = self._download()
@@ -182,6 +184,7 @@ class ChemfishDataset(metaclass=abc.ABCMeta):
 @abcd.auto_repr_str()
 class OptisepDataset(ChemfishDataset, metaclass=abc.ABCMeta):
     """ """
+
     def __init__(self, training_experiment: int, is_test_set: bool):
         self.training_experiment = training_experiment
         self.is_test_set = is_test_set
@@ -210,6 +213,7 @@ class OptisepDataset(ChemfishDataset, metaclass=abc.ABCMeta):
 
 class LeoDataset1(ChemfishDataset):
     """ """
+
     def _download(self):
         """ """
         today = datetime(2019, 6, 17)
@@ -234,6 +238,7 @@ class LeoDataset1(ChemfishDataset):
 
 class LeoDataset2(ChemfishDataset):
     """ """
+
     def _download(self):
         """ """
         pattern = re.compile(r".*BM ([0-9]{1,2})\.([1-9]{1,2}).*")
@@ -328,6 +333,7 @@ class _SimpleFlamesDataset(ChemfishDataset):
 
 class ChemfishDatasets:
     """ """
+
     @classmethod
     @abcd.copy_docstring(LeoDataset1)
     def leo_biomol(cls) -> WellFrame:

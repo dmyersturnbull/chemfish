@@ -9,7 +9,8 @@ from chemfish.viz.figures import *
 
 
 class BreakdownBarPlotter(KvrcPlotting):
-    """ """
+    """"""
+
     def __init__(self, bar_width: float = chemfish_rc.acc_bar_width_fraction, kwargs=None):
         self.bar_width = bar_width
         self.kwargs = {} if kwargs is None else kwargs

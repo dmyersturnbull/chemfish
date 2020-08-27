@@ -117,6 +117,7 @@ class LookupTool(metaclass=abc.ABCMeta):
 
 class Column:
     """ """
+
     def __init__(
         self,
         name: str,
@@ -149,6 +150,7 @@ V = TypeVar("V")
 
 class LookupBuilder:
     """ """
+
     def __init__(self, table: Type[T]):
         self._table = table
         self._query = table.select()

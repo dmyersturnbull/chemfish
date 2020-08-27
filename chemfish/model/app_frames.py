@@ -115,10 +115,7 @@ class AppFrame(TypedDf):
 
 
         Args:
-          any_of_stimuli: Union[str:
-          Sequence[str]]:
-          accept_value: Callable[[int]:
-          bool]:  (Default value = lambda x: x > 0)
+          any_of_stimuli:
 
         Returns:
 
@@ -154,9 +151,7 @@ class AppFrame(TypedDf):
 
 
         Args:
-          stimulus: Union[str:
-          int:
-          Stimuli]:
+          stimulus:
 
         Returns:
 
@@ -194,8 +189,8 @@ class AppFrame(TypedDf):
 
 
         Args:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
+          start_ms:
+          end_ms:
 
         Returns:
 
@@ -214,7 +209,7 @@ class AppFrame(TypedDf):
 
         Args:
           index: A row index, starting at 0
-          index: int:
+          index:
 
         Returns:
           A DataFrame of start, end, and value for changes
@@ -226,12 +221,11 @@ class AppFrame(TypedDf):
     def insight(self) -> InsightFrame:
         """
         Generates something like template_stimulus_frames for legacy or SauronX batteries and assays
-        :return: A DataFrame of start, end, and value for changes
 
         Args:
 
         Returns:
-
+            A DataFrame of start, end, and value for changes
         """
         return InsightFrame(
             InsightFrame.convert(
@@ -245,9 +239,8 @@ class AppFrame(TypedDf):
     def _insight(cls, frames_row: pd.Series) -> InsightFrame:
         """
 
-
         Args:
-          frames_row: pd.Series:
+          frames_row:
 
         Returns:
 
@@ -268,8 +261,8 @@ class AppFrame(TypedDf):
 
 
         Args:
-          frames_row: pd.Series:
-          ms_per_stimframe: int:
+          frames_row:
+          ms_per_stimframe:
 
         Returns:
 
@@ -300,8 +293,8 @@ class AppFrame(TypedDf):
 
 
         Args:
-          arr: np.array:
-          framerate: float:
+          arr:
+          framerate:
 
         Returns:
 
@@ -323,9 +316,7 @@ class AppFrame(TypedDf):
 
 
         Args:
-          battery: Union[int:
-          str:
-          Batteries]:
+          battery:
 
         Returns:
 

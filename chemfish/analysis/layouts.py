@@ -14,6 +14,7 @@ from chemfish.model.compound_names import *
 
 class LayoutFrame(UntypedDf):
     """ """
+
     def drug_cols(self):
         """ """
         ii = 1
@@ -51,6 +52,7 @@ class LayoutFrame(UntypedDf):
 
 class LayoutChecker:
     """ """
+
     @classmethod
     def warn_wells(cls, template_plate: Union[TemplatePlates, int, str]):
         """
@@ -82,6 +84,7 @@ class LayoutChecker:
 
 class LayoutParser:
     """ """
+
     def parse(
         self,
         df: Union[PathLike, pd.DataFrame],
@@ -967,6 +970,7 @@ class DoseColumnIterator:
 
 class LiteralImporter:
     """ """
+
     @classmethod
     def replace_run(cls, run: Union[Runs, int, str]):
         """

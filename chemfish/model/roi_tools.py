@@ -3,6 +3,7 @@ from chemfish.core.core_imports import *
 
 class RoiBounds:
     """ """
+
     def __init__(self, x0: int, y0: int, x1: int, y1: int) -> None:
         self.x0 = x0
         self.y0 = y0
@@ -18,6 +19,7 @@ class RoiBounds:
 
 class WellRoi(RoiBounds):
     """ """
+
     def __init__(self, row: int, column: int, x0: int, y0: int, x1: int, y1: int) -> None:
         self.row_index = row
         self.column_index = column
@@ -31,6 +33,7 @@ class WellRoi(RoiBounds):
 
 class RoiTools:
     """ """
+
     @classmethod
     def verify_roi(cls, roi: Rois, width: int, height: int, desc: str = "") -> None:
         """

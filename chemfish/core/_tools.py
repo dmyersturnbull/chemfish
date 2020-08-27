@@ -10,123 +10,11 @@ class InternalTools:
     """
     A collection of utility functions for internal use in Chemfish.
     Equivalents of some of these functions are in the external-use Tools class, which delegates to this class.
-    These functions do NOT depend on the Kokel Lab's specific structure of data in Valar.
     The most useful functions are:
         - Tools.run: Gets a run from a run ID, tag, name, instance, or submission hash or instance
         - Tools.runs: Delegates to Tools.run for either of the types accepted by Tools.run, or an iterable over them
 
-    Args:
-
-    Returns:
-
     """
-
-    @classmethod
-    def download_frame_timestamps(cls, run_id: int) -> np.array:
-        """
-        Downloads the timestamps that SauronX recorded for the frame capture times, or None if the sensor was not defined.
-        Will always return None for legacy data.
-        In pre-PointGrey data, these are the timestamps that MATLAB received the frames.
-        In PointGrey data, these are the timestamps that the image was taken (according to the camera firmware).
-
-        Args:
-          run_id: The ID of a runs row, only
-          run_id: int:
-
-        Returns:
-          The numpy array of floats, or None
-
-        """
-        return InternalTools.convert_sensor_data(
-            SensorData.select()
-            .where(SensorData.run_id == run_id)
-            .where(SensorData.sensor_id == 3)
-            .first()
-        )
-
-    @classmethod
-    def download_stimulus_timestamps(cls, run_id: int) -> Optional[np.array]:
-        """
-        Downloads the timestamps that SauronX recorded for the stimuli, or None if the sensor was not defined.
-        Will always return None for legacy data.
-
-        Args:
-          run_id: The ID of a runs row, only
-          run_id: int:
-
-        Returns:
-          The numpy array of floats, or None
-
-        """
-        return InternalTools.convert_sensor_data(
-            SensorData.select()
-            .where(SensorData.run_id == run_id)
-            .where(SensorData.sensor_id == 4)
-            .first()
-        )
-
-    @classmethod
-    def convert_sensor_data(cls, data: SensorData) -> Union[None, np.array, bytes, str]:
-        """
-        Downloads and converts sensor data.
-        See `InternalTools.convert_sensor_data_from_bytes` for details.
-
-        Args:
-          data: The ID or instance of a row in sensor_data
-          data: SensorData:
-
-        Returns:
-          The converted data
-
-        """
-        data = SensorData.fetch(data)
-        return InternalTools.convert_sensor_data_from_bytes(data.sensor, data.floats)
-
-    @classmethod
-    def convert_sensor_data_from_bytes(
-        cls, sensor: Union[str, int, Sensors], data: bytes
-    ) -> Union[None, np.array, bytes, str]:
-        """
-        Convert the sensor data to its appropriate type as defined by `sensors.data_type`.
-        WARNING:
-            Currently does not handle `sensors.data_type=='utf8_char'`. Currently there are no sensors in Valar with this data type.
-
-        Args:
-          sensor: The name, ID, or instance of the sensors row
-          data: The data from `sensor_data.floats`; despite the name this is blob represented as bytes and may not correspond to floats at all
-          sensor:
-          data: bytes:
-
-        Returns:
-          The converted data, or None if `data` is None
-
-        """
-        sensor = Sensors.fetch(sensor)
-        dt = sensor.data_type
-        if data is None:
-            return None
-        if dt == "byte":
-            return np.frombuffer(data, dtype=np.byte)
-        if dt == "unsigned_byte":
-            return np.frombuffer(data, dtype=np.byte) + 2 ** 7
-        if dt == "short":
-            return np.frombuffer(data, dtype=">i2").astype(np.int64)
-        if dt == "unsigned_short":
-            return np.frombuffer(data, dtype=">i2").astype(np.int64) + 2 ** 15
-        if dt == "int":
-            return np.frombuffer(data, dtype=">i4").astype(np.int64)
-        if dt == "unsigned_int":
-            return np.frombuffer(data, dtype=">i4").astype(np.int64) + 2 ** 31
-        if dt == "float":
-            return np.frombuffer(data, dtype=">f4").astype(np.float64)
-        if dt == "double":
-            return np.frombuffer(data, dtype=">f8").astype(np.float64)
-        if dt == "utf8_char":
-            return str(dt, encoding="utf-8")
-        elif dt == "other":
-            return data
-        else:
-            raise UnsupportedOpError(f"Oh no! Sensor cache doesn't recognize dtype {dt}")
 
     @classmethod
     def verify_class_has_attrs(cls, class_, *attributes: Union[str, Iterable[str]]) -> None:
@@ -163,23 +51,6 @@ class InternalTools:
         return bad
 
     @classmethod
-    def from_kwargs(cls, kwargs, key: str, fallback: Any) -> Tup[Any, Dict[str, Any]]:
-        """
-
-
-        Args:
-          kwargs:
-          key: str:
-          fallback: Any:
-
-        Returns:
-
-        """
-        # we'll get an error if this appears twice, so let's remove the one in kwargs
-        value = kwargs[key] if key in kwargs else fallback
-        return value, {k: v for k, v in kwargs.items() if k != key}
-
-    @classmethod
     def load_resource(
         cls, *parts: Sequence[str]
     ) -> Union[
@@ -213,7 +84,6 @@ class InternalTools:
         Args:
           thing_class: The table (peewee model)
           things: A list of lookup values -- each is an ID or unique varchar/char/enum field value
-          thing_class: Type[BaseModel]:
 
         Returns:
           The ID of the row
@@ -235,8 +105,6 @@ class InternalTools:
           thing_class: The table (peewee model)
           things: A list of lookup values -- each is an ID or unique varchar/char/enum field value
           keep_none: Include None values
-          thing_class: Type[BaseModel]:
-          keep_none: bool:  (Default value = False)
 
         Returns:
           The ID of the row
@@ -263,7 +131,6 @@ class InternalTools:
         Args:
           thing_class: The table (peewee model)
           thing: The lookup value -- an ID or unique varchar/char/enum field value
-          thing_class: Type[BaseModel]:
 
         Returns:
           The ID of the row
@@ -320,7 +187,6 @@ class InternalTools:
 
         Args:
           sequence_or_element: A single element of any type, or an untyped Iterable of elements.
-          sequence_or_element: Any:
 
         Returns:
           A list
@@ -349,12 +215,12 @@ class InternalTools:
     @classmethod
     def well(cls, well: Union[int, Wells]) -> Wells:
         """
-        Fetchs a well and its run in a single query.
+        Fetches a well and its run in a single query.
         In contrast, calling Wells.fetch().run will perform two queries.
 
         Args:
           well: A well ID or instance
-          well:
+
         Returns:
           A wells instance
 
@@ -363,83 +229,6 @@ class InternalTools:
         if well is None:
             raise ValarLookupError(f"No well {well}")
         return well
-
-    @classmethod
-    def all_or_none_are_none(
-        cls, collection: Collection[Any], attr: Optional[str]
-    ) -> Optional[bool]:
-        """
-        Returns None, True, or False on either a sequence of elements (`attr` is None),
-        or a sequence of attributes of those elements (`attr` is defined).
-        Returns:
-            - True if the attribute of every element is None
-            - False if the attribute of every element is not None.
-            - None if the attribute is not defined on one or more elements.
-            - None if the attribute is TNonerue on some elements and not None on others
-
-        Args:
-          collection: Any iterable of objects that might have `attr` defined on them
-          attr: The name of the attribute; if None will use the elements themselves
-          collection: Collection[Any]:
-          attr: Optional[str]:
-
-        Returns:
-          A boolean or None
-
-        """
-
-        def isnull(x):
-            """
-
-
-            Args:
-              x:
-
-            Returns:
-
-            """
-            return x is None if attr is None else getattr(x, attr) is None
-
-        if all(isnull(r) for r in collection):
-            return True
-        if all(not isnull(r) for r in collection):
-            return False
-        return None
-
-    @classmethod
-    def all_or_none_are_true(
-        cls, collection: Collection[Any], attr: Optional[str]
-    ) -> Optional[bool]:
-        """
-        Returns None, True, or False on either a sequence of elements (`attr` is True),
-        or a sequence of attributes of those elements (`attr` is defined).
-        Returns:
-            - True if the attribute of every element is true
-            - False if the attribute of every element is false.
-            - None if the attribute is not defined on one or more elements.
-            - None if the attribute is True on some elements and False on others
-
-        Args:
-          collection: Any iterable of objects that might have `attr` defined on them
-          attr: The name of the attribute; if None will use the elements themselves
-          collection: Collection[Any]:
-          attr: Optional[str]:
-
-        Returns:
-          A boolean or None
-
-        """
-        if attr is not None:
-            if all(getattr(r, attr) for r in collection):
-                return True
-            if all(not getattr(r, attr) for r in collection):
-                return False
-        else:
-            if all(r for r in collection):
-                return True
-            if all(not r for r in collection):
-                return False
-        return None
 
 
 __all__ = ["InternalTools"]

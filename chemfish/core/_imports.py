@@ -63,7 +63,7 @@ from warnings import warn
 import decorateme as abcd
 import numpy as np
 import pandas as pd
-from pocketutils.core import SmartEnum
+from pocketutils.core import PathLike, SmartEnum
 from pocketutils.core.exceptions import *
 from pocketutils.tools.common_tools import CommonTools
 
@@ -74,8 +74,6 @@ from chemfish.core import (
     chemfish_version,
     logger,
 )
-
-PathLike = Union[str, PurePath, os.PathLike]
 
 
 class NoFeaturesError(MissingResourceError):
@@ -96,30 +94,3 @@ class IncompatibleGenerationError(IncompatibleDataError):
 
 class SauronxOnlyError(IncompatibleGenerationError):
     """A function called is available only for SauronX data."""
-
-
-class ChemfishJsonEncoder(json.JSONEncoder):
-    """ """
-    def default(self, obj):
-        """
-        
-
-        Args:
-          obj: 
-
-        Returns:
-
-        """
-        try:
-            # noinspection PyUnresolvedReferences
-            import peewee
-
-            if isinstance(obj, peewee.Field):
-                return type(obj).__name__
-        except ImportError:
-            pass  # let the encode fail
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        elif isinstance(obj, (datetime, date)):
-            return obj.isoformat()
-        return json.JSONEncoder.default(self, obj)

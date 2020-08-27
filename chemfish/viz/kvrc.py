@@ -14,25 +14,7 @@ class ChemfishRc(KvrcCore):
     """A container for important matplotlib style settings, which can be referenced by plotters."""
 
     def _load_settings(self, config: KvrcConfig):
-        """
-        
-
-        Args:
-          config: KvrcConfig: 
-
-        Returns:
-
-        """
         def mget(key: str):
-            """
-            
-
-            Args:
-              key: str: 
-
-            Returns:
-
-            """
             return plt.rcParams[key]
 
         # ______________________________________________________________________________________________________________
