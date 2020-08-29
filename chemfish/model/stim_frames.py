@@ -32,11 +32,8 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
         Also sets all solenoids and soft solenoids to have intensity 255.
 
         Args:
-          waveform_loader: A function mapping stimulus names to Waveform objects; The waveforms will be 'standardized' to range from 0 to 255.
-          is_legacy:
-          waveform_loader: Callable[[StimulusLike]:
-          Waveform]:
-          is_legacy: bool:
+            waveform_loader: A function mapping stimulus names to Waveform objects; The waveforms will be 'standardized' to range from 0 to 255.
+            is_legacy:
 
         Returns:
 
@@ -178,8 +175,6 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
         Args:
           battery: A name or ID of a battery
           fps_for_sampling: Sample every x frames, starting at 0. This option should mostly be avoided.
-          battery: Batteries:
-          fps_for_sampling: Optional[int]:  (Default value = None)
 
         Returns:
 

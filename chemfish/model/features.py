@@ -16,15 +16,15 @@ class FeatureType:
         generations: Set[DataGeneration],
     ):
         """
-
-        :param valar_feature: The Features row instance in Valar
-        :param time_dependent: Whether the feature corresponds to frames in the video (possibly differing by a constant)
-        :param stride_in_bytes: The number of bytes (in the poorly named features.floats) per value, such as 8 for a double value
-        :param recommended_scale: A multiplier of the values for display, such as 1000 for values on that order
-        :param recommended_unit: An arbitrary string to label units with; should account for the recommended_scale
-        :param is_interpolated: For time-dependent features, whether the feature is interpolated to align with the timesamps.
-                This is generally a good idea for PointGrey+ features, and a bad idea for cameras with less accurate timestamps.
-        :param generations: Generations of video data this feature can apply to.
+        Args:
+            valar_feature: The Features row instance in Valar
+            time_dependent: Whether the feature corresponds to frames in the video (possibly differing by a constant)
+            stride_in_bytes: The number of bytes (in the poorly named features.floats) per value, such as 8 for a double value
+            recommended_scale: A multiplier of the values for display, such as 1000 for values on that order
+            recommended_unit: An arbitrary string to label units with; should account for the recommended_scale
+            is_interpolated: For time-dependent features, whether the feature is interpolated to align with the timesamps.
+                             This is generally a good idea for PointGrey+ features, and a bad idea for cameras with less accurate timestamps.
+            generations: Generations of video data this feature can apply to.
         """
         self.valar_feature = valar_feature
         self.id = valar_feature.id
@@ -43,9 +43,9 @@ class FeatureType:
 
 
         Args:
-          wf: WellFeatures:
-          well:
-          stringent:
+            wf: WellFeatures:
+            well:
+            stringent:
 
         Returns:
 
@@ -69,7 +69,7 @@ class FeatureType:
 
 
         Args:
-          arr: np.array:
+            arr: np.array:
 
         Returns:
 
@@ -82,10 +82,9 @@ class FeatureType:
 
 
         Args:
-          blob: bytes:
-          well: Union[Wells:
-          int]:
-          stringent:
+            blob: bytes:
+            well:
+            stringent:
 
         Returns:
 
@@ -113,10 +112,9 @@ class _ConsecutiveFrameFeature(FeatureType, metaclass=abcd.ABCMeta):
 
 
         Args:
-          blob: bytes:
-          well: Union[Wells:
-          int]:
-          stringent:
+            blob: bytes:
+            well:
+            stringent:
 
         Returns:
 
@@ -149,7 +147,7 @@ class _Mi(_ConsecutiveFrameFeature):
 
 
         Args:
-          arr: np.array:
+            arr: np.array:
 
         Returns:
 
@@ -178,7 +176,7 @@ class _Diff(_ConsecutiveFrameFeature):
 
 
         Args:
-          arr: np.array:
+            arr: np.array:
 
         Returns:
 

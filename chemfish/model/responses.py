@@ -16,7 +16,7 @@ class DoseResponseFrame(TypedDf):
         Returns a DataFrame of the scores for just one 'axis' (usually 1 or 2 to denote negative and positive controls, respectively).
 
         Args:
-          i: int:
+            i: int:
 
         Returns:
 
@@ -35,7 +35,7 @@ class DoseResponseFrame(TypedDf):
         To do this, relies on the name to determine whether a row is a control.
 
         Args:
-          more_controls: Optional[Set[str]]:  (Default value = None)
+            more_controls: Optional[Set[str]]:  (Default value = None)
 
         Returns:
 
@@ -65,10 +65,6 @@ class DoseResponseFrame1D(DoseResponseFrame):
         - 'x_text': The x position labels.
         - 'upper_1', 'lower_1', 'score_1' (axis on left side, different bands)
 
-    Args:
-
-    Returns:
-
     """
 
     @classmethod
@@ -90,10 +86,6 @@ class DoseResponseFrame2D(DoseResponseFrame):
         - 'x_text': The x position labels.
         - 'upper_1', 'lower_1', 'score_1' (axis on left side, different bands)
         - 'upper_2', 'lower_2', 'score_2' (axis on right side, different bands).
-
-    Args:
-
-    Returns:
 
     """
 
@@ -118,7 +110,7 @@ class DoseResponseFrame2D(DoseResponseFrame):
         Returns a BaseScoreFrame of the scores for just one 'axis' (usually 1 or 2 to denote negative and positive controls, respectively).
 
         Args:
-          i: int:
+            i: int:
 
         Returns:
 

@@ -518,19 +518,22 @@ class TrainableCcIterator(SizedIterator):
         ] = CcShouldProceeds.keep(),
     ):
         """
-        :param df: A WellFrame with treatments and controls to generate comparisons over
-        :param it: An iterator over ControlComparisons for `df`
-        :param treatment_selector: A function that maps a ControlComparison and this `df` to a smaller WellFrame
+        Constructor.
+
+        Args:
+            df: A WellFrame with treatments and controls to generate comparisons over
+            it: An iterator over ControlComparisons for `df`
+            treatment_selector: A function that maps a ControlComparison and this `df` to a smaller WellFrame
                                     containing just the desired treatments.
                                     These should be all the wells with the ControlComparisons `name`, or a subset of them
-        :param control_selector: A function that maps a ControlComparison, this `df`, and the treatments (from `treatment_selector`)
+            control_selector: A function that maps a ControlComparison, this `df`, and the treatments (from `treatment_selector`)
                                     to a smaller WellFrame of the desired control wells.
                                     These should be all the control wells for the ControlComparison's `control`, or a subset of them
-        :param subsampler: A function that maps the ControlComparisons, result from `treatment_selector`, and result from `control_selector`,
+            subsampler: A function that maps the ControlComparisons, result from `treatment_selector`, and result from `control_selector`,
                                     to a new pair of (by_name, by_controls) corresponding to the inputs.
                                     The intended purpose is subsampling intelligently after the treatment and control wells are chosen.
                                     This function is permitted to be a bit flexible. It should avoid modifying inputs, but may.
-        :param should_proceed: A function that decides whether to keep comparison, taking the ControlComparsion,
+            should_proceed: A function that decides whether to keep comparison, taking the ControlComparsion,
                                     final subsampled input (by_name, by_controls), and returns True to keep it.
         """
         self.df = df

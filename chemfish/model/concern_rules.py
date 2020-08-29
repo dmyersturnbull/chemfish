@@ -135,7 +135,6 @@ class SensorLengthConcernRule(ConcernRule):
     def __init__(self, as_of: datetime, sensor_cache):
         self.as_of = as_of
         self.sensor_cache = sensor_cache
-        self._photosensor = Sensors.fetch("sauronx-tinkerkit-photometer-ms")
 
     @property
     def clazz(self) -> Type[Concern]:
@@ -174,6 +173,8 @@ class SensorLengthConcernRule(ConcernRule):
             generation = ValarTools.generation_of(run)
             if generation is not DataGeneration.POINTGREY:
                 continue  # not supported -- yet
+            # TODO hardcoded
+            sensor = Sensors.fetch("sauronx-tinkerkit-photosensor-ms")
             run = Runs.fetch(run)
             sampling = float(
                 ValarTools.toml_item(run, "sauron.hardware.sensors.sampling_interval_milliseconds")
@@ -188,7 +189,7 @@ class SensorLengthConcernRule(ConcernRule):
                 logger.debug(f"Missing photosensor data on r{run.id}")
             else:
                 actual = np.float(len(photo_data.data))
-                yield self._new(run, expected, actual, generation, self._photosensor)
+                yield self._new(run, expected, actual, generation, sensor)
                 # we won't bother for thermo
 
 
@@ -201,10 +202,6 @@ class TargetTimeConcernRule(ConcernRule):
             - expected :: seconds :: treatment
         When it can't find an annotation, falls back to the value in `Concerns.expected_times`.
         Otherwise, yields a concern for each run, each of the 3 kinds, and each corresponding annotations.
-
-    Args:
-
-    Returns:
 
     """
 
@@ -916,12 +913,10 @@ class Concerns:
 
 
         Args:
-          feature:
-          sensor_cache:
-          as_of: Optional[datetime]:
-          min_severity: Union[int:
-          str:
-          Severity]:  (Default value = Severity.GOOD)
+            feature:
+            sensor_cache:
+            as_of:
+            min_severity:
 
         Returns:
 
@@ -941,13 +936,11 @@ class Concerns:
 
 
         Args:
-          df: WellFrame:
-          feature:
-          sensor_cache:
-          as_of: Optional[datetime]:
-          min_severity: Union[int:
-          str:
-          Severity]:  (Default value = Severity.GOOD)
+            df: WellFrame:
+            feature:
+            sensor_cache:
+            as_of:
+            min_severity:
 
         Returns:
 
@@ -960,7 +953,7 @@ class Concerns:
 
 
         Args:
-          concerns: Sequence[Concern]:
+            concerns:
 
         Returns:
 
@@ -990,7 +983,7 @@ class Concerns:
 
 
         Args:
-          concerns: Sequence[Concern]:
+            concerns:
 
         Returns:
 

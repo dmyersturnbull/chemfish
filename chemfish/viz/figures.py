@@ -729,11 +729,13 @@ class _Pub:
     ) -> Generator[FigureSaver, None, None]:
         """
         A context manager with a `FigureSaver`, non-interactive, auto-clearing, and optional chemfish_rc params.
-        :param width: A string passed to `chemfish_rc`; ex: `1/2 2_col` (defined in chemfish_rc params file)
-        :param height: A string passed to `chemfish_rc`; ex: `1/2 2_col` (defined in chemfish_rc params file)
-        :param save_under: Save everything under this directory (but passing absolute paths will invalidate this)
-        :param args: Functions of chemfish_rc passed to `chemfish_rc.using`
-        :param kwargs: Kwargs of chemfish_rc and matplotlib params passed to `chemfish_rc.using`.
+
+        Args:
+            width: A string passed to `chemfish_rc`; ex: `1/2 2_col` (defined in chemfish_rc params file)
+            height: A string passed to `chemfish_rc`; ex: `1/2 2_col` (defined in chemfish_rc params file)
+            save_under: Save everything under this directory (but passing absolute paths will invalidate this)
+            args: Functions of chemfish_rc passed to `chemfish_rc.using`
+            kwargs: Kwargs of chemfish_rc and matplotlib params passed to `chemfish_rc.using`.
         :return:
         """
         save_under = str(save_under).replace("/", os.sep)

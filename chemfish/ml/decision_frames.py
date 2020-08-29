@@ -13,10 +13,6 @@ class DecisionFrame(TypedDf):
     Practically, this is a Pandas wrapper around a scikit-learn decision_function
     that also has the predicted and correct class labels.
 
-    Args:
-
-    Returns:
-
     """
 
     @classmethod

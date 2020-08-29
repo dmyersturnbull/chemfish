@@ -37,10 +37,6 @@ class BatteryTimeData:
     BatteryTimeData object (contains start/end timestamps, length of battery, etc.) for a given run.
     These are the emperical values, not the expected ones!
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(self, run: RunLike, start_ms: int, end_ms: int):
@@ -66,6 +62,8 @@ class BatteryTimeData:
 
 
 class ChemfishSensor:
+    """"""
+
     def __init__(self, run: RunLike, sensor_data: SensorDataLike):
         """
         Sensor wrapper object that holds converted sensor_data for a given run.
@@ -73,8 +71,6 @@ class ChemfishSensor:
         Args:
           run: Run ID, Submission ID, Submission Object, or Run Object
           sensor_data: Converted Sensor_data
-
-        Returns:
 
         """
         self._sensor_data = sensor_data
@@ -124,10 +120,6 @@ class TimeData(ChemfishSensor, metaclass=abc.ABCMeta):
     BatteryTimeData object (contains start/end timestamps, length of battery, etc.) for a given run.
     These are the emperical values, not the expected ones!
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(self, run: RunLike, battery_data: np.array):
@@ -143,7 +135,7 @@ class TimeData(ChemfishSensor, metaclass=abc.ABCMeta):
 
 
         Args:
-          ind: int:
+            ind: int:
 
         Returns:
 
@@ -209,8 +201,8 @@ class ImageSensor(ChemfishSensor):
         Sensor that holds Image sensor data (Webcam and Preview). Applies grid if it holds preview data.
 
         Args:
-          run: Run ID, Submission ID, Submission Object, or Run Object
-          sensor_data: Converted image sensor data (Webcam/Preview)
+            run: Run ID, Submission ID, Submission Object, or Run Object
+            sensor_data: Converted image sensor data (Webcam/Preview)
 
         Returns:
 
@@ -225,15 +217,12 @@ class ImageSensor(ChemfishSensor):
         Draws a grid, returing a new ImageSensor.
 
         Args:
-          color: A color code recognized by PIL (Python Imaging Library), such as a hex code starting with #
-          roi_ref: The reference from which to obtain the ROIs; the default is the sauronx ROI set from the TOML, which may or may not exist
-          color:
-          roi_ref: Union[int:
-          str:
-          Refs]:  (Default value = 63)
+            color: A color code recognized by PIL (Python Imaging Library), such as a hex code starting with #
+            roi_ref: The reference from which to obtain the ROIs; the default is the sauronx ROI set from the TOML,
+                     which may or may not exist
 
         Returns:
-          A copy of this ImageSensor
+            A copy of this ImageSensor
 
         """
         new = deepcopy(self)
@@ -276,11 +265,13 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
     ):
         """
         Sensor data for sensors that have a time component
-        :param run: Run ID, Submission ID, Submission Object, or Run Object
-        :param timing_data: Converted Timing Data
-        :param sensor_data: Converted Sensor Data
-        :param battery_data: BatteryTimeData object
-        :param samples_per_sec: For example, audio files typically use 44100 Hz; keep None if the sampling is not even
+
+        Args:
+            run: Run ID, Submission ID, Submission Object, or Run Object
+            timing_data: Converted Timing Data
+            sensor_data: Converted Sensor Data
+            battery_data: BatteryTimeData object
+            samples_per_sec: For example, audio files typically use 44100 Hz; keep None if the sampling is not even
         """
         super().__init__(run, sensor_data)
         self._bt_data = battery_data
@@ -312,12 +303,12 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
         Slices Sensor data
 
         Args:
-          start_ms: param end_ms:
-          start_ms: Optional[int]:
-          end_ms: Optional[int]:
+            start_ms: param end_ms:
+            start_ms: Optional[int]:
+            end_ms: Optional[int]:
 
         Returns:
-          a copy of this class
+            a copy of this class
 
         """
         started = (
@@ -465,9 +456,9 @@ class MicrophoneRawSensor(TimeDepChemfishSensor):
 
 
         Args:
-          ds_rate: int:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
+            ds_rate: int:
+            start_ms: Optional[int]:  (Default value = None)
+            end_ms: Optional[int]:  (Default value = None)
 
         Returns:
 

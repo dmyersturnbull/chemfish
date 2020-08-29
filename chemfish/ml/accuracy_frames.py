@@ -83,8 +83,6 @@ class AccuracyFrame(ScoreFrameWithPrediction):
 
         Args:
           renamer: A function mapping class labels to more human-friendly class labels
-          renamer: Optional[Callable[[str]:
-          str]]:  (Default value = None)
 
         Returns:
           A Matplotlib Figure
@@ -98,8 +96,6 @@ class AccuracyFrame(ScoreFrameWithPrediction):
 
         Args:
           renamer: A function mapping class labels to more human-friendly class labels
-          renamer: Optional[Callable[[str]:
-          str]]:  (Default value = None)
 
         Returns:
           A Matplotlib Figure
@@ -117,10 +113,6 @@ class AccuracyFrame(ScoreFrameWithPrediction):
           renamer: A function mapping class labels to more human-friendly class labels
           ci: Confidence interval 0.0-1.0
           boot: Number of bootstarp samples
-          renamer: Optional[Callable[[str]:
-          str]]:  (Default value = None)
-          ci:
-          boot:
 
         Returns:
           A Matplotlib Figure
@@ -137,8 +129,6 @@ class AccuracyFrame(ScoreFrameWithPrediction):
         Args:
           b: The number of bootstrap samples
           q: The high quantile, between 0 and 1.
-          b: int:
-          q:
 
         Returns:
           A DataFrame with columns 'label', 'lower', and 'upper'.

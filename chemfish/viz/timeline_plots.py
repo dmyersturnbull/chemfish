@@ -108,7 +108,10 @@ class TimelinePlotter(KvrcPlotting):
         n_y_positions: int = 10,
     ):
         """
-        :param use_times: Sets the y-values to the actual times; great for precision but tends to require a large height
+        Constructors.
+
+        Args:
+            use_times: Sets the y-values to the actual times; great for precision but tends to require a large height
         """
         self.use_times, self.date_format, self.x_locator = use_times, date_format, x_locator
         self.n_y_positions = n_y_positions

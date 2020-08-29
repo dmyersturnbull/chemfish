@@ -33,13 +33,15 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
         """
         Creates a new plotter to be applied to any data.
         By default `cmap` is set intelligently. If you override it, use a diverging colormap if `symmetric=True` and linear otherwise.
-        :param stimframes_plotter:
-        :param should_label: Show x and y labels and tick labels
-        :param cmap:
-        :param vmax_quantile:
-        :param symmetric: If True, calculates z=abs(max(MI)) and sets vmin=-z and vmax=z.
-        :param name_sep_line:
-        :param control_sep_line:
+
+        Args:
+            stimframes_plotter:
+            should_label: Show x and y labels and tick labels
+            cmap:
+            vmax_quantile:
+            symmetric: If True, calculates z=abs(max(MI)) and sets vmin=-z and vmax=z.
+            name_sep_line:
+            control_sep_line:
         """
         self._stimframes_plotter = (
             stimframes_plotter if stimframes_plotter is not None else StimframesPlotter()

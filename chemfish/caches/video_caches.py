@@ -31,8 +31,11 @@ class VideoCache(AVideoCache):
         shire_store: PathLike = DEFAULT_SHIRE_STORE,
     ):
         """
-        :param cache_dir: The directory to save video files under.
-        :param shire_store: The local or remote path to the Shire.
+        Constructor.
+
+        Args:
+            cache_dir: The directory to save video files under.
+            shire_store: The local or remote path to the Shire.
                 If local, will copy the files. If remote, will download with SCP on Windows and rsync on other systems.
         """
         self._cache_dir = Tools.prepped_dir(cache_dir)

@@ -20,13 +20,15 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         legacy: bool = False,
     ):
         """
+        Constructor.
 
-        :param should_label: Show axis labels
-        :param mark_every_n_ms: Explicitly control the number of x ticks per ms; otherwise chooses nice defaults.
-        :param fps: IGNORED. Legacy option.
-        :param audio_waveform: Show audio stimuli as waveforms. This requires that the stimframes passed have embedded (expanded) waveforms.
-        :param assay_labels: Show a label at the bottom for each assay
-        :param legacy: Whether the batteries being plotted are legacy
+        Args:
+            should_label: Show axis labels
+            mark_every_n_ms: Explicitly control the number of x ticks per ms; otherwise chooses nice defaults.
+            fps: IGNORED. Legacy option.
+            audio_waveform: Show audio stimuli as waveforms. This requires that the stimframes passed have embedded (expanded) waveforms.
+            assay_labels: Show a label at the bottom for each assay
+            legacy: Whether the batteries being plotted are legacy
         """
         self._should_label = should_label
         self._mark_every_n_ms = mark_every_n_ms

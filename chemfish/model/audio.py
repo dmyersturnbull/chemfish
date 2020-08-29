@@ -134,8 +134,8 @@ class Waveform:
 
 
         Args:
-             minimum:
-             maximum:
+            minimum:
+            maximum:
             ms_freq:
 
         Returns:

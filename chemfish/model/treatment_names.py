@@ -128,7 +128,9 @@ class StringTreatmentNamer(TreatmentNamer):
     def __init__(self, expression: str):
         """
         Builds using a formatting expression. See the docs for StringTreatmentDisplayer.
-        :param expression: A formatting expression
+
+        Args:
+            expression: A formatting expression
         """
         self.expression = expression
         # it's just annoyingly easy to make this mistake
@@ -155,8 +157,9 @@ class StringTreatmentNamer(TreatmentNamer):
 
 
         Args:
-          t: Treatment:
-          name:
+            t: Treatment:
+            name:
+
         Returns:
 
         """
@@ -196,113 +199,32 @@ class StringTreatmentNamer(TreatmentNamer):
         """
 
         def inchikeyit(gs):
-            """
-
-
-            Args:
-              gs:
-
-            Returns:
-
-            """
             return self._fall(gs[0], cid, bid) if inchikey is None else inchikey
 
         def chemblit(gs):
-            """
-
-
-            Args:
-              gs:
-
-            Returns:
-
-            """
             return self._fall(gs[0], cid, bid) if chembl is None else chembl
 
         def chemspiderit(gs):
-            """
-
-
-            Args:
-              gs:
-
-            Returns:
-
-            """
             return self._fall(gs[0], cid, bid) if chemspider is None else chemspider
 
         def nameit(gs):
-            """
-
-
-            Args:
-              gs:
-
-            Returns:
-
-            """
             return self._parse(cid, bid, name, gs[0], gs[1], gs[2], gs[3])
 
         def tagit(gs):
-            """
-
-
-            Args:
-              gs:
-
-            Returns:
-
-            """
             return self._parse(cid, bid, tag, gs[0], gs[1], gs[2], gs[3])
 
         def idit(gs):
-            """
-
-
-            Args:
-              gs:
-
-            Returns:
-
-            """
             return "b" + str(bid) if cid is None else ("c" + str(cid))
 
         def get_dose_kwargs(gs) -> Tup[Optional[int], Optional[bool]]:
-            """
-
-
-            Args:
-              gs:
-
-            Returns:
-
-            """
             use_sigfigs = gs[0] == ":"
             round_figs = None if gs[1] is None else int(gs[1])
             return use_sigfigs, round_figs
 
         def doseit(gs):
-            """
-
-
-            Args:
-              gs:
-
-            Returns:
-
-            """
             return self._dosify(dose, True, *get_dose_kwargs(gs))
 
         def rumit(gs):
-            """
-
-
-            Args:
-              gs:
-
-            Returns:
-
-            """
             return self._dosify(dose, False, *get_dose_kwargs(gs))
 
         e = self.expression
@@ -324,10 +246,10 @@ class StringTreatmentNamer(TreatmentNamer):
 
 
         Args:
-          dose:
-          adjust:
-          use_sigfigs:
-          round_figs:
+            dose:
+            adjust:
+            use_sigfigs:
+            round_figs:
 
         Returns:
 
@@ -344,9 +266,9 @@ class StringTreatmentNamer(TreatmentNamer):
 
 
         Args:
-          allowed:
-          cid:
-          bid:
+            allowed:
+            cid:
+            bid:
 
         Returns:
 
@@ -364,9 +286,9 @@ class StringTreatmentNamer(TreatmentNamer):
 
 
         Args:
-          e0:
-          reg:
-          rep:
+            e0:
+            reg:
+            rep:
 
         Returns:
 
@@ -390,13 +312,13 @@ class StringTreatmentNamer(TreatmentNamer):
 
 
         Args:
-          cid:
-          bid:
-          name: Optional[str]:
-          fallback_rule: str:
-          truncate_rule: Optional[str]:
-          cap_rule: Optional[str]:
-          if_null_rule: Optional[str]:
+            cid:
+            bid:
+            name: Optional[str]:
+            fallback_rule: str:
+            truncate_rule: Optional[str]:
+            cap_rule: Optional[str]:
+            if_null_rule: Optional[str]:
 
         Returns:
 
@@ -418,8 +340,8 @@ class StringTreatmentNamer(TreatmentNamer):
 
 
         Args:
-          name: str:
-          rule: Optional[str]:
+            name: str:
+            rule: Optional[str]:
 
         Returns:
 
@@ -455,7 +377,7 @@ class StringTreatmentNamer(TreatmentNamer):
 
 
 class TreatmentNamers:
-    """ """
+    """"""
 
     @classmethod
     def of(cls, s: str):
@@ -463,7 +385,7 @@ class TreatmentNamers:
 
 
         Args:
-          s: str:
+            s: str:
 
         Returns:
 
@@ -472,37 +394,37 @@ class TreatmentNamers:
 
     @classmethod
     def id(cls):
-        """ """
+        """"""
         return StringTreatmentNamer("${id}")
 
     @classmethod
     def id_with_dose(cls):
-        """ """
+        """"""
         return StringTreatmentNamer("${id} (${dose})")
 
     @classmethod
     def name_with_dose(cls):
-        """ """
+        """"""
         return StringTreatmentNamer("${id|name} (${dose})")
 
     @classmethod
     def name(cls):
-        """ """
+        """"""
         return StringTreatmentNamer("${id|name}")
 
     @classmethod
     def name_with_id(cls):
-        """ """
+        """"""
         return StringTreatmentNamer("${name} [${id}]")
 
     @classmethod
     def name_with_id_with_dose(cls):
-        """ """
+        """"""
         return StringTreatmentNamer("${name} [${id}] (${dose})")
 
     @classmethod
     def chembl(cls):
-        """ """
+        """"""
         return StringTreatmentNamer("${id|chembl}")
 
 

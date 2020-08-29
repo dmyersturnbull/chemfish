@@ -10,10 +10,6 @@ class CompoundNamer(metaclass=abc.ABCMeta):
         - fetch returns a map from compound IDs to selected names
         - map_to calls fetch and returns a list of names in the same order as the list passed
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(self, as_of: Optional[datetime] = datetime.now()):

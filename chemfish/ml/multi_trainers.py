@@ -18,7 +18,8 @@ class MultiTrainerUtils:
 
 
         Args:
-          items:
+            items:
+
         Returns:
 
         """
@@ -45,10 +46,6 @@ class MultiTrainer:
     A model to train case-vs-control classifiers for all cases and all controls (using a `TrainableCcIterator`).
     Knows the model used to train, the dir to save to, and an iterator over `TrainableCc`s.
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(
@@ -59,10 +56,12 @@ class MultiTrainer:
         always_log: bool = False,
     ):
         """
-        :param save_dir: The directory under which to save
-        :param model_type: A WellClassifier supporting an out-of-bag; its `build` function will be called without parameters
-        :param iterator_fn: The iterator over case-control comparisons
-        :param always_log: If False, suppresses classifier output after the first one
+
+        Args:
+            save_dir: The directory under which to save
+            model_type: A WellClassifier supporting an out-of-bag; its `build` function will be called without parameters
+            iterator_fn: The iterator over case-control comparisons
+            always_log: If False, suppresses classifier output after the first one
         """
         self.always_log = always_log
         self.save_dir, self.model_type, self.iterator_fn = Path(save_dir), model_type, iterator_fn
@@ -74,8 +73,8 @@ class MultiTrainer:
         Prints info about each comparison to stdout.
 
         Args:
-          df: WellFrame:
-          max_iters: Optional[int]:  (Default value = None)
+            df: WellFrame:
+            max_iters: Optional[int]:  (Default value = None)
 
         Returns:
 
@@ -107,7 +106,7 @@ class MultiTrainer:
         Just iterates over `TrainableCc`s to be trained (even if they were already trained).
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -120,10 +119,9 @@ class MultiTrainer:
         Train the whole model.
 
         Args:
-          df: Must correspond to the iterator; this can't be verified
-          store_for_spindle: Store results as they're trained. This will consume increasing memory with successive models, but will save time at the end.
-          df: WellFrame:
-          store_for_spindle: bool:  (Default value = False)
+            df: Must correspond to the iterator; this can't be verified
+            store_for_spindle: Store results as they're trained. This will consume increasing memory with
+                               successive models, but will save time at the end.
 
         Returns:
 
@@ -139,10 +137,9 @@ class MultiTrainer:
         Train the models, yielding one at a time after they're trained.
 
         Args:
-          df: Must correspond to the iterator; this can't be verified
-          store_for_spindle: Store results as they're trained. This will consume increasing memory with successive models, but will save a spindle at the end.
-          df: WellFrame:
-          store_for_spindle: bool:  (Default value = False)
+            df: Must correspond to the iterator; this can't be verified
+            store_for_spindle: Store results as they're trained. This will consume increasing memory with successive
+                               models, but will save a spindle at the end.
 
         Returns:
 
@@ -174,7 +171,7 @@ class MultiTrainer:
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -198,8 +195,8 @@ class MultiTrainer:
 
 
         Args:
-          tt: TrainableCc:
-          subdir: ClassifierPath:
+            tt: TrainableCc:
+            subdir: ClassifierPath:
 
         Returns:
 
@@ -213,8 +210,7 @@ class MultiTrainer:
 
     def read_spindle(self) -> SpindleFrame:
         """
-        Reads the `spindle.csv`.
-        Fast.
+        Reads the `spindle.csv`. Fast.
 
         Args:
 
@@ -235,8 +231,7 @@ class MultiTrainer:
 
     def load_decisions(self) -> Generator[Tup[DecisionFrame, TrainableCc], None, None]:
         """
-        Reads in `DecisionFrame`s
-        Slow.
+        Reads in `DecisionFrame`s. Slow.
 
         Args:
 
@@ -252,15 +247,14 @@ class MultiTrainer:
 
     def load_paths(self) -> Generator[Tup[ClassifierPath, TrainableCc], None, None]:
         """
-        Returns the paths and corresponding control comparisons.
-        Slow.
+        Returns the paths and corresponding control comparisons. Slow.
 
         Args:
 
         Returns:
 
         Raises:
-          PathDoesNotExistError: If any model wasn't fully trained, including an associated decision.csv
+            PathDoesNotExistError: If any model wasn't fully trained, including an associated decision.csv
 
         """
         for path, cc in self.paths():
@@ -269,8 +263,7 @@ class MultiTrainer:
 
     def paths(self) -> Generator[Tup[ClassifierPath, TrainableCc], None, None]:
         """
-        Returns the paths and corresponding control comparisons.
-        Slow.
+        Returns the paths and corresponding control comparisons. Slow.
         The paths MAY OR MAY NOT BE TRAINED.
 
         Args:
@@ -287,8 +280,8 @@ class MultiTrainer:
 
 
         Args:
-          it: TrainableCcIterator:
-          df:
+            it: TrainableCcIterator:
+            df:
 
         Returns:
 
@@ -340,14 +333,14 @@ class MultiTrainers:
 
 
         Args:
-          df: WellFrame:
-          save_dir: PathLike:
-          model_type: SklearnWfClassifierWithOob:
-          n_repeats: int:  (Default value = 1)
-          restrict_to_same:
-          restrict_include_null: bool:  (Default value = False)
-          subsample_to: Optional[int]:  (Default value = None)
-          controls:
+            df: WellFrame:
+            save_dir: PathLike:
+            model_type: SklearnWfClassifierWithOob:
+            n_repeats: int:  (Default value = 1)
+            restrict_to_same:
+            restrict_include_null: bool:  (Default value = False)
+            subsample_to: Optional[int]:  (Default value = None)
+            controls:
 
         Returns:
 
@@ -384,17 +377,16 @@ class MultiTrainers:
 
 
         Args:
-          df: WellFrame:
-          save_dir: PathLike:
-          model_type: SklearnWfClassifierWithOob:
-          n_repeats: int:  (Default value = 1)
-          restrict_to_same:
-          Set[str]]:  (Default value = None)
-          restrict_include_null: bool:  (Default value = False)
-          low:
-          high:
-          seed:
-          controls:
+            df: WellFrame:
+            save_dir: PathLike:
+            model_type: SklearnWfClassifierWithOob:
+            n_repeats: int:  (Default value = 1)
+            restrict_to_same:
+            restrict_include_null: bool:  (Default value = False)
+            low:
+            high:
+            seed:
+            controls:
 
         Returns:
 
@@ -428,11 +420,11 @@ class MultiTrainers:
 
 
         Args:
-          df: WellFrame:
-          save_dir: PathLike:
-          model_type: SklearnWfClassifierWithOob:
-          n_repeats: int:  (Default value = 1)
-          subsample_to: Optional[int]:  (Default value = None)
+            df: WellFrame:
+            save_dir: PathLike:
+            model_type: SklearnWfClassifierWithOob:
+            n_repeats: int:  (Default value = 1)
+            subsample_to: Optional[int]:  (Default value = None)
 
         Returns:
 
@@ -459,13 +451,13 @@ class MultiTrainers:
 
 
         Args:
-          df: WellFrame:
-          save_dir: PathLike:
-          model_type: SklearnWfClassifierWithOob:
-          n_repeats: int:  (Default value = 1)
-          low:
-          high:
-          seed:
+            df: WellFrame:
+            save_dir: PathLike:
+            model_type: SklearnWfClassifierWithOob:
+            n_repeats: int:  (Default value = 1)
+            low:
+            high:
+            seed:
 
         Returns:
 
@@ -494,13 +486,13 @@ class MultiTrainers:
 
 
         Args:
-          df: WellFrame:
-          save_dir: PathLike:
-          model_type: SklearnWfClassifierWithOob:
-          n_repeats: int:  (Default value = 1)
-          restrict_to_same:
-          restrict_include_null: bool:  (Default value = False)
-          subsample_to: Optional[int]:  (Default value = None)
+            df: WellFrame:
+            save_dir: PathLike:
+            model_type: SklearnWfClassifierWithOob:
+            n_repeats: int:  (Default value = 1)
+            restrict_to_same:
+            restrict_include_null: bool:  (Default value = False)
+            subsample_to: Optional[int]:  (Default value = None)
 
         Returns:
 

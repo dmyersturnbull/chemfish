@@ -47,10 +47,6 @@ class AppFrame(TypedDf):
         - 'frames_sha1':
         - 'frames': A numpy array of uint8s
 
-    Args:
-
-    Returns:
-
     """
 
     @classmethod

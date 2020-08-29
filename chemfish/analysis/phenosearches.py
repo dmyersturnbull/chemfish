@@ -398,8 +398,11 @@ class TruncatingScorer:
 
     def __init__(self, query: np.array, similarity: Callable[[np.array, Wells], float]):
         """
-        :param query: A time trace of MI or cd(10)
-        :param similarity: Any function that computes a similarity between two arrays. If you have a distance function,
+        Constructor.
+
+        Args:
+            query: A time trace of MI or cd(10)
+            similarity: Any function that computes a similarity between two arrays. If you have a distance function,
                wrap it in `lambda x, y: -distance(x, y)`"""
         self.query = query
         self.similarity = similarity

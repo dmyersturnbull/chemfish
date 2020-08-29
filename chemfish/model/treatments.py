@@ -13,10 +13,6 @@ class Treatment:
         2. Batch ID
         3. Dose
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(
@@ -31,14 +27,17 @@ class Treatment:
         chemspider: Optional[str] = None,
     ):
         """
-        :param bid: The batch id
-        :param oc: The batch hash
-        :param compound_id: The compound ID
-        :param inchikey: The Inchikey
-        :param dose: The dose in micromolar
-        :param tag: The value in batches.tag
-        :param chembl: The ChEMBL ID
-        :param chemspider: The ChemSpider ID
+        Constructor.
+
+        Args:
+            bid: The batch id
+            oc: The batch hash
+            compound_id: The compound ID
+            inchikey: The Inchikey
+            dose: The dose in micromolar
+            tag: The value in batches.tag
+            chembl: The ChEMBL ID
+            chemspider: The ChemSpider ID
         """
         if bid is None:
             raise XValueError("Batch ID cannot be None")

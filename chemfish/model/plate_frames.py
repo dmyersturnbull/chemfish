@@ -13,8 +13,8 @@ class PlateFrame(UntypedDf):
 
 
         Args:
-          run: RunLike:
-          feature: FeatureType:
+            run: RunLike:
+            feature: FeatureType:
 
         Returns:
 
@@ -27,8 +27,8 @@ class PlateFrame(UntypedDf):
 
 
         Args:
-          run: RunLike:
-          feature: FeatureType:
+            run: RunLike:
+            feature: FeatureType:
 
         Returns:
 
@@ -43,9 +43,9 @@ class PlateFrame(UntypedDf):
 
 
         Args:
-          run: RunLike:
-          feature: FeatureType:
-          stat: Callable[[np.array]:
+            run: RunLike:
+            feature: FeatureType:
+            stat: Callable[[np.array]:
 
         Returns:
 

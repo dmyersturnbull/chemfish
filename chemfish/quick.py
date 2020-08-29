@@ -162,25 +162,27 @@ class Quick:
         Builds a new Quick.
         WARNING: The details of the arguments auto_fix and enable_checks are subject to change.
         In particular, more auto-fixes could be added in the future. If this is unacceptable for your use, disable this option.
-        :param feature: Generate WellFrames and plots using this feature.
-        :param generation: Generation permitted
-        :param as_of: Enables additional methods by setting max datetime for those queries. This includes querying by flexible Peewee Expressions
-        :param cache: A FrameCache for saving WellFrames on disk
-        :param facade: An optional FrameFacade for saving WellFrames into memory
-        :param stim_cache: A StimCache for saving StimFrames objects on disk
-        :param default_namer: By default, draw WellFrames with this Namer
-        :param enable_checks: Warn about missing frames, 'concern' rows in the annotations table, suspicious batches, and more; see Concerns.warn_common_checks for full info
-        :param auto_fix: Applies fixes to WellFrames
-        :param sensor_cache: A SensorCache.
-        :param video_cache: A VideoCache.
-        :param compound_namer: Fill in 'compound_names' column in WellFrame using this function. May also be used in other places.
+
+        Args:
+            feature: Generate WellFrames and plots using this feature.
+            generation: Generation permitted
+            as_of: Enables additional methods by setting max datetime for those queries. This includes querying by flexible Peewee Expressions
+            cache: A FrameCache for saving WellFrames on disk
+            facade: An optional FrameFacade for saving WellFrames into memory
+            stim_cache: A StimCache for saving StimFrames objects on disk
+            default_namer: By default, draw WellFrames with this Namer
+            enable_checks: Warn about missing frames, 'concern' rows in the annotations table, suspicious batches, and more; see Concerns.warn_common_checks for full info
+            auto_fix: Applies fixes to WellFrames
+            sensor_cache: A SensorCache.
+            video_cache: A VideoCache.
+            compound_namer: Fill in 'compound_names' column in WellFrame using this function. May also be used in other places.
                                 NOTE: A copy will be made with `compound_namer.as_of` set to `as_of`.
-        :param audio_stimulus_cache: An AudioStimulusCache for caching audio files, etc.
-        :param quantile: A quantile for setting min and max on various plot types, including sensor plots and z-score plots (also see zscore_min_max)
-        :param trace_ymax: If set, limit the y axis on traces to this; great for features like cd(10) but less so for MI
-        :param zscore_min_max: If set, limit zmear bounds to +/- this value; otherwise a percentile will be chosen
-        :param discard_trash: Automatically discard wells with control type in Concerns.trash_controls if True, or a passed set
-        :param smoothing_factor: This times the frames per second = default smoothing window size
+            audio_stimulus_cache: An AudioStimulusCache for caching audio files, etc.
+            quantile: A quantile for setting min and max on various plot types, including sensor plots and z-score plots (also see zscore_min_max)
+            trace_ymax: If set, limit the y axis on traces to this; great for features like cd(10) but less so for MI
+            zscore_min_max: If set, limit zmear bounds to +/- this value; otherwise a percentile will be chosen
+            discard_trash: Automatically discard wells with control type in Concerns.trash_controls if True, or a passed set
+            smoothing_factor: This times the frames per second = default smoothing window size
         """
         if as_of > datetime.now():
             logger.warning(

@@ -14,10 +14,6 @@ class ConfusionMatrix(UntypedDf):
     A wrapper around a confusion matrix as a Pandas DataFrame.
     The rows are the correct labels, and the columns are the predicted labels.
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(self, data=None, index=None, columns=None, dtype=None, copy=False):
@@ -59,7 +55,6 @@ class ConfusionMatrix(UntypedDf):
         Returns a copy with every value mapped to a new location.
         Destroys the correct links between labels and values.
         Useful for permutation tests.
-        :return: A copy
 
         Args:
 
@@ -120,7 +115,6 @@ class ConfusionMatrix(UntypedDf):
     def score_df(self) -> pd.DataFrame:
         """
         Get the diagonal elements as a Pandas DataFrame with columns 'name' and 'score'.
-        :return: A Pandas DataFrame
 
         Args:
 
@@ -205,11 +199,10 @@ class ConfusionMatrix(UntypedDf):
         Sorts this ConfusionMatrix's rows and columns by a predefined ordering. Returns a copy.
 
         Args:
-          permutation: Maps names (strings) to their 0-indexed positions (integers)
-        If a mapping, takes as-is; these are returned by permutation()
-        If a DataFrame, must have 2 columns 'key' (name) and 'value' (position), and 1 row per name
-        If a str, tries to read a CSV file at that path into a DataFrame; uses Tools.csv_to_dict
-          permutation: Union[Sequence[str]:
+            permutation: Maps names (strings) to their 0-indexed positions (integers)
+                         If a mapping, takes as-is; these are returned by permutation()
+                         If a DataFrame, must have 2 columns 'key' (name) and 'value' (position), and 1 row per name
+                         If a str, tries to read a CSV file at that path into a DataFrame; uses Tools.csv_to_dict
 
         Returns:
           A new ConfusionMatrix with sorted rows and columns
@@ -237,7 +230,7 @@ class ConfusionMatrix(UntypedDf):
         Put these elements first.
 
         Args:
-          first: Sequence[str]:
+            first: Sequence[str]:
 
         Returns:
 
@@ -286,11 +279,6 @@ class ConfusionMatrix(UntypedDf):
           runs: Run stamps in the upper-left corner with these runs (not verified)
           renamer: A function that maps the class names to new names for plotting
           label_colors: Mapping from names to colors for the labels; or a string for all control colors
-          vmin:
-          vmax:
-          runs:
-          renamer:
-          label_colors:
 
         Returns:
           The figure, which was not displayed
@@ -329,7 +317,6 @@ class ConfusionMatrices:
 
         Args:
           matrices: An iterable of ConfusionMatrices (does not need to be a list)
-          matrices: Sequence[ConfusionMatrix]:
 
         Returns:
           A new ConfusionMatrix
@@ -366,9 +353,6 @@ class ConfusionMatrices:
         Args:
           matrices: An iterable of ConfusionMatrices (does not need to be a list)
           aggregation: to perform, such as np.mean
-          matrices: Sequence[ConfusionMatrix]:
-          aggregation: Callable[[Sequence[pd.DataFrame]]:
-          None]:
 
         Returns:
           A new ConfusionMatrix

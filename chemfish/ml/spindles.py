@@ -18,8 +18,8 @@ class SummarizedSpindleFrame(BaseScoreFrame):
 
 
         Args:
-          axis: int:
-          splitter: Callable[[str]:
+            axis: int:
+            splitter: Callable[[str]:
 
         Returns:
 
@@ -104,10 +104,6 @@ class SpindleFrame(ScoreFrameWithPrediction):
     * prediction           (the predicted label)
     * score                (probability for the true label)
 
-    Args:
-
-    Returns:
-
     """
 
     @classmethod
@@ -121,7 +117,7 @@ class SpindleFrame(ScoreFrameWithPrediction):
 
 
         Args:
-          target:
+            target:
 
         Returns:
 
@@ -135,7 +131,7 @@ class SpindleFrame(ScoreFrameWithPrediction):
 
 
         Args:
-          source: str:
+            source: str:
 
         Returns:
 
@@ -148,7 +144,7 @@ class SpindleFrame(ScoreFrameWithPrediction):
 
 
         Args:
-          source: str:
+            source: str:
 
         Returns:
 
@@ -161,7 +157,7 @@ class SpindleFrame(ScoreFrameWithPrediction):
 
 
         Args:
-          control_label: str:
+            control_label: str:
 
         Returns:
 
@@ -174,7 +170,7 @@ class SpindleFrame(ScoreFrameWithPrediction):
 
 
         Args:
-          control_label: str:
+            control_label: str:
 
         Returns:
 
@@ -253,13 +249,13 @@ class SpindleFrame(ScoreFrameWithPrediction):
         This just considers only 1 control type.
 
         Args:
-          control:
-          splitter:
-          ci:
-          center_fn:  (Default value = np.median)
-          spread_fn:  (Default value = np.std)
-          boot:
-          axis:
+            control:
+            splitter:
+            ci:
+            center_fn:  (Default value = np.median)
+            spread_fn:  (Default value = np.std)
+            boot:
+            axis:
 
         Returns:
 

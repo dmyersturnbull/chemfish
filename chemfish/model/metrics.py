@@ -19,9 +19,9 @@ class StatTools:
         Note that scipy uses statsmodel for KDE if it's available. Otherwise, it silently falls back to scipy. That's clearly hazardous.
 
         Args:
-          a: np.array:
-          kernel:
-          bw:
+            a: np.array:
+            kernel:
+            bw:
 
         Returns:
 
@@ -90,10 +90,10 @@ class MetricData:
 
 
         Args:
-          label: str:
-          control: Optional[str]:
-          true: Sequence[bool]:
-          scores: Sequence[float]:
+            label: str:
+            control: Optional[str]:
+            true: Sequence[bool]:
+            scores: Sequence[float]:
 
         Returns:
 
@@ -110,10 +110,10 @@ class MetricData:
 
 
         Args:
-          label: str:
-          control: Optional[str]:
-          true: Sequence[bool]:
-          scores: Sequence[float]:
+            label: str:
+            control: Optional[str]:
+            true: Sequence[bool]:
+            scores: Sequence[float]:
 
         Returns:
 
@@ -127,10 +127,6 @@ class BaseScoreFrame(TypedDf):
     """
     Something that has a label and some kind of score(s).
     Requires at least a column called 'label'.
-
-    Args:
-
-    Returns:
 
     """
 
@@ -174,7 +170,8 @@ class BaseScoreFrame(TypedDf):
 
 
         Args:
-          label:
+            label:
+
         Returns:
 
         """
@@ -189,8 +186,8 @@ class BaseScoreFrame(TypedDf):
 
 
         Args:
-          classes: pd.Series:
-          scores: pd.Series:
+            classes: pd.Series:
+            scores: pd.Series:
 
         Returns:
 
@@ -205,7 +202,7 @@ class BaseScoreFrame(TypedDf):
         To do this, relies on the name to determine whether a row is a control.
 
         Args:
-          more_controls: Optional[Set[str]]:  (Default value = None)
+            more_controls: Optional[Set[str]]:  (Default value = None)
 
         Returns:
 
@@ -219,7 +216,7 @@ class BaseScoreFrame(TypedDf):
         Sorts these names first, keeping the rest in the same order.
 
         Args:
-          names: Sequence[str]:
+            names: Sequence[str]:
 
         Returns:
 
@@ -242,10 +239,10 @@ class BaseScoreFrame(TypedDf):
 
 
         Args:
-          ci:
-          center_fn:  (Default value = np.mean)
-          spread_fn:  (Default value = np.std)
-          boot:
+            ci:
+            center_fn:  (Default value = np.mean)
+            spread_fn:  (Default value = np.std)
+            boot:
 
         Returns:
 
@@ -266,16 +263,6 @@ class BaseScoreFrame(TypedDf):
         else:
 
             def get_b(g, c):
-                """
-
-
-                Args:
-                  g:
-                  c:
-
-                Returns:
-
-                """
                 return np.quantile(
                     [
                         float(g.sample(len(g), replace=True).score.aggregate(center_fn))
@@ -308,8 +295,8 @@ class BaseScoreFrame(TypedDf):
 
 
         Args:
-          df: pd.DataFrame:
-          class_name: str:
+            df: pd.DataFrame:
+            class_name: str:
 
         Returns:
 
@@ -329,10 +316,6 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
     A score frame with additional columns 'prediction' and 'score_for_prediction'.
     Supports generating ROC and PR curves.
 
-    Args:
-
-    Returns:
-
     """
 
     @classmethod
@@ -346,7 +329,7 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
 
 
         Args:
-          control_label: str:
+            control_label: str:
 
         Returns:
 
@@ -358,7 +341,7 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
 
 
         Args:
-          control_label: str:
+            control_label: str:
 
         Returns:
 
@@ -370,9 +353,9 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
 
 
         Args:
-          control_label: str:
-          info:
-          clazz:
+            control_label: str:
+            info:
+            clazz:
 
         Returns:
 
@@ -399,9 +382,9 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
 
 
         Args:
-          control_label: str:
-          info:
-          clazz:
+            control_label: str:
+            info:
+            clazz:
 
         Returns:
 
@@ -429,9 +412,9 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
 
 
         Args:
-          control_label: str:
-          info:
-          clazz:
+            control_label: str:
+            info:
+            clazz:
 
         Returns:
 
@@ -453,7 +436,7 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
 
 
         Args:
-          control_label: str:
+            control_label: str:
 
         Returns:
 
@@ -489,8 +472,8 @@ class KdeData:
 
 
         Args:
-          support_start: Optional[float]:  (Default value = None)
-          support_end: Optional[float]:  (Default value = None)
+            support_start: Optional[float]:  (Default value = None)
+            support_end: Optional[float]:  (Default value = None)
 
         Returns:
 
@@ -508,8 +491,8 @@ class KdeData:
 
 
         Args:
-          df: BaseScoreFrame:
-          **kwargs:
+            df: BaseScoreFrame:
+            **kwargs:
 
         Returns:
 
@@ -522,8 +505,8 @@ class KdeData:
 
 
         Args:
-          samples: Sequence[float]:
-          **kwargs:
+            samples: Sequence[float]:
+            **kwargs:
 
         Returns:
 

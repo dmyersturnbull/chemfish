@@ -94,19 +94,20 @@ class SensorCache(ASensorCache):
         sensor_name, run = tup
         sensor_name = SensorNames.of(sensor_name)
         run = ValarTools.run(run)
+        # TODO hardcoded names
         if sensor_name == SensorNames.PHOTORESISTOR:
             return PhotoresistorSensor(
                 run,
-                self._download("sauronx-tinkerkit-photometer-ms", run),
-                self._download("sauronx-tinkerkit-photometer-values", run),
+                self._download("sauronx-tinkerkit-photosensor-ms", run),
+                self._download("sauronx-tinkerkit-photosensor-values", run),
                 self.bt_data(run),
                 None,
             )
         elif sensor_name == SensorNames.THERMISTOR:
             return ThermistorSensor(
                 run,
-                self._download("sauronx-tinkerkit-thermometer-ms", run),
-                self._download("sauronx-tinkerkit-thermometer-values", run),
+                self._download("sauronx-tinkerkit-thermosensor-ms", run),
+                self._download("sauronx-tinkerkit-thermosensor-values", run),
                 self.bt_data(run),
                 None,
             )

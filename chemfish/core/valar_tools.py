@@ -66,11 +66,19 @@ class ValarTools:
         )
 
     @classmethod
+    def required_sensors(cls, generation: DataGeneration) -> Set[Sensors]:
+        gens = {x["name"]: x for x in InternalTools.load_resource("core", "generations.json")}
+        return set(Sensors.fetch_all(gens[generation.name]["required_sensors"]))
+
+    @classmethod
+    def optional_sensors(cls, generation: DataGeneration) -> Set[Sensors]:
+        gens = {x["name"]: x for x in InternalTools.load_resource("core", "generations.json")}
+        return set(Sensors.fetch_all(gens[generation.name]["optional_sensors"]))
+
+    @classmethod
     def standard_sensor(cls, name: str, generation: DataGeneration) -> Sensors:
-        data: Mapping[str, Any] = InternalTools.load_resource("core", "generations.json")[
-            generation.name
-        ]
-        return Sensors.fetch(data[name])
+        gens = {x["name"]: x for x in InternalTools.load_resource("core", "generations.json")}
+        return Sensors.fetch(gens[generation.name][name])
 
     @classmethod
     def download_stimulus_timestamps(cls, run: RunLike) -> Optional[np.array]:
@@ -324,18 +332,6 @@ class ValarTools:
         if f is None:
             raise ValarLookupError(f"No log file for SauronX run r{run.id}")
         return f.text
-
-    @classmethod
-    def required_sensors(cls, generation: DataGeneration) -> Set[Sensors]:
-        generations: Mapping[str, Any] = InternalTools.load_resource("core", "generations.json")
-        # noinspection PyTypeChecker
-        return Sensors.fetch_all(generations[generation.name]["required_sensors"])
-
-    @classmethod
-    def optional_sensors(cls, generation: DataGeneration) -> Set[Sensors]:
-        generations: Mapping[str, Any] = InternalTools.load_resource("core", "generations.json")
-        # noinspection PyTypeChecker
-        return Sensors.fetch_all(generations[generation.name]["optional_sensors"])
 
     @classmethod
     def treatment_sec(cls, run: RunLike) -> float:
@@ -649,17 +645,29 @@ class ValarTools:
         run = ValarTools.run(run)
         sauronx = run.submission_id is not None
         generations: Sequence[Dict[str, Any]] = InternalTools.load_resource(
-            "core", "generations.toml"
+            "core", "generations.json"
         )
         # noinspection PyChainedComparisons
         matches = {
-            sauronx == x["has_submission"]
-            and run.datetime_run >= datetime.strftime(x["start_date"], "%Y-%m-%d")
-            and run.datetime_run <= datetime.strftime(x["end_date"], "%Y-%m-%d")
-            and run.sauron_config.sauron.name in x["saurons"]
+            x["name"]
             for x in generations
+            if sauronx == x["has_submission"]
+            and (
+                x["start_date"] == ""
+                or run.datetime_run >= datetime.strptime(x["start_date"], "%Y-%m-%d")
+            )
+            and (
+                x["end_date"] == ""
+                or run.datetime_run <= datetime.strptime(x["end_date"], "%Y-%m-%d")
+            )
+            and run.sauron_config.sauron.name in x["saurons"]
         }
-        return Tools.only(matches)
+        if len(matches) > 1:
+            raise MultipleMatchesError(
+                f"Run {run.id} ({run.datetime_run}) with{'' if sauronx else 'out'} submission matches {matches}"
+            )
+        match = Tools.only(matches)
+        return DataGeneration.of(match)
 
     @classmethod
     def features_on(cls, run: RunLike) -> Set[str]:

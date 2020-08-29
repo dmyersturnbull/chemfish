@@ -67,10 +67,6 @@ class WellClassifier(SaveableTrainable):
         - started, finished, seconds_taken
     The saved .info file contains the above, plus the contents of `params` and any statistics.
 
-    Args:
-
-    Returns:
-
     """
 
     @abcd.abstractmethod
@@ -222,10 +218,6 @@ class BuildableWellClassifier(abcd.ABC):
     This method is separated from the constructor, which might provide a different, more direct interface.
     The idea here is that `build` may be willing to assume default parameters.
 
-    Args:
-
-    Returns:
-
     """
 
     @classmethod
@@ -263,10 +255,6 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
     A well classifier backed by a single scikit-learn classifier.
     Note that the constructer is typed as requiring a `ForestClassifier`, but this is only for better tab completion.
     It can accept any scikit-learn classifier.
-
-    Args:
-
-    Returns:
 
     """
 
@@ -460,7 +448,7 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
 class SklearnWfClassifierWithOob(
     SklearnWellClassifier, HasOob, BuildableWellClassifier, metaclass=abc.ABCMeta
 ):
-    """ """
+    """"""
 
     def __init__(self, model: AnySklearnClassifier):
         model.oob_score = True  # ignore user preference so that oob_score() is defined
@@ -541,7 +529,7 @@ class SklearnWfClassifierWithOob(
 
 
 class SklearnWfClassifierWithWeights(SklearnWellClassifier, HasWeights, metaclass=abc.ABCMeta):
-    """ """
+    """"""
 
     def __init__(self, model: AnySklearnClassifier):
         super().__init__(model)

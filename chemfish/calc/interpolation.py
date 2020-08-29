@@ -40,12 +40,12 @@ class FeatureInterpolation:
         Calls TimeSeriesFeatureTools.interpolate_features; see that function for more info.
 
         Args:
-          feature_arr: The array of the feature; not affected
-          well: The well instance or ID
-          stringent: Raise exceptions for small errors
+            feature_arr: The array of the feature; not affected
+            well: The well instance or ID
+            stringent: Raise exceptions for small errors
 
         Returns:
-          The interpolated features
+            The interpolated features
 
         """
         run = InternalTools.well(well).run

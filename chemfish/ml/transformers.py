@@ -16,9 +16,6 @@ class WellTransform(abcd.ABC):
     df = df // transform1 // transform2 // transform3
     ```
 
-    Args:
-
-    Returns:
 
     """
 
@@ -27,7 +24,7 @@ class WellTransform(abcd.ABC):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -52,7 +49,7 @@ class TwoDWellTransform(WellTransform, metaclass=abc.ABCMeta):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -75,7 +72,7 @@ class OutlierStdTransform(TrimmingWellTransform):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -88,16 +85,6 @@ class OutlierStdTransform(TrimmingWellTransform):
         return df
 
     def _trim(self, df, col):
-        """
-
-
-        Args:
-          df:
-          col:
-
-        Returns:
-
-        """
         return df[(df[col] - df[col].mean()).abs() <= self.n_stds * np.std(df[col])]
 
 
@@ -113,7 +100,7 @@ class OutlierDistanceTransform(TrimmingWellTransform):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -129,7 +116,7 @@ class OutlierDistanceTransform(TrimmingWellTransform):
 
 
         Args:
-          df:
+            df:
 
         Returns:
 
@@ -149,7 +136,7 @@ class RotationTransform(TwoDWellTransform):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -172,7 +159,7 @@ class SklearnTransform(WellTransform, metaclass=abc.ABCMeta):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -196,7 +183,7 @@ class CompositeTransform(WellTransform):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -215,8 +202,8 @@ class WellTransforms:
 
 
         Args:
-          df: WellFrame:
-          **kwargs:
+            df: WellFrame:
+            **kwargs:
 
         Returns:
 
@@ -230,8 +217,8 @@ class WellTransforms:
 
 
         Args:
-          df: WellFrame:
-          **kwargs:
+            df: WellFrame:
+            **kwargs:
 
         Returns:
 
@@ -245,7 +232,7 @@ class WellTransforms:
 
 
         Args:
-          *transformations: WellTransform:
+            *transformations: WellTransform:
 
         Returns:
 
@@ -258,8 +245,8 @@ class WellTransforms:
 
 
         Args:
-          df: WellFrame:
-          n_stds: float:
+            df: WellFrame:
+            n_stds: float:
 
         Returns:
 
@@ -272,9 +259,9 @@ class WellTransforms:
 
 
         Args:
-          df: WellFrame:
-          distance_fn:
-          max_distance:
+            df: WellFrame:
+            distance_fn:
+            max_distance:
 
         Returns:
 
@@ -287,8 +274,8 @@ class WellTransforms:
 
 
         Args:
-          df: WellFrame:
-          degrees: float:
+            df: WellFrame:
+            degrees: float:
 
         Returns:
 
