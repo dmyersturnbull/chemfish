@@ -128,12 +128,11 @@ class ValarTools:
             Currently does not handle `sensors.data_type=='utf8_char'`. Currently there are no sensors in Valar with this data type.
 
         Args:
-          sensor: The name, ID, or instance of the sensors row
-          data: The data from `sensor_data.floats`; despite the name this is blob represented as bytes and may not correspond to floats at all
+            sensor: The name, ID, or instance of the sensors row
+            data: The data from `sensor_data.floats`; despite the name this is blob represented as bytes and may not correspond to floats at all
 
         Returns:
-          The converted data, or None if `data` is None
-
+            The converted data, or None if `data` is None
         """
         sensor = Sensors.fetch(sensor)
         dt = sensor.data_type
@@ -168,8 +167,6 @@ class ValarTools:
         Get a mapping from stimulus names to a good approximation as a single color.
         *Only covers LED stimuli, plus the IR.*
 
-        Args:
-
         Returns:
 
         """
@@ -186,7 +183,7 @@ class ValarTools:
 
 
         Args:
-          stim:
+            stim:
 
         Returns:
 
@@ -202,9 +199,9 @@ class ValarTools:
 
 
         Args:
-          df: pd.DataFrame:
-          column: str:
-          more_controls: Optional[Set[str]]:  (Default value = None)
+            df: pd.DataFrame:
+            column: str:
+            more_controls: Optional[Set[str]]:  (Default value = None)
 
         Returns:
 
@@ -220,9 +217,9 @@ class ValarTools:
 
 
         Args:
-          df: pd.DataFrame:
-          column:
-          first: Sequence[str]:
+            df: pd.DataFrame:
+            column:
+            first: Sequence[str]:
 
         Returns:
 
@@ -248,9 +245,9 @@ class ValarTools:
         This can be very useful for plotting.
 
         Args:
-          names: Iterable[str]:
-          sorting:
-          more_controls: Optional[Set[str]]:  (Default value = None)
+            names: Iterable[str]:
+            sorting:
+            more_controls: Optional[Set[str]]:  (Default value = None)
 
         Returns:
 
@@ -275,7 +272,7 @@ class ValarTools:
 
 
         Args:
-          stimulus:
+            stimulus:
 
         Returns:
 
@@ -299,11 +296,10 @@ class ValarTools:
         Get the SauronX TOML config file for a run. Is guaranteed to exist for SauronX data, but won't for legacy.
 
         Args:
-          run: A run ID, name, tag, instance, or submission instance or hash
-          run: RunLike:
+            run: A run ID, name, tag, instance, or submission instance or hash
 
         Returns:
-          The wrapped text of the config file
+            The wrapped text of the config file
 
         """
         run = Tools.run(run)
@@ -315,14 +311,13 @@ class ValarTools:
     @classmethod
     def log_file(cls, run: RunLike) -> str:
         """
-        Get the SauronX log file for a run. Is guaranteed to exist for SauronX data, but won't for legacy.
+        Gets the SauronX log file for a run. Is guaranteed to exist for SauronX data, but won't for legacy.
 
         Args:
-          run: A run ID, name, tag, instance, or submission instance or hash
-          run: RunLike:
+            run: A run ID, name, tag, instance, or submission instance or hash
 
         Returns:
-          The text of the log file, with proper (unescaped) newlines and tabs
+            The text of the log file, with proper (unescaped) newlines and tabs
 
         """
         run = ValarTools.run(run)
@@ -339,7 +334,7 @@ class ValarTools:
         Returns np.inf is something is missing.
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -355,7 +350,7 @@ class ValarTools:
         Returns np.inf is something is missing.
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -375,7 +370,7 @@ class ValarTools:
         Returns np.inf is something is missing.
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -395,11 +390,9 @@ class ValarTools:
 
 
         Args:
-          remote_path: PathLike:
-          local_path: str:
-          overwrite:
-
-        Returns:
+            remote_path: PathLike:
+            local_path: str:
+            overwrite:
 
         """
         remote_path = str(remote_path)
@@ -416,11 +409,9 @@ class ValarTools:
 
 
         Args:
-          remote_path: PathLike:
-          local_path: str:
-          overwrite:
-
-        Returns:
+            remote_path: PathLike:
+            local_path: str:
+            overwrite:
 
         """
         try:
@@ -437,12 +428,10 @@ class ValarTools:
 
 
         Args:
-          remote_path: str:
-          path: PathLike:
-          is_dir: bool:
-          overwrite: bool:
-
-        Returns:
+            remote_path: str:
+            path: PathLike:
+            is_dir: bool:
+            overwrite: bool:
 
         """
         path = str(path)

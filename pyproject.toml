@@ -127,7 +127,7 @@ statsmodels                    = ">=0.12, <1.0"
 typer                          = ">=0.3, <1.0"
 
 decorateme                     = ">=0.1.1, <1.0"
-typeddfs                       = ">=0.2.3, <1.0"
+typeddfs                       = ">=0.3.0, <1.0"
 pocketutils                    = ">=0.1.1, <1.0"
 valarpy                        = "^2.2"
 
