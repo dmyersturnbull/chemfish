@@ -4,7 +4,7 @@ import subprocess
 
 import tomlkit
 from natsort import natsorted
-from pocketutils.core.toml_data import TomlData
+from pocketutils.core.dot_dict import NestedDotDict
 
 from chemfish.core._imports import *
 from chemfish.core._tools import *
@@ -291,7 +291,7 @@ class ValarTools:
         assert False, f"No type for stimulus {stimulus.name} found!"
 
     @classmethod
-    def toml_file(cls, run: RunLike) -> TomlData:
+    def toml_file(cls, run: RunLike) -> NestedDotDict:
         """
         Get the SauronX TOML config file for a run. Is guaranteed to exist for SauronX data, but won't for legacy.
 
@@ -971,7 +971,7 @@ class ValarTools:
         return np.unique([int(np.round(x * fps / 1000)) for x in ms])
 
     @classmethod
-    def fetch_toml(cls, run: Union[int, str, Runs, Submissions]) -> TomlData:
+    def fetch_toml(cls, run: Union[int, str, Runs, Submissions]) -> NestedDotDict:
         """
         Parse TomlData from config_files.
 
@@ -983,12 +983,12 @@ class ValarTools:
         """
         run = ValarTools.run(run)
         sxt = ConfigFiles.fetch(run.config_file_id)
-        return TomlData(tomlkit.loads(sxt.toml_text))
+        return NestedDotDict(tomlkit.loads(sxt.toml_text))
 
     @classmethod
-    def parse_toml(cls, sxt: Union[ConfigFiles, Runs]) -> TomlData:
+    def parse_toml(cls, sxt: Union[ConfigFiles, Runs]) -> NestedDotDict:
         """
-        Parse TomlData from config_files.
+        Parse NestedDotDict from config_files.
 
         Args:
           sxt:
@@ -998,7 +998,7 @@ class ValarTools:
         """
         if isinstance(sxt, Runs):
             sxt = ConfigFiles.fetch(sxt.config_file_id)
-        return TomlData(tomlkit.loads(sxt.toml_text))
+        return NestedDotDict(tomlkit.loads(sxt.toml_text))
 
     @classmethod
     def initials(cls, user: Union[Users, int, str]) -> str:
@@ -1147,7 +1147,7 @@ class ValarTools:
         return Tools.unique([setting.sauron_config for setting in query])
 
     @classmethod
-    def toml_data(cls, run: RunLike) -> TomlData:
+    def toml_data(cls, run: RunLike) -> NestedDotDict:
         """
 
 
@@ -1159,7 +1159,7 @@ class ValarTools:
         """
         run = ValarTools.run(run)
         t = ConfigFiles.fetch(run.config_file_id)
-        return TomlData(tomlkit.loads(t.toml_text))
+        return NestedDotDict(tomlkit.loads(t.toml_text))
 
     @classmethod
     def toml_item(cls, run: RunLike, item: str) -> Any:
@@ -1188,7 +1188,7 @@ class ValarTools:
         """
         run = ValarTools.run(run)
         t = ConfigFiles.fetch(run.config_file_id)
-        data = TomlData(tomlkit.loads(t.toml_text))
+        data = NestedDotDict(tomlkit.loads(t.toml_text))
         lst = {}
 
         def settings(value, key):
@@ -1202,7 +1202,7 @@ class ValarTools:
             Returns:
 
             """
-            if isinstance(value, (dict, TomlData)):
+            if isinstance(value, (dict, NestedDotDict)):
                 for k, v in value.items():
                     settings(v, str(key) + "." + str(k))
             else:
@@ -1233,7 +1233,7 @@ class ValarTools:
             return 25
         t = ConfigFiles.fetch(run.config_file_id)
         # noinspection PyTypeChecker
-        return int(TomlData(tomlkit.loads(t.toml_text))["sauron.hardware.camera.frames_per_second"])
+        return NestedDotDict(tomlkit.loads(t.toml_text)).int("sauron.hardware.camera.frames_per_second")
 
     @classmethod
     def battery_stimframes_per_second(cls, battery: Union[int, str, Batteries]) -> int:
@@ -1277,7 +1277,7 @@ class ValarTools:
             return 1
         else:
             t = ConfigFiles.fetch(run.config_file_id)
-            fps = TomlData(tomlkit.loads(t.toml_text)).get_int(
+            fps = NestedDotDict(tomlkit.loads(t.toml_text)).int(
                 "sauron.hardware.camera.frames_per_second"
             )
             return fps / 1000

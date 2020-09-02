@@ -1,5 +1,4 @@
-import os
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 from pocketutils.core.exceptions import *
@@ -266,15 +265,6 @@ class TestWellFrameBuilderNoSetUp:
             WellFrameBuilder.runs(1).with_packs("hello").build()
 
         def pack_func(df):
-            """
-
-
-            Args:
-              df:
-
-            Returns:
-
-            """
             return "pack" + df["row"].astype(str)
 
         reg_df = WellFrameBuilder.wells(1).build()
@@ -292,9 +282,8 @@ class TestWellFrameBuilderNoSetUp:
 
     def test_build(self):
         """Tests build method for WellFrameBuilder. Makes sure no NaN values are returned."""
-        no_nan_wfs = WellFrameBuilder.runs(
-            1
-        ).build()  # Should not contain any NaNs as all fields are populated correctly in chemfishtest for Run 1.
+        # Should not contain any NaNs as all fields are populated correctly in chemfishtest for Run 1.
+        no_nan_wfs = WellFrameBuilder.runs(1).build()
         nan_val = float("nan")
         for i in no_nan_wfs.index.names:
             assert nan_val not in no_nan_wfs[i]

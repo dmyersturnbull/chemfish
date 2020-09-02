@@ -52,7 +52,7 @@ from pocketutils.biochem.multiwell_plates import *
 # pocketutils
 from pocketutils.core import frozenlist
 from pocketutils.core.io import DelegatingWriter, LogWriter
-from pocketutils.core.toml_data import *
+from pocketutils.core.dot_dict import *
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC, LinearSVC
 

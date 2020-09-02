@@ -14,12 +14,6 @@ from chemfish.model.wf_builders import *
 def float_or_string(draw):
     """
     Helper function that either returns an integer of string strategy. Used to create 'mixed' index column values.
-
-    Args:
-      draw:
-
-    Returns:
-
     """
     fs = draw(strategies.booleans())
     if fs:
@@ -32,12 +26,6 @@ def float_or_string(draw):
 def wf_strategy(draw):
     """
     Creates a list of parameters that can be used to create a WellFrame filled with dummy data.
-
-    Args:
-      draw:
-
-    Returns:
-
     """
     rows = draw(strategies.integers(min_value=1, max_value=20))
     cols = draw(strategies.integers(min_value=1, max_value=20))
@@ -92,16 +80,10 @@ class TestWellFrames:
         int_wf = self.reg_wf.astype(np.dtype(np.int32))
         assert set(self.reg_wf.dtypes) == {np.dtype(np.float64)}
         assert set(int_wf.dtypes) == {np.dtype(np.int32)}
-        assert self.reg_wf.equals(
-            copy_reg_wf
-        ), "The astype method should not modify the wellframe in place."
-        assert self.reg_wf.index.equals(
-            int_wf.index
-        ), "The meta index columns of the original WellFrame must be identical to the meta index columns of the wellframe returned by astype."
-        assert np.array_equal(self.reg_wf.values, int_wf.values)
-        assert self.reg_wf.columns.equals(
-            int_wf.columns
-        ), "The Feature Column names should be untouched in the returned WellFrame."
+        assert self.reg_wf.equals(copy_reg_wf)
+        assert self.reg_wf.index.equals(int_wf.index)
+        assert np.array_equal(self.reg_wf.values, int_wf.values), f"{self.reg_wf.values} != {int_wf.values}"
+        assert self.reg_wf.column_names() == list(int_wf.columns)
         with pytest.raises(ValueError):
             WellFrame().astype()
 
@@ -110,27 +92,12 @@ class TestWellFrames:
         feats_wf = self.reg_wf
         feats_two_meta_wf = self.reg_wf.features_only(["well", "name"])
         copy_reg_wf = self.reg_wf.copy(deep=True)
-        assert (
-            copy_reg_wf.shape == feats_wf.shape
-        ), "The shape of the WellFrame returned should be identical to the original WellFrame. Expected: {} Actual: {} ".format(
-            copy_reg_wf.shape, feats_wf.shape
-        )
-        assert (
-            feats_wf.index.name == "name"
-        ), "The returned WellFrame should only have one name and not be a multi-index."
-        assert set(feats_two_meta_wf.index.names) == {
-            "name",
-            "well",
-        }, "Incorrect meta_columns returned. Expected: {} Actual: {} ".format(
-            {"name", "well"}, set(feats_two_meta_wf.index.names)
-        )
-        assert np.array_equal(
-            feats_wf.values, copy_reg_wf.values
-        ), "The returned WellFrame should have all the feature columns of the original WellFrame."
-        assert self.reg_wf.equals(
-            copy_reg_wf
-        ), "The original WellFrame should not be modified in place."
-        assert isinstance(feats_wf, WellFrame), "Features_only should return a WellFrame instance."
+        assert copy_reg_wf.shape == feats_wf.shape
+        assert feats_wf.index.name == "name"
+        assert set(feats_two_meta_wf.index.names) == {"name", "well"}
+        assert np.array_equal(feats_wf.values, copy_reg_wf.values)
+        assert self.reg_wf.equals(copy_reg_wf)
+        assert isinstance(feats_wf, WellFrame)
         with pytest.raises(ValueError):
             WellFrame()
 
@@ -150,9 +117,6 @@ class TestWellFramesHDF:
         """
         Tests invariant involving to_hdf and read_hdf methods. Converting a WellFrame with to_hdf and then reading that
         hdf should return the WellFrame you started with.
-
-        Args:
-          data:
         """
         if (
             len(data[0]) > 1

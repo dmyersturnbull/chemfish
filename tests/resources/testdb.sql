@@ -52,18 +52,6 @@ CREATE TABLE `annotations` (
 
 
 --
--- Table structure for table `api_keys`
---
-
-CREATE TABLE `api_keys` (
-  `id` tinyint(3) unsigned not null auto_increment,
-  `name` varchar(100) not null,
-  `value` varchar(255) not null,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
-
-
---
 -- Table structure for table `assay_params`
 --
 
@@ -1244,104 +1232,156 @@ CREATE TABLE `mandos_rules` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 
-INSERT INTO refs (
-    id, name, datetime_downloaded, external_version, description, url
+
+SET FOREIGN_KEY_CHECKS=1;
+
+
+INSERT INTO refs (name,  description) VALUES ('manual', 'Manual');
+INSERT INTO refs (name, description) VALUES ('manual:high', 'High-priority');
+INSERT INTO refs (name, description) VALUES ('manual:johnson', 'User-added');
+
+INSERT INTO saurons (name) VALUES ('Elephant');
+
+INSERT INTO users (username, first_name, last_name) VALUES ('johnson', 'Jackie', 'Johnson');
+INSERT INTO users (username, first_name, last_name) VALUES ('annette', 'Annette', 'Antoinette');
+
+INSERT INTO locations (name, part_of) VALUES ('Local Group', NULL);
+INSERT INTO locations (name, part_of) VALUES ('Alpha Centauri', 1);
+INSERT INTO locations (name, part_of) VALUES ('Isle of the Deep', 2);
+
+INSERT INTO project_types(name, description) VALUES ('main', 'Main type of project');
+
+INSERT INTO projects(name, description, creator_id) VALUES ('eat', 'Eating food', 1);
+
+INSERT INTO stimuli(name, default_color, description, analog) VALUES ('spikes', '000000', 'Spikes, of course', 1);
+INSERT INTO stimuli(name, default_color, description, analog) VALUES ('gaps', '000000', 'Things to jump over', 0);
+
+INSERT INTO batteries(
+    name, description, length, author_id, assays_sha1
 ) VALUES (
-    4, 'ref_four', '2019-01-29 12:48:12', 'ref_four_external_version', 'this is ref four',
-    'https://www.nonexistentreffour.com'
+    'buffet', 'Buffet', 30, 1, random_bytes(20)
 );
 
-INSERT INTO users (
-    id, username, first_name, last_name, write_access, bcrypt_hash
+INSERT INTO assays(
+    name, description, length, frames_sha1
 ) VALUES (
-    4, 'test_user7', 'test', 'UserBser', 0, 'jfEHa6wjtC6Fyx95F8miqtgZCSG0V35ZE82EGY3BS5kccr80Y8g3tbTWOzf7'
+    'pizza', 'This pizza has one topping and is longer', 2000, random_bytes(20)
+);
+INSERT INTO assays(
+    name, description, length, frames_sha1
+) VALUES (
+    'salad', 'This salad has two ingredients and is shorter', 1000, random_bytes(20)
 );
 
-INSERT INTO submissions (
-    id, lookup_hash, experiment_id, user_id, person_plated_id, continuing_id, datetime_plated, datetime_dosed,
-    acclimation_sec, description, notes, created
-) VALUES (
-    25, '9p0MKHbf5P3m', 3, 2, 1, 1, '2019-01-26 10:11:12', '2019-01-26 11:11:12', 50, 'this is submission 25', NULL,
-    now()
+INSERT INTO stimulus_frames (assay_id, stimulus_id, frames, frames_sha1) VALUES (
+    1, 1, X'00000000000000000000ffffffffffffffffffff00000000000000000000', random_bytes(20)
 );
 
-INSERT INTO runs (
-    id, experiment_id, plate_id, description, experimentalist_id, submission_id, datetime_run, datetime_dosed, name,
-    tag, sauron_config_id, config_file_id, incubation_min, acclimation_sec, notes
+INSERT INTO stimulus_frames (
+    assay_id, stimulus_id, frames, frames_sha1
 ) VALUES (
-    4, 2, 1, 'run number four', 1, 25, '2019-01-28 10:11:12', '2019-01-28 10:42:12', 'run_number_four', 'tag_four', 3, 1,
-    20, 50, 'hi there r no notes here'
+    2, 1, X'00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff', random_bytes(20)
+);
+INSERT INTO stimulus_frames (
+    assay_id, stimulus_id, frames, frames_sha1
+) VALUES (
+    2, 2, X'ffffffffffffffffffffffffffffff000000000000000000000000000000', random_bytes(20)
 );
 
-INSERT INTO run_tags (
-    id, run_id, name, value
-) VALUES(3, 1, 'second run tag', '0abcdefghijklmnop');
+INSERT INTO assay_positions (battery_id, assay_id, start) VALUES (1, 1, 0);
+INSERT INTO assay_positions (battery_id, assay_id, start) VALUES (1, 2, 30);
 
-INSERT INTO run_tags (
-    id, run_id, name, value
-) VALUES(4, 1, 'sauronx_version', '54554512asofja109');
-
-INSERT INTO submission_params (
-    id, submission_id, name, param_type, value
+INSERT INTO experiments(
+    name, description, creator_id, project_id, battery_id, template_plate_id, default_acclimation_sec
 ) VALUES (
-    5, 2, '$...BC123', 'compound', '\["AB0124403", "AB0124404"\]'
+    'Eat', 'Eating a buffet', 1, 1, 1, NULL, 60
 );
 
-INSERT INTO submission_params (
-    id, submission_id, name, param_type, value
+
+INSERT INTO sauron_configs (sauron_id, datetime_changed, description) VALUES (1, '2011-01-01 11:11:11', 'Nope');
+
+INSERT INTO sauron_settings (sauron_config_id, name, value) VALUES (1, 'frames_per_second', 1);
+
+INSERT INTO plate_types(name, n_rows, n_columns, well_shape, opacity) VALUES('2x3', 2, 3, 'square', 'opaque');
+
+INSERT INTO plates(plate_type_id, person_plated_id, datetime_plated) VALUES(1, 1, '2012-01-01 09:09:09');
+
+INSERT INTO submissions(
+    lookup_hash, experiment_id, user_id, person_plated_id, continuing_id,
+    datetime_plated, datetime_dosed, acclimation_sec, description
 ) VALUES (
-    4, 1, 'sp_1_7', 'dose', 100
+    '123456789abc', 1, 1, 1, NULL,
+    '2011-01-01 09:09:09', '2012-01-01 10:10:10', 60, 'A submission of sorts'
 );
 
-INSERT INTO compounds (
-    id, inchi, inchikey, inchikey_connectivity, chembl_id, chemspider_id, smiles
+INSERT INTO runs(
+    experiment_id, plate_id, description, experimentalist_id, submission_id, datetime_run, datetime_dosed,
+    name, tag, sauron_config_id, config_file_id, incubation_min, acclimation_sec
 ) VALUES (
-    3, 'inchi_foo_bar', 'AQWEFNOQVPJJNP-UHFFFAOYSA-N', 'q42345ghijklbs', '113109-290-1', 1101145, 'C=C-B=C-H'
+    1, 1, 'Plate 1', 1, 1, '2012-01-01 11:11:11', '2012-01-01 10:10:10',
+    'run:1', '20120101.11111111.Elephant', 1, NULL, 61, 60
 );
 
-INSERT INTO locations (
-    id, name, description, purpose, part_of, temporary
-) VALUES(4, 'location_three', 'hello this is location three', 'purpose three', 2, 0);
-
-INSERT INTO batches (
-    id, lookup_hash, tag, compound_id, made_from_id, supplier_id, ref_id, legacy_internal_id, location_id, box_number,
-    well_number, location_note, amount, concentration_millimolar, solvent_id, molecular_weight, supplier_catalog_number,
-    person_ordered, date_ordered, notes
+-- drug (-) control
+INSERT INTO wells(
+    run_id, well_index, control_type_id, variant_id, well_group, n, age
 ) VALUES (
-    4, '124bff34abagzf', 'wrong_legacy_id_format', 1, NULL, 1, 1, 'BC000040201', 2, 5, 2, 'location three', '200ul', 100,
-    2, 25.0, 1, 1, now(), 'hello this is notes_six'
+    1, 1, 1, 1, NULL, 10, 7
+);
+-- drug (+) control, with drug
+INSERT INTO wells(
+    run_id, well_index, control_type_id, variant_id, well_group, n, age
+) VALUES (
+    1, 2, 2, 1, NULL, 10, 7
+);
+-- different variant
+INSERT INTO wells(
+    run_id, well_index, control_type_id, variant_id, well_group, n, age
+) VALUES (
+    1, 3, NULL, 2, NULL, 10, 7
+);
+-- single compound treatment
+INSERT INTO wells(
+    run_id, well_index, control_type_id, variant_id, well_group, n, age
+) VALUES (
+    1, 4, NULL, 1, NULL, 10, 7
+);
+-- co-treatment, one without a compounds row
+INSERT INTO wells(
+    run_id, well_index, control_type_id, variant_id, well_group, n, age
+) VALUES (
+    1, 5, NULL, 1, NULL, 10, 7
+);
+-- new well group
+INSERT INTO wells(
+    run_id, well_index, control_type_id, variant_id, well_group, n, age
+) VALUES (
+    1, 6, NULL, 1, 'a well group', 10, 7
 );
 
-INSERT INTO genetic_variants (
-    id, name, mother_id, father_id, lineage_type, date_created, notes, creator_id, fully_annotated
+INSERT INTO compounds(
+    inchi, inchikey, inchikey_connectivity, chembl_id, chemspider_id, smiles
 ) VALUES (
-    4, 'genetic variant four', 7, 5, 'cross', now(), 'notes for gene four', 1, 0
+
+);
+INSERT INTO compounds(
+    inchi, inchikey, inchikey_connectivity, chembl_id, chemspider_id, smiles
+) VALUES (
+
+);
+INSERT INTO compounds(
+    inchi, inchikey, inchikey_connectivity, chembl_id, chemspider_id, smiles
+) VALUES (
+
 );
 
-INSERT INTO sensors (
-    id, name, description, data_type, blob_type, n_between
+INSERT INTO batches(
+    lookup_hash, tag, compound_id, made_from_id, supplier_id, ref_id,
+    legacy_internal_id, location_id, box_number, well_number, location_note,
+    amount, concentration_millimolar, solvent_id, molecular_weight, supplier_catalog_number,
+    person_ordered, date_ordered
 ) VALUES (
-    4, 'sensor_four', 'this is sensor four.', 'long', 'assay_start', 10
-);
 
-INSERT INTO sensor_data (
-    id, run_id, sensor_id, floats, floats_sha1
-) VALUES (
-    5, 2, 3,
-    1234134093401234987234980721384712934324913448123098409185908135981039581958112379573578136793134696676741671761515747642724576,
-    cast(2819 as Binary(20))
-);
-
-INSERT INTO control_types (
-    id, name, description, positive, drug_related, genetics_related
-) VALUES (
-    3, 'control type three', 'this is control type three', 1, 1, 1
-);
-
-INSERT INTO wells (
-    id, run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    9, 1, 7, 2, 5, 'well group one', 6, 15
 );
 
 INSERT INTO features (
@@ -1353,115 +1393,4 @@ INSERT INTO features (
     id, name, description, dimensions, data_type
 ) VALUES (
     2, 'cd(10)', 'cd(10)', '[t-1]', 'float'
-);
-
-INSERT INTO well_features (
-    id, well_id, type_id, floats, sha1
-) VALUES (
-    6, 9, 1, 1929014393149134898314981349831498134981341311234143, cast(2111 as Binary(20))
-);
-
-INSERT INTO stimuli (
-    id, name, default_color, description, analog, rgb, wavelength_nm, audio_file_id
-) VALUES (
-    3, 'none', 'ffffff', NULL, 1, NULL, NULL, NULL
-);
-
-INSERT INTO stimulus_frames (
-    id, assay_id, stimulus_id, frames, frames_sha1
-) VALUES (
-    7, 5, 1, '78654131412341132413409876341324329048132984901238490821394081239080913859018340981349921384',
-    cast(101109 as Binary(20))
-);
-
-INSERT INTO assays (
-    id, name, description, length, hidden, template_assay_id, frames_sha1
-) VALUES (
-    5, 'assay_five', 'this is assay five', 100, 0, 2, cast(122333 as Binary(20))
-);
-
-INSERT INTO well_treatments (
-    id, well_id, batch_id, micromolar_dose
-) VALUES (
-    1, 1, 1, 100
-);
-
-INSERT INTO suppliers (
-    id, name, description
-) VALUES (
-    4, 'supplier_guy_three', 'decent supplier'
-);
-
-INSERT INTO plates (
-    id, plate_type_id, person_plated_id, datetime_plated
-) VALUES (
-    5, 3, 1, '2019-04-10 13:18:20'
-);
-
-INSERT INTO plate_types (
-    id, name, supplier_id, part_number, n_rows, n_columns, well_shape, opacity
-) VALUES (
-    4, 'plate_four', 3, NULL, 8, 12, 'round', 'transparent'
-);
-
-INSERT INTO submission_records (
-id, submission_id, status, sauron_id, datetime_modified
-) VALUES (
-    2, 1, 'no status', 1, now()
-);
-
-INSERT INTO sauron_configs (
-    id, sauron_id, datetime_changed, description
-) VALUES (
-    4, 2, '2019-04-11 11:11:11', 'hello'
-);
-
-INSERT INTO saurons (
-    id, name, active
-) VALUES (
-    5, 'sauron5', '1'
-);
-
-INSERT INTO experiments (
-    id, name, description, creator_id, project_id, battery_id, template_plate_id, transfer_plate_id,
-    default_acclimation_sec, notes, active
-) VALUES (
-    5, 'exp 5', 'this is exp 5', 4, 1, 2, 3, 3, 100, 'hi this notes for exp 5', 1
-);
-
-INSERT INTO project_types (
-    id, name, description
-) VALUES (
-    4, 'project_four', 'this is project four '
-);
-
-INSERT INTO batteries (
-    id, name, description, length, author_id, template_id, hidden, notes, assays_sha1
-) VALUES (
-    4, 'battery_four', 'this is battery four', 1000, 4, 3, 0, 'interesting stuff', cast('assay_four' as binary(20))
-);
-
-INSERT INTO assay_positions (
-    id, assay_id, battery_id, start
-) VALUES (
-    4, 5, 4, 0
-);
-
-INSERT INTO template_plates (
-    id, name, description, plate_type_id, author_id, hidden, created, specializes
-) VALUES (
-    5, 'template_plate_five', 'this is the fifth tempPlate', 3, 4, 0, now(), NULL
-);
-
-INSERT INTO transfer_plates (
-    id, name, description, plate_type_id, supplier_id, parent_id, dilution_factor_from_parent, initial_ul_per_well,
-    creator_id, datetime_created
-) VALUES (
-    4, 'transfer_plate_four', 'this is the fourth template plate', 4, NULL, NULL, NULL, 10, 4, now()
-);
-
-INSERT INTO compound_labels (
-    id, compound_id, name, ref_id
-) VALUES (
-    3, 3, 'compound_three', 3
 );
