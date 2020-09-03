@@ -142,6 +142,10 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         """
         c = stim.name
         n_stimframes = len(r)
+        if isinstance(r, pd.Series):
+            # https://github.com/numpy/numpy/issues/15555
+            # https://github.com/pandas-dev/pandas/issues/35331
+            r = r.values
         x = np.argwhere(r > 0)
         y = r[r > 0]
         if not np.any(r > 0):

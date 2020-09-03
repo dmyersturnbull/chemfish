@@ -40,6 +40,7 @@ class ValarTools:
 
     MANUAL_HIGH_REF = Refs.fetch_or_none("manual:high")
     MANUAL_REF = Refs.fetch("manual")
+    LEGACY_FRAMERATE = 25
 
     @classmethod
     def download_frame_timestamps(cls, run: RunLike) -> np.array:
@@ -306,7 +307,7 @@ class ValarTools:
         if run.submission is None:
             raise SauronxOnlyError(f"No config files are stored for legacy data (run r{run.id})")
         t = ConfigFiles.fetch(run.config_file)
-        return TomlData(t.toml_text)
+        return NestedDotDict(t.toml_text)
 
     @classmethod
     def log_file(cls, run: RunLike) -> str:
@@ -973,7 +974,7 @@ class ValarTools:
     @classmethod
     def fetch_toml(cls, run: Union[int, str, Runs, Submissions]) -> NestedDotDict:
         """
-        Parse TomlData from config_files.
+        Parse NestedDotDict from config_files.
 
         Args:
           run:
@@ -983,7 +984,7 @@ class ValarTools:
         """
         run = ValarTools.run(run)
         sxt = ConfigFiles.fetch(run.config_file_id)
-        return NestedDotDict(tomlkit.loads(sxt.toml_text))
+        return NestedDotDict.parse_toml(sxt.toml_text)
 
     @classmethod
     def parse_toml(cls, sxt: Union[ConfigFiles, Runs]) -> NestedDotDict:
@@ -998,7 +999,7 @@ class ValarTools:
         """
         if isinstance(sxt, Runs):
             sxt = ConfigFiles.fetch(sxt.config_file_id)
-        return NestedDotDict(tomlkit.loads(sxt.toml_text))
+        return NestedDotDict.parse_toml(sxt.toml_text)
 
     @classmethod
     def initials(cls, user: Union[Users, int, str]) -> str:
@@ -1082,7 +1083,7 @@ class ValarTools:
         return (
             ValarTools.frames_per_second(run)
             * battery.length
-            / (25 if run.submission is None else 1000)
+            / (cls.LEGACY_FRAMERATE if run.submission is None else 1000)
         )
 
     @classmethod
@@ -1159,7 +1160,7 @@ class ValarTools:
         """
         run = ValarTools.run(run)
         t = ConfigFiles.fetch(run.config_file_id)
-        return NestedDotDict(tomlkit.loads(t.toml_text))
+        return NestedDotDict.parse_toml(t.toml_text)
 
     @classmethod
     def toml_item(cls, run: RunLike, item: str) -> Any:
@@ -1173,43 +1174,7 @@ class ValarTools:
         Returns:
 
         """
-        return cls.toml_items(run)[item]
-
-    @classmethod
-    def toml_items(cls, run: RunLike) -> Mapping[str, Any]:
-        """
-
-
-        Args:
-          run: RunLike:
-
-        Returns:
-
-        """
-        run = ValarTools.run(run)
-        t = ConfigFiles.fetch(run.config_file_id)
-        data = NestedDotDict(tomlkit.loads(t.toml_text))
-        lst = {}
-
-        def settings(value, key):
-            """
-
-
-            Args:
-              value:
-              key:
-
-            Returns:
-
-            """
-            if isinstance(value, (dict, NestedDotDict)):
-                for k, v in value.items():
-                    settings(v, str(key) + "." + str(k))
-            else:
-                lst[key.lstrip(".")] = value
-
-        settings(data, "")
-        return lst
+        return cls.toml_data(run)[item]
 
     @classmethod
     def frames_per_second(cls, run: RunLike) -> int:
@@ -1232,8 +1197,8 @@ class ValarTools:
         if run.submission is None:
             return 25
         t = ConfigFiles.fetch(run.config_file_id)
-        # noinspection PyTypeChecker
-        return NestedDotDict(tomlkit.loads(t.toml_text)).int("sauron.hardware.camera.frames_per_second")
+        toml = NestedDotDict.parse_toml(t.toml_text)
+        return toml.exactly("sauron.hardware.camera.frames_per_second", int)
 
     @classmethod
     def battery_stimframes_per_second(cls, battery: Union[int, str, Batteries]) -> int:
@@ -1246,7 +1211,7 @@ class ValarTools:
         Returns:
 
         """
-        return 25 if ValarTools.battery_is_legacy(battery) else 1000
+        return cls.LEGACY_FRAMERATE if ValarTools.battery_is_legacy(battery) else 1000
 
     @classmethod
     def assay_ms_per_stimframe(cls, assay: Union[int, str, Assays]) -> int:
@@ -1276,11 +1241,7 @@ class ValarTools:
         if run.submission is None:
             return 1
         else:
-            t = ConfigFiles.fetch(run.config_file_id)
-            fps = NestedDotDict(tomlkit.loads(t.toml_text)).int(
-                "sauron.hardware.camera.frames_per_second"
-            )
-            return fps / 1000
+            return cls.frames_per_second(run) / 1000
 
     @classmethod
     def parse_param_value(
@@ -1325,27 +1286,9 @@ class ValarTools:
 
         # util functions
         def oc_it(oc: str):
-            """
-
-
-            Args:
-              oc: str:
-
-            Returns:
-
-            """
             return Batches.fetch(oc)
 
         def var_it(var: str):
-            """
-
-
-            Args:
-              var: str:
-
-            Returns:
-
-            """
             return GeneticVariants.fetch(var)
 
         # convert
@@ -1499,7 +1442,7 @@ class ValarTools:
         )
 
         def _simplify_name(name: str) -> str:
-            prefixes = dict(InternalTools.load_resource("core", "assay_prefixes.json")[0])
+            prefixes = dict(InternalTools.load_resource("core", "assay_prefixes.json"))
             s = _qualifier.sub("", _end.sub("", name))
             for k, v in prefixes.items():
                 s = s.replace(k, v)

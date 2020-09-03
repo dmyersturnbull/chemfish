@@ -82,7 +82,9 @@ class TestWellFrames:
         assert set(int_wf.dtypes) == {np.dtype(np.int32)}
         assert self.reg_wf.equals(copy_reg_wf)
         assert self.reg_wf.index.equals(int_wf.index)
-        assert np.array_equal(self.reg_wf.values, int_wf.values), f"{self.reg_wf.values} != {int_wf.values}"
+        assert np.array_equal(
+            self.reg_wf.values, int_wf.values
+        ), f"{self.reg_wf.values} != {int_wf.values}"
         assert self.reg_wf.column_names() == list(int_wf.columns)
         with pytest.raises(ValueError):
             WellFrame().astype()

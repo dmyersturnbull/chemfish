@@ -288,24 +288,6 @@ class ConfusionMatrix(UntypedDf):
             self, vmin=vmin, vmax=vmax, renamer=renamer, runs=runs, label_colors=label_colors
         )
 
-    @classmethod
-    def read_csv(cls, path: PathLike, *args, **kwargs):
-        """
-
-
-        Args:
-          path: PathLike:
-          *args:
-          **kwargs:
-
-        Returns:
-
-        """
-        path = Path(path)
-        df = pd.read_csv(path, index_col=0)
-        df.index.name = "name"
-        return ConfusionMatrix(df)
-
 
 class ConfusionMatrices:
     """ """

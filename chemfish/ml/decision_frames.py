@@ -117,7 +117,7 @@ class DecisionFrame(TypedDf):
         Returns:
 
         """
-        self.to_vanilla().to_csv(path, index_label=self.__class__.required_index_names())
+        self.to_csv(path)
 
 
 __all__ = ["DecisionFrame"]

@@ -176,7 +176,7 @@ class Quick:
             sensor_cache: A SensorCache.
             video_cache: A VideoCache.
             compound_namer: Fill in 'compound_names' column in WellFrame using this function. May also be used in other places.
-                                NOTE: A copy will be made with `compound_namer.as_of` set to `as_of`.
+                            NOTE: A copy will be made with `compound_namer.as_of` set to `as_of`.
             audio_stimulus_cache: An AudioStimulusCache for caching audio files, etc.
             quantile: A quantile for setting min and max on various plot types, including sensor plots and z-score plots (also see zscore_min_max)
             trace_ymax: If set, limit the y axis on traces to this; great for features like cd(10) but less so for MI
@@ -841,14 +841,13 @@ class Quick:
     def classify(
         self,
         run: QsLike,
-        save_dir: Optional[PathLike] = None,
+        save_dir: PathLike,
         namer: Optional[WellNamer] = None,
         model_fn: SklearnWfClassifierWithOob = WellForestClassifier,
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
         color: bool = False,
         sort: bool = True,
-        load_only: bool = False,
         **kwargs,
     ) -> WellForestClassifier:
         """
@@ -870,14 +869,12 @@ class Quick:
 
         """
         save_dir = Tools.prepped_dir(save_dir, exist_ok=False)
-        save_dir = ClassifierPath(save_dir)
+        class_path = ClassifierPath(save_dir)
         df = self.df(run, namer=namer, start_ms=start_ms, end_ms=end_ms)
         model = model_fn.build(**kwargs)
-        if save_dir.exists():
+        if class_path.exists():
             logger.info(f"Loading existing model at {save_dir}")
             model.load(save_dir)
-        elif load_only:
-            raise OpStateError(f"Model at {save_dir} trained")
         else:
             model.train(df)
         if color:
@@ -1723,7 +1720,7 @@ class Quicks:
         return cls.choose(DataGeneration.POINTGREY, as_of=as_of, **kwargs)
 
     @classmethod
-    def pike_sauronx(cls, as_of: Optional[datetime], **kwargs):
+    def legacy_pike_sauronx(cls, as_of: Optional[datetime], **kwargs):
         """
 
 
@@ -1737,7 +1734,7 @@ class Quicks:
         return cls.choose(DataGeneration.PIKE_SAURONX, as_of=as_of, **kwargs)
 
     @classmethod
-    def pike_legacy(cls, as_of: Optional[datetime], **kwargs):
+    def legacy_pike_legacy(cls, as_of: Optional[datetime], **kwargs):
         """
 
 
@@ -1751,7 +1748,7 @@ class Quicks:
         return cls.choose(DataGeneration.PIKE_LEGACY, as_of=as_of, **kwargs)
 
     @classmethod
-    def pike_mgh(cls, as_of: Optional[datetime], **kwargs):
+    def legacy_pike_mgh(cls, as_of: Optional[datetime], **kwargs):
         """
 
 

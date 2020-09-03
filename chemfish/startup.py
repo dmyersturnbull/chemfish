@@ -38,7 +38,6 @@ from io import StringIO
 from tempfile import NamedTemporaryFile, TemporaryDirectory, TemporaryFile
 
 # external packages
-import dill
 import joblib
 import matplotlib
 import matplotlib.gridspec as gridspec
@@ -51,7 +50,6 @@ from pocketutils.biochem.multiwell_plates import *
 
 # pocketutils
 from pocketutils.core import frozenlist
-from pocketutils.core.io import DelegatingWriter, LogWriter
 from pocketutils.core.dot_dict import *
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC, LinearSVC
@@ -133,14 +131,6 @@ from chemfish.viz.trace_plots import *
 from chemfish.viz.well_plots import *
 
 ################################
-# chemfish imports
-################################
-
-
-# calc
-
-
-################################
 # package overrides
 ################################
 
@@ -149,6 +139,12 @@ logging.getLogger().setLevel(chemfish_env.global_log_level)
 
 # I don't know why this needs to happen twice
 __filterer.substring_never(".*libuv only supports.*")
+
+# numexpr's default is 8, which is excessive for most applications
+# let's keep it between 1 and min(6, nCPU-1)
+# setting this has the advantage of silencing the "NumExpr defaulting to 8 threads." logging
+os.environ.setdefault("NUMEXPR_MAX_THREADS", str(max(1, min(6, os.cpu_count() - 1))))
+
 
 ################################
 # startup messages

@@ -369,6 +369,8 @@ class Tools(_Tools, ChemfishValarTools):
         Returns:
 
         """
+        if path is None:
+            raise ValueError("Path is None!")
         cls.prep_dir(path, exist_ok=True)
         return Path(path)
 

@@ -105,11 +105,9 @@ chemfish = "chemfish.cli:cli"
 python                         = ">=3.8, <4"
 clana                          = "^0.4"
 cycler                         = ">=0.10, <1.0"
-dill                           = "^0.3"
 fuzzywuzzy                     = ">=0.18, <1.0"
 h5py                           = "^2.10"
 joblib                         = "^0.16"
-jsonpickle                     = "^1.4"
 librosa                        = "^0.8"
 matplotlib                     = ">=3.3, <4.0"
 natsort                        = "^7"
@@ -128,10 +126,11 @@ typer                          = ">=0.3, <1.0"
 
 decorateme                     = ">=0.1.1, <1.0"
 typeddfs                       = ">=0.3.0, <1.0"
-pocketutils                    = ">=0.1.1, <1.0"
+# we're actually using "biochem" too, but we don't need any extra dependencies
+pocketutils                    = {version=">=0.3, <1.0", extras=["tools", "notebooks"]}
 valarpy                        = "^2.2"
 
-#python-levenshtein             = {optional = true, version="^0.11"}
+python-levenshtein             = {optional = true, version="^0.11"}
 
 #ipympl                         = {version=">=0.5, <1.0", optional=true}
 #ipython                        = {version="^7", optional=true}
@@ -162,7 +161,7 @@ coveralls                = "^2"
 tomlkit                  = ">=0.5, <1.0"
 
 [tool.poetry.extras]
-#performance  = ["python-levenshtein"]
+performance  = ["python-levenshtein"]
 #notebook     = ["ipympl", "ipython", "ipywidgets", "jupyterlab", "pywin32", "pyzmq"]
 #media        = ["imageio-ffmpeg", "librosa", "moviepy", "pydub"]
 dev          = [

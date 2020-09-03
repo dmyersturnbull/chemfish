@@ -152,8 +152,6 @@ class WellClassifier(SaveableTrainable):
             raise EmptyCollectionError("Cannot train on an empty WellFrame")
         if len(set(names)) == 1:
             logger.warning(f"Training a classifier for only 1 label: {names[0]}")
-        if len(set(names)) > 50:
-            logger.warning("Training a classifier on >50 labels")
 
     def _verify_test(self, wells: np.array, names: Sequence[str], features):
         """
@@ -353,7 +351,7 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
         except Exception:
             raise LoadError(f"Failed to save model metadata to {path.info_json}")
         try:
-            joblib.dump(self.model, str(path.model_pkl), protocol=chemfish_env.pickle_protocol)
+            joblib.dump(self.model, str(path.model_pkl), protocol=5)
         except Exception:
             raise LoadError(f"Failed to save model to {path.model_pkl}")
         logger.debug(f"Saved model to {path.model_pkl}")
@@ -374,8 +372,17 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
         logger.minor(
             "Training with replicates: " + ", ".join([k + "=" + str(v) for k, v in reps.items()])
         )
+        with_lt_2 = {k: v for k, v in reps.items() if v < 2}
+        if len(with_lt_2) > 20:
+            logger.warning(f"{len(with_lt_2)} labels have only 1 replicate.")
+        elif len(with_lt_2) > 0:
+            logger.warning(
+                f"{len(with_lt_2)} labels have only 1 replicate: {','.join(with_lt_2.keys())}."
+            )
+        if len(df.unique_names()) > 100:
+            logger.caution("Training a classifier on >100 labels.")
         if len(set(reps.values())) > 1:
-            logger.caution("Training with an imbalanced set")
+            logger.caution("Training on an imbalanced set.")
         # fit
         t0, d0 = time.monotonic(), datetime.now()
         try:
@@ -483,7 +490,9 @@ class SklearnWfClassifierWithOob(
         """
         from chemfish.viz.figures import FigureSaver
 
-        path = Tools.prepped_dir(path, exist_ok=exist_ok)
+        path = Tools.prepped_dir(
+            path.path if isinstance(path, ClassifierPath) else path, exist_ok=exist_ok
+        )
         path = ClassifierPath(path)
         logger.debug(f"Saving to {path}")
         self._verify_trained()
@@ -640,20 +649,10 @@ class WellClassifiers:
 
             @classmethod
             def model_class(cls) -> Type[AnySklearnClassifier]:
-                """ """
                 return model
 
             @classmethod
             def build(cls, **kwargs):
-                """
-
-
-                Args:
-                  **kwargs:
-
-                Returns:
-
-                """
                 args = copy(default_kwargs)
                 args.update(kwargs)
                 return X(model(**args))

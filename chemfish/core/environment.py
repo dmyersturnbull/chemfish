@@ -73,7 +73,7 @@ class ChemfishEnvironment:
         self.user = Users.fetch(self.username)
         self.user_ref = Refs.fetch_or_none("manual:" + self.username)
         if self.user_ref is None:
-            logger.warning(r"manual:{self.username} is not in `refs`. Using 'manual'.")
+            logger.warning(f"manual:{self.username} is not in `refs`. Using 'manual'.")
         self.user_ref = Refs.fetch_or_none("manual")
         self.chemfish_log_level = _try("chemfish_log_level", "INFO")
         self.global_log_level = _try("global_log_level", "INFO")
@@ -118,7 +118,7 @@ class ChemfishEnvironment:
         logger.setLevel(self.chemfish_log_level)
         logging.getLogger(self.global_log_level)
         logger.info(
-            "Set global log level to {self.global_log_level} and chemfish to {self.chemfish_log_level}."
+            f"Set global log level to {self.global_log_level} and chemfish to {self.chemfish_log_level}."
         )
 
 

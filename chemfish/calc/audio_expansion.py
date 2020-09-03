@@ -34,6 +34,10 @@ class AudioExpansion:
             if is_legacy
             else waveform.standardize_sauronx(50.0, 200.0)
         )
+        if isinstance(stimseries, pd.Series):
+            # https://github.com/numpy/numpy/issues/15555
+            # https://github.com/pandas-dev/pandas/issues/35331
+            stimseries = stimseries.values
         # noinspection PyTypeChecker
         starts = np.argwhere(stimseries > 0)
         built = []
