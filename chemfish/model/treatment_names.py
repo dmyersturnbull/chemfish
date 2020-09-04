@@ -11,7 +11,9 @@ class UnknownVariableError(UnrecognizedKeyError):
 
 
 class TreatmentNamer:
-    """A way to format a Treatment."""
+    """
+    A way to format a Treatment.
+    """
 
     @abcd.abstractmethod
     def display(self, treatment: Treatment, name: Union[None, str, Mapping[int, str]]) -> str:
@@ -24,12 +26,21 @@ class TreatmentNamer:
                   Does not need to include every compound ID, and may even be empty.
 
         Returns:
-          The display name of the Treatment
+            The display name of the Treatment
 
         """
         raise NotImplementedError()
 
     def __call__(self, treatment: Treatment, name: Union[None, str, Mapping[int, str]]) -> str:
+        """
+
+        Args:
+            treatment:
+            name:
+
+        Returns:
+
+        """
         return self.display(treatment, name)
 
     def _convert(self, t: Treatment, names: Union[None, str, Mapping[int, str]]) -> Optional[str]:
@@ -48,11 +59,7 @@ class TreatmentNamer:
         elif isinstance(names, str):
             return names
         elif hasattr(names, "__getitem__"):
-            return (
-                names[t.compound_id]
-                if t.compound_id is not None and t.compound_id in names
-                else None
-            )
+            return names[t.cid] if t.cid is not None and t.cid in names else None
         else:
             raise TypeError(f"Type {type(names)} for name not recognized")
 
@@ -75,12 +82,8 @@ class StringTreatmentNamer(TreatmentNamer):
     """
     A displayer built from a formatting expression with variables ${um}, ${bid}, etc.
     The result of display() will be the literal expression, but with certain fields substituted.
-    Example usage:
 
-    Args:
-
-    Returns:
-
+    Example:
     >>> # example 1
         >>> displayer = StringTreatmentNamer('${id} (${dose.2})') # '.2'  means 2 decimal places
         >>> displayer(Treatment.from_info(4, 5048.6))  # returns 'c13 (5.05mM)'
@@ -90,6 +93,7 @@ class StringTreatmentNamer(TreatmentNamer):
         >>> # example 3
         >>> displayer = StringTreatmentNamer('compound ID = ${cid} @ ${um} [µM'])  # 'um' means micromolar
         >>> displayer(Treatment.from_info(4, 5048.6), 'ethanol')  # returns 'compound ID = 4 @ 5048.6 [µM]'
+
     The recognized placeholders are:
         - ${treatment}        The value of str(treatment)
         - ${bid}              The batch ID
@@ -115,6 +119,7 @@ class StringTreatmentNamer(TreatmentNamer):
         - ${um}               The dose in micromolar with a suffix of µM, with infinite significant figures
         - ${um:3}             The dose in micromolar with a suffix of µM, with 3 (or other value passed) significant figures
         - ${um.3}             The dose in micromolar with a suffix of µM, with 3 (or other value passed) decimal places
+
     The capitalizers are:
         - 'lower' for all lowercase
         - 'upper' for all uppercase
@@ -165,7 +170,7 @@ class StringTreatmentNamer(TreatmentNamer):
         """
         name = self._convert(t, name)
         return self._format(
-            str(t), t.id, t.compound_id, t.tag, t.dose, name, t.inchikey, t.chembl, t.chemspider
+            str(t), t.bid, t.cid, t.btag, t.dose, name, t.inchikey, t.chembl, t.chemspider
         )
 
     def _format(
@@ -241,7 +246,7 @@ class StringTreatmentNamer(TreatmentNamer):
         e = self._replace(e, rumdose, rumit)
         return e
 
-    def _dosify(self, dose, adjust, use_sigfigs, round_figs):
+    def _dosify(self, dose, adjust, use_sigfigs, round_figs) -> Optional[str]:
         """
 
 
@@ -261,7 +266,7 @@ class StringTreatmentNamer(TreatmentNamer):
         round_figs = int(round_figs)
         return Tools.nice_dose(dose, round_figs, adjust_units=adjust, use_sigfigs=use_sigfigs)
 
-    def _fall(self, allowed, cid, bid):
+    def _fall(self, allowed, cid, bid) -> Optional[str]:
         """
 
 
@@ -281,7 +286,7 @@ class StringTreatmentNamer(TreatmentNamer):
         elif fallback in ["id", "bid"]:
             return "b" + str(bid)
 
-    def _replace(self, e0, reg, rep):
+    def _replace(self, e0, reg, rep) -> Optional[str]:
         """
 
 
@@ -307,7 +312,7 @@ class StringTreatmentNamer(TreatmentNamer):
         truncate_rule: Optional[str],
         cap_rule: Optional[str],
         if_null_rule: Optional[str],
-    ):
+    ) -> str:
         """
 
 
@@ -380,7 +385,7 @@ class TreatmentNamers:
     """"""
 
     @classmethod
-    def of(cls, s: str):
+    def of(cls, s: str) -> StringTreatmentNamer:
         """
 
 
@@ -393,37 +398,37 @@ class TreatmentNamers:
         return StringTreatmentNamer(s)
 
     @classmethod
-    def id(cls):
+    def id(cls) -> StringTreatmentNamer:
         """"""
         return StringTreatmentNamer("${id}")
 
     @classmethod
-    def id_with_dose(cls):
+    def id_with_dose(cls) -> StringTreatmentNamer:
         """"""
         return StringTreatmentNamer("${id} (${dose})")
 
     @classmethod
-    def name_with_dose(cls):
+    def name_with_dose(cls) -> StringTreatmentNamer:
         """"""
         return StringTreatmentNamer("${id|name} (${dose})")
 
     @classmethod
-    def name(cls):
+    def name(cls) -> StringTreatmentNamer:
         """"""
         return StringTreatmentNamer("${id|name}")
 
     @classmethod
-    def name_with_id(cls):
+    def name_with_id(cls) -> StringTreatmentNamer:
         """"""
         return StringTreatmentNamer("${name} [${id}]")
 
     @classmethod
-    def name_with_id_with_dose(cls):
+    def name_with_id_with_dose(cls) -> StringTreatmentNamer:
         """"""
         return StringTreatmentNamer("${name} [${id}] (${dose})")
 
     @classmethod
-    def chembl(cls):
+    def chembl(cls) -> StringTreatmentNamer:
         """"""
         return StringTreatmentNamer("${id|chembl}")
 

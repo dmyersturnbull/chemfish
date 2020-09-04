@@ -9,7 +9,7 @@ from chemfish.viz.accuracy_plots import *
 
 
 class SummarizedSpindleFrame(BaseScoreFrame):
-    """ """
+    """"""
 
     def to_dose_response(
         self, axis: int, splitter: Callable[[str], Tup[str, str]] = Tools.split_drug_dose
@@ -18,8 +18,8 @@ class SummarizedSpindleFrame(BaseScoreFrame):
 
 
         Args:
-            axis: int:
-            splitter: Callable[[str]:
+            axis:
+            splitter:
 
         Returns:
 
@@ -78,38 +78,40 @@ class SpindleFrame(ScoreFrameWithPrediction):
     The label will also be different from the source when using MultiTrainers' `split_same=True`.
     The labels were remapped when doing the comparison between a control and itself,
     randomly partitioning the wells into __a and __b (suffixes). Then the label will contain __a or __b,
-    while both the target and source will be the control name. **For example:**
+    while both the target and source will be the control name.
+
+    **For example:**
         - source == 'solvent (-)'
         - target == 'solvent (-)'
         - label  == 'solvent (-)__a' (or 'solvent (-)__b')
 
     Using this distinction, if you simply average scores by label, you'll mix the desired scores.
     For ROC curves, you'll need the true labels in the 'label' column.
-    See `source_to_label`, which returns a copy with the labels replaced with the source.
+    See ``source_to_label``, which returns a copy with the labels replaced with the source.
     (Don't use this by habit -- only use it when needed, because it might cause confusion later.)
 
     Supports generating dose-response curves by splitting label names into (treatment, dose) pairs.
     The dose can actually anything, such as number of fish, datetime run, or binding affinity to some target.
-    See `to_1d_dose_response` and `to_2d_dose_response`.
+    See ``to_1d_dose_response`` and ``to_2d_dose_response``.
 
     Also supports generating ROC and precision-recall curves.
 
     Here are all of the columns:
-    * target               (target control in comparison)
-    * source               (target non-control label in comparison)
-    * repeat               (the ith repeat of the comparison; used when wells were subsampled repeatedly)
-    * well                 (well ID)
-    * run                  (run ID)
-    * label                (the true label of the well)
-    * prediction           (the predicted label)
-    * score                (probability for the true label)
+        - target               (target control in comparison)
+        - source               (target non-control label in comparison)
+        - repeat               (the ith repeat of the comparison; used when wells were subsampled repeatedly)
+        - well                 (well ID)
+        - run                  (run ID)
+        - label                (the true label of the well)
+        - prediction           (the predicted label)
+        - score                (probability for the true label)
 
     """
 
     @classmethod
     @abcd.overrides
     def required_columns(cls) -> Sequence[str]:
-        """ """
+        """"""
         return ["label", "target", "repeat", "score", "prediction", "score_for_prediction"]
 
     def by_target(self, target: Union[str, int, ControlTypes]) -> SpindleFrame:
@@ -196,7 +198,7 @@ class SpindleFrame(ScoreFrameWithPrediction):
             - split the labels into (treatment, dose) pairs,
                 where dose can really be anything, such as number of animals or datetime run
             - make 'lower', 'middle', 'upper', and 'spread' columns for a positive control and a negative control:
-                negative => lower_1, etc; posive => lower_2, etc
+                negative => lower_1, etc; positive => lower_2, etc
 
         Args:
             negative_control: The name of the negative control (not checked), or a ControlTypes-lookupable object

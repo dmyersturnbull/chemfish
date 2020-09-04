@@ -23,8 +23,8 @@ class KvrcColorSchemes:
 
 
         Args:
-          color:
-          shading: float:
+            color:
+            shading: float:
 
         """
         color = mcolors.colorConverter.to_rgb(color)
@@ -37,8 +37,8 @@ class KvrcColorSchemes:
 
 
         Args:
-          palette: Iterable[str]:
-          shading: float:
+            palette: Iterable[str]:
+            shading: float:
 
         Returns:
 
@@ -103,8 +103,6 @@ class KvrcColorSchemes:
         "Dark" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         No black and reordered red and yellow.
 
-        Args:
-
         Returns:
 
         """
@@ -115,8 +113,6 @@ class KvrcColorSchemes:
         """
         "High-contrast" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         Reordered. No gray.
-
-        Args:
 
         Returns:
 
@@ -129,8 +125,6 @@ class KvrcColorSchemes:
         "Vibrant" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         Reordered: black was moved to the front.
 
-        Args:
-
         Returns:
 
         """
@@ -141,8 +135,6 @@ class KvrcColorSchemes:
         """
         "Vibrant" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         Gray was removed.
-
-        Args:
 
         Returns:
 
@@ -155,8 +147,6 @@ class KvrcColorSchemes:
         "Vibrant" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         Gray was removed and gray was added to the front.
 
-        Args:
-
         Returns:
 
         """
@@ -167,8 +157,6 @@ class KvrcColorSchemes:
         """
         "Muted" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         Gray was removed.
-
-        Args:
 
         Returns:
 
@@ -190,8 +178,6 @@ class KvrcColorSchemes:
         """
         "Muted" color scheme from https://personal.sron.nl/~pault/#sec:qualitative
         Black was added to the front and gray was removed.
-
-        Args:
 
         Returns:
 
@@ -217,6 +203,7 @@ class FancyCmaps:
         - white_blue
         - blue_white
         - white_black
+
     The built-in matplotlib ones don't actually go between pure color values!!
     For ex, 'Greys' doesn't go from pure white to pure black!
     So colormaps to consider avoiding include Greys, Blues, Greens, (etc), bwr, and seismic.

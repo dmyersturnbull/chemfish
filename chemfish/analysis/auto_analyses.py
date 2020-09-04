@@ -13,7 +13,7 @@ from chemfish.viz.figures import *
 
 @abcd.auto_repr_str()
 class AutoScreenTracer:
-    """ """
+    """"""
 
     def __init__(
         self,
@@ -27,6 +27,18 @@ class AutoScreenTracer:
         saver: Optional[FigureSaver] = None,
         redownload: bool = False,
     ):
+        """
+
+        Args:
+            path:
+            redo:
+            traces:
+            plot_sensors:
+            metric:
+            path_fn:
+            saver:
+            redownload:
+        """
         self.path = Tools.prepped_dir(path)
         self.redo = redo
         self.traces = traces
@@ -63,15 +75,13 @@ class AutoScreenTracer:
         self,
         project: Union[Projects, int, str],
         control: Union[ControlTypes, str, int] = "solvent (-)",
-    ):
+    ) -> None:
         """
 
 
         Args:
-          project
-          control:
-
-        Returns:
+            project
+            control:
 
         """
         project = Projects.fetch(project)
@@ -81,15 +91,13 @@ class AutoScreenTracer:
         self,
         experiment: Union[Experiments, int, str],
         control: Union[ControlTypes, str, int] = "solvent (-)",
-    ):
+    ) -> None:
         """
 
 
         Args:
-          experiment:
-          control:
-
-        Returns:
+            experiment:
+            control:
 
         """
         experiment = Experiments.fetch(experiment)
@@ -102,10 +110,8 @@ class AutoScreenTracer:
 
 
         Args:
-          where:
-          control:
-
-        Returns:
+            where:
+            control:
 
         """
         control = None if control is None else ControlTypes.fetch(control)
@@ -125,10 +131,8 @@ class AutoScreenTracer:
 
 
         Args:
-          run: Runs:
-          control:
-
-        Returns:
+            run: Runs:
+            control:
 
         """
         q0 = self.quick
@@ -172,7 +176,7 @@ class AutoScreenTracer:
             # and now come the plots
             ########################################
             with FigureTools.hiding():
-                self._plot(df, control, path)
+                self._plot(df, control, path, run)
             ########################
             # we're done with plots
             self._write_properties(done_path)
@@ -183,16 +187,14 @@ class AutoScreenTracer:
             raise
         FigureTools.clear()
 
-    def _write_scores(self, df: WellFrame, control: ControlTypes, path: Path):
+    def _write_scores(self, df: WellFrame, control: ControlTypes, path: Path) -> None:
         """
 
 
         Args:
-          df: WellFrame:
-          control: ControlTypes:
-          path: Path:
-
-        Returns:
+            df: WellFrame:
+            control: ControlTypes:
+            path: Path:
 
         """
         if self.metric is None:
@@ -206,16 +208,15 @@ class AutoScreenTracer:
             # keep columns
         scores.to_csv(path / "scores.csv")
 
-    def _plot(self, df: WellFrame, control: ControlTypes, path: Path):
+    def _plot(self, df: WellFrame, control: ControlTypes, path: Path, run: Runs) -> None:
         """
 
 
         Args:
-          df: WellFrame:
-          control: ControlTypes:
-          path: Path:
-
-        Returns:
+            df:
+            control:
+            path:
+            run: run
 
         """
 
@@ -262,12 +263,12 @@ class AutoScreenTracer:
         # except Exception:
         #    logger.error("Failed to plot structures", exc_info=True)
 
-    def _write_properties(self, done_path: Path):
+    def _write_properties(self, done_path: Path) -> None:
         """
 
 
         Args:
-          done_path: Path:
+            done_path: Path:
 
         Returns:
 
@@ -286,7 +287,7 @@ class AutoScreenTracer:
 
 
         Args:
-          run: Runs:
+            run: Runs:
 
         Returns:
 
@@ -298,14 +299,12 @@ class AutoScreenTraces:
     """ """
 
     @classmethod
-    def run(cls, args):
+    def run(cls, args) -> None:
         """
 
 
         Args:
-          args:
-
-        Returns:
+            args:
 
         """
         parser = argparse.ArgumentParser("Auto-generate screening plots")
@@ -326,7 +325,7 @@ class AutoScreenTraces:
             args.generation,
             datetime.now(),
             feature=args.feature,
-            namer=WellNamers.screening_plate_with_labels(ignore_bids),
+            namer=WellNamers.screening_plate(ignore_bids),
         )
         tracer = AutoScreenTracer(
             q, args.path, redo=args.redo, traces=args.traces, plot_sensors=args.plot_sensors

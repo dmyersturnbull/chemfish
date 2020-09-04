@@ -15,13 +15,15 @@ class CachingWellFrameBuilder(WellFrameBuilder):
     The FrameCache saves WellFrames for full runs, but WellFrameBuilder will return only the wells of interest.
     If include_full_runs is set, WellFrameBuilder will return every well on runs where at least one well was queried.
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(self, cache: WellCache, before_datetime: Optional[datetime]):
+        """
+
+        Args:
+            cache:
+            before_datetime:
+        """
         super().__init__(before_datetime)
         self._cache = cache
         self._include_full_runs = False
@@ -36,8 +38,8 @@ class CachingWellFrameBuilder(WellFrameBuilder):
         Convenience factory method to query by an exact set of wells with no addition WHEREs.
 
         Args:
-          wells:
-          cache: WellCache:
+            wells:
+            cache: WellCache:
 
         Returns:
 
@@ -60,8 +62,8 @@ class CachingWellFrameBuilder(WellFrameBuilder):
         Convenience factory method to query by an exact set of runs with no addition WHEREs.
 
         Args:
-          runs:
-          cache: WellCache:
+            runs:
+            cache: WellCache:
 
         Returns:
 
@@ -84,8 +86,6 @@ class CachingWellFrameBuilder(WellFrameBuilder):
         Makes CachingWellFrameBuilder.build() return all of the wells on a run if a single well matched the query.
         This won't make the actual querying any slower because the whole runs are cached to disk, not just the matching wells.
 
-        Args:
-
         Returns:
 
         """
@@ -99,8 +99,8 @@ class CachingWellFrameBuilder(WellFrameBuilder):
         In CachingWellFrameBuilder this is useless because it MUST be the same as the cache feature.
 
         Args:
-          feature: The FeatureType; for CachingWellFrameBuilder MUST be the same as the feature
-          dtype:
+            feature: The FeatureType; for CachingWellFrameBuilder MUST be the same as the feature
+            dtype:
 
         Returns:
 
@@ -117,8 +117,6 @@ class CachingWellFrameBuilder(WellFrameBuilder):
         """
         Builds the WellFrame.
         Either loads the runs from disk and filters the wells by the query, or queries, caches, and returns.
-
-        Args:
 
         Returns:
 
@@ -147,7 +145,7 @@ class CachingWellFrameBuilder(WellFrameBuilder):
             df = df.with_new_sizes(self._sizer)
         df = self._internal_limit(df)
         df = self._internal_restrict_to_gen(df)
-        return df.sort_std()
+        return df.sort_standard()
 
 
 __all__ = ["CachingWellFrameBuilder"]

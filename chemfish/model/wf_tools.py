@@ -10,7 +10,7 @@ def _w(attrs: str):
 
 
     Args:
-      attrs: str:
+        attrs: str:
 
     Returns:
 
@@ -23,7 +23,7 @@ def _r(attrs: str):
 
 
     Args:
-      attrs: str:
+        attrs: str:
 
     Returns:
 
@@ -32,7 +32,9 @@ def _r(attrs: str):
 
 
 class WellFrameColumns:
-    """The functions that are used to generate the WellFrame columns."""
+    """
+    The functions that are used to generate the WellFrame columns.
+    """
 
     experiment_id = "experiment_id", _w("run.experiment.id")
     experiment_name = "experiment_name", _w("run.experiment.name")
@@ -80,13 +82,13 @@ class WellFrameColumns:
     b_ids = (
         "b_ids",
         lambda w, ts: tuple(
-            {Treatment.from_well_treatment(t).id for t in ts if t.batch_id is not None}
+            {Treatment.from_well_treatment(t).bid for t in ts if t.batch_id is not None}
         ),
     )
     c_ids = (
         "c_ids",
         lambda w, ts: tuple(
-            {Treatment.from_well_treatment(t).compound_id for t in ts if t.batch_id is not None}
+            {Treatment.from_well_treatment(t).cid for t in ts if t.batch_id is not None}
         ),
     )
 
@@ -144,7 +146,7 @@ class WellFrameColumns:
 
 
 class WellFrameColumnTools:
-    """ """
+    """"""
 
     int32_cols = {
         "well",
@@ -228,7 +230,7 @@ class WellFrameColumnTools:
         Temporarily replace NaNs and Nones to little-used values.
 
         Args:
-          df:
+            df:
 
         Returns:
 
@@ -251,7 +253,7 @@ class WellFrameColumnTools:
         Undoes WellFrameColumnTools._from_nan
 
         Args:
-          df:
+            df:
 
         Returns:
 

@@ -8,7 +8,7 @@ from chemfish.model.well_names import *
 
 
 class ChemfishDatasetTools:
-    """ """
+    """"""
 
     @classmethod
     def filter_fewer(cls, df: WellFrame, cutoff: int) -> WellFrame:
@@ -16,13 +16,11 @@ class ChemfishDatasetTools:
         For any compound with fewer than `cutoff` wells containing exactly that compound, filters the corresponding wells.
 
         Args:
-          df: A WellFrame with 0 or 1 compounds per well
-          cutoff: Minimum
-          df: WellFrame:
-          cutoff: int:
+            df: A WellFrame with 0 or 1 compounds per well
+            cutoff: Minimum
 
         Returns:
-          The filtered WellFrame
+            The filtered WellFrame
 
         """
         if np.any(df["c_ids"].map(len) > 1):
@@ -46,7 +44,7 @@ class ChemfishDatasetTools:
 
 
         Args:
-          today: datetime:
+            today: datetime:
 
         Returns:
 
@@ -59,7 +57,7 @@ class ChemfishDatasetTools:
 
 
         Args:
-          today: datetime:
+            today: datetime:
 
         Returns:
 
@@ -77,7 +75,7 @@ class ChemfishDatasetTools:
 
 
         Args:
-          today: datetime:
+            today: datetime:
 
         Returns:
 
@@ -95,7 +93,7 @@ class ChemfishDatasetTools:
 
 
         Args:
-          today: datetime:
+            today: datetime:
 
         Returns:
 
@@ -108,7 +106,7 @@ class ChemfishDatasetTools:
 
 
         Args:
-          today: datetime:
+            today: datetime:
 
         Returns:
 
@@ -126,12 +124,12 @@ class ChemfishDatasetTools:
 
 
         Args:
-          today: datetime:
+            today: datetime:
 
         Returns:
 
         """
-        return WellNamers.screening_plate_with_labels()
+        return WellNamers.screening_plate()
 
     @classmethod
     def dmt_simple_namer(cls, today: datetime) -> WellNamer:
@@ -139,7 +137,7 @@ class ChemfishDatasetTools:
 
 
         Args:
-          today: datetime:
+            today: datetime:
 
         Returns:
 
@@ -227,7 +225,7 @@ class LeoDataset1(ChemfishDataset):
             .with_names(WellNamers.screening_plate())
             .build()
         )
-        df = df.without_controls_matching(names={"no drug transfer", "low drug transfer"})
+        df = df.without_controls(names={"no drug transfer", "low drug transfer"})
         df = df.sort_values(["datetime_run", "well_index"])
         df = df.groupby("experiment_id").head(n_replicates * 96)
         treatments = df.without_controls().groupby("c_ids").head(n_replicates)
@@ -289,7 +287,7 @@ class LeoDataset2(ChemfishDataset):
         return (
             df.sort_values(["run", "well_index"])
             .subset(1, None)
-            .without_controls_matching({"no drug transfer"})
+            .without_controls({"no drug transfer"})
         )
 
 
@@ -299,10 +297,6 @@ class _SimpleFlamesDataset(ChemfishDataset):
     FYI:
         - Removes the first and last frames
         - Datetime 2019-09-01
-
-    Args:
-
-    Returns:
 
     """
 

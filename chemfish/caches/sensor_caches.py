@@ -11,7 +11,9 @@ bdata_names = {"sauronx-microphone-wav", "preview", "webcam"}
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class SensorCache(ASensorCache):
-    """A cache for sensor data from a given run"""
+    """
+    A cache for sensor data from a given run.
+    """
 
     def __init__(self, cache_dir: PathLike = DEFAULT_CACHE_DIR):
         self._cache_dir = Tools.prepped_dir(cache_dir)
@@ -27,7 +29,7 @@ class SensorCache(ASensorCache):
 
 
         Args:
-          tup:
+            tup:
 
         Returns:
 
@@ -43,7 +45,7 @@ class SensorCache(ASensorCache):
 
 
         Args:
-          path: PathLike:
+            path: PathLike:
 
         Returns:
 
@@ -54,14 +56,12 @@ class SensorCache(ASensorCache):
         return sensor, run
 
     @abcd.overrides
-    def download(self, *sensors: Iterable[Tup[SensorLike, RunLike]]):
+    def download(self, *sensors: Iterable[Tup[SensorLike, RunLike]]) -> None:
         """
 
 
         Args:
-          *sensors:
-
-        Returns:
+            *sensors:
 
         """
         for sensor, run in sensors:
@@ -132,12 +132,11 @@ class SensorCache(ASensorCache):
         Fetches sensor data if cache is available. Downloads if cache not present.
 
         Args:
-          sensor: param run:
-          sensor: SensorLike:
-          run: RunLike:
+            sensor:
+            run: RunLike:
 
         Returns:
-          Raw/Converted Sensor Data
+            Raw/Converted Sensor Data
 
         """
         sensor = Sensors.fetch(sensor)

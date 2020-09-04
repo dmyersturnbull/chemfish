@@ -4,7 +4,9 @@ from chemfish.lookups import *
 
 @abcd.external
 class SubmissionLookups(LookupTool):
-    """Utilities for glancing at Valar's contents. Unlike "real" queries, these do not require a datetime filter."""
+    """
+    Utilities for glancing at Valar's contents. Unlike "real" queries, these do not require a datetime filter.
+    """
 
     @classmethod
     def tags(cls, wheres: Union[ExpressionsLike, RunTags] = None) -> Lookup:

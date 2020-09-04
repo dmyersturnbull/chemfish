@@ -2,7 +2,6 @@ import ast
 import shutil
 import subprocess
 
-import tomlkit
 from natsort import natsorted
 from pocketutils.core.dot_dict import NestedDotDict
 
@@ -21,7 +20,7 @@ _stimulus_replace.update(InternalTools.load_resource("core", "stim_names.json"))
 
 
 class StimulusType(SmartEnum):
-    """ """
+    """"""
 
     LED = enum.auto()
     AUDIO = enum.auto()
@@ -68,16 +67,40 @@ class ValarTools:
 
     @classmethod
     def required_sensors(cls, generation: DataGeneration) -> Set[Sensors]:
+        """
+
+        Args:
+            generation:
+
+        Returns:
+
+        """
         gens = {x["name"]: x for x in InternalTools.load_resource("core", "generations.json")}
         return set(Sensors.fetch_all(gens[generation.name]["required_sensors"]))
 
     @classmethod
     def optional_sensors(cls, generation: DataGeneration) -> Set[Sensors]:
+        """
+
+        Args:
+            generation:
+
+        Returns:
+
+        """
         gens = {x["name"]: x for x in InternalTools.load_resource("core", "generations.json")}
         return set(Sensors.fetch_all(gens[generation.name]["optional_sensors"]))
 
     @classmethod
     def standard_sensor(cls, name: str, generation: DataGeneration) -> Sensors:
+        """
+
+        Args:
+            generation:
+
+        Returns:
+
+        """
         gens = {x["name"]: x for x in InternalTools.load_resource("core", "generations.json")}
         return Sensors.fetch(gens[generation.name][name])
 
@@ -110,10 +133,10 @@ class ValarTools:
         See `InternalTools.convert_sensor_data_from_bytes` for details.
 
         Args:
-          data: The ID or instance of a row in sensor_data
+            data: The ID or instance of a row in sensor_data
 
         Returns:
-          The converted data
+            The converted data
 
         """
         data = SensorData.fetch(data)
@@ -133,7 +156,7 @@ class ValarTools:
             data: The data from `sensor_data.floats`; despite the name this is blob represented as bytes and may not correspond to floats at all
 
         Returns:
-            The converted data, or None if `data` is None
+            The converted data, or None if ``data`` is None
         """
         sensor = Sensors.fetch(sensor)
         dt = sensor.data_type
@@ -218,9 +241,9 @@ class ValarTools:
 
 
         Args:
-            df: pd.DataFrame:
+            df:
             column:
-            first: Sequence[str]:
+            first:
 
         Returns:
 
@@ -246,9 +269,9 @@ class ValarTools:
         This can be very useful for plotting.
 
         Args:
-            names: Iterable[str]:
+            names:
             sorting:
-            more_controls: Optional[Set[str]]:  (Default value = None)
+            more_controls:
 
         Returns:
 
@@ -366,8 +389,9 @@ class ValarTools:
     def wait_sec(cls, run: RunLike) -> float:
         """
         Time between plating and either running or plating.
-        - If dose time < plate time: wait_sec is negative
-        - If not dosed: wait_sec = run time - plate time
+            - If dose time < plate time: wait_sec is negative
+            - If not dosed: wait_sec = run time - plate time
+
         Returns np.inf is something is missing.
 
         Args:
@@ -472,12 +496,12 @@ class ValarTools:
         """
         Queries valar to determine names of solvents used in batches and map them to their names with ref manual:high.
         This is very slow and should be used only to update the known list.
-        See `known_solvent_names` instead.
+        See ``known_solvent_names`` instead.
 
         Args:
 
         Returns:
-          A mapping from compound IDs to names
+            A mapping from compound IDs to names
 
         """
 
@@ -510,7 +534,7 @@ class ValarTools:
         Args:
 
         Returns:
-          A mapping from compound IDs to names
+            A mapping from compound IDs to names
 
         """
         return {
@@ -527,10 +551,10 @@ class ValarTools:
         Return the control types matching ALL of the specified criteria.
 
         Args:
-          names: The set of allowed control_types
-          attributes: Any key-value pairs mapping an attribute of ControlTypes to a required value
-          names:
-          **attributes:
+            names: The set of allowed control_types
+            attributes: Any key-value pairs mapping an attribute of ControlTypes to a required value
+            names:
+            **attributes:
 
         Returns:
 
@@ -557,10 +581,10 @@ class ValarTools:
         Return the control types matching ANY of the specified criteria.
 
         Args:
-          names: A set of control_types
-          attributes: Any key-value pairs mapping an attribute of ControlTypes to a required value
-          names:
-          **attributes:
+            names: A set of control_types
+            attributes: Any key-value pairs mapping an attribute of ControlTypes to a required value
+            names:
+            **attributes:
 
         Returns:
 
@@ -583,7 +607,9 @@ class ValarTools:
 
     @classmethod
     def generate_batch_hash(cls) -> str:
-        """Generates a batch lookup_hash as an 8-digit lowercase alphanumeric string."""
+        """
+        Generates a batch lookup_hash as an 8-digit lowercase alphanumeric string.
+        """
         s = None
         # 41.36 bits with 1 million compounds has a 20% chance of a collision
         # that's ok because the chance for a single compound is very low, and we can always generate a new one
@@ -597,7 +623,11 @@ class ValarTools:
 
     @classmethod
     def generate_submission_hash(cls) -> str:
-        """ """
+        """
+
+        Returns:
+
+        """
         return "%012x" % (random.randrange(16 ** 12))
 
     @classmethod
@@ -605,12 +635,12 @@ class ValarTools:
         """
         Generates a batch lookup_hash as 'oc_' plus the first 11 characters the sha1 of its ID.
         This is the previous way to generate hashes, but it has problems:
-            1) If there's a hash collision, we're stuck.
-            2) If we need to reset the IDs, there will be overlap between new and old
-            3) We waste 3 characters at the beginning and need 11 random characters
+            1. If there's a hash collision, we're stuck.
+            2. If we need to reset the IDs, there will be overlap between new and old
+            3. We waste 3 characters at the beginning and need 11 random characters
 
         Args:
-          batch_id: int:
+            batch_id: int:
 
         Returns:
 
@@ -626,10 +656,10 @@ class ValarTools:
         Determines the "data generation" of the run, specific to Kokel Lab data. See `DataGeneration` for more details.
 
         Args:
-          run: A runs instance, ID, name, tag, or submission hash or instance
+            run: A runs instance, ID, name, tag, or submission hash or instance
 
         Returns:
-          A DataGeneration instance
+            A DataGeneration instance
 
         """
         run = ValarTools.run(run)
@@ -665,10 +695,10 @@ class ValarTools:
         Finds all unique features involved in all the wells for a given run.
 
         Args:
-          run: A run ID, name, tag, instance, or submission hash or instance
+            run: A run ID, name, tag, instance, or submission hash or instance
 
         Returns:
-          The set of features involved in a given run.
+            The set of features involved in a given run.
 
         """
         run = ValarTools.run(run)
@@ -695,10 +725,10 @@ class ValarTools:
         Finds all unique sensor names that have sensor data for a given run.
 
         Args:
-          run: A run ID, name, tag, instance, or submission hash or instance
+            run: A run ID, name, tag, instance, or submission hash or instance
 
         Returns:
-          The set of sensor names that have sensor data for a given run.
+            The set of sensor names that have sensor data for a given run.
 
         """
         run = ValarTools.run(run)
@@ -717,10 +747,10 @@ class ValarTools:
 
 
         Args:
-          submission_hash: Any string
+            submission_hash: Any string
 
         Returns:
-          Whether the string could be a submission hash (is formatted correctly)
+            Whether the string could be a submission hash (is formatted correctly)
 
         """
         return InternalTools.looks_like_submission_hash(submission_hash)
@@ -731,10 +761,10 @@ class ValarTools:
 
 
         Args:
-          battery: The battery ID, name, or instance
+            battery: The battery ID, name, or instance
 
         Returns:
-          Whether the battery is a _true_ legacy battery; i.e. can't be run with SauronX
+            Whether the battery is a _true_ legacy battery; i.e. can't be run with SauronX
 
         """
         battery = Batteries.fetch(battery)
@@ -746,10 +776,10 @@ class ValarTools:
 
 
         Args:
-          assay: The assay ID, name, or instance
+            assay: The assay ID, name, or instance
 
         Returns:
-          Whether the assay is a _true_ legacy battery; i.e. can't be run with SauronX
+            Whether the assay is a _true_ legacy battery; i.e. can't be run with SauronX
 
         """
         assay = Assays.fetch(assay)
@@ -761,10 +791,10 @@ class ValarTools:
 
 
         Args:
-          assay: The assay ID, name, or instance
+            assay: The assay ID, name, or instance
 
         Returns:
-          Whether the assay contains real stimuli; the query is relatively fast
+            Whether the assay contains real stimuli; the query is relatively fast
 
         """
         assay = Assays.fetch(assay)
@@ -781,7 +811,7 @@ class ValarTools:
         Does not perform a fetch. Instead, uses a prefetched map of names.
 
         Args:
-          sauron: A Sauron instance, ID, or name
+            sauron: A Sauron instance, ID, or name
 
         Returns:
 
@@ -793,17 +823,17 @@ class ValarTools:
             return "S" + sauron.name
 
     @classmethod
-    def sauron_config_name(cls, sc) -> str:
+    def sauron_config_name(cls, sauron_config: Union[int, SauronConfigs]) -> str:
         """
 
 
         Args:
-          sc:
+            sauron_config:
 
         Returns:
 
         """
-        sc = SauronConfigs.fetch(sc)
+        sc = SauronConfigs.fetch(sauron_config)
         return str(sc.id) + ":" + sc.created.strftime("%Y%m%d")
 
     @classmethod
@@ -812,12 +842,12 @@ class ValarTools:
         Fetches a sauron_configs row from a sauron_config or its ID, or a tuple of (sauron ID/instance/name, datetime modified).
 
         Args:
-          config: SauronConfigLike:
+            config: SauronConfigLike:
 
         Returns:
 
         Raises:
-          ValarLookupError: if it's not found
+            ValarLookupError: if it's not found
 
         """
         if isinstance(config, (int, SauronConfigs)):
@@ -845,8 +875,8 @@ class ValarTools:
 
 
         Args:
-          config: SauronConfigLike:
-          key: str:
+            config: SauronConfigLike:
+            key: str:
 
         Returns:
 
@@ -867,7 +897,7 @@ class ValarTools:
 
 
         Args:
-          config: SauronConfigLike:
+            config: SauronConfigLike:
 
         Returns:
 
@@ -886,11 +916,11 @@ class ValarTools:
         Returns a tag value from run_tags or raises a ValarLookupError.
 
         Args:
-          run: A run ID, name, tag, submission hash, submission instance or run instance
-          tag_name: The value in run_tags.name
+            run: A run ID, name, tag, submission hash, submission instance or run instance
+            tag_name: The value in run_tags.name
 
         Returns:
-          The value as an str
+            The value as an str
 
         """
         run = ValarTools.run(run)
@@ -905,11 +935,11 @@ class ValarTools:
         Returns a tag value from run_tags.
 
         Args:
-          run: A run ID, name, tag, submission hash, submission instance or run instance
-          tag_name: The value in run_tags.name
+            run: A run ID, name, tag, submission hash, submission instance or run instance
+            tag_name: The value in run_tags.name
 
         Returns:
-          The value as an str, or None if it doesn't exist
+            The value as an str, or None if it doesn't exist
 
         """
         run = ValarTools.run(run)
@@ -927,10 +957,10 @@ class ValarTools:
             - 'whoosh' instead of 'fs_12'
 
         Args:
-          stimulus: A stimulus ID, name, or instance
+            stimulus: A stimulus ID, name, or instance
 
         Returns:
-          The name as a string
+            The name as a string
 
         """
         stimulus = stimulus if isinstance(stimulus, str) else Stimuli.fetch(stimulus)
@@ -942,7 +972,7 @@ class ValarTools:
         Only works for SauronX runs.
 
         Args:
-          run:
+            run:
 
         Returns:
 
@@ -962,11 +992,11 @@ class ValarTools:
         Obscure.
 
         Args:
-          ms: The array of millisecond values
-          fps: The frames per second
+            ms: The array of millisecond values
+            fps: The frames per second
 
         Returns:
-          The unique frame seconds, unique, in order
+            The unique frame seconds, unique, in order
 
         """
         return np.unique([int(np.round(x * fps / 1000)) for x in ms])
@@ -977,7 +1007,7 @@ class ValarTools:
         Parse NestedDotDict from config_files.
 
         Args:
-          run:
+            run:
 
         Returns:
 
@@ -992,7 +1022,7 @@ class ValarTools:
         Parse NestedDotDict from config_files.
 
         Args:
-          sxt:
+            sxt:
 
         Returns:
 
@@ -1008,10 +1038,10 @@ class ValarTools:
         For example, 'matt' will be 'MMC', and 'douglas' will be 'DMT'.
 
         Args:
-          user: The name, ID, or instance in the users table
+            user: The name, ID, or instance in the users table
 
         Returns:
-          The initials as a string, in caps
+            The initials as a string, in caps
 
         """
         if isinstance(user, int):
@@ -1025,25 +1055,13 @@ class ValarTools:
         return "".join([c for c in user.first_name + " " + user.last_name if c.isupper()])
 
     @classmethod
-    def users_to_initials(cls) -> Mapping[Users, str]:
-        """
-        Returns the initials of all Users in database.
-
-        Args:
-
-        Returns:
-            Dictionary of all Users with keys corresponding to User Instances and values corresponding to
-        """
-        return {user: ValarTools.initials(user) for user in Users.select()}
-
-    @classmethod
     def storage_path(cls, run: Union[int, str, Runs, Submissions], shire_path: str) -> PurePath:
         """
 
 
         Args:
-          run:
-          shire_path: str:
+            run:
+            shire_path: str:
 
         Returns:
 
@@ -1063,10 +1081,10 @@ class ValarTools:
         Calls
 
         Args:
-          run: A run ID, name, tag, instance, or submission hash or instance
+            run: A run ID, name, tag, instance, or submission hash or instance
 
         Returns:
-          ValarTools.frames_per_second.
+            ValarTools.frames_per_second.
 
         """
         run = ValarTools.run(run)
@@ -1092,7 +1110,7 @@ class ValarTools:
 
 
         Args:
-          sauron_config:
+            sauron_config:
 
         Returns:
 
@@ -1113,8 +1131,8 @@ class ValarTools:
 
 
         Args:
-          sauron:
-          fps: int:
+            sauron:
+            fps: int:
 
         Returns:
 
@@ -1129,9 +1147,9 @@ class ValarTools:
 
 
         Args:
-          sauron:
-          name: str:
-          value: Any:
+            sauron:
+            name: str:
+            value: Any:
 
         Returns:
 
@@ -1153,7 +1171,7 @@ class ValarTools:
 
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -1168,8 +1186,8 @@ class ValarTools:
 
 
         Args:
-          run: RunLike:
-          item: str:
+            run: RunLike:
+            item: str:
 
         Returns:
 
@@ -1206,7 +1224,7 @@ class ValarTools:
 
 
         Args:
-          battery:
+            battery:
 
         Returns:
 
@@ -1219,7 +1237,7 @@ class ValarTools:
 
 
         Args:
-          assay:
+            assay:
 
         Returns:
 
@@ -1232,7 +1250,7 @@ class ValarTools:
         Returns the number of frames
 
         Args:
-          run: A run ID, name, tag, instance, or submission hash or instance
+            run: A run ID, name, tag, instance, or submission hash or instance
 
         Returns:
 
@@ -1262,11 +1280,11 @@ class ValarTools:
         Parses a submission value into strings, lists, ints, floats, batches, or genetic_variants.
 
         Args:
-          submission: Submission Identifier
-          param_name: Ex '$...drug'
+            submission: Submission Identifier
+            param_name: Ex '$...drug'
 
         Returns:
-          Submission Paramater value
+            Submission Paramater value
 
         """
         submission = Submissions.fetch(submission)
@@ -1328,10 +1346,10 @@ class ValarTools:
         are excluded from the returned set.
 
         Args:
-          ref: The library Refs table ID, name, or instance
+            ref: The library Refs table ID, name, or instance
 
         Returns:
-          The unique library plate IDs, from the legacy_internal fields
+            The unique library plate IDs, from the legacy_internal fields
 
         """
         ref = Refs.fetch(ref)
@@ -1354,11 +1372,11 @@ class ValarTools:
         Uses a fair bit of logic to figure this out; peruse the code for more info.
 
         Args:
-          submission: The submission ID, hash, or instance
-          var_name: The submission_params variable name, often something like '$...drug'
+            submission: The submission ID, hash, or instance
+            var_name: The submission_params variable name, often something like '$...drug'
 
         Returns:
-          library plate id for new style submissions and truncated legacy_internal_id values for old style submissions.
+            library plate id for new style submissions and truncated legacy_internal_id values for old style submissions.
 
         """
         submission = Submissions.fetch(submission)
@@ -1401,10 +1419,10 @@ class ValarTools:
         or submission hash(es).
 
         Args:
-          runs: An iterable consisting of run ID(s), name(s), tag(s), instance(s), or submission hash(es) or instance(s)
+            runs: An iterable consisting of run ID(s), name(s), tag(s), instance(s), or submission hash(es) or instance(s)
 
         Returns:
-          An iterable consisting of runs associated with given run identifiers.
+            An iterable consisting of runs associated with given run identifiers.
 
         """
         return Tools.runs(runs)
@@ -1429,10 +1447,8 @@ class ValarTools:
             Strips out the legacy assay qualifiers like `(variant:...)` and the user/experiment info.
             Also removes text like '#legacy' and 'sauronx-', and 'sys :: light ::'.
 
-        Args:
-
         Returns:
-          A function mapping assay names to new names
+            A function mapping assay names to new names
 
         """
         _usernames = {u.username for u in Users.select(Users.username)}
@@ -1456,7 +1472,7 @@ class ValarTools:
         See `ValarTools.assay_name_simplifier`, which is faster for many assay names.
 
         Args:
-          assay:
+            assay:
 
         Returns:
 
@@ -1472,10 +1488,10 @@ class ValarTools:
         Quickly gets only a fraction of a time-dependent feature.
 
         Args:
-          well: The well ID
-          feature: The FeatureType to select
-          start_frame: Starts at 0 as per our convention (note that MySQL itself starts at 1)
-          end_frame: Starts at 0 as per our convention (note that MySQL itself starts at 1)
+            well: The well ID
+            feature: The FeatureType to select
+            start_frame: Starts at 0 as per our convention (note that MySQL itself starts at 1)
+            end_frame: Starts at 0 as per our convention (note that MySQL itself starts at 1)
 
         Returns:
 

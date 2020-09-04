@@ -12,6 +12,12 @@ class BreakdownBarPlotter(KvrcPlotting):
     """"""
 
     def __init__(self, bar_width: float = chemfish_rc.acc_bar_width_fraction, kwargs=None):
+        """
+
+        Args:
+            bar_width:
+            kwargs:
+        """
         self.bar_width = bar_width
         self.kwargs = {} if kwargs is None else kwargs
 
@@ -62,16 +68,16 @@ class BreakdownPiePlotter(KvrcPlotting):
         self._radius = radius
         self._kwargs = {} if kwargs is None else kwargs
 
-    def plot(self, labels, sizes, colors=None, explode=None, ax=None):
+    def plot(self, labels, sizes, colors=None, explode=None, ax=None) -> Figure:
         """
 
 
         Args:
-          labels:
-          sizes:
-          colors:
-          explode:
-          ax:
+            labels:
+            sizes:
+            colors:
+            explode:
+            ax:
 
         Returns:
 

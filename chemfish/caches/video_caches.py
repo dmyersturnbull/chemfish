@@ -19,10 +19,6 @@ class VideoCache(AVideoCache):
     A cache for videos for runs.
     Downloads videos from the Shire, saves the native h265 video files, and loads them with moveipy.
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(
@@ -36,7 +32,8 @@ class VideoCache(AVideoCache):
         Args:
             cache_dir: The directory to save video files under.
             shire_store: The local or remote path to the Shire.
-                If local, will copy the files. If remote, will download with SCP on Windows and rsync on other systems.
+                         If local, will copy the files.
+                         If remote, will download with SCP on Windows and rsync on other systems.
         """
         self._cache_dir = Tools.prepped_dir(cache_dir)
         self.shire_store = PurePath(shire_store)
@@ -52,7 +49,7 @@ class VideoCache(AVideoCache):
 
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -66,7 +63,7 @@ class VideoCache(AVideoCache):
 
 
         Args:
-          path: PathLike:
+            path: PathLike:
 
         Returns:
 
@@ -80,11 +77,10 @@ class VideoCache(AVideoCache):
         Loads from the cache, downloading if necessary, and loads.
 
         Args:
-          run: A run ID, instance, name, tag, or submission hash or instance
-          run: RunLike:
+            run: A run ID, instance, name, tag, or submission hash or instance
 
         Returns:
-          A SauronxVideo
+            A SauronxVideo
 
         """
         self.download(run)
@@ -96,9 +92,7 @@ class VideoCache(AVideoCache):
 
 
         Args:
-          *runs: RunLike:
-
-        Returns:
+            *runs: RunLike:
 
         """
         for run in Tools.runs(runs):
@@ -121,8 +115,7 @@ class VideoCache(AVideoCache):
         Loads from the cache. Will raise an error if the video is not already in the cache.
 
         Args:
-          run: A run ID, instance, name, tag, or submission hash or instance
-          run: RunLike:
+            run: A run ID, instance, name, tag, or submission hash or instance
 
         Returns:
           A SauronxVideo
@@ -135,24 +128,20 @@ class VideoCache(AVideoCache):
         Raises a HashValidationFailedException if the hash doesn't validate.
 
         Args:
-          run: RunLike:
-
-        Returns:
+            run: RunLike:
 
         """
         path = self.path_of(run)
         if not VideoCore.video_hasher.check_hash(path):
             raise HashValidationFailedError(f"Video at {path} did not validate")
 
-    def _copy_from_shire(self, remote_path, local_path):
+    def _copy_from_shire(self, remote_path, local_path) -> None:
         """
 
 
         Args:
-          remote_path:
-          local_path:
-
-        Returns:
+            remote_path:
+            local_path:
 
         """
         try:

@@ -3,7 +3,6 @@ from __future__ import annotations
 import ast
 import textwrap
 from functools import total_ordering
-from typing import Union
 
 import matplotlib
 import matplotlib.cm as cmaps
@@ -19,7 +18,7 @@ from chemfish.viz.smart_dimensions import RefDims
 
 @total_ordering
 class TimeUnit:
-    """ """
+    """"""
 
     def __init__(self, unit: str, abbrev: str, singlular: str, n_ms: int):
         self.unit, self.abbrev, self.singular, self.plural, self.n_ms = (
@@ -30,12 +29,12 @@ class TimeUnit:
             n_ms,
         )
 
-    def to_ms(self, n: int):
+    def to_ms(self, n: int) -> int:
         """
 
 
         Args:
-          n: int:
+            n: int:
 
         Returns:
 
@@ -56,7 +55,7 @@ class TimeUnit:
 
 
 class TimeUnits:
-    """ """
+    """"""
 
     MS = TimeUnit("ms", "ms", "millisecond", 1)
     SEC = TimeUnit("s", "sec", "second", 1000)
@@ -67,7 +66,7 @@ class TimeUnits:
 
     @classmethod
     def values(cls):
-        """ """
+        """"""
         return [
             TimeUnits.MS,
             TimeUnits.SEC,
@@ -83,7 +82,8 @@ class TimeUnits:
 
 
         Args:
-          s:
+            s:
+
         Returns:
 
         """
@@ -97,7 +97,9 @@ class TimeUnits:
 
 
 class KvrcDefaults:
-    """Some default and legacy default values for chemfish_rc."""
+    """
+    Some default and legacy default values for chemfish_rc.
+    """
 
     trace_pref_tick_ms_interval = InternalTools.load_resource("viz", "ms_ticks.ints")
 
@@ -132,10 +134,6 @@ class Key:
     Otherwise, `value` will be None.
     (Note that the `value` may actually be None when resolved.)
 
-    Args:
-
-    Returns:
-
     """
 
     __slots__ = ["key", "kind", "fallback", "nullable", "desc", "value", "is_resolved"]
@@ -150,6 +148,17 @@ class Key:
         value: Optional[T] = None,
         is_resolved: bool = False,
     ):
+        """
+
+        Args:
+            key:
+            kind:
+            fallback:
+            nullable:
+            desc:
+            value:
+            is_resolved:
+        """
         self.key, self.kind, self.fallback, self.nullable, self.desc = (
             key,
             kind,
@@ -165,14 +174,13 @@ class Key:
         Then return a copy of this Key with `Key.value` set to the user-passed value or the fallback.
 
         Args:
-          value: Should be None iff it was not set in config file
-          value: Optional[str]:
+            value: Should be None iff it was not set in config file
 
         Returns:
-          A new Key
+            A new Key
 
         Raises:
-          OpStateError: If it has a non-None `Key.value` (it's already been resolved)
+            OpStateError: If it has a non-None `Key.value` (it's already been resolved)
 
         """
         if self.value is not None:
@@ -197,7 +205,7 @@ class Key:
 
 
         Args:
-          value: str:
+            value: str:
 
         Returns:
 
@@ -214,7 +222,7 @@ class Key:
 
 
         Args:
-          value: str:
+            value: str:
 
         Returns:
 
@@ -229,18 +237,16 @@ class KvrcConfig:
     """
     The collection of resolved (fixed; set from config file) chemfish_rc `Key`s.
     It contains `ChemfishConfig.collection`, which is a dict mapping key strings to resolved `Key`s.
-    For ex, `collection` might contain:
-    ```
-    {
-        'stamp_font_size': Key('stamp_font_size', float, 9).resolved(5)
-    }
-    ```
+
+    Example:
+        For ex, `collection` might contain::
+
+        {
+            'stamp_font_size': Key('stamp_font_size', float, 9).resolved(5)
+        }
+
     `collection` is mutable, with keys added through the `key` method.
-    In pratice, we'll instead call the methods corresponding to the desired types, such as `KvrcCdonfig.new_enum`.
-
-    Args:
-
-    Returns:
+    In practice, we'll instead call the methods corresponding to the desired types, such as `KvrcCdonfig.new_enum`.
 
     """
 
@@ -260,20 +266,14 @@ class KvrcConfig:
         Adds a new `Key` to the collection. (Calls the `Key` constructor.)
 
         Args:
-          key: The name of the key (ex: 'stamp_font_size')
-          kind: A function mapping a user-passed string to the required type
-          fallback: A default value of type T applied when the key isn't listed in the config file
-          nullable: Whether the user can set the key to None (ex: 'stamp_font_size=none'); independent of the fallback
-          d: An optional description of the key
-          key: str:
-          kind: Callable[[str]:
-          T]:
-          fallback: T:
-          nullable:
-          d:
+            key: The name of the key (ex: 'stamp_font_size')
+            kind: A function mapping a user-passed string to the required type
+            fallback: A default value of type T applied when the key isn't listed in the config file
+            nullable: Whether the user can set the key to None (ex: 'stamp_font_size=none'); independent of the fallback
+            d: An optional description of the key
 
         Returns:
-          The resolved value of the inserted key; this is the same as `config.collection['stamp_font_size'].value)
+            The resolved value of the inserted key; this is the same as `config.collection['stamp_font_size'].value)
 
         """
         key_obj = Key(key, kind, fallback, nullable, d)
@@ -293,9 +293,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[str]:
-          desc:
+            key: str:
+            fallback: Optional[str]:
+            desc:
 
         Returns:
 
@@ -309,25 +309,16 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[List[str]]:
-          inclass: Type:
-          desc:
+            key:
+            fallback:
+            inclass:
+            desc:
 
         Returns:
 
         """
 
         def find(v):
-            """
-
-
-            Args:
-              v:
-
-            Returns:
-
-            """
             return getattr(KvrcColorSchemes, v)
 
         return self.key(key, find, fallback, d=desc)
@@ -339,25 +330,16 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[str]:
-          choices: Set[str]:
-          desc:
+            key: str:
+            fallback: Optional[str]:
+            choices: Set[str]:
+            desc:
 
         Returns:
 
         """
 
         def en(v):
-            """
-
-
-            Args:
-              v:
-
-            Returns:
-
-            """
             if v not in choices:
                 raise ConfigError(f"{v} is not in {choices}")
             return v
@@ -371,9 +353,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[List[str]]:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
@@ -387,10 +369,8 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[Dict[str:
-          Any]]:
-          desc:
+            key:
+            fallback:
 
         Returns:
 
@@ -404,10 +384,8 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[Dict[str:
-          str]]:
-          desc:
+            key:
+            fallback:
 
         Returns:
 
@@ -421,24 +399,15 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[str]:
-          desc:
+            key: str:
+            fallback: Optional[str]:
+            desc:
 
         Returns:
 
         """
 
         def lam(v):
-            """
-
-
-            Args:
-              v:
-
-            Returns:
-
-            """
             if v not in MarkerStyle.markers.keys():
                 raise ConfigError(f"{v} is not a valid marker style")
 
@@ -451,9 +420,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[List[str]]:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
@@ -467,10 +436,8 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[Dict[str:
-          str]]:
-          desc:
+            key:
+            fallback:
 
         Returns:
 
@@ -486,9 +453,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback
-          desc:
+            key:
+            fallback
+            desc:
 
         Returns:
 
@@ -505,9 +472,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: bool:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
@@ -526,11 +493,11 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: float:
-          minimum:
-          maximum:
-          desc:
+            key: str:
+            fallback: float:
+            minimum:
+            maximum:
+            desc:
 
         Returns:
 
@@ -549,9 +516,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[TimeUnit]:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
@@ -565,9 +532,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: List[float]:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
@@ -581,25 +548,14 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[Tup[float:
-          float]]:
-          desc:
+            key:
+            fallback:
 
         Returns:
 
         """
 
         def ftup(v) -> Tup[float, float]:
-            """
-
-
-            Args:
-              v:
-
-            Returns:
-
-            """
             z = self._eval_list(v, float)
             a, b = float(z[0]), float(z[1])
             return a, b
@@ -618,11 +574,11 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: int:
-          minimum:
-          maximum:
-          desc:
+            key: str:
+            fallback: int:
+            minimum:
+            maximum:
+            desc:
 
         Returns:
 
@@ -639,9 +595,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: List[int]:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
@@ -653,24 +609,15 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[str]:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
         """
 
         def fw(value):
-            """
-
-
-            Args:
-              value:
-
-            Returns:
-
-            """
             if key not in {"normal", "bold", "heavy", "light", "ultrabold", "ultralight"}:
                 raise ConfigError(f"Font weight {value} not understood for {key}")
             return value
@@ -682,9 +629,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: str:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
@@ -696,9 +643,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: List[str]:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
@@ -710,9 +657,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: float:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
@@ -729,9 +676,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: float:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
@@ -750,24 +697,15 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: List[float]:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
         """
 
         def alphas(v: str):
-            """
-
-
-            Args:
-              v: str:
-
-            Returns:
-
-            """
             z = self._eval_list(v, str)
             return [self._conv_float(key, x, minimum=0, maximum=1) for x in z]
 
@@ -778,9 +716,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: float:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
@@ -799,9 +737,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[str]:
-          desc:
+            key:
+            fallback:
+            desc:
 
         Returns:
 
@@ -813,9 +751,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: float:
-          desc:
+            key: str:
+            fallback: float:
+            desc:
 
         Returns:
 
@@ -832,9 +770,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: float:
-          desc:
+            key: str:
+            fallback: float:
+            desc:
 
         Returns:
 
@@ -851,9 +789,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: Optional[str]:
-          desc:
+            key: str:
+            fallback: Optional[str]:
+            desc:
 
         Returns:
 
@@ -865,9 +803,9 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          fallback: float:
-          desc:
+            key: str:
+            fallback: float:
+            desc:
 
         Returns:
 
@@ -886,10 +824,10 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          value: str:
-          minimum: Optional[float]:
-          maximum: Optional[float]:
+            key: str:
+            value: str:
+            minimum: Optional[float]:
+            maximum: Optional[float]:
 
         Returns:
 
@@ -908,10 +846,10 @@ class KvrcConfig:
 
 
         Args:
-          key: str:
-          value: str:
-          minimum: Optional[int]:
-          maximum: Optional[int]:
+            key: str:
+            value: str:
+            minimum: Optional[int]:
+            maximum: Optional[int]:
 
         Returns:
 
@@ -931,8 +869,8 @@ class KvrcConfig:
         Requires exact Python syntax using `ast.literal_eval`.
 
         Args:
-          value: str:
-          vtypes:
+            value: str:
+            vtypes:
 
         Returns:
 
@@ -949,8 +887,8 @@ class KvrcConfig:
         Strips off any kind of bracket (if paired -- at both start and end), then splits by commas (,).
 
         Args:
-          value: str:
-          vtypes:
+            value: str:
+            vtypes:
 
         Returns:
 
@@ -959,11 +897,19 @@ class KvrcConfig:
 
 
 class KvrcCore:
-    """A base without specific param values."""
+    """
+    A base without specific param values.
+    """
 
     def __init__(
         self, matplotlib_style_path: Optional[PathLike], kvrc_style_path: Optional[PathLike]
     ):
+        """
+
+        Args:
+            matplotlib_style_path:
+            kvrc_style_path:
+        """
         self.stimulus_names, self._stimulus_names = None, None
         self.stimulus_colors, self._stimulus_colors = None, None
         self.feature_names, self._feature_names = None, None
@@ -984,7 +930,7 @@ class KvrcCore:
         Finds keys with 's' as a substring, returning the current values.
 
         Args:
-          s: str:
+            s: str:
 
         Returns:
 
@@ -994,13 +940,10 @@ class KvrcCore:
     def reload(self) -> None:
         """
         Does two things:
-        - Sets the matplotlib style (`plt.style.use`) if it's not None
-        - Reloads the chemfish_rc settings from `kvrc_style_path` if it's not None
+            - Sets the matplotlib style (`plt.style.use`) if it's not None
+            - Reloads the chemfish_rc settings from `kvrc_style_path` if it's not None
+
         Also sets the attributes `matplotlib_style_path` and `kvrc_style_path`, only when they're not None.
-
-        Args:
-
-        Returns:
 
         """
         self.load(self._matplotlib_style_path, self._kvrc_style_path)
@@ -1012,10 +955,8 @@ class KvrcCore:
         Reads and loads the matplotlib and chemfish_rc style file, if they're not `None`.
 
         Args:
-          matplotlib_style_path: Optional[PathLike]:
-          kvrc_style_path: Optional[PathLike]:
-
-        Returns:
+            matplotlib_style_path: Optional[PathLike]:
+            kvrc_style_path: Optional[PathLike]:
 
         """
         if matplotlib_style_path is not None:
@@ -1028,9 +969,7 @@ class KvrcCore:
 
 
         Args:
-          matplotlib_style_path: PathLike:
-
-        Returns:
+            matplotlib_style_path: PathLike:
 
         """
         self._matplotlib_style_path = matplotlib_style_path
@@ -1050,9 +989,7 @@ class KvrcCore:
 
 
         Args:
-          kvrc_style_path: PathLike:
-
-        Returns:
+            kvrc_style_path: PathLike:
 
         """
         self._kvrc_style_path = kvrc_style_path
@@ -1109,7 +1046,7 @@ class KvrcCore:
         We'll override this in the subclass.
 
         Args:
-          config: KvrcConfig:
+            config: KvrcConfig:
 
         Returns:
 
@@ -1123,8 +1060,6 @@ class KvrcCore:
         If `feature_names` is None, sets it in terms of `_feature_names` from the config file.
         The dict maps *internal names* (`Featuretype.internal_name`) to display names.
         If not set in `_feature_names`, the display name will be `FeatureType.feature_name`.
-
-        Args:
 
         Returns:
 
@@ -1145,7 +1080,7 @@ class KvrcCore:
         Note: Does not modify `_feature_names` (passed in the config file).
 
         Args:
-          **dct:
+            **dct:
 
         Returns:
 
@@ -1160,8 +1095,6 @@ class KvrcCore:
         The dict maps control_type names (`Stimuli.name`) to display names.
         If not set in `_stimulus_names`, the display name will be `ValarTools.stimulus_display_name(stimulus.name)`.
 
-        Args:
-
         Returns:
 
         """
@@ -1172,15 +1105,13 @@ class KvrcCore:
                     self.stimulus_names[s.name] = ValarTools.stimulus_display_name(s.name)
         return self.stimulus_names
 
-    def set_stimulus_names(self, **dct):
+    def set_stimulus_names(self, **dct) -> None:
         """
         Updates items in the `stimulus_names` dictionary, replacing them if they already exist.
         Note: Does not modify `_stimulus_names` (passed in the config file).
 
         Args:
-          **dct:
-
-        Returns:
+            **dct:
 
         """
         self.stimulus_names.update(dct)
@@ -1192,8 +1123,6 @@ class KvrcCore:
         If `stimulus_colors` is None, sets it in terms of `_stimulus_colors` from the config file.
         The dict maps control_type names (`Stimuli.name`) to colors.
         If not set in `_stimulus_colors`, the color will be `ValarTools.stimulus_display_color(stimulus.name)`.
-
-        Args:
 
         Returns:
 
@@ -1207,22 +1136,24 @@ class KvrcCore:
             self.stimulus_colors.update(self.stimulus_colors)
         return self.stimulus_colors
 
-    def set_stimulus_colors(self, **dct):
+    def set_stimulus_colors(self, **dct) -> None:
         """
         Updates items in the `stimulus_colors` dictionary, replacing them if they already exist.
         Note: Does not modify `_stimulus_colors` (passed in the config file).
 
         Args:
-          **dct:
-
-        Returns:
+            **dct:
 
         """
         self.stimulus_colors.update(dct)
 
     @property
     def width(self):
-        """ """
+        """
+
+        Returns:
+
+        """
         return plt.rcParams["figure.figsize"][0]
 
     @width.setter
@@ -1231,7 +1162,7 @@ class KvrcCore:
 
 
         Args:
-          value:
+            value:
 
         Returns:
 
@@ -1240,7 +1171,7 @@ class KvrcCore:
 
     @property
     def height(self):
-        """ """
+        """"""
         return plt.rcParams["figure.figsize"][1]
 
     @height.setter
@@ -1249,7 +1180,7 @@ class KvrcCore:
 
 
         Args:
-          value:
+            value:
 
         Returns:
 
@@ -1258,7 +1189,7 @@ class KvrcCore:
 
     @property
     def figsize(self):
-        """ """
+        """"""
         return plt.rcParams["figure.figsize"]
 
     @contextmanager
@@ -1267,28 +1198,29 @@ class KvrcCore:
         Temporarily sets Chemfish-specific or matplotlib settings.
 
         Args:
-          args: If present, these are functions that accept *this* ChemfishRc, modifies it, and returns nothing
-          kwargs: If present, these are key-value pairs where the keys are of ChemfishRc settings or matplotlib RC params,
-        and the values are the new values.
-        Periods (.) are automatically converted to underscores.
-          *args:
-          **kwargs:
+            args: If present, these are functions that accept *this* ChemfishRc, modifies it, and returns nothing
+            kwargs: If present, these are key-value pairs where the keys are of ChemfishRc settings or matplotlib RC params,
+                    and the values are the new values.
+                    Periods (.) are automatically converted to underscores.
+
         Returns:
-          A Python context manager with these options set
-          Example 1:
-          ```
-          with chemfish_rc.using(trace_legend_n_cols=2, axes_prop_cycle=kbgrcmy):
-          quick.trace(5)
-          ```
-          Example 2:
-          ```
-          def my_common_styler(kv):
-          kv['trace_legend_n_cols'] = 2
-          kv['axes.prop_cycle'] = 'kbgrcmy'
-          kv['stamp_on'] = False
-          with chemfish_rc.using(my_common_styler):
-          quck.trace(5)
-          ```
+            A Python context manager with these options set
+
+        Examples:
+            Example 1::
+
+                with chemfish_rc.using(trace_legend_n_cols=2, axes_prop_cycle=kbgrcmy):
+                quick.trace(5)
+
+            Example 2::
+
+                def my_common_styler(kv):
+                kv['trace_legend_n_cols'] = 2
+                kv['axes.prop_cycle'] = 'kbgrcmy'
+                kv['stamp_on'] = False
+                with chemfish_rc.using(my_common_styler):
+                    quck.trace(5)
+
           You can of course combine these two types of arguments (functions and keyword arguments).
           Has special behavior when setting `width`, `height`, and `figure.figsize`:
           If any of these are set, it sets the others in terms of it.
@@ -1321,11 +1253,14 @@ class KvrcCore:
             1. `item` in the available chemfish_rc keys
             2. `item` in maptlotlib rcParams
             3. `item.replace('_', '.', 1)`  in matplotlib rcParams
+
         However, has special behavior for figsize-related arguments:
             If `item` is any of `width`, `height`, or `figure.figsize`,
             sets the remaining ones in terms of it.
             Ex: setting `width` will also change `figsize[0]`, and vice versa.
-        :raises ChemfishKeyError: If the key wasn't found in any of the 3 places
+
+        Raises:
+            ChemfishKeyError: If the key wasn't found in any of the 3 places
         """
         item = item.strip()
         if item in self.__dict__.keys():
@@ -1352,8 +1287,8 @@ class KvrcCore:
 
 
         Args:
-          item: str:
-          value:
+            item: str:
+            value:
 
         Returns:
 
@@ -1411,9 +1346,8 @@ class KvrcCore:
         Plots a color palette.
 
         Args:
-          values: A string of a color (starting with #), a sequence of colors (each starting with #), or the name of the chemfish_rc setting (ex: pref_treatment_colors).
-          values: Union[Sequence[str]:
-          str]:
+            values: A string of a color (starting with #), a sequence of colors (each starting with #),
+                    or the name of the chemfish_rc setting (ex: pref_treatment_colors).
 
         Returns:
 
@@ -1442,11 +1376,15 @@ class KvrcCore:
         return figure
 
     def print_defaults(self) -> None:
-        """Prints the collection of default values."""
+        """
+        Prints the collection of default values.
+        """
         print("\n".join(["{:50} = {}".format(v.key, v.fallback) for v in self.collection.values()]))
 
     def print(self) -> None:
-        """Prints the collection of current values."""
+        """
+        Prints the collection of current values.
+        """
         print("\n".join(["{:50} = {}".format(v.key, v.value) for v in self.collection.values()]))
 
     def print_wrapped(self, length: int = 75) -> None:
@@ -1454,8 +1392,7 @@ class KvrcCore:
         Print a nice, long, wrapped string describing all of the options and their values.
 
         Args:
-          length: Max number of characters per line
-          length:
+            length: Max number of characters per line
 
         Returns:
 

@@ -10,17 +10,15 @@ from chemfish.core.core_imports import *
 
 
 class Lookup(UntypedDf, metaclass=abc.ABCMeta):
-    """A Pandas DataFrame from a simple Valar lookup."""
+    """
+    A Pandas DataFrame from a simple Valar lookup.
+    """
 
 
 class LookupTool(metaclass=abc.ABCMeta):
     """
     A class that provides static functions to look up data from Valar into Lookup DataFrames.
     These functions resemble SQL views.
-
-    Args:
-
-    Returns:
 
     """
 
@@ -30,8 +28,8 @@ class LookupTool(metaclass=abc.ABCMeta):
 
 
         Args:
-          expressions:
-          any_of:
+            expressions:
+            any_of:
 
         Returns:
 
@@ -42,10 +40,9 @@ class LookupTool(metaclass=abc.ABCMeta):
     def _expressions_using(cls, expressions, any_of):
         """
 
-
         Args:
-          expressions:
-          any_of:
+            expressions:
+             any_of:
 
         Returns:
 
@@ -67,7 +64,7 @@ class LookupTool(metaclass=abc.ABCMeta):
     @classmethod
     def _expressions_not_using(cls, expressions, any_of):
         """
-
+        X.
 
         Args:
           expressions:
@@ -96,12 +93,12 @@ class LookupTool(metaclass=abc.ABCMeta):
         For backwards compatibility
 
         Args:
-          table:
-          query:
-          like:
-          regex:
-          wheres:
-          *data:
+            table:
+            query:
+            like:
+            regex:
+            wheres:
+            *data:
 
         Returns:
 
@@ -116,7 +113,7 @@ class LookupTool(metaclass=abc.ABCMeta):
 
 
 class Column:
-    """ """
+    """"""
 
     def __init__(
         self,
@@ -124,6 +121,13 @@ class Column:
         attribute: Optional[str] = None,
         function: Optional[Callable[[Any], Any]] = None,
     ):
+        """
+
+        Args:
+            name:
+            attribute:
+            function:
+        """
         self.name = name
         self.attribute = attribute
         self.function = (lambda x: x) if function is None else function
@@ -133,7 +137,7 @@ class Column:
 
 
         Args:
-          data: Any:
+            data: Any:
 
         Returns:
 
@@ -149,9 +153,14 @@ V = TypeVar("V")
 
 
 class LookupBuilder:
-    """ """
+    """"""
 
     def __init__(self, table: Type[T]):
+        """
+
+        Args:
+            table:
+        """
         self._table = table
         self._query = table.select()
         self._columns = []  # type: List[Column]
@@ -168,7 +177,7 @@ class LookupBuilder:
 
 
         Args:
-          query: peewee.Query:
+            query: peewee.Query:
 
         Returns:
 
@@ -181,7 +190,7 @@ class LookupBuilder:
 
 
         Args:
-          attr: str:
+            attr: str:
 
         Returns:
 
@@ -190,30 +199,24 @@ class LookupBuilder:
         self._base_attr = attr
         return self
 
-    def handle_single(self, type_val: Type[V], function: Callable[[V], ExpressionLike]):
+    def handle_single(self, type_val: Type[V], function: Callable[[V], ExpressionLike]) -> None:
         """
 
 
         Args:
-          type_val: Type[V]:
-          function: Callable[[V]:
-          ExpressionLike]:
-
-        Returns:
+            type_val:
+            function:
 
         """
         self._single_handlers[type_val] = function
 
-    def handle_where(self, type_val: Type[V], function: Callable[[V], ExpressionLike]):
+    def handle_where(self, type_val: Type[V], function: Callable[[V], ExpressionLike]) -> None:
         """
 
 
         Args:
-          type_val: Type[V]:
-          function: Callable[[V]:
-          ExpressionLike]:
-
-        Returns:
+            type_val:
+            function:
 
         """
         self._where_handlers[type_val] = function
@@ -225,7 +228,7 @@ class LookupBuilder:
 
 
         Args:
-          *data:
+            *data:
 
         Returns:
 
@@ -249,10 +252,9 @@ class LookupBuilder:
 
 
         Args:
-          name: str:
-          attribute:
-          function: Optional[Callable[[Any]:
-          Any]]:  (Default value = None)
+            name: str:
+            attribute:
+            function:
 
         Returns:
 
@@ -275,8 +277,8 @@ class LookupBuilder:
 
 
         Args:
-          like: bool:
-          regex: bool:
+            like: bool:
+            regex: bool:
 
         Returns:
 
@@ -292,7 +294,7 @@ class LookupBuilder:
 
 
         Args:
-          column: str:
+            column: str:
 
         Returns:
 
@@ -305,7 +307,7 @@ class LookupBuilder:
 
 
         Args:
-          column: str:
+            column: str:
 
         Returns:
 
@@ -318,11 +320,7 @@ class LookupBuilder:
 
 
         Args:
-          wheres: Iterable[Union[T:
-          str:
-          int:
-          BaseModel:
-          ExpressionLike]]:
+            wheres:
 
         Returns:
 

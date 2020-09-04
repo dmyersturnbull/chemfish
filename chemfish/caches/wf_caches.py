@@ -16,11 +16,21 @@ DEFAULT_CACHE_DIR = chemfish_env.cache_dir / "wells"
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class WellCache(AWellCache):
-    """A cache for WellFrames with a particular feature."""
+    """
+    A cache for WellFrames with a particular feature.
+    """
 
     def __init__(
         self, feature: FeatureTypeLike, cache_dir: PathLike = DEFAULT_CACHE_DIR, dtype=None
     ):
+        """
+
+        Args:
+            feature:
+            cache_dir:
+            dtype:
+
+        """
         self.feature = FeatureTypes.of(feature) if feature is not None else None
         cache_dir = Path(cache_dir) / ("-" if self.feature is None else self.feature.internal_name)
         self._cache_dir = Tools.prepped_dir(cache_dir)
@@ -33,7 +43,7 @@ class WellCache(AWellCache):
         Features will be converted when loaded using `pd.as_type(dtype)`.
 
         Args:
-          dtype:
+            dtype:
 
         Returns:
 
@@ -51,7 +61,7 @@ class WellCache(AWellCache):
 
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -65,7 +75,7 @@ class WellCache(AWellCache):
 
 
         Args:
-          path: PathLike:
+            path: PathLike:
 
         Returns:
 
@@ -79,7 +89,7 @@ class WellCache(AWellCache):
 
 
         Args:
-          runs: RunsLike:
+            runs: RunsLike:
 
         Returns:
 
@@ -94,7 +104,7 @@ class WellCache(AWellCache):
 
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -109,9 +119,7 @@ class WellCache(AWellCache):
 
 
         Args:
-          *runs: RunsLike:
-
-        Returns:
+            *runs: RunsLike:
 
         """
         # TODO this is broken!!!
@@ -136,7 +144,7 @@ class WellCache(AWellCache):
 
 
         Args:
-          runs: RunsLike:
+            runs: RunsLike:
 
         Returns:
 
@@ -144,15 +152,7 @@ class WellCache(AWellCache):
         runs = ValarTools.runs(runs)
 
         def read(r):
-            """
-
-
-            Args:
-              r:
-
-            Returns:
-
-            """
+            """"""
             with Tools.silenced(no_stderr=True, no_stdout=True):
                 try:
                     df = pd.read_hdf(self.path_of(r), "df")
@@ -177,9 +177,7 @@ class WellCache(AWellCache):
         Saves a well-by-well dataframe as HDF5.
 
         Args:
-          df:
-
-        Returns:
+            df:
 
         """
         for run in df["run"].unique():

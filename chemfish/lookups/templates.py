@@ -4,7 +4,7 @@ from chemfish.lookups import *
 
 @abcd.external
 class TemplateLookups(LookupTool):
-    """ """
+    """"""
 
     @classmethod
     def treatments(

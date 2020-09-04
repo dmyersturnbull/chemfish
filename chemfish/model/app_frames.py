@@ -9,17 +9,13 @@ from chemfish.core.core_imports import *
 
 
 class InsightFrame(TypedDf):
-    """A Pandas DataFrame that with one row per change to a stimulus over time."""
+    """
+    A Pandas DataFrame that with one row per change to a stimulus over time.
+    """
 
     @classmethod
     def required_columns(cls):
-        """ """
         return ["value", "start_ms", "end_ms"]
-
-    @classmethod
-    def columns_to_drop(cls):
-        """ """
-        return ["index"]
 
 
 class AppFrame(TypedDf):
@@ -28,10 +24,12 @@ class AppFrame(TypedDf):
     For example, imagine a battery with two assays:
         - 'blue': a 1-second solid red light
         - 'red-tap': a red light with hard taps
+
     The AppFrame will have three rows:
         - assay: 'blue',      stimulus: 'blue LED',   start_ms:0
         - assay: 'red-tap',   stimulus: 'red LED',    start_ms:1000
         - assay: 'red-tap',   stimulus: 'solenoid',   start_ms:1000
+
     Has columns:
         - 'sf_id': stimulus_frames ID
         - 'ap_id': assay_positions ID
@@ -55,7 +53,7 @@ class AppFrame(TypedDf):
 
 
         Args:
-          battery:
+            battery:
 
         Returns:
 
@@ -70,7 +68,7 @@ class AppFrame(TypedDf):
 
     @classmethod
     def required_columns(cls):
-        """ """
+        """"""
         return [
             "sf_id",
             "ap_id",
@@ -87,15 +85,12 @@ class AppFrame(TypedDf):
             "frames",
         ]
 
-    def __init__(self, data=None, index=None, columns=None, dtype=None, copy=False):
-        super().__init__(data=data, index=index, columns=columns, dtype=dtype, copy=copy)
-
     def ms_off(self, any_of_stimuli: Union[str, Sequence[str]]) -> Sequence[int]:
         """
 
 
         Args:
-          any_of_stimuli:
+            any_of_stimuli:
 
         Returns:
 
@@ -111,7 +106,8 @@ class AppFrame(TypedDf):
 
 
         Args:
-          any_of_stimuli:
+            any_of_stimuli:
+            accept_value:
 
         Returns:
 
@@ -125,8 +121,8 @@ class AppFrame(TypedDf):
 
 
         Args:
-          any_of_stimuli:
-          accept_value:
+            any_of_stimuli:
+            accept_value:
 
         Returns:
 
@@ -147,7 +143,7 @@ class AppFrame(TypedDf):
 
 
         Args:
-          stimulus:
+            stimulus:
 
         Returns:
 
@@ -172,7 +168,7 @@ class AppFrame(TypedDf):
 
 
         Args:
-          assay:
+            assay:
 
         Returns:
 
@@ -185,8 +181,8 @@ class AppFrame(TypedDf):
 
 
         Args:
-          start_ms:
-          end_ms:
+            start_ms:
+            end_ms:
 
         Returns:
 
@@ -204,8 +200,7 @@ class AppFrame(TypedDf):
         Generates something like template_stimulus_frames for legacy protocols and assays
 
         Args:
-          index: A row index, starting at 0
-          index:
+            index: A row index, starting at 0
 
         Returns:
           A DataFrame of start, end, and value for changes
@@ -217,8 +212,6 @@ class AppFrame(TypedDf):
     def insight(self) -> InsightFrame:
         """
         Generates something like template_stimulus_frames for legacy or SauronX batteries and assays
-
-        Args:
 
         Returns:
             A DataFrame of start, end, and value for changes
@@ -236,7 +229,7 @@ class AppFrame(TypedDf):
         """
 
         Args:
-          frames_row:
+            frames_row:
 
         Returns:
 
@@ -257,8 +250,8 @@ class AppFrame(TypedDf):
 
 
         Args:
-          frames_row:
-          ms_per_stimframe:
+            frames_row:
+            ms_per_stimframe:
 
         Returns:
 
@@ -289,8 +282,8 @@ class AppFrame(TypedDf):
 
 
         Args:
-          arr:
-          framerate:
+            arr:
+            framerate:
 
         Returns:
 
@@ -312,7 +305,7 @@ class AppFrame(TypedDf):
 
 
         Args:
-          battery:
+            battery:
 
         Returns:
 

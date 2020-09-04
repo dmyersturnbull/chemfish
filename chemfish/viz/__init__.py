@@ -24,7 +24,7 @@ class CakeLayer(metaclass=abc.ABCMeta):
 
 
         Args:
-          **kwargs:
+            **kwargs:
 
         Returns:
 
@@ -41,8 +41,8 @@ def fix_fig(fig: Figure, **kwargs):
 
 
     Args:
-      fig: Figure:
-      **kwargs:
+        fig: Figure:
+        **kwargs:
 
     Returns:
 
@@ -69,7 +69,7 @@ def new_fig(**kwargs):
 
 
     Args:
-      **kwargs:
+        **kwargs:
 
     Returns:
 
@@ -84,7 +84,7 @@ def subplots(**kwargs):
 
 
     Args:
-      **kwargs:
+        **kwargs:
 
     Returns:
 

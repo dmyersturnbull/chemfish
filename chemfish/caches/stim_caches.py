@@ -12,13 +12,21 @@ DEFAULT_EXPANDED_CACHE_DIR = chemfish_env.cache_dir / "batteries" / "expanded"
 @abcd.auto_repr_str()
 @abcd.auto_eq()
 class StimframeCache(AStimCache):
-    """A cache for BatteryStimFrames."""
+    """
+    A cache for BatteryStimFrames.
+    """
 
     def __init__(
         self,
         cache_dir: PathLike = None,
         waveform_loader: Optional[Callable[[str], Waveform]] = None,
     ):
+        """
+
+        Args:
+            cache_dir:
+            waveform_loader:
+        """
         self.waveform_loader = waveform_loader
         if cache_dir is None:
             cache_dir = (
@@ -28,12 +36,12 @@ class StimframeCache(AStimCache):
 
     @property
     def cache_dir(self) -> Path:
-        """ """
+        """"""
         return self._cache_dir
 
     @property
     def is_expanded(self) -> bool:
-        """ """
+        """"""
         return self.waveform_loader is not None
 
     @abcd.overrides
@@ -42,7 +50,7 @@ class StimframeCache(AStimCache):
 
 
         Args:
-          battery: BatteryLike:
+            battery: BatteryLike:
 
         Returns:
 
@@ -57,7 +65,7 @@ class StimframeCache(AStimCache):
 
 
         Args:
-          path: PathLike:
+            path: PathLike:
 
         Returns:
 
@@ -71,7 +79,7 @@ class StimframeCache(AStimCache):
 
 
         Args:
-          battery: BatteryLike:
+            battery: BatteryLike:
 
         Returns:
 
@@ -85,7 +93,7 @@ class StimframeCache(AStimCache):
 
 
         Args:
-          *batteries: BatteryLike:
+            *batteries: BatteryLike:
 
         Returns:
 
@@ -105,7 +113,7 @@ class StimframeCache(AStimCache):
 
 
         Args:
-          battery: BatteryLike:
+            battery: BatteryLike:
 
         Returns:
 
@@ -118,15 +126,13 @@ class StimframeCache(AStimCache):
                 raise CacheLoadError(f"Failed to load stimframes for battery {battery.id}") from e
             return BatteryStimFrame(df)
 
-    def _save(self, battery, bsf):
+    def _save(self, battery, bsf) -> None:
         """
 
 
         Args:
-          battery:
-          bsf:
-
-        Returns:
+            battery:
+            bsf:
 
         """
         try:

@@ -3,7 +3,6 @@ from __future__ import annotations
 import moviepy.video.fx.crop as crop_fx
 from matplotlib.colors import to_rgb
 from moviepy.audio.AudioClip import CompositeAudioClip
-from moviepy.video.io.html_tools import ipython_display
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
 from chemfish.core.core_imports import *
@@ -20,13 +19,13 @@ def _draw_rectangle(frame, x0, y0, x1, y1, thickness: int, color):
     Draw a rectangle in the frame
 
     Args:
-      frame:
-      x0:
-      y0:
-      x1:
-      y1:
-      thickness: int:
-      color:
+        frame:
+        x0:
+        y0:
+        x1:
+        y1:
+        thickness: int:
+        color:
 
     Returns:
 
@@ -46,7 +45,7 @@ def _concat_audio(clips):
 
 
     Args:
-      clips:
+        clips:
 
     Returns:
 
@@ -74,13 +73,15 @@ class SauronxVideo:
 
     ========
     Coordinates and times are always with respect to the original!
-    Ex:
-    ```
-    cropped = video.crop_coords(100, 100, 200, 200)
-    print(cropped.x0, cropped.y0)  # 100, 100
-    cropped = cropped.crop_coords(100, 100, 200, 200)
-    print(cropped.x0, cropped.y0)  # 200, 200
-    ```
+
+    Example:
+        Cropping::
+
+            cropped = video.crop_coords(100, 100, 200, 200)
+            print(cropped.x0, cropped.y0)  # 100, 100
+            cropped = cropped.crop_coords(100, 100, 200, 200)
+            print(cropped.x0, cropped.y0)  # 200, 200
+
     ========
 
     WARNING:
@@ -147,6 +148,25 @@ class SauronxVideo:
         wf: Optional[WellFrame] = None,
         meta: Optional[Mapping[str, Any]] = None,
     ):
+        """
+
+        Args:
+            path:
+            run:
+            video:
+            roi_ref:
+            starts_at_ms:
+            ends_at_ms:
+            x0:
+            y0:
+            x1:
+            y1:
+            clip_history:
+            crop_history:
+            rate:
+            wf:
+            meta:
+        """
         self.path = Path(path)
         self.run = Tools.run(run, join=True)
         self.generation = ValarTools.generation_of(self.run)
@@ -188,8 +208,7 @@ class SauronxVideo:
 
 
         Args:
-          well_frame_fn: Callable[[WellFrame]:
-          WellFrame]:
+            well_frame_fn:
 
         Returns:
 
@@ -202,7 +221,7 @@ class SauronxVideo:
 
 
         Args:
-          **kwargs:
+            **kwargs:
 
         Returns:
 
@@ -211,7 +230,7 @@ class SauronxVideo:
         return self.highlight_wells(wells, color=chemfish_rc.video_negative_control_color)
 
     def highlight_controls(self) -> SauronxVideo:
-        """ """
+        """"""
         wells = self.wf.with_controls(positive=True)["well_label"].unique().tolist()
         cp = self.highlight_wells(wells, color=chemfish_rc.video_positive_control_color)
         wells = self.wf.with_controls(positive=False)["well_label"].unique().tolist()
@@ -222,12 +241,12 @@ class SauronxVideo:
 
 
         Args:
-          compounds:
+            compounds:
 
         Returns:
 
         """
-        wells = self.wf.with_all_compounds(compounds)["well_label"].unique().tolist()
+        wells = self.wf.with_compounds_all(compounds)["well_label"].unique().tolist()
         return self.highlight_wells(wells, color=chemfish_rc.video_plain_color)
 
     def highlight_bound(
@@ -242,11 +261,11 @@ class SauronxVideo:
 
 
         Args:
-          well1: str:
-          well2: str:
-          start_ms: int:  (Default value = 0)
-          end_ms: Optional[int]:  (Default value = None)
-          color:
+            well1: str:
+            well2: str:
+            start_ms:
+            end_ms:
+            color:
 
         Returns:
 
@@ -268,10 +287,10 @@ class SauronxVideo:
 
 
         Args:
-          labels:
-          start_ms: int:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          color:
+            labels:
+            start_ms:
+            end_ms:
+            color:
 
         Returns:
 
@@ -300,13 +319,13 @@ class SauronxVideo:
 
 
         Args:
-          x0: int:  (Default value = None)
-          y0: int:  (Default value = None)
-          x1: int:  (Default value = None)
-          y1: int:  (Default value = None)
-          color:
-          start_ms:  (Default value = None)
-          end_ms:  (Default value = None)
+            x0: int:
+            y0: int:
+            x1: int:
+            y1: int:
+            color:
+            start_ms:
+            end_ms:
 
         Returns:
 
@@ -362,8 +381,8 @@ class SauronxVideo:
         This will be moderately slow.
 
         Args:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
+            start_ms:
+            end_ms:
 
         Returns:
 
@@ -387,7 +406,7 @@ class SauronxVideo:
         Crops to a single well.
 
         Args:
-          wb1: str:
+            wb1: str:
 
         Returns:
 
@@ -398,11 +417,15 @@ class SauronxVideo:
     def crop_to_bound(self, label_1: str, label_2: str) -> SauronxVideo:
         """
         Crop between two wells.
-        Ex: video.bound('A01', 'C04')
+
+        Example:
+            Cropping::
+
+                video.bound('A01', 'C04')
 
         Args:
-          label_1: str:
-          label_2: str:
+            label_1: str:
+            label_2: str:
 
         Returns:
 
@@ -415,7 +438,7 @@ class SauronxVideo:
 
 
         Args:
-          label: str:
+            label: str:
 
         Returns:
 
@@ -428,10 +451,10 @@ class SauronxVideo:
 
 
         Args:
-          x0: int:
-          y0: int:
-          x1: int:
-          y1: int:
+            x0: int:
+            y0: int:
+            x1: int:
+            y1: int:
 
         Returns:
 
@@ -463,7 +486,7 @@ class SauronxVideo:
 
 
         Args:
-          factor: float:
+            factor: float:
 
         Returns:
 
@@ -477,7 +500,7 @@ class SauronxVideo:
 
 
         Args:
-          assay: AssayPositions:
+            assay: AssayPositions:
 
         Returns:
 
@@ -491,8 +514,8 @@ class SauronxVideo:
 
 
         Args:
-          start_ms: int:
-          end_ms: int:
+            start_ms: int:
+            end_ms: int:
 
         Returns:
 
@@ -504,7 +527,7 @@ class SauronxVideo:
 
 
         Args:
-          wb1: int:
+            wb1: int:
 
         Returns:
 
@@ -516,7 +539,7 @@ class SauronxVideo:
 
 
         Args:
-          wb1: str:
+            wb1: str:
 
         Returns:
 
@@ -528,7 +551,8 @@ class SauronxVideo:
 
 
         Args:
-          well:
+            well:
+
         Returns:
 
         """
@@ -543,7 +567,7 @@ class SauronxVideo:
 
 
         Args:
-          roi: Rois:
+            roi: Rois:
 
         Returns:
 
@@ -555,7 +579,7 @@ class SauronxVideo:
 
 
         Args:
-          video: SauronxVideo:
+            video: SauronxVideo:
 
         Returns:
 
@@ -584,11 +608,13 @@ class SauronxVideo:
 
 
         Args:
-          suppress:
+            suppress:
 
         Returns:
 
         """
+        from moviepy.video.io.html_tools import ipython_display
+
         logger.info(f"Displaying {self}")
         with logger.suppressed(suppress, universe=True):
             with Tools.silenced(suppress, suppress):
@@ -599,9 +625,7 @@ class SauronxVideo:
 
 
         Args:
-          path: PathLike:
-
-        Returns:
+            path: PathLike:
 
         """
         path = str(Tools.prepped_file(path).with_suffix(".mkv"))
@@ -614,16 +638,14 @@ class SauronxVideo:
 
 
         Args:
-          path: PathLike:
-
-        Returns:
+            path: PathLike:
 
         """
         path = str(Tools.prepped_file(path).with_suffix(".mp4"))
         self.video.write_videofile(path, ffmpeg_params=VideoCore.mp4_params)
 
     def close(self) -> None:
-        """ """
+        """"""
         self.video.close()
 
     def _verify_slice(self, start_ms: int, end_ms: int, assay: Optional[AssayPositions]):
@@ -631,9 +653,9 @@ class SauronxVideo:
 
 
         Args:
-          start_ms: int:
-          end_ms: int:
-          assay: Optional[AssayPositions]:
+            start_ms: int:
+            end_ms: int:
+            assay: Optional[AssayPositions]:
 
         Returns:
 
@@ -673,10 +695,10 @@ class SauronxVideo:
 
 
         Args:
-          lookup: Any:
-          roi: Rois:
-          ref:
-          run:
+            lookup: Any:
+            roi: Rois:
+            ref:
+            run:
 
         Returns:
 
@@ -734,7 +756,7 @@ class SauronxVideo:
 
 
 class SauronxVideos:
-    """ """
+    """"""
 
     @classmethod
     def of(cls, path: PathLike, run: Runs) -> SauronxVideo:
@@ -742,8 +764,8 @@ class SauronxVideos:
 
 
         Args:
-          path: PathLike:
-          run: Runs:
+            path: PathLike:
+            run: Runs:
 
         Returns:
 

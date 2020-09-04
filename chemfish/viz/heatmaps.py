@@ -16,7 +16,7 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
     """
     Plots heatmaps with wells on the y-axis, time on the x-axis, and MI or another time-dependent feature as color.
     Can be either symmetric (blue→white→red) or "raw" (white→black).
-    See ?HeatPlotter for more info.
+    See ``HeatPlotter`` for more info.
 
     """
 
@@ -68,10 +68,10 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
 
 
         Args:
-          df: WellFrame:
-          stimframes: Optional[StimFrame]:
-          starts_at_ms: int:  (Default value = 0)
-          battery:
+            df:
+            stimframes:
+            starts_at_ms:
+            battery:
 
         Returns:
 
@@ -102,8 +102,8 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
 
 
         Args:
-          n_rows: int:
-          with_stimframes: bool:
+            n_rows: int:
+            with_stimframes: bool:
 
         Returns:
 
@@ -137,8 +137,8 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
 
 
         Args:
-          df:
-          ax1:
+            df:
+            ax1:
 
         Returns:
 
@@ -178,7 +178,7 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
 
 
         Args:
-          df:
+            df:
 
         Returns:
 
@@ -194,6 +194,14 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
         return label_names
 
     def _vmin_max(self, df):
+        """
+
+        Args:
+            df:
+
+        Returns:
+
+        """
         if self._symmetric:
             highest = df.abs().quantile(self._vmax_quantile, axis=1).quantile(self._vmax_quantile)
             return -highest, highest
@@ -203,6 +211,16 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
             return vmin, vmax
 
     def _add_lines(self, vals, ax1, sep_line):
+        """
+
+        Args:
+            vals:
+            ax1:
+            sep_line:
+
+        Returns:
+
+        """
         if sep_line is None:
             return
         prev_name = -1

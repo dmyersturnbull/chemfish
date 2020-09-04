@@ -137,9 +137,9 @@ class LayoutViewers:
         lambda w, ts: ", ".join(
             Tools.unique(
                 [
-                    str(Treatment.from_well_treatment(t).oc[3:9])
+                    str(Treatment.from_well_treatment(t).bhash[3:9])
                     for t in ts
-                    if Treatment.from_well_treatment(t).oc is not None
+                    if Treatment.from_well_treatment(t).bhash is not None
                 ]
             )
         ),
@@ -149,9 +149,9 @@ class LayoutViewers:
         lambda w, ts: ", ".join(
             Tools.unique(
                 [
-                    str(Treatment.from_well_treatment(t).id)
+                    str(Treatment.from_well_treatment(t).bid)
                     for t in ts
-                    if Treatment.from_well_treatment(t).id is not None
+                    if Treatment.from_well_treatment(t).bid is not None
                 ]
             )
         ),
@@ -161,9 +161,9 @@ class LayoutViewers:
         lambda w, ts: ", ".join(
             Tools.unique(
                 [
-                    str(Treatment.from_well_treatment(t).tag)
+                    str(Treatment.from_well_treatment(t).btag)
                     for t in ts
-                    if Treatment.from_well_treatment(t).tag is not None
+                    if Treatment.from_well_treatment(t).btag is not None
                 ]
             )
         ),
@@ -173,9 +173,9 @@ class LayoutViewers:
         lambda w, ts: ", ".join(
             Tools.unique(
                 [
-                    str(Treatment.from_well_treatment(t).compound_id)
+                    str(Treatment.from_well_treatment(t).cid)
                     for t in ts
-                    if Treatment.from_well_treatment(t).id is not None
+                    if Treatment.from_well_treatment(t).bid is not None
                 ]
             )
         ),

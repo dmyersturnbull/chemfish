@@ -33,6 +33,15 @@ class FigureSaver:
         as_type: Optional[str] = None,
         kwargs: Mapping[str, Any] = None,
     ):
+        """
+
+        Args:
+            save_under:
+            clear:
+            warnings:
+            as_type:
+            kwargs:
+        """
         self._save_under = None if save_under is None else Path(save_under)
         if clear is not None and not isinstance(clear, bool) and not callable(clear):
             raise XTypeError(type(clear))
@@ -44,9 +53,19 @@ class FigureSaver:
         self._kwargs = {} if kwargs is None else kwargs
 
     def __mod__(self, tup):
+        """
+
+        Args:
+            tup:
+        """
         self.save_one(*tup)
 
     def __idiv__(self, tup):
+        """
+
+        Args:
+            tup:
+        """
         self.save(*tup)
 
     def save(
@@ -64,11 +83,9 @@ class FigureSaver:
         Otherwise, falls back to numbering them (ex: directory/1.png, etc)
 
         Args:
-          figure: FigureSeqLike:
-          path:
-          names:
-
-        Returns:
+            figure: FigureSeqLike:
+            path:
+            names:
 
         """
         if Tools.is_true_iterable(figure) and path.endswith(".pdf"):
@@ -85,11 +102,9 @@ class FigureSaver:
         Save a single PDF with potentially many figures.
 
         Args:
-          figures: FigureSeqLike:
-          path: PathLike:
-          names:
-
-        Returns:
+            figures: FigureSeqLike:
+            path: PathLike:
+            names:
 
         """
         # note! this is weird
@@ -112,11 +127,9 @@ class FigureSaver:
 
 
         Args:
-          figures:
-          directory:
-          names:
-
-        Returns:
+            figures:
+            directory:
+            names:
 
         """
         for name, figure in self._enumerate(figures, names):
@@ -129,10 +142,8 @@ class FigureSaver:
 
 
         Args:
-          figure:
-          path:
-
-        Returns:
+            figure:
+            path:
 
         """
         self._save_one(figure, path)
@@ -142,10 +153,8 @@ class FigureSaver:
 
 
         Args:
-          figure: Figure:
-          path: PathLike:
-
-        Returns:
+            figure: Figure:
+            path: PathLike:
 
         """
         path = self._sanitized_file(path)
@@ -159,10 +168,10 @@ class FigureSaver:
 
 
         Args:
-          figures:
-          names:
+            figures:
+            names:
 
-        Returns:
+        Yields:
 
         """
         if isinstance(figures, Mapping):
@@ -180,9 +189,7 @@ class FigureSaver:
 
 
         Args:
-          figure: Figure:
-
-        Returns:
+            figure: Figure:
 
         """
         if self._clear is None:
@@ -201,11 +208,10 @@ class FigureSaver:
             - warns about issues
 
         Args:
-          path: The path, including directory, but excluding self._save_under
-          path: PathLike:
+            path: The path, including directory, but excluding self._save_under
 
         Returns:
-          The Path
+            The Path
 
         """
         path = Path(path)

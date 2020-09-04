@@ -23,13 +23,13 @@ DEFINITELY_BAD_CONTROLS = {c: control_types[c] for c in {"no drug transfer", "lo
 
 
 class ConcernFrame(UntypedDf):
-    """ """
+    """"""
 
     pass
 
 
 class TargetTimeKind(Enum):
-    """ """
+    """"""
 
     ACCLIMATION = 1
     WAIT = 2
@@ -60,32 +60,23 @@ class Severity(enum.Enum):
 
     Many Concern types are not derived from Annotations or BatchAnnotations.
     For example, wells with low drug transfer, late treatment times, missing features or sensors, etc.
-    `ConcernRule`s define a Severity, but you can of course make your own rules for defining these.
+    ConcernRule define a Severity, but you can of course make your own rules for defining these.
 
     For example:
     The Severity of treatment times built into `TargetTimeConcernRule.severity` has specific rules
     for how bad (or good) a late (or early) treatment, wait (pre-treatment), or acclimation duration is.
     For example, >2-fold late treatment is marked with DANGER.
-    You could also define your own function:
-    ```
-    def lateness(concern: TargetTimeConcern) -> Severity:
-        if concern.kind is not TargetTimeKind.TREATMENT:
+    You could also define your own function::
 
-    Args:
+        def lateness(concern: TargetTimeConcern) -> Severity:
+            if concern.kind is not TargetTimeKind.TREATMENT:
 
-    Returns:
-      ```
 
-      A good rule of thumb:
-      * DANGER or CRITCAL  -- discard or fix
-      * WARNING            -- examine and decide
-      * CAUTION            -- examine and confirm
-      * GOOD or NOTE       -- ignore these
-
-    Raises:
-      if: concern
-      return: Severity
-      else:
+    A good rule of thumb:
+        - DANGER or CRITICAL  -- discard or fix
+        - WARNING            -- examine and decide
+        - CAUTION            -- examine and confirm
+        - GOOD or NOTE       -- ignore these
 
     """
 
@@ -110,12 +101,12 @@ class Severity(enum.Enum):
 
     @property
     def log_fn(self):
-        """ """
+        """"""
         return getattr(logger, self.log_level.lower())
 
     @property
     def log_level(self) -> str:
-        """ """
+        """"""
         return {
             9: "ERROR",
             4: "WARNING",
@@ -144,8 +135,6 @@ class Severity(enum.Enum):
             The rest have smaller widths.
         To work around this, hair spaces are appended. But that's not enough.
 
-        Args:
-
         Returns:
 
         """
@@ -159,7 +148,7 @@ class Severity(enum.Enum):
         }[self.value]
 
     @classmethod
-    def of(cls, level: Union[Severity, int, str]):
+    def of(cls, level: Union[Severity, int, str]) -> Severity:
         """
         Returns a Severity from:
             - a Severity instance
@@ -168,7 +157,7 @@ class Severity(enum.Enum):
             - the numerical value of a Severity
 
         Args:
-          level:
+            level:
 
         Returns:
 
@@ -194,12 +183,12 @@ class Severity(enum.Enum):
         Parses a 'level' value from Annotations or BatchAnnotations.
 
         Args:
-          level: str:
+            level: str:
 
         Returns:
 
         Raises:
-          LookupFailedError:
+            LookupFailedError:
 
         """
         level = level.lower()
@@ -214,26 +203,22 @@ class Severity(enum.Enum):
 
     @classmethod
     def bad_values(cls) -> Sequence[Severity]:
-        """ """
+        """"""
         return [Severity.CAUTION, Severity.WARNING, Severity.DANGER, Severity.CRITICAL]
 
     @classmethod
     def key_str(cls) -> str:
-        """ """
+        """"""
         return Chars.dangled(
             "  ".join([s.name + ":" + s.emoji.strip() for s in Severity.bad_values()])
         )
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class Concern(metaclass=abc.ABCMeta):
     """
     A result from a quality test on behavioral data on a run (or well).
     Might indicate an issue or potential issue. Refer to its `severity`.
-
-    Args:
-
-    Returns:
 
     """
 
@@ -263,9 +248,11 @@ class Concern(metaclass=abc.ABCMeta):
         }
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class LoadConcern(Concern):
-    """The data could not be loaded at all."""
+    """
+    The data could not be loaded at all.
+    """
 
     error: BaseException
     tb: FrameSummary
@@ -279,9 +266,9 @@ class LoadConcern(Concern):
         return "Load failed with {self.run.id} / {type(self.error)}"
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class ImpossibleTimeConcern(Concern):
-    """ """
+    """"""
 
     kind: str
     value: str
@@ -295,9 +282,11 @@ class ImpossibleTimeConcern(Concern):
         return f"{self.kind} time is {self.value}"
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class MissingSensorConcern(Concern):
-    """ """
+    """
+
+    """
 
     generation: DataGeneration
     expected: Set[Sensors]
@@ -305,11 +294,12 @@ class MissingSensorConcern(Concern):
 
     @property
     def missing(self) -> Set[Sensors]:
-        """ """
+        """
+
+        """
         return self.expected - self.actual
 
     def as_dict(self) -> Mapping[str, Any]:
-        """ """
         return {
             **self._main_dict(),
             "defined": frozenset([s.name for s in self.actual]),
@@ -317,7 +307,6 @@ class MissingSensorConcern(Concern):
         }
 
     def description(self) -> str:
-        """ """
         if len(self.missing) > 1:
             return f"Missing sensors: {', '.join([s.name for s in self.missing])}"
         elif len(self.missing) == 1:
@@ -326,24 +315,23 @@ class MissingSensorConcern(Concern):
             return "Has all sensors"
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class WellConcern(Concern):
-    """ """
+    """
+
+    """
 
     trash: Mapping[ControlTypes, int]
 
     @property
     def name(self):
-        """ """
         return "WellConcern"
 
     def as_dict(self) -> Mapping[str, Any]:
-        """ """
         x = Tools.join_kv(self.trash, ",")
         return {**self._main_dict(), "counts": "-" if len(x) == 0 else x}
 
     def description(self) -> str:
-        """ """
         if len(self.trash) > 0:
             return "Hazard well(s) present: " + ", ".join(
                 k.name + Chars.bracketed("n=" + str(v)) for k, v in self.trash.items()
@@ -352,15 +340,16 @@ class WellConcern(Concern):
             return "No hazard wells"
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class BatchConcern(Concern):
-    """ """
+    """
+
+    """
 
     batch: Batches
     annotation: BatchAnnotations
 
     def as_dict(self) -> Mapping[str, Any]:
-        """ """
         return {
             **self._main_dict(),
             "id": self.annotation.id,
@@ -369,13 +358,14 @@ class BatchConcern(Concern):
         }
 
     def description(self) -> str:
-        """ """
         return f"Suspicious batch b{self.batch.id}: '{self.annotation.name}'"
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class _AnnotationConcern(Concern, metaclass=abc.ABCMeta):
-    """ """
+    """
+
+    """
 
     annotation: Annotations
 
@@ -390,57 +380,63 @@ class _AnnotationConcern(Concern, metaclass=abc.ABCMeta):
         }
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class _ErrorConcern(Concern, metaclass=abc.ABCMeta):
-    """ """
+    """
+
+    """
 
     expected: float
     actual: float
 
     @property
     def raw_diff(self) -> float:
-        """ """
+        """
+
+        """
         return self.actual - self.expected
 
     @property
     def raw_error(self) -> float:
-        """ """
+        """
+
+        """
         return abs(self.raw_diff)
 
     @property
     def relative_error(self) -> float:
-        """ """
+        """
+
+        """
         return abs(self.relative_diff)
 
     @property
     def relative_diff(self) -> float:
-        """ """
-        if not hasattr(self, "__relative_diff"):
-            if self.expected == 0 or np.isinf(self.expected):
-                logger.debug(f"Expected value is {self.expected}. Setting relative_diff=+inf")
-                self.__relative_diff = np.inf
-            else:
-                # noinspection PyAttributeOutsideInit
-                self.__relative_diff = (self.actual - self.expected) / self.expected
-        return self.__relative_diff
+        """
+
+        """
+        if self.expected == 0 or np.isinf(self.expected):
+            logger.debug(f"Expected value is {self.expected}. Setting relative_diff=+inf")
+            return np.inf
+        else:
+            return (self.actual - self.expected) / self.expected
 
     @property
     def log2_diff(self) -> float:
-        """ """
-        if not hasattr(self, "__log2diff"):
-            if self.expected == 0 or np.isinf(self.expected):
-                logger.debug(f"Expected value is {self.expected}. Setting log2_diff=+inf")
-                self.__log2diff = np.inf
-            elif self.actual == 0 or np.isinf(self.actual):
-                logger.debug(f"Actual value is {self.actual}. Setting log2_diff=+inf")
-                self.__log2diff = np.inf
-            else:
-                # noinspection PyAttributeOutsideInit
-                self.__log2diff = np.log2(self.actual) - np.log2(self.expected)
-        return self.__log2diff
+        """
+
+        """
+        if self.expected == 0 or np.isinf(self.expected):
+            logger.debug(f"Expected value is {self.expected}. Setting log2_diff=+inf")
+            return np.inf
+        elif self.actual == 0 or np.isinf(self.actual):
+            logger.debug(f"Actual value is {self.actual}. Setting log2_diff=+inf")
+            return np.inf
+        else:
+            # noinspection PyAttributeOutsideInit
+            return np.log2(self.actual) - np.log2(self.expected)
 
     def as_dict(self) -> Mapping[str, Any]:
-        """ """
         return {
             **self._main_dict(),
             "raw_diff": self.raw_diff,
@@ -451,40 +447,37 @@ class _ErrorConcern(Concern, metaclass=abc.ABCMeta):
         }
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class SensorLengthConcern(_ErrorConcern):
-    """ """
+    """"""
 
     generation: DataGeneration
     sensor: Sensors
 
     def as_dict(self) -> Mapping[str, Any]:
-        """ """
         return {**super().as_dict(), "sensor": self.sensor.id}
 
     def description(self) -> str:
-        """ """
         return f"Sensor {self.sensor.name} severity: {self.severity.name.lower()}: {self.expected} → {self.actual}"
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class TargetTimeConcern(_ErrorConcern):
-    """ """
+    """
+
+    """
 
     kind: TargetTimeKind
     annotation: Optional[Annotations]
 
     @property
     def name(self):
-        """ """
         return self.kind.name.capitalize() + "Sec"
 
     def as_dict(self) -> Mapping[str, Any]:
-        """ """
         return {**super().as_dict(), "annotation_id": Tools.look(self.annotation, "id")}
 
     def description(self) -> str:
-        """ """
         diff = Tools.pretty_float(self.log2_diff, 2)
         actual = Tools.pretty_float(self.actual, None).lstrip("+")
         expected = Tools.pretty_float(self.expected, None).lstrip("+")
@@ -493,12 +486,13 @@ class TargetTimeConcern(_ErrorConcern):
         )
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class AnnotationConcern(_AnnotationConcern):
-    """ """
+    """
+
+    """
 
     def description(self) -> str:
-        """ """
         return (
             "Annotation: "
             + Chars.squoted(self.annotation.name)
@@ -507,14 +501,15 @@ class AnnotationConcern(_AnnotationConcern):
         )
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class ToFixConcern(_AnnotationConcern):
-    """ """
+    """
+
+    """
 
     fixed_with: Optional[Annotations]
 
     def description(self) -> str:
-        """ """
         return "{} to_fix {} ({}; id={}): {}".format(
             "Unfixed" if self.fixed_with is None else "Fixed",
             Chars.squoted(self.annotation.name),
@@ -524,9 +519,11 @@ class ToFixConcern(_AnnotationConcern):
         )
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class NFeaturesConcern(_ErrorConcern):
-    """ """
+    """
+
+    """
 
     def as_dict(self) -> Mapping[str, Any]:
         """ """
@@ -537,15 +534,16 @@ class NFeaturesConcern(_ErrorConcern):
         return f"Feature length: {self.expected} → {self.actual}"
 
 
-@dataclass
+@dataclass(frozen=True, order=True)
 class GenerationConcern(Concern):
-    """ """
+    """
+
+    """
 
     expected_generations: Set[DataGeneration]
     actual_generation: DataGeneration
 
     def as_dict(self) -> Mapping[str, Any]:
-        """ """
         return {
             **self._main_dict(),
             "expected_generations": tuple(self.expected_generations),
@@ -553,7 +551,6 @@ class GenerationConcern(Concern):
         }
 
     def description(self) -> str:
-        """ """
         return "Generation(s) {} (expected) → {}".format(
             Tools.join(self.expected_generations, ",", attr="name"), self.actual_generation.name
         )

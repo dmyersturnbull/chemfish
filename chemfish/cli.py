@@ -21,7 +21,7 @@ logger.setLevel(logging.INFO)
 
 
 class ChemfishCmd(SmartEnum):
-    """ """
+    """"""
 
     init = enum.auto()
     parrot = enum.auto()
@@ -29,14 +29,14 @@ class ChemfishCmd(SmartEnum):
 
 
 class ChemfishProcessor:
-    """ """
+    """"""
 
     def run(self, args) -> None:
         """
 
 
         Args:
-          args:
+            args:
 
         Returns:
 
@@ -55,8 +55,8 @@ class ChemfishProcessor:
 
 
         Args:
-          cmd: ChemfishCmd:
-          args:
+            cmd: ChemfishCmd:
+            args:
 
         Returns:
 
@@ -70,7 +70,7 @@ class ChemfishProcessor:
 
     # noinspection PyTypeChecker
     def init(self) -> None:
-        """ """
+        """"""
         logger.notice("Setting up chemfish configuration...")
         n_created = sum(
             [
@@ -106,9 +106,7 @@ class ChemfishProcessor:
 
 
         Args:
-          args:
-
-        Returns:
+            args:
 
         """
         from chemfish.caches.video_caches import VideoCache
@@ -124,8 +122,8 @@ class ChemfishProcessor:
 
 
         Args:
-          dest: Path:
-          source: Path:
+            dest: Path:
+            source: Path:
 
         Returns:
 
@@ -145,7 +143,7 @@ class ChemfishProcessor:
 
 
 def main():
-    """ """
+    """"""
     # noinspection PyBroadException
     try:
         ChemfishProcessor().run(None)

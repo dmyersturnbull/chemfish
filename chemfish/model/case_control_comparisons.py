@@ -22,22 +22,25 @@ class ControlComparison:
         - name=='optovin' and name=='optovin',        as a negative control experiment
         - name=='mk-801' and name=='ketamine',        where the result of the comparison indicates closeness
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(self, name: str, control: str, repeat: int):
+        """
+
+        Args:
+            name:
+            control:
+            repeat:
+        """
         self.name, self.control, self.repeat = name, control, repeat
 
     def to_dict(self) -> Mapping[str, Any]:
-        """ """
+        """"""
         return {"name": self.name, "control": self.control, "repeat": self.repeat}
 
     @property
     def directory(self) -> Path:
-        """ """
+        """"""
         return Tools.sanitize_path_nodes([str(self.repeat), self.control, self.name], is_file=False)
 
     def __hash__(self):
@@ -50,10 +53,6 @@ class TrainableCc:
     An equivalent to ``ControlComparison`` that also contains an attribute ``smalldf``,
     which contains selected wells to intended for the comparison.
     ``smalldf`` always has exactly 2 `name` values (``len(smalldf.unique_names()) == 2``).
-
-    Args:
-
-    Returns:
 
     """
 
@@ -97,14 +96,18 @@ class TrainableCc:
 
 
 class CcIterator(SizedIterator, metaclass=abc.ABCMeta):
-    """Iterator over `ControlComparison` instances."""
+    """
+    Iterator over `ControlComparison` instances.
+    """
 
     def __next__(self) -> ControlComparison:
         raise NotImplementedError()
 
 
 class CcSelfIterator(CcIterator):
-    """Iterator over name--name comparisons, where both values are the same. (Ex: 'optovin--optovin', then 'etomidate--etomidate')."""
+    """
+    Iterator over name--name comparisons, where both values are the same. (Ex: 'optovin--optovin', then 'etomidate--etomidate').
+    """
 
     def __init__(self, names: Iterable[str], n_repeats: int):
         self.__n_repeats = n_repeats
@@ -126,7 +129,9 @@ class CcSelfIterator(CcIterator):
 
 
 class CcCrossIterator(CcIterator):
-    """Iterator over name--name comparisons, filtering out those where the names are the same."""
+    """
+    Iterator over name--name comparisons, filtering out those where the names are the same.
+    """
 
     def __init__(self, names: Iterable[str], controls: Iterable[str], n_repeats: int):
         it = [
@@ -153,7 +158,9 @@ class CcCrossIterator(CcIterator):
 
 
 class CcTreatmentSelectors:
-    """Functions that choose (any number of) 'treatment' wells from a `WellFrame`."""
+    """
+    Functions that choose (any number of) 'treatment' wells from a ``WellFrame``.
+    """
 
     @classmethod
     def keep(cls, n: Optional[int] = None) -> Callable[[ControlComparison, WellFrame], WellFrame]:
@@ -161,7 +168,7 @@ class CcTreatmentSelectors:
 
 
         Args:
-          n:
+            n:
 
         Returns:
 
@@ -172,8 +179,8 @@ class CcTreatmentSelectors:
 
 
             Args:
-              cc: ControlComparison:
-              df: WellFrame:
+                cc: ControlComparison:
+                df: WellFrame:
 
             Returns:
 
@@ -192,15 +199,14 @@ class CcControlSelectors:
     """
     Functions that choose (any number of) 'control' wells from a `WellFrame`, knowing which treatments were already chosen,
 
-    Args:
+    The arguments for each are:
+        1. ControlComparison
+        2. WellFrame of all the wells
+        3. WellFrame of the chosen treatment wells (from arg #2).
 
-    Returns:
-      The arguments for each are:
-      1. ControlComparison
-      2. WellFrame of all the wells
-      3. WellFrame of the chosen treatment wells (from arg #2).
-      Then returns:
-      - A WellFrame of the controls (selected from arg #2)
+    Then returns:
+        - A WellFrame of the controls (selected from arg #2)
+
       These may include all available control wells or a subset of them, but never any others.
 
     """
@@ -214,9 +220,9 @@ class CcControlSelectors:
 
 
             Args:
-              cc: ControlComparison:
-              df: WellFrame:
-              by_name: WellFrame:
+                cc: ControlComparison:
+                df: WellFrame:
+                by_name: WellFrame:
 
             Returns:
 
@@ -233,9 +239,8 @@ class CcControlSelectors:
 
 
         Args:
-          columns: Union[str:
-          Set[str]]:
-          or_null: bool:
+            columns:
+            or_null: bool:
 
         Returns:
 
@@ -248,9 +253,9 @@ class CcControlSelectors:
 
 
             Args:
-              cc: ControlComparison:
-              df: WellFrame:
-              by_name: WellFrame:
+                cc: ControlComparison:
+                df: WellFrame:
+                by_name: WellFrame:
 
             Returns:
 
@@ -272,10 +277,6 @@ class CcSubsamplers:
     Functions that take two `WellFrame`s: 1 for 'treatments' and 1 for 'controls',
     and return updated `WellFrame`s with wells potentially subsampled from each.
 
-    Args:
-
-    Returns:
-
     """
 
     @classmethod
@@ -286,8 +287,8 @@ class CcSubsamplers:
 
 
         Args:
-          n: Optional[int]:
-          balanced:
+            n: Optional[int]:
+            balanced:
 
         Returns:
 
@@ -300,9 +301,9 @@ class CcSubsamplers:
 
 
             Args:
-              cc: ControlComparison:
-              by_name: WellFrame:
-              by_control: WellFrame:
+                cc: ControlComparison:
+                by_name: WellFrame:
+                by_control: WellFrame:
 
             Returns:
 
@@ -329,9 +330,8 @@ class CcSubsamplers:
 
 
         Args:
-          rand: Callable[[int]:
-          int]:
-          balanced:
+            rand:
+            balanced:
 
         Returns:
 
@@ -344,9 +344,9 @@ class CcSubsamplers:
 
 
             Args:
-              cc: ControlComparison:
-              by_name: WellFrame:
-              by_control: WellFrame:
+                cc: ControlComparison:
+                by_name: WellFrame:
+                by_control: WellFrame:
 
             Returns:
 
@@ -373,18 +373,14 @@ class CcSubsamplers:
             they both don't have a single name, or that name isn't the one in the ControlComparison.
 
         Args:
-          n: Maximum number of wells to subsample for each (i.e. n treatment wells and n control wells).
-        If None, choose all available (except when `balanced`; see below)
-          balanced: If there are an odd number of wells, choose floor(available/2) for both.
-        Otherwise, choose floor(available/2), floor(available/2)+1.
-        If `n` is lower than the number of wells available, chooses `n` for both.
-          rand: If non-None, apply this function on the chosen number of wells for 'a' and 'b'.
-        This happens after everything else.
-        If `balanced` is set, raises an AssertionError if the new (returned) values aren't the same for 'a' and 'b'
-          n: Optional[int]:
-          balanced:
-          rand: Optional[Callable[[int]:
-          int]]:  (Default value = None)
+            n: Maximum number of wells to subsample for each (i.e. n treatment wells and n control wells).
+               If None, choose all available (except when `balanced`; see below)
+            balanced: If there are an odd number of wells, choose floor(available/2) for both.
+                      Otherwise, choose floor(available/2), floor(available/2)+1.
+                      If `n` is lower than the number of wells available, chooses `n` for both.
+            rand: If non-None, apply this function on the chosen number of wells for 'a' and 'b'.
+                  This happens after everything else.
+                  If ``balanced`` is set, raises an AssertionError if the new (returned) values aren't the same for 'a' and 'b'
 
         Returns:
 
@@ -397,9 +393,9 @@ class CcSubsamplers:
 
 
             Args:
-              cc: ControlComparison:
-              by_name: WellFrame:
-              by_control: WellFrame:
+                cc: ControlComparison:
+                by_name: WellFrame:
+                by_control: WellFrame:
 
             Returns:
 
@@ -447,7 +443,9 @@ class CcSubsamplers:
 
 
 class CcShouldProceeds:
-    """A collection of functions that decide whether to keep a `ControlComparison` after everything else is complete."""
+    """
+    A collection of functions that decide whether to keep a `ControlComparison` after everything else is complete.
+    """
 
     @classmethod
     def keep(
@@ -457,9 +455,9 @@ class CcShouldProceeds:
 
 
         Args:
-          n_each: Optional[int]:  (Default value = None)
-          req_two_labels: bool:  (Default value = True)
-          fail:
+            n_each:
+            req_two_labels:
+            fail:
 
         Returns:
 
@@ -473,9 +471,9 @@ class CcShouldProceeds:
 
 
             Args:
-              cc: ControlComparison:
-              by_name: WellFrame:
-              by_control: WellFrame:
+                cc: ControlComparison:
+                by_name: WellFrame:
+                by_control: WellFrame:
 
             Returns:
 
@@ -498,7 +496,7 @@ class CcShouldProceeds:
 
 
 class TrainableCcIterator(SizedIterator):
-    """ """
+    """"""
 
     def __init__(
         self,
@@ -524,17 +522,17 @@ class TrainableCcIterator(SizedIterator):
             df: A WellFrame with treatments and controls to generate comparisons over
             it: An iterator over ControlComparisons for `df`
             treatment_selector: A function that maps a ControlComparison and this `df` to a smaller WellFrame
-                                    containing just the desired treatments.
-                                    These should be all the wells with the ControlComparisons `name`, or a subset of them
+                                containing just the desired treatments.
+                                These should be all the wells with the ControlComparisons `name`, or a subset of them
             control_selector: A function that maps a ControlComparison, this `df`, and the treatments (from `treatment_selector`)
-                                    to a smaller WellFrame of the desired control wells.
-                                    These should be all the control wells for the ControlComparison's `control`, or a subset of them
+                              to a smaller WellFrame of the desired control wells.
+                              These should be all the control wells for the ControlComparison's `control`, or a subset of them
             subsampler: A function that maps the ControlComparisons, result from `treatment_selector`, and result from `control_selector`,
-                                    to a new pair of (by_name, by_controls) corresponding to the inputs.
-                                    The intended purpose is subsampling intelligently after the treatment and control wells are chosen.
-                                    This function is permitted to be a bit flexible. It should avoid modifying inputs, but may.
+                        to a new pair of (by_name, by_controls) corresponding to the inputs.
+                        The intended purpose is subsampling intelligently after the treatment and control wells are chosen.
+                        This function is permitted to be a bit flexible. It should avoid modifying inputs, but may.
             should_proceed: A function that decides whether to keep comparison, taking the ControlComparsion,
-                                    final subsampled input (by_name, by_controls), and returns True to keep it.
+                            final subsampled input (by_name, by_controls), and returns True to keep it.
         """
         self.df = df
         self.__it = it
@@ -547,6 +545,11 @@ class TrainableCcIterator(SizedIterator):
         )
 
     def __next__(self) -> TrainableCc:
+        """
+
+        Returns:
+
+        """
         i = 0
         while self.__it.has_next():
             cc = next(self.__it)
@@ -566,7 +569,7 @@ class TrainableCcIterator(SizedIterator):
 
 
         Args:
-          cc: ControlComparison:
+            cc:
 
         Returns:
 
@@ -609,7 +612,9 @@ class TrainableCcIterator(SizedIterator):
 
 
 class CcIterators:
-    """A collection of `TrainableCcIterator` implementations."""
+    """
+    A collection of ``TrainableCcIterator`` implementations.
+    """
 
     @classmethod
     def vs_control(
@@ -630,10 +635,15 @@ class CcIterators:
         If this is too much detail, refer to the others, which have similar arguments.
 
         Args:
-          df: The WellFrame to iterate over.
-          n_repeats: Repeat this number of times. Mostly useful when subsampling.
-          restrict_to_same: Only include control wells that share one of the values in this column for the treatments.
+            df: The WellFrame to iterate over.
+            n_repeats: Repeat this number of times. Mostly useful when subsampling.
+            restrict_to_same: Only include control wells that share one of the values in this column for the treatments.
+            restrict_include_null:
+            subsample_to:
+            controls:
+
         This happens BEFORE subsampling (with `subsample_to`, if set).
+
         For example, setting `restrict_to_same='run'` will cause:
         1. Treatment wells are chosen. They're over a set of runs X.
         2. Control wells are chosen, subject to being on a run in X.
@@ -646,18 +656,10 @@ class CcIterators:
           subsample_to: Subsample BOTH the cases and the controls to some number of replicates, OR THE MINIMUM for either
         This means each classifier will get an even number of replicates for the cases and controls.
         It also means a classifier might use fewer replicates, if not enough exist.
-          controls: If None, chooses the controls to train against from df['control_type'].unique()
-          df: WellFrame:
-          n_repeats: int:  (Default value = 1)
-          restrict_to_same: Union[None:
-          str:
-          Set[str]]:  (Default value = None)
-          restrict_include_null: bool:  (Default value = False)
-          subsample_to: Optional[int]:  (Default value = None)
-          controls:
+
 
         Returns:
-          A `TrainableCcIterator`
+          A ``TrainableCcIterator``
 
         """
         if controls is None:
@@ -686,16 +688,14 @@ class CcIterators:
 
 
         Args:
-          df: WellFrame:
-          n_repeats: int:  (Default value = 1)
-          restrict_to_same: Union[None:
-          str:
-          Set[str]]:  (Default value = None)
-          restrict_include_null: bool:  (Default value = False)
-          low:
-          high:
-          seed:
-          controls:
+            df: WellFrame:
+            n_repeats:
+            restrict_to_same:
+            restrict_include_null:
+            low:
+            high:
+            seed:
+            controls:
 
         Returns:
 
@@ -719,10 +719,10 @@ class CcIterators:
     ) -> TrainableCcIterator:
         """
         Iterates over comparisons of name--name.
-        Subsampling then separates into "treatment" and "control" groups, relabling each mini-`WellFrame`.
-        That is: each `TrainableCc.smalldf.unique_names() == [original_name+'__a', original_name+'__b']`.
+        Subsampling then separates into "treatment" and "control" groups, relabling each mini-``WellFrame``.
+        That is: each ``TrainableCc.smalldf.unique_names() == [original_name+'__a', original_name+'__b']``.
         The split can never result in overlap between wells in the 'a' and 'b' groups.
-        `subsample_to` is the preferred number of wells per group. Setting it to None is equivalent to setting it to +infinity,
+        ``subsample_to`` is the preferred number of wells per group. Setting it to None is equivalent to setting it to +infinity,
         meaning use the maximum available.
         The split will always use up to `subsample_to` wells in 'a' and 'b', subject to those available,
         but will further keep the proportions balanced.
@@ -731,14 +731,11 @@ class CcIterators:
         So: Each group will have `floor(min(n_available, subsample_to) / 2)` wells
 
         Args:
-          df: param n_repeats:
-          subsample_to: The "preferred" number of wells per group
-          df: WellFrame:
-          n_repeats: int:  (Default value = 1)
-          subsample_to: Optional[int]:  (Default value = None)
+            df: param n_repeats:
+            subsample_to: The "preferred" number of wells per group
 
         Returns:
-          A TrainableCcIterator
+            A TrainableCcIterator
 
         """
         it = CcSelfIterator(df.unique_names(), n_repeats)
@@ -762,11 +759,11 @@ class CcIterators:
         If there are always enough wells available, this is just between `low` and `high`.
 
         Args:
-          df: WellFrame:
-          n_repeats: int:  (Default value = 1)
-          low:
-          high:
-          seed:
+            df: WellFrame:
+            n_repeats:
+            low:
+            high:
+            seed:
 
         Returns:
 
@@ -794,13 +791,11 @@ class CcIterators:
         See `vs_controls` for information about the arguments.
 
         Args:
-          df: WellFrame:
-          n_repeats: int:  (Default value = 1)
-          restrict_to_same: Union[None:
-          str:
-          Set[str]]:  (Default value = None)
-          restrict_include_null: bool:  (Default value = False)
-          subsample_to: Optional[int]:  (Default value = None)
+            df: WellFrame:
+            n_repeats:
+            restrict_to_same:
+            restrict_include_null:
+            subsample_to:
 
         Returns:
 
@@ -819,9 +814,9 @@ class CcIterators:
 
 
         Args:
-          low: Optional[int]:
-          high: Optional[int]:
-          seed: int:
+            low:
+            high:
+            seed: int:
 
         Returns:
 
@@ -838,7 +833,7 @@ class CcIterators:
 
 
                 Args:
-                  available:
+                    available:
 
                 Returns:
 

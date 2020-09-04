@@ -7,6 +7,7 @@ from chemfish.viz.figures import *
 
 
 class TimelineLabelType(SmartEnum):
+    """"""
 
     NONE = enum.auto()
     TIMES = enum.auto()
@@ -20,7 +21,7 @@ class TimelineLabelType(SmartEnum):
 
 
         Args:
-          runs: RunsLike:
+            runs: RunsLike:
 
         Returns:
 
@@ -43,6 +44,7 @@ class TimelineLabelType(SmartEnum):
 
 
 class DurationType(SmartEnum):
+    """"""
 
     WAIT = enum.auto()
     TREATMENT = enum.auto()
@@ -52,7 +54,11 @@ class DurationType(SmartEnum):
 
     @property
     def description(self) -> str:
-        """ """
+        """
+
+        Returns:
+
+        """
         if self is DurationType.TREATMENT_TO_START:
             return "time since treatment (min)"
         elif self is DurationType.PLATING_TO_START:
@@ -65,7 +71,7 @@ class DurationType(SmartEnum):
 
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -94,10 +100,6 @@ class TimelinePlotter(KvrcPlotting):
     Plots timelines, mostly for when plates were run.
     Colors are assigned per experiment, with a legend label each.
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(
@@ -112,6 +114,9 @@ class TimelinePlotter(KvrcPlotting):
 
         Args:
             use_times: Sets the y-values to the actual times; great for precision but tends to require a large height
+            date_format:
+            x_locator:
+            n_y_positions:
         """
         self.use_times, self.date_format, self.x_locator = use_times, date_format, x_locator
         self.n_y_positions = n_y_positions
@@ -126,9 +131,9 @@ class TimelinePlotter(KvrcPlotting):
 
 
         Args:
-          dates: Sequence[datetime]:
-          experiments:
-          labels:
+            dates:
+            experiments:
+            labels:
 
         Returns:
 
@@ -217,7 +222,7 @@ class TimelinePlotter(KvrcPlotting):
 
 
 class TimelinePlots:
-    """ """
+    """"""
 
     @classmethod
     def of(
@@ -231,13 +236,12 @@ class TimelinePlots:
 
 
         Args:
-          runs: param label_with: How to label individual runs; common choices are 'runs', 'plates', and 'times'.
-          use_experiments: If True, chooses a different color (and legend item) per exeriment (Default value = True)
-          kwargs: These are passed to the `TimelinePlotter` constructor
-          runs: RunsLike:
-          label_with: Union[str:
-          TimelineLabelType]:
-          **kwargs:
+            runs: param label_with: How to label individual runs; common choices are 'runs', 'plates', and 'times'.
+            use_experiments: If True, chooses a different color (and legend item) per exeriment (Default value = True)
+            kwargs: These are passed to the `TimelinePlotter` constructor
+            runs:
+            label_with:
+            **kwargs:
 
         Returns:
 
@@ -252,7 +256,9 @@ class TimelinePlots:
 
 
 class RunDurationPlotter:
-    """Plotters for durations between events like treatment and running (a plate)."""
+    """
+    Plotters for durations between events like treatment and running (a plate).
+    """
 
     def __init__(self, attribute: str):
         self._attribute = attribute
@@ -262,7 +268,7 @@ class RunDurationPlotter:
 
 
         Args:
-          kde_in_minutes: KdeData:
+            kde_in_minutes:
 
         Returns:
 
@@ -287,7 +293,7 @@ class RunDurationPlotter:
 
 
 class RunDurationPlots:
-    """ """
+    """"""
 
     @classmethod
     def of(
@@ -300,10 +306,10 @@ class RunDurationPlots:
 
 
         Args:
-          runs: RunsLike:
-          kind: Union[DurationType:
-          str]:
-          kde_params:
+            runs: RunsLike:
+            kind:
+            kde_params:
+
         Returns:
 
         """

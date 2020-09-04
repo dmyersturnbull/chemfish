@@ -17,7 +17,6 @@ class DecisionFrame(TypedDf):
 
     @classmethod
     def required_index_names(cls) -> Sequence[str]:
-        """ """
         return ["label", "sample_id"]
 
     @classmethod
@@ -50,7 +49,11 @@ class DecisionFrame(TypedDf):
         return cls.convert(decision_function)
 
     def confusion(self) -> ConfusionMatrix:
-        """ """
+        """
+
+        Returns:
+
+        """
         labels = self.columns
         correct_labels = self.index.get_level_values("label")
         if self.shape[0] != len(correct_labels):
@@ -72,7 +75,11 @@ class DecisionFrame(TypedDf):
         return ConfusionMatrix(correct_confused_with)
 
     def accuracy(self) -> AccuracyFrame:
-        """ """
+        """
+
+        Returns:
+
+        """
         actual_labels = self.index.get_level_values("label").values
         sample_ids = self.index.get_level_values("sample_id").values
         stripped = self.reset_index().drop("sample_id", axis=1).set_index("label")
@@ -88,36 +95,6 @@ class DecisionFrame(TypedDf):
                 "score_for_prediction": predicted_probs * 100.0,
             }
         )
-
-    @classmethod
-    def read_csv(cls, path: PathLike, *args, **kwargs) -> DecisionFrame:
-        """
-
-
-        Args:
-            path: PathLike:
-            *args:
-            **kwargs:
-
-        Returns:
-
-        """
-        df = pd.read_csv(Path(path)).set_index(cls.required_index_names())
-        return cls(df)
-
-    def to_csv(self, path: PathLike, *args, **kwargs):
-        """
-
-
-        Args:
-            path: PathLike:
-            *args:
-            **kwargs:
-
-        Returns:
-
-        """
-        self.to_csv(path)
 
 
 __all__ = ["DecisionFrame"]

@@ -20,6 +20,14 @@ class ImportancePlotter(CakeComponent, KvrcPlotting):
         cmap: Union[str, Colormap] = FancyCmaps.white_black(),
         vmax_quantile: Optional[float] = 0.95,
     ):
+        """
+
+        Args:
+            scatter:
+            cmap:
+            vmax_quantile:
+
+        """
         self._scatter, self._cmap = scatter, cmap
         self._vmax_quantile = vmax_quantile
 
@@ -34,10 +42,10 @@ class ImportancePlotter(CakeComponent, KvrcPlotting):
 
 
         Args:
-          weights:
-          ax:
-          vmin:
-          vmax:
+            weights:
+            ax:
+            vmin:
+            vmax:
 
         Returns:
 

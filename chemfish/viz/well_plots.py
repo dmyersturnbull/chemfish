@@ -7,14 +7,16 @@ from chemfish.viz.figures import *
 
 
 class WellPlotter(KvrcPlotting):
-    """ """
+    """
+
+    """
 
     def plot(self, df: WellFrame) -> Figure:
         """
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -23,9 +25,16 @@ class WellPlotter(KvrcPlotting):
 
 
 class TwoDWellPlotter(WellPlotter):
-    """ """
+    """
+
+    """
 
     def __init__(self, alpha: float = 0.8):
+        """
+
+        Args:
+
+        """
         self.alpha = alpha
 
     def plot(self, df: WellFrame) -> Figure:
@@ -33,7 +42,7 @@ class TwoDWellPlotter(WellPlotter):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -102,7 +111,9 @@ class TwoDWellPlotter(WellPlotter):
 
 
 class WellPlotters:
-    """ """
+    """
+
+    """
 
     @classmethod
     def basic(cls, df: WellFrame, recolor: bool = False, **kwargs) -> Figure:
@@ -110,17 +121,17 @@ class WellPlotters:
         Plots a standard 2D well plot such as t-SNE or PCA.
 
         Args:
-          df: WellFrame with exactly 2 features
-          recolor: Overrides the color column of the WellFrame, selecting 1 color per name and accounting for control types
-          df: WellFrame:
-          recolor:
-          **kwargs:
+            df: WellFrame with exactly 2 features
+            recolor: Overrides the color column of the WellFrame, selecting 1 color per name and accounting for control types
+            df: WellFrame:
+            recolor:
+            **kwargs:
 
         Returns:
 
         """
         if recolor:
-            df = df.set_meta_col(
+            df = df.set_meta(
                 "color", InternalVizTools.assign_colors_x(df["name"], df["control_type"])
             )
         return TwoDWellPlotter(**kwargs).plot(df)

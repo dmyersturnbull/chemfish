@@ -37,7 +37,7 @@ class ChemfishResources:
 
 
         Args:
-          *parts:
+            *parts:
 
         Returns:
 
@@ -50,7 +50,7 @@ class ChemfishResources:
 
 
         Args:
-          *parts:
+            *parts:
 
         Returns:
 
@@ -63,7 +63,7 @@ class ChemfishResources:
 
 
         Args:
-          *parts:
+            *parts:
 
         Returns:
 

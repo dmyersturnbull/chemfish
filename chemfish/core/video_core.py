@@ -11,6 +11,7 @@ from chemfish.core.valar_singleton import *
 
 
 class VideoCore:
+    """"""
 
     shasum_filename: str = InternalTools.load_resource("core", "videos.json")["shasum_filename"]
     sha_algorithm = InternalTools.load_resource("core", "videos.json")["shasum_algorithm"]
@@ -29,10 +30,10 @@ class VideoCore:
         """
 
         Args:
-          run: The runs instance
+            run: The runs instance
 
         Returns:
-          The path to the video MKV file relative to (and under) the Shire.
+            The path to the video MKV file relative to (and under) the Shire.
 
         """
         # TODO hardcoded

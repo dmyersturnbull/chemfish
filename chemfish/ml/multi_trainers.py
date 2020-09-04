@@ -10,10 +10,10 @@ from chemfish.model.well_frames import *
 
 
 class MultiTrainerUtils:
-    """ """
+    """"""
 
     @classmethod
-    def to_spindle(cls, items: Iterable[Tup[DecisionFrame, TrainableCc]]):
+    def to_spindle(cls, items: Iterable[Tup[DecisionFrame, TrainableCc]]) -> SpindleFrame:
         """
 
 
@@ -76,11 +76,7 @@ class MultiTrainer:
             df: WellFrame:
             max_iters: Optional[int]:  (Default value = None)
 
-        Returns:
-
         """
-        from IPython.display import display
-
         for i, (tt, subdir, n_trained) in enumerate(self._iterate(df)):
             info = {"trained": subdir.exists_with_decision(), **tt.info()}
             lines = []
@@ -108,7 +104,7 @@ class MultiTrainer:
         Args:
             df: WellFrame:
 
-        Returns:
+        Yields:
 
         """
         for tt, subdir, n_trained in self._iterate(df):
@@ -122,8 +118,6 @@ class MultiTrainer:
             df: Must correspond to the iterator; this can't be verified
             store_for_spindle: Store results as they're trained. This will consume increasing memory with
                                successive models, but will save time at the end.
-
-        Returns:
 
         """
         for _ in self.train(df, store_for_spindle=store_for_spindle):
@@ -141,7 +135,7 @@ class MultiTrainer:
             store_for_spindle: Store results as they're trained. This will consume increasing memory with successive
                                models, but will save a spindle at the end.
 
-        Returns:
+        Yields:
 
         """
         decisions = []
@@ -173,7 +167,7 @@ class MultiTrainer:
         Args:
             df: WellFrame:
 
-        Returns:
+        Yields:
 
         """
         it = self.iterator_fn()
@@ -210,9 +204,7 @@ class MultiTrainer:
 
     def read_spindle(self) -> SpindleFrame:
         """
-        Reads the `spindle.csv`. Fast.
-
-        Args:
+        Reads the ``spindle.csv``. Fast.
 
         Returns:
 
@@ -227,15 +219,15 @@ class MultiTrainer:
         if self.spindle_path.exists():
             return self.read_spindle()
         else:
-            return MultiTrainerUtils.to_spindle(self.load_decisions()).to_csv(self.spindle_path)
+            spindle = MultiTrainerUtils.to_spindle(self.load_decisions())
+            spindle.to_csv(self.spindle_path)
+            return spindle
 
     def load_decisions(self) -> Generator[Tup[DecisionFrame, TrainableCc], None, None]:
         """
-        Reads in `DecisionFrame`s. Slow.
+        Reads in ``DecisionFrame``s. Slow.
 
-        Args:
-
-        Returns:
+        Yields:
 
         """
         logger.minor(f"Loading decisions at {self.save_dir}")
@@ -249,9 +241,7 @@ class MultiTrainer:
         """
         Returns the paths and corresponding control comparisons. Slow.
 
-        Args:
-
-        Returns:
+        Yields:
 
         Raises:
             PathDoesNotExistError: If any model wasn't fully trained, including an associated decision.csv
@@ -266,24 +256,20 @@ class MultiTrainer:
         Returns the paths and corresponding control comparisons. Slow.
         The paths MAY OR MAY NOT BE TRAINED.
 
-        Args:
-
-        Returns:
+        Yields:
 
         """
         for cc in iter(self.iterator_fn()):
             path = ClassifierPath(self.save_dir / cc.directory)
             yield path, cc
 
-    def _startup_messages(self, it: TrainableCcIterator, df):
+    def _startup_messages(self, it: TrainableCcIterator, df) -> None:
         """
 
 
         Args:
             it: TrainableCcIterator:
             df:
-
-        Returns:
 
         """
         logger.debug(f"Iterator has length {len(it)}")
@@ -302,20 +288,21 @@ class MultiTrainer:
 
     @property
     def info_path(self) -> Path:
-        """ """
+        """"""
         return self.save_dir / "info.properties"
 
     @property
     def spindle_path(self) -> Path:
-        """ """
+        """"""
         return self.save_dir / "spindle.csv"
 
     def __len__(self):
+        """"""
         return self.__length
 
 
 class MultiTrainers:
-    """ """
+    """"""
 
     @classmethod
     def vs_control(
@@ -328,7 +315,7 @@ class MultiTrainers:
         restrict_include_null: bool = False,
         subsample_to: Optional[int] = None,
         controls: Optional[Iterable[str]] = None,
-    ):
+    ) -> MultiTrainer:
         """
 
 
@@ -372,7 +359,7 @@ class MultiTrainers:
         high: Optional[int] = None,
         seed: int = 0,
         controls: Optional[Iterable[str]] = None,
-    ):
+    ) -> MultiTrainer:
         """
 
 
@@ -415,7 +402,7 @@ class MultiTrainers:
         model_type: SklearnWfClassifierWithOob,
         n_repeats: int = 1,
         subsample_to: Optional[int] = None,
-    ):
+    ) -> MultiTrainer:
         """
 
 
@@ -446,7 +433,7 @@ class MultiTrainers:
         low: Optional[int] = None,
         high: Optional[int] = None,
         seed: int = 0,
-    ):
+    ) -> MultiTrainer:
         """
 
 
@@ -481,7 +468,7 @@ class MultiTrainers:
         restrict_to_same: Union[None, str, Set[str]] = None,
         restrict_include_null: bool = False,
         subsample_to: Optional[int] = None,
-    ):
+    ) -> MultiTrainer:
         """
 
 

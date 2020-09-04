@@ -16,20 +16,17 @@ class ConfusionMatrix(UntypedDf):
 
     """
 
-    def __init__(self, data=None, index=None, columns=None, dtype=None, copy=False):
-        super().__init__(data=data, index=index, columns=columns, dtype=dtype, copy=copy)
-
     def warn_if_asymmetric(self) -> None:
-        """ """
+        """"""
         if self.rows != self.cols:
             logger.warning(f"Rows {self.rows} != columns {self.columns}")
 
     def is_symmetric(self) -> bool:
-        """ """
+        """"""
         return self.rows == self.cols
 
     def _repr_html_(self) -> str:
-        """ """
+        """"""
         return "<strong>{}: {} {}</strong>\n{}".format(
             self.__class__.__name__,
             self._dims(),
@@ -43,7 +40,7 @@ class ConfusionMatrix(UntypedDf):
 
 
         Args:
-          names: Set[str]:
+            names: Set[str]:
 
         Returns:
 
@@ -67,7 +64,9 @@ class ConfusionMatrix(UntypedDf):
         return ConfusionMatrix(vals, index=self.rows, columns=self.columns)
 
     def diagonals(self) -> np.array:
-        """Returns diagonal elements."""
+        """
+        Returns diagonal elements.
+        """
         return np.array([self.iat[i, i] for i in range(len(self))])
 
     def off_diagonals_quantiles(self, q: float = 0.5) -> np.array:
@@ -75,7 +74,7 @@ class ConfusionMatrix(UntypedDf):
 
 
         Args:
-          q:
+            q:
 
         Returns:
 
@@ -86,25 +85,25 @@ class ConfusionMatrix(UntypedDf):
         return np.array(lst)
 
     def off_diagonals_means(self) -> np.array:
-        """ """
+        """"""
         lst = []
         for i in range(len(self)):
             lst.append(np.mean([self.iat[i, j] for j in range(len(self))]))
         return np.array(lst)
 
     def flatten(self) -> np.array:
-        """ """
+        """"""
         return self.values.flatten()
 
     def sum_diagonal(self) -> float:
-        """ """
+        """"""
         s = 0
         for i in range(len(self)):
             s += self.iat[i, i]
         return s
 
     def sum_off_diagonal(self) -> float:
-        """ """
+        """"""
         s = 0
         for i in range(len(self)):
             for j in range(len(self)):
@@ -112,11 +111,9 @@ class ConfusionMatrix(UntypedDf):
                     s += self.iat[i, j]
         return s
 
-    def score_df(self) -> pd.DataFrame:
+    def score_df(self) -> UntypedDf:
         """
         Get the diagonal elements as a Pandas DataFrame with columns 'name' and 'score'.
-
-        Args:
 
         Returns:
 
@@ -124,10 +121,15 @@ class ConfusionMatrix(UntypedDf):
         sers = []
         for score, name in self.scores():
             sers.append(pd.Series({"name": name, "score": score}))
-        return pd.DataFrame(sers)
+        return UntypedDf(sers)
 
     def symmetrize(self) -> ConfusionMatrix:
-        """Averages with its transpose, forcing it to be symmetric. Returns a copy."""
+        """
+        Averages with its transpose, forcing it to be symmetric.
+
+        Returns:
+            A copy
+        """
         return ConfusionMatrix(0.5 * (self + self.T))
 
     def triagonalize(self) -> ConfusionMatrix:
@@ -144,11 +146,13 @@ class ConfusionMatrix(UntypedDf):
         return ConfusionMatrix(self.where(np.tril(np.ones(self.shape)).astype(np.bool)))
 
     def log(self) -> ConfusionMatrix:
-        """Takes the log10 of every value in this ConfusionMatrix, returning a new one."""
+        """
+        Takes the log10 of every value in this ConfusionMatrix, returning a new one.
+        """
         return ConfusionMatrix(self.applymap(np.log10))
 
     def negative(self) -> ConfusionMatrix:
-        """ """
+        """"""
         return ConfusionMatrix(self.applymap(lambda x: -x))
 
     def sort(self, **kwargs) -> ConfusionMatrix:
@@ -158,10 +162,10 @@ class ConfusionMatrix(UntypedDf):
         Returns a copy.
 
         Args:
-          **kwargs:
+            **kwargs:
 
         Returns:
-          A dictionary mapping class names to their new positions (starting at 0)
+            A dictionary mapping class names to their new positions (starting at 0)
 
         """
         permutation = self.permutation(**kwargs)
@@ -173,10 +177,10 @@ class ConfusionMatrix(UntypedDf):
         Returns the sorting. Does not alter this ConfusionMatrix.
 
         Args:
-          **kwargs:
+            **kwargs:
 
         Returns:
-          A dictionary mapping class names to their new positions (starting at 0)
+            A dictionary mapping class names to their new positions (starting at 0)
 
         """
         if not self.is_symmetric():
@@ -190,7 +194,12 @@ class ConfusionMatrix(UntypedDf):
         return perm
 
     def sort_alphabetical(self) -> ConfusionMatrix:
-        """Sort by the labels alphabetically."""
+        """
+        Sort by the labels alphabetically.
+
+        Returns:
+            A copy
+        """
         labels = sorted(self.rows)
         return self.sort_first(labels)
 
@@ -205,7 +214,7 @@ class ConfusionMatrix(UntypedDf):
                          If a str, tries to read a CSV file at that path into a DataFrame; uses Tools.csv_to_dict
 
         Returns:
-          A new ConfusionMatrix with sorted rows and columns
+            A new ConfusionMatrix with sorted rows and columns
 
         """
         if not self.is_symmetric():
@@ -241,17 +250,19 @@ class ConfusionMatrix(UntypedDf):
 
     @property
     def rows(self):
-        """ """
+        """"""
         return self.index.tolist()
 
     @property
     def cols(self):
-        """ """
+        """"""
         return self.columns.tolist()
 
     @property
     def length(self) -> int:
-        """Get a safe length, verifying that the len(rows) == len(cols)."""
+        """
+        Gets a safe length, verifying that the len(rows) == len(cols).
+        """
         if len(self.rows) != len(self.cols):
             raise LengthMismatchError(f"{len(self.rows)} rows != {len(self.cols)} cols")
         return len(self.rows)
@@ -274,14 +285,14 @@ class ConfusionMatrix(UntypedDf):
         Generates a heatmap.
 
         Args:
-          vmin: Set this as the minimum accuracy (white on the colorbar)
-          vmax: Set this as the maximum accuracy (black on the colorbar)
-          runs: Run stamps in the upper-left corner with these runs (not verified)
-          renamer: A function that maps the class names to new names for plotting
-          label_colors: Mapping from names to colors for the labels; or a string for all control colors
+            vmin: Set this as the minimum accuracy (white on the colorbar)
+            vmax: Set this as the maximum accuracy (black on the colorbar)
+            runs: Run stamps in the upper-left corner with these runs (not verified)
+            renamer: A function that maps the class names to new names for plotting
+            label_colors: Mapping from names to colors for the labels; or a string for all control colors
 
         Returns:
-          The figure, which was not displayed
+            The figure, which was not displayed
 
         """
         return ConfusionPlots.plot(
@@ -298,10 +309,10 @@ class ConfusionMatrices:
         Averages a list of confusion matrices.
 
         Args:
-          matrices: An iterable of ConfusionMatrices (does not need to be a list)
+            matrices: An iterable of ConfusionMatrices (does not need to be a list)
 
         Returns:
-          A new ConfusionMatrix
+            A new ConfusionMatrix
 
         """
         if len(matrices) < 1:
@@ -333,11 +344,11 @@ class ConfusionMatrices:
         Averages a list of confusion matrices.
 
         Args:
-          matrices: An iterable of ConfusionMatrices (does not need to be a list)
-          aggregation: to perform, such as np.mean
+            matrices: An iterable of ConfusionMatrices (does not need to be a list)
+            aggregation: to perform, such as np.mean
 
         Returns:
-          A new ConfusionMatrix
+            A new ConfusionMatrix
 
         """
         if len(matrices) < 1:
@@ -363,7 +374,7 @@ class ConfusionMatrices:
 
 
         Args:
-          classes: Sequence[str]:
+            classes: Sequence[str]:
 
         Returns:
 
@@ -380,7 +391,7 @@ class ConfusionMatrices:
 
 
         Args:
-          classes: Sequence[str]:
+            classes: Sequence[str]:
 
         Returns:
 
@@ -400,7 +411,7 @@ class ConfusionMatrices:
 
 
         Args:
-          classes: Sequence[str]:
+            classes: Sequence[str]:
 
         Returns:
 

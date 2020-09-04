@@ -12,7 +12,7 @@ from chemfish.model.wf_builders import *
 
 
 class HitFrame(TypedDf):
-    """ """
+    """"""
 
     @classmethod
     def reserved_columns(cls):
@@ -24,7 +24,7 @@ class HitFrame(TypedDf):
 
 
         Args:
-          runs: RunsLike:
+            runs: RunsLike:
 
         Returns:
 
@@ -45,24 +45,29 @@ class HitSearch:
     The scores should always be such that more positive is better.
     Alternatively, you can call HitSearch.iterate() to stream over the results, which are pd.Series containing the columns for HitFrame.
     Whether called with search(), will save every n results as a DataFrame .csv to disk (1000 by default).
-    Example usage:
-        search = HitSearch()\
-                .set_feature('MI')\
-                .set_primary_score(lambda arr, well: -np.abs(arr - prototypical).mean())\
-                .add_secondary_score('mean', lambda arr, well: np.mean(arr))\
-                .set_min_score(-150)\
-                .where(Experiments.id == 12)\
-                .set_save_every(10)\
-                .limit(1000)
-        hits = search.search('query_results.csv')  # type: HitFrame
 
-    Args:
+    Example:
+        Like this::
 
-    Returns:
+            search = HitSearch()\
+                    .set_feature('MI')\
+                    .set_primary_score(lambda arr, well: -np.abs(arr - prototypical).mean())\
+                    .add_secondary_score('mean', lambda arr, well: np.mean(arr))\
+                    .set_min_score(-150)\
+                    .where(Experiments.id == 12)\
+                    .set_save_every(10)\
+                    .limit(1000)
+            hits = search.search('query_results.csv')  # type: HitFrame
 
     """
 
     def __init__(self, as_of: datetime):
+        """
+
+        Args:
+            as_of:
+
+        """
         self.as_of = as_of
         self.feature = FeatureTypes.MI
         self.wheres = []
@@ -77,7 +82,7 @@ class HitSearch:
         Save every `n` number of iterations. The default is 1000.
 
         Args:
-          n: int:
+            n: int:
 
         Returns:
 
@@ -90,11 +95,11 @@ class HitSearch:
         Sets the feature.
 
         Args:
-          feature: A FeatureType or its 'internal' name.
-        These are not just the feature names in Valar.
-        For example: "MI" is just non-interpolated MI, but "cd(10)_i" is interpolated cd(10).
-        When in doubt, you can pass in `quick.feature`.
-          feature:
+            feature: A FeatureType or its 'internal' name.
+                     These are not just the feature names in Valar.
+                     For example: "MI" is just non-interpolated MI, but "cd(10)_i" is interpolated cd(10).
+                     When in doubt, you can pass in `quick.feature`.
+
         Returns:
 
         """
@@ -107,8 +112,7 @@ class HitSearch:
 
         Args:
           expression: A peewee WHERE expression such as `Experiments.id == 1`
-        Can be an expression of Runs, Plates, Experiments, Projects, PlateTypes, Batteries, SauronConfigs, or Saurons.
-          expression: ExpressionLike:
+                      Can be an expression of Runs, Plates, Experiments, Projects, PlateTypes, Batteries, SauronConfigs, or Saurons.
 
         Returns:
 
@@ -122,12 +126,9 @@ class HitSearch:
 
         Args:
           function: A function that accepts a numpy array and a Wells valarpy instance and returns a single number
-        Make sure the function returns HIGHER values for BETTER scores.
-        If necessary you can modify the function to return the negative; ex
-        `set_primary_score(lambda arr, well: -my_scoring_fn(arr, well))`
-          function: Callable[[np.array:
-          Wells]:
-          float]:
+                    Make sure the function returns HIGHER values for BETTER scores.
+                    If necessary you can modify the function to return the negative; ex
+                    ``set_primary_score(lambda arr, well: -my_scoring_fn(arr, well))``
 
         Returns:
 
@@ -142,12 +143,8 @@ class HitSearch:
         Adds a secondary score, which will be included as an extra column.
 
         Args:
-          function: The same format as in `set_primary_score`
-          name: The name that will be given to the column
-          function: Callable[[np.array:
-          Wells]:
-          float]:
-          name: str:
+            function: The same format as in `set_primary_score`
+            name: The name that will be given to the column
 
         Returns:
 
@@ -164,10 +161,9 @@ class HitSearch:
         After calculating the scores for a well, exclude it entirely if its score is below this value.
 
         Args:
-          value: The minimum value. For primary scores, higher should always be better.
-          name: score' for the primary score or the name of a secondary score
-          value: float:
-          name:
+            value: The minimum value. For primary scores, higher should always be better.
+            name: score' for the primary score or the name of a secondary score
+            value: float:
 
         Returns:
 
@@ -183,7 +179,7 @@ class HitSearch:
         This function is generally only used to help debug a phenosearch.
 
         Args:
-          n: int:
+            n: int:
 
         Returns:
 
@@ -199,11 +195,10 @@ class HitSearch:
         Will save perodically in the background to file `path` if it is not None.
 
         Args:
-          path: The file path; should end with '.csv'; if None will not save
-          path:
+            path: The file path; should end with '.csv'; if None will not save
 
         Returns:
-          A HitFrame, a subclass of DataFrame
+            A HitFrame, a subclass of DataFrame
 
         """
         if self.primary_score_fn is None:
@@ -221,18 +216,18 @@ class HitSearch:
         )
         return self._save_hits(results, path)
 
-    def _save_hits(self, results, path: Optional[str]):
+    def _save_hits(self, results, path: Optional[str]) -> HitFrame:
         """
 
 
         Args:
-          results:
-          path: Optional[str]:
+            results:
+            path:
 
         Returns:
 
         """
-        df = HitFrame(results).reset_index()
+        df = HitFrame(results)
         if path is not None:
             df.to_csv(path)
         logger.minor(f"Saved {len(results)} hits")
@@ -243,11 +238,12 @@ class HitSearch:
         A lower-level alternative to calling `search`.
         Just returns an iterator over the Pandas Series that would be in the HitFrame when calling `search`.
         Does NOT save the results periodically.
-        Example usage:
-            for series in search.iterate():
-                do_something(series)
 
-        Args:
+        Example:
+            How to use::
+
+                for series in search.iterate():
+                    do_something(series)
 
         Returns:
 
@@ -289,8 +285,8 @@ class HitWellFrame(WellFrame):
         Converts a HitFrame into a HitWellFrame, which contains well info.
 
         Args:
-          hits: HitFrame:
-          namer:
+            hits: HitFrame:
+            namer:
 
         Returns:
 
@@ -326,22 +322,14 @@ class HitSearchTools:
             that start will be included (subject to min_duration_ms).
 
         Args:
-          battery: The name, ID, or instance of a battery
-          stimuli: Either a stimulus or set of stimuli
-          start: Include times the stimulus increased in pwm (or volume)
-          stop: Include times the stimulus decreased in pwm or volume
-          min_duration_ms: WARNING: Uses the stimframes themselves, which have 25-fps-based values in legacy
-          battery: Union[int:
-          str:
-          Batteries]:
-          stimuli: Set[Union[int:
-          Stimuli]]:
-          start:
-          stop:
-          min_duration_ms: float:  (Default value = 1000)
+            battery: The name, ID, or instance of a battery
+            stimuli: Either a stimulus or set of stimuli
+            start: Include times the stimulus increased in pwm (or volume)
+            stop: Include times the stimulus decreased in pwm or volume
+            min_duration_ms: WARNING: Uses the stimframes themselves, which have 25-fps-based values in legacy
 
         Returns:
-          Restrict to a number of milliseconds where the stimulus is unchaged before that value, and the same with after
+            Restrict to a number of milliseconds where the stimulus is unchaged before that value, and the same with after
 
         """
         apps = AppFrame.of(battery)
@@ -375,8 +363,8 @@ class HitSearchTools:
 
 
         Args:
-          stimframes: BatteryStimFrame:
-          win_size: int:  (Default value = 1000)
+            stimframes: BatteryStimFrame:
+            win_size:
 
         Returns:
 
@@ -403,7 +391,7 @@ class TruncatingScorer:
         Args:
             query: A time trace of MI or cd(10)
             similarity: Any function that computes a similarity between two arrays. If you have a distance function,
-               wrap it in `lambda x, y: -distance(x, y)`"""
+                        wrap it in `lambda x, y: -distance(x, y)`"""
         self.query = query
         self.similarity = similarity
         self.problematic_wells = set()  # type: Set[Wells]
@@ -411,6 +399,12 @@ class TruncatingScorer:
         self._max_missing = 3
 
     def __call__(self, target: np.array, well: Wells) -> float:
+        """
+
+        Args:
+            target:
+            well:
+        """
         n = min(len(target), len(self.query))
         if abs(len(target) - len(self.query)) > self._max_missing:
             if well.run not in self.problematic_runs:
@@ -441,7 +435,7 @@ class TruncatingScorer:
 
 
 class HitScores:
-    """ """
+    """"""
 
     @classmethod
     def pearson(
@@ -451,24 +445,14 @@ class HitScores:
 
 
         Args:
-          query: np.array:
-          weights:
+            query: np.array:
+            weights:
 
         Returns:
 
         """
 
         def pearson(x, y):
-            """
-
-
-            Args:
-              x:
-              y:
-
-            Returns:
-
-            """
             return distance.correlation(x, y, weights)
 
         return TruncatingScorer(query, pearson)
@@ -489,9 +473,9 @@ class HitScores:
             - p=-np.inf is the minimum
 
         Args:
-          query: np.array:
-          p: float:
-          weights:
+            query: np.array:
+            p: float:
+            weights:
 
         Returns:
 
@@ -501,61 +485,21 @@ class HitScores:
         if p == 0:
 
             def similarity(x, y):
-                """
-
-
-                Args:
-                  x:
-                  y:
-
-                Returns:
-
-                """
                 return np.power(2, np.sum(np.log2(weights * np.abs(x - y))))  # TODO check
 
         elif np.isneginf(p):
 
             def similarity(x, y):
-                """
-
-
-                Args:
-                  x:
-                  y:
-
-                Returns:
-
-                """
                 return -np.min(weights * np.abs(x - y))
 
         elif np.isposinf(p):
 
             def similarity(x, y):
-                """
-
-
-                Args:
-                  x:
-                  y:
-
-                Returns:
-
-                """
                 return -np.max(weights * np.abs(x - y))
 
         else:
 
             def similarity(x, y):
-                """
-
-
-                Args:
-                  x:
-                  y:
-
-                Returns:
-
-                """
                 return -np.power(np.power(weights * np.abs(x - y), p).sum(), 1 / p)
 
         similarity.__name__ = f"-minkowski(p={p})"

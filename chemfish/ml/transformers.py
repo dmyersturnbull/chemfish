@@ -11,11 +11,12 @@ class WellTransform(abcd.ABC):
     """
     A WellTransformation is anything that transforms a `WellFrame` to another `WellFrame` with its `build` function.
     Examples include PCA and filtering outliers.
-    The method `//` is a shorthand for `fit`, useful for composing multiple transformations. Ex:
-    ```
-    df = df // transform1 // transform2 // transform3
-    ```
+    The method `//` is a shorthand for `fit`, useful for composing multiple transformations.
 
+    Example:
+        Simple usage::
+
+            df = df // transform1 // transform2 // transform3
 
     """
 
@@ -32,17 +33,20 @@ class WellTransform(abcd.ABC):
         raise NotImplementedError()
 
     def __floordiv__(self, df: WellFrame) -> WellFrame:
+        """
+        Alias for ``fit``.
+        """
         return self.fit(df)
 
 
 class TrimmingWellTransform(WellTransform, metaclass=abc.ABCMeta):
-    """ """
+    """"""
 
     pass
 
 
 class TwoDWellTransform(WellTransform, metaclass=abc.ABCMeta):
-    """ """
+    """"""
 
     def validate(self, df: WellFrame) -> None:
         """
@@ -61,9 +65,14 @@ class TwoDWellTransform(WellTransform, metaclass=abc.ABCMeta):
 
 
 class OutlierStdTransform(TrimmingWellTransform):
-    """ """
+    """"""
 
     def __init__(self, n_stds: float = 2):
+        """
+
+        Args:
+            n_stds:
+        """
         self.n_stds = n_stds
         self.trimmed_wells = None
 
@@ -89,9 +98,15 @@ class OutlierStdTransform(TrimmingWellTransform):
 
 
 class OutlierDistanceTransform(TrimmingWellTransform):
-    """ """
+    """"""
 
     def __init__(self, distance_fn, max_distance: float):
+        """
+
+        Args:
+            distance_fn:
+            max_distance:
+        """
         self.distance_fn, self.max_distance = distance_fn, max_distance
         self.trimmed_wells = None
 
@@ -126,9 +141,14 @@ class OutlierDistanceTransform(TrimmingWellTransform):
 
 
 class RotationTransform(TwoDWellTransform):
-    """ """
+    """"""
 
     def __init__(self, degrees: float):
+        """
+
+        Args:
+            degrees:
+        """
         self.degrees = degrees
 
     def fit(self, df: WellFrame) -> WellFrame:
@@ -149,9 +169,14 @@ class RotationTransform(TwoDWellTransform):
 
 
 class SklearnTransform(WellTransform, metaclass=abc.ABCMeta):
-    """ """
+    """"""
 
     def __init__(self, model: TransformerMixin):
+        """
+
+        Args:
+            model:
+        """
         self.model = model
 
     def fit(self, df: WellFrame) -> WellFrame:
@@ -173,9 +198,15 @@ class SklearnTransform(WellTransform, metaclass=abc.ABCMeta):
 
 
 class CompositeTransform(WellTransform):
-    """ """
+    """"""
 
     def __init__(self, *transformations: WellTransform):
+        """
+
+        Args:
+            *transformations:
+
+        """
         self.transformations = transformations
 
     def fit(self, df: WellFrame) -> WellFrame:
@@ -194,7 +225,9 @@ class CompositeTransform(WellTransform):
 
 
 class WellTransforms:
-    """A suite of functions that apply common `WellTransformation`s to single WellFrames."""
+    """
+    A suite of functions that apply common `WellTransformation`s to single WellFrames.
+    """
 
     @classmethod
     def tsne(cls, df: WellFrame, **kwargs) -> WellFrame:

@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import matplotlib.ticker as ticker
 
 from chemfish.core.core_imports import *
@@ -12,35 +14,44 @@ class UnsupportedPlotOption(UnsupportedOpError):
     pass
 
 
+@dataclass(frozen=True)
 class Position:
-    """ """
-
-    def __init__(self, left: bool, right: bool, top: bool, bottom: bool, first: bool, last: bool):
-        self.left, self.right, self.top, self.bottom = left, right, top, bottom
-        self.first, self.last = first, last
+    """"""
+    left: bool
+    right: bool
+    top: bool
+    bottom: bool
+    first: bool
+    last: bool
 
 
 class Miniaxis:
-    """ """
+    """
+
+    """
 
     def __init__(self, ax: Axes, position: Position):
+        """
+
+        Args:
+            ax:
+            position:
+        """
         self.ax, self.position = ax, position
         self.twin = self.ax.twinx()
 
-    def plot(self, x, mean, upper, lower, label: str, color: str, twin: bool):
+    def plot(self, x, mean, upper, lower, label: str, color: str, twin: bool) -> None:
         """
 
 
         Args:
-          x:
-          mean:
-          upper:
-          lower:
-          label: str:
-          color: str:
-          twin: bool:
-
-        Returns:
+            x:
+            mean:
+            upper:
+            lower:
+            label: str:
+            color: str:
+            twin: bool:
 
         """
         x, mean, upper, lower = self._mk2(x, mean, upper, lower)
@@ -65,10 +76,10 @@ class Miniaxis:
         When there's only 1 point, turn it into 2 so we still get a line.
 
         Args:
-          x:
-          v:
-          u:
-          w:
+            x:
+            v:
+            u:
+            w:
 
         Returns:
 
@@ -80,20 +91,18 @@ class Miniaxis:
             v, u, w = [v0, v0], [u0, u0], [w0, w0]
         return x, v, u, w
 
-    def _plot(self, x, v, label, color, marker, alpha, twin):
+    def _plot(self, x, v, label, color, marker, alpha, twin) -> None:
         """
 
 
         Args:
-          x:
-          v:
-          label:
-          color:
-          marker:
-          alpha:
-          twin:
-
-        Returns:
+            x:
+            v:
+            label:
+            color:
+            marker:
+            alpha:
+            twin:
 
         """
         ax = self.twin if twin else self.ax
@@ -119,24 +128,22 @@ class Miniaxis:
         right_ticks: Sequence[float],
         right_tick_labels: Sequence[str],
         force_ylim=None,
-    ):
+    ) -> None:
         """
 
 
         Args:
-          label: str:
-          x_label: str:
-          left_label: str:
-          right_label: str:
-          x_ticks: Sequence[float]:
-          x_tick_labels: Sequence[str]:
-          y_ticks: Sequence[float]:
-          y_tick_labels: Sequence[str]:
-          right_ticks: Sequence[float]:
-          right_tick_labels: Sequence[str]:
-          force_ylim:  (Default value = None)
-
-        Returns:
+            label: str:
+            x_label: str:
+            left_label: str:
+            right_label: str:
+            x_ticks: Sequence[float]:
+            x_tick_labels: Sequence[str]:
+            y_ticks: Sequence[float]:
+            y_tick_labels: Sequence[str]:
+            right_ticks: Sequence[float]:
+            right_tick_labels: Sequence[str]:
+            force_ylim:  (Default value = None)
 
         """
         if right_label is None:
@@ -195,7 +202,7 @@ class Miniaxis:
 
 
 class Grid:
-    """ """
+    """"""
 
     def __init__(
         self,
@@ -213,6 +220,23 @@ class Grid:
         summary: pd.DataFrame,
         figure: Figure,
     ):
+        """
+
+        Args:
+            n_rows:
+            n_columns:
+            x_label:
+            left_label:
+            right_label
+            y_ticks:
+            y_tick_labels:
+            right_ticks:
+            right_tick_labels:
+            force_ylim:
+            rotate_x_ticks:
+            summary:
+            figure:
+        """
         self.n_rows, self.n_columns = n_rows, n_columns
         self.x_label, self.left_label, self.right_label = x_label, left_label, right_label
         y_tick_labels = [
@@ -238,6 +262,11 @@ class Grid:
         self._i = 0
 
     def spawn(self) -> Axes:
+        """
+
+        Returns:
+
+        """
         """ """
         i, row, col = self._i + 1, self._i // self.n_columns + 1, self._i % self.n_columns + 1
         drug = self._drugs[self._i]
@@ -264,15 +293,6 @@ class Grid:
         mini = Miniaxis(ax, position)
 
         def get(c):
-            """
-
-
-            Args:
-              c:
-
-            Returns:
-
-            """
             return data[c] if c in data.columns else None
 
         mean, upper, lower = get("score_1"), get("upper_1"), get("lower_1")
@@ -315,7 +335,9 @@ class Grid:
 
 
 class DoseResponsePlotter:
-    """Plots a grid of input and response axes. The responses can include an axis on the right."""
+    """
+    Plots a grid of input and response axes. The responses can include an axis on the right.
+    """
 
     def __init__(
         self,
@@ -329,6 +351,19 @@ class DoseResponsePlotter:
         ylim: Optional[Tup[float, float]] = None,
         rotate_x_ticks: bool = False,
     ):
+        """
+
+        Args:
+            x_label:
+            left_label:
+            right_label:
+            y_ticks
+            right_ticks:
+            n_rows:
+            n_cols:
+            ylim:
+            rotate_x_ticks:
+        """
         self.x_label, self.left_label, self.right_label, self.y_ticks, self.right_ticks = (
             x_label,
             left_label,
@@ -345,11 +380,10 @@ class DoseResponsePlotter:
         Plot a grid of minplots.
 
         Args:
-          summary: A DoseResponseFrame (dataframe subclass)
-          summary: DoseResponseFrame:
+            summary: A DoseResponseFrame (dataframe subclass)
 
         Returns:
-          A Figure
+            A Figure
 
         """
         n_rows, n_cols = self.n_rows, self.n_cols
@@ -357,12 +391,12 @@ class DoseResponsePlotter:
         n_total = len(summary["label"].unique())
         if self.y_ticks is None:
 
-            def get_ticks(n):
+            def get_ticks(n) -> np.array:
                 """
 
 
                 Args:
-                  n:
+                    n:
 
                 Returns:
 

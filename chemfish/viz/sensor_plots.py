@@ -10,7 +10,7 @@ from chemfish.viz.stim_plots import StimframesPlotter
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class SensorPlotter(CakeComponent, KvrcPlotting):
-    """ """
+    """"""
 
     def __init__(self, stimplotter: Optional[StimframesPlotter] = None, quantile: float = 0.995):
         self.stimplotter = StimframesPlotter() if stimplotter is None else stimplotter
@@ -27,10 +27,10 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
 
 
         Args:
-          run:
-          stimframes: StimFrame:
-          sensors: Sequence[TimeDepChemfishSensor]:
-          start_ms: Optional[int]:  (Default value = None)
+            run:
+            stimframes: StimFrame:
+            sensors: Sequence[TimeDepChemfishSensor]:
+            start_ms: Optional[int]:  (Default value = None)
 
         Returns:
 

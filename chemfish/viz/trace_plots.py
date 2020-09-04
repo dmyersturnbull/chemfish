@@ -14,7 +14,7 @@ from chemfish.viz.stim_plots import *
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class TraceBase(CakeLayer, KvrcPlotting):
-    """ """
+    """"""
 
     def __init__(
         self,
@@ -29,6 +29,16 @@ class TraceBase(CakeLayer, KvrcPlotting):
         with_bar: bool = False,
         feature: FeatureType = FeatureTypes.MI,
     ):
+        """
+
+        Args:
+            top_bander:
+            bottom_bander:
+            mean_bander:
+            mean_band_color:
+            with_bar:
+            feature:
+        """
         self._banded = top_bander is None or bottom_bander is None or mean_bander is None
         self._top_bander = top_bander
         self._bottom_bander = bottom_bander
@@ -59,18 +69,16 @@ class TraceBase(CakeLayer, KvrcPlotting):
 
 
         Args:
-          subdf: WellFrame:
-          s: str:
-          control_names: Sequence[str]:
-          ax1: Axes:
-          colors: Mapping[str:
-          str]:
-          alphas: Mapping[str:
-          float]:
-          y_bounds: Optional[Tup[float:
-          float]]:
-          starts_at_ms: int:
-          run_dict:
+            subdf:
+            s: str:
+            control_names:
+            ax1:
+            colors:
+            alphas:
+            y_bounds:
+            starts_at_ms:
+            run_dict:
+
         Returns:
 
         """
@@ -124,12 +132,12 @@ class TraceBase(CakeLayer, KvrcPlotting):
 
 
         Args:
-          group:
-          name:
-          color:
-          alpha:
-          ax1:
-          y_bounds:
+            group:
+            name:
+            color:
+            alpha:
+            ax1:
+            y_bounds:
 
         Returns:
 
@@ -191,7 +199,7 @@ class TraceBase(CakeLayer, KvrcPlotting):
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class TracePlotter(KvrcPlotting):
-    """ """
+    """"""
 
     def __init__(
         self,
@@ -211,6 +219,21 @@ class TracePlotter(KvrcPlotting):
         feature: FeatureType = FeatureTypes.MI,
         extra_gridspec_slots: Optional[Sequence[float]] = None,
     ):
+        """
+
+        Args:
+            stimframes_plotter:
+            y_bounds:
+            trace_to_stimuli_height_ratio:
+            always_plot_control:
+            top_bander:
+            bottom_bander:
+            mean_bander:
+            mean_band_color:
+            with_bar:
+            feature:
+            extra_gridspec_slots:
+        """
         self._stimframes_plotter = (
             stimframes_plotter if stimframes_plotter is not None else StimframesPlotter()
         )
@@ -238,7 +261,7 @@ class TracePlotter(KvrcPlotting):
         assays: Optional[AssayFrame] = None,
         run_dict: Optional[Mapping[str, str]] = None,
         battery: Union[None, Batteries, int, str] = None,
-    ) -> Iterator[Tup[str, Figure]]:
+    ) -> Generator[Tup[str, Figure], None, None]:
         """
 
 
@@ -251,8 +274,8 @@ class TracePlotter(KvrcPlotting):
             assays:
             battery:
 
-        Returns:
-
+        Yields:
+            Tuples mapping the name (from ``df['name']``) to figures
         """
         # prep
         t0 = time.monotonic()
@@ -265,7 +288,7 @@ class TracePlotter(KvrcPlotting):
                 name
                 for name in df.names().unique()
                 if self._always_plot_control
-                or len(df.without_controls_matching()) == 0
+                or len(df.without_controls()) == 0
                 or (name in control_names and name not in control_names[name])
             ]
         )
@@ -311,8 +334,8 @@ class TracePlotter(KvrcPlotting):
 
 
         Args:
-          df:
-          control_names:
+            df:
+            control_names:
 
         Returns:
 
@@ -339,7 +362,7 @@ class TracePlotter(KvrcPlotting):
 
 
         Args:
-          n_extra_slots: int:
+            n_extra_slots: int:
 
         Returns:
 
@@ -371,19 +394,19 @@ class TracePlotter(KvrcPlotting):
 
 
         Args:
-          sub: WellFrame:
-          name:
-          starts_at_ms:
-          control_names: Sequence[str]:
-          stimframes:
-          assays:
-          run_dict:
-          extra:
-          figsize:
-          trace_height:
-          stim_height:
-          y_bounds:
-          battery:
+            sub: WellFrame:
+            name:
+            starts_at_ms:
+            control_names: Sequence[str]:
+            stimframes:
+            assays:
+            run_dict:
+            extra:
+            figsize:
+            trace_height:
+            stim_height:
+            y_bounds:
+            battery:
 
         Returns:
 
@@ -425,9 +448,9 @@ class TracePlotter(KvrcPlotting):
 
 
         Args:
-          df: WellFrame:
-          name: str:
-          control_names:
+            df: WellFrame:
+            name: str:
+            control_names:
 
         Returns:
 
@@ -451,8 +474,8 @@ class TracePlotter(KvrcPlotting):
 
 
         Args:
-          control_names: Sequence[str]:
-          name: str:
+            control_names: Sequence[str]:
+            name: str:
 
         Returns:
 

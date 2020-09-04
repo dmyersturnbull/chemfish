@@ -23,15 +23,23 @@ class SpindlePlotter:
         x_thresh: Union[None, float, Tup[float, str]] = None,
         y_thresh: Union[None, float, Tup[float, str]] = None,
     ):
+        """
+
+        Args:
+            x_label:
+            y_label:
+            x_thresh:
+            y_thresh:
+        """
         self.x_label, self.y_label = x_label, y_label
         self.x_thresh, self.y_thresh = x_thresh, y_thresh
 
-    def plot(self, df: DoseResponseFrame2D):
+    def plot(self, df: DoseResponseFrame2D) -> Figure:
         """
 
 
         Args:
-          df: DoseResponseFrame2D:
+            df: DoseResponseFrame2D:
 
         Returns:
 
@@ -109,7 +117,7 @@ class SpindlePlotter:
 
 
         Args:
-          thresh:
+            thresh:
 
         Returns:
 

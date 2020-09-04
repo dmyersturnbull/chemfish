@@ -1,33 +1,28 @@
+from dataclasses import dataclass
+
 from chemfish.core.core_imports import *
 from chemfish.viz._internal_viz import *
 from chemfish.viz.figures import FigureTools
 
 
-@abcd.auto_eq()
-@abcd.auto_repr_str()
+@dataclass(frozen=True)
 class ConfusionPlotter(KvrcPlotting):
-    """"""
+    """
 
-    def __init__(
-        self,
-        vmin: float = 0,
-        vmax: float = 1,
-        renamer_fn: Callable[[str], str] = lambda s: s,
-        label_color_fn: Optional[Callable[[str], str]] = None,
-        label_colorbar: Optional[str] = "predictions (%)",
-    ):
-        self._vmin, self._vmax = vmin, vmax
-        self._renamer_fn = renamer_fn
-        self._label_color_fn = label_color_fn
-        self._label_colorbar = label_colorbar
+    """
+    vmin: float = 0
+    vmax: float = 1
+    renamer_fn: Callable[[str], str] = lambda s: s
+    label_color_fn: Optional[Callable[[str], str]] = None
+    label_colorbar: Optional[str] = "predictions (%)"
 
     def plot(self, confusion, runs: Optional[Sequence[int]] = None) -> Figure:
         """
 
 
         Args:
-          confusion:
-          runs:
+            confusion:
+            runs:
 
         Returns:
 
@@ -42,16 +37,16 @@ class ConfusionPlotter(KvrcPlotting):
         mat = ax.imshow(
             data * 100,
             cmap=chemfish_rc.confusion_cmap,
-            vmin=100 * self._vmin,
-            vmax=100 * self._vmax,
+            vmin=100 * self.vmin,
+            vmax=100 * self.vmax,
             interpolation="none",
             extent=extent,
             aspect="equal",
             origin="upper",
         )
         cbar = FigureTools.add_aligned_colorbar(ax, mat)
-        if cbar is not None and self._label_colorbar:
-            cbar.ax.set_ylabel(FigureTools.fix_labels(self._label_colorbar), rotation=90)
+        if cbar is not None and self.label_colorbar:
+            cbar.ax.set_ylabel(FigureTools.fix_labels(self.label_colorbar), rotation=90)
         # ax.set_xlim(-1.0, data.shape[0] - 1.0)
         # axis labels
         ax.set_ylabel("actual")
@@ -63,11 +58,11 @@ class ConfusionPlotter(KvrcPlotting):
         ax.xaxis.set_ticks([], minor=True)
         ax.yaxis.set_ticks([], minor=True)
         ax.set_xticklabels(
-            [FigureTools.fix_labels(self._renamer_fn(k)) for k in confusion.index.values],
+            [FigureTools.fix_labels(self.renamer_fn(k)) for k in confusion.index.values],
             rotation=90,
         )
         ax.set_yticklabels(
-            [FigureTools.fix_labels(self._renamer_fn(k)) for k in confusion.columns.values]
+            [FigureTools.fix_labels(self.renamer_fn(k)) for k in confusion.columns.values]
         )
         ax.xaxis.set_ticks_position("bottom")
         # for t in ax.xaxis.get_ticklines(minor=False):
@@ -84,7 +79,7 @@ class ConfusionPlotter(KvrcPlotting):
                 [label_x, tick_x.get_text(), label_y, tick_y.get_text()]
             )
             name = label_x
-            color = self._label_color_fn(name)
+            color = self.label_color_fn(name)
             spine_x.set_color(color)
             spine_y.set_color(color)
             tick_x.set_color(color)
@@ -98,7 +93,9 @@ class ConfusionPlotter(KvrcPlotting):
 
 
 class ConfusionPlots:
-    """ """
+    """
+
+    """
 
     @classmethod
     def plot(
@@ -114,44 +111,25 @@ class ConfusionPlots:
 
 
         Args:
-          confusion:
-          vmin:
-          vmax:
-          runs:
-          renamer: Union[None:
-          Mapping[str:
-          str]:
-          Callable[[str]:
-          str]]:  (Default value = False)
-          label_colors:
+            confusion:
+            vmin:
+            vmax:
+            runs:
+            renamer:
+            label_colors:
+
+        Returns:
+
         """
         # colors
         if label_colors is None or label_colors is False:
 
             def label_color_fn(s):
-                """
-
-
-                Args:
-                  s:
-
-                Returns:
-
-                """
                 return "black"
 
         elif label_colors is True:
 
             def label_color_fn(s):
-                """
-
-
-                Args:
-                  s:
-
-                Returns:
-
-                """
                 return chemfish_rc.pref_control_color_dict.get(
                     s, chemfish_rc.pref_name_color_dict.get(s, "black")
                 )
@@ -159,15 +137,6 @@ class ConfusionPlots:
         elif isinstance(label_colors, Mapping):
 
             def label_color_fn(s: str):
-                """
-
-
-                Args:
-                  s: str:
-
-                Returns:
-
-                """
                 return label_colors.get(s, "black")
 
         elif callable(label_colors):
@@ -178,29 +147,11 @@ class ConfusionPlots:
         if renamer is None:
 
             def renamer_fn(s):
-                """
-
-
-                Args:
-                  s:
-
-                Returns:
-
-                """
                 return s
 
         elif isinstance(renamer, Mapping):
 
             def renamer_fn(s: str):
-                """
-
-
-                Args:
-                  s: str:
-
-                Returns:
-
-                """
                 return renamer.get(s, s)
 
         elif callable(renamer):

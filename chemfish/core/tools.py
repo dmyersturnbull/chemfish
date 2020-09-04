@@ -22,7 +22,7 @@ class IncomptabileNumpyArrayDataType(XTypeError):
 
 
 class ChemfishValarTools:
-    """ """
+    """"""
 
     @classmethod
     def query(cls, query: peewee.BaseQuery) -> pd.DataFrame:
@@ -30,7 +30,7 @@ class ChemfishValarTools:
 
 
         Args:
-          query: peewee.BaseQuery:
+            query: peewee.BaseQuery:
 
         Returns:
 
@@ -47,7 +47,6 @@ class ChemfishValarTools:
 
         Args:
             data: Bytes from Scala-inserted values in Valar blobs
-            data: bytes:
 
         Returns:
             A Numpy ubyte (uint8) array
@@ -61,7 +60,7 @@ class ChemfishValarTools:
 
 
         Args:
-          data: np.array:
+            data: np.array:
 
         Returns:
 
@@ -74,7 +73,7 @@ class ChemfishValarTools:
 
 
         Args:
-          data: bytes:
+            data: bytes:
 
         Returns:
 
@@ -87,7 +86,7 @@ class ChemfishValarTools:
 
 
         Args:
-          data: bytes:
+            data: bytes:
 
         Returns:
 
@@ -100,16 +99,15 @@ class ChemfishValarTools:
         Gets the bytes of a Numpy array, first requiring that the array is of the specified type.
 
         Args:
-          data: A numpy array
-          dtype: A Numpy datatype, such as np.uint32
-          data: np.array:
+            data: A numpy array
+            dtype: A Numpy datatype, such as np.uint32
 
         Returns:
-          The bytes representation
+            The bytes representation
 
         Raises:
-          IncomptabileNumpyArrayDataType: If the numpy array has the wrong data type
-          TypeError: If `data` is not a Numpy array at all
+            IncomptabileNumpyArrayDataType: If the numpy array has the wrong data type
+            TypeError: If `data` is not a Numpy array at all
 
         """
         if data.dtype != dtype:
@@ -124,7 +122,7 @@ class ChemfishValarTools:
 
 
         Args:
-          wells:
+            wells:
 
         Returns:
 
@@ -145,11 +143,10 @@ class ChemfishValarTools:
         Currently performs one query on Valar per run. In the future will only perform one query for all of them.
 
         Args:
-          runs: A run from a run ID, tag, name, instance, or submission hash or instance, or an iterable of any of these
-          runs: RunsLike:
+            runs: A run from a run ID, tag, name, instance, or submission hash or instance, or an iterable of any of these
 
         Returns:
-          The Runs row instances in the same order
+            The Runs row instances in the same order
 
         """
         runs = runs if Tools.is_true_iterable(runs) else [runs]
@@ -212,12 +209,12 @@ class ChemfishValarTools:
         return blanks
 
     @classmethod
-    def run_ids_unchecked(cls, runs: RunsLike):
+    def run_ids_unchecked(cls, runs: RunsLike) -> Sequence[int]:
         """
 
 
         Args:
-          runs: RunsLike:
+            runs: RunsLike:
 
         Returns:
 
@@ -236,13 +233,11 @@ class ChemfishValarTools:
         Fetches from Valar once. Use Tools.runs if you want to fetch multiple runs in a single query.
 
         Args:
-          run: A run from a run ID, tag, name, instance, or submission hash or instance
-          join: Join on experiments, submissions, sauron_configs, saurons, plates, and plate_types
-          run: RunLike:
-          join:
+            run: A run from a run ID, tag, name, instance, or submission hash or instance
+            join: Join on experiments, submissions, sauron_configs, saurons, plates, and plate_types
 
         Returns:
-          The Runs row instance
+            The Runs row instance
 
         """
         bq = lambda: (
@@ -293,7 +288,7 @@ class ChemfishValarTools:
 
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -307,11 +302,10 @@ class ChemfishValarTools:
 
 
         Args:
-          submission_hash: Any string
-          submission_hash: str:
+            submission_hash: Any string
 
         Returns:
-          Whether the string could be a submission hash (is formatted correctly)
+            Whether the string could be a submission hash (is formatted correctly)
 
         """
         return (
@@ -331,10 +325,10 @@ class Tools(_Tools, ChemfishValarTools):
 
 
         Args:
-          things:
-          function:
-          n_jobs: Optional[int]:  (Default value = chemfish_env.n_cores)
-          verbosity:
+            things:
+            function:
+            n_jobs:
+            verbosity:
 
         Returns:
 
@@ -349,7 +343,7 @@ class Tools(_Tools, ChemfishValarTools):
 
 
         Args:
-          path: PathLike:
+            path: PathLike:
 
         Returns:
 
@@ -363,8 +357,8 @@ class Tools(_Tools, ChemfishValarTools):
 
 
         Args:
-          path: PathLike:
-          exist_ok: bool:  (Default value = True)
+            path: PathLike:
+            exist_ok: bool:  (Default value = True)
 
         Returns:
 

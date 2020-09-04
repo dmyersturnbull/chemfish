@@ -15,35 +15,27 @@ from chemfish.viz.figures import *
 class ClassifierFailedError(AlgorithmError):
     """ """
 
-    pass
-
 
 class ClassifierTrainFailedError(ClassifierFailedError):
     """ """
-
-    pass
 
 
 class ClassifierPredictFailedError(ClassifierFailedError):
     """ """
 
-    pass
-
 
 class TrainTestOverlapWarning(StrangeRequestWarning):
-    """Training and test data overlap."""
+    """
+    Training and test data overlap.
+    """
 
 
 class NotTrainedError(OpStateError):
     """ """
 
-    pass
-
 
 class AlreadyTrainedError(OpStateError):
     """ """
-
-    pass
 
 
 # just for good tab completion
@@ -57,14 +49,17 @@ class WellClassifier(SaveableTrainable):
         - test(df)
         - load(path)
         - save(path)
+
     Some classifiers may also implement:
         - training_decision
         - oob_score
         - weights
+
     Only three methods need to be implemented: train, test, and the property params.
     When trained, `info` contains:
         - wells, labels, features
         - started, finished, seconds_taken
+
     The saved .info file contains the above, plus the contents of `params` and any statistics.
 
     """
@@ -76,8 +71,6 @@ class WellClassifier(SaveableTrainable):
 
         Args:
           df: WellFrame:
-
-        Returns:
 
         """
         raise NotImplementedError()
@@ -98,22 +91,20 @@ class WellClassifier(SaveableTrainable):
     @property
     @abcd.abstractmethod
     def params(self) -> Mapping[str, Any]:
-        """ """
+        """"""
         raise NotImplementedError()
 
     @property
-    def is_trained(self):
-        """ """
+    def is_trained(self) -> bool:
+        """"""
         return "finished" in self.info
 
-    def _update_wf_info(self, df: WellFrame):
+    def _update_wf_info(self, df: WellFrame) -> None:
         """
 
 
         Args:
-          df: WellFrame:
-
-        Returns:
+            df: WellFrame:
 
         """
         self.info.update(
@@ -125,26 +116,24 @@ class WellClassifier(SaveableTrainable):
             }
         )
 
-    def _verify_trained(self):
+    def _verify_trained(self) -> None:
         """ """
         if not self.is_trained:
             raise NotTrainedError("Model is not trained")
 
-    def _verify_untrained(self):
+    def _verify_untrained(self) -> None:
         """ """
         if self.is_trained:
             raise AlreadyTrainedError("Model is already trained")
 
-    def _verify_train(self, wells: np.array, names: Sequence[str], features):
+    def _verify_train(self, wells: np.array, names: Sequence[str], features) -> None:
         """
 
 
         Args:
-          wells: np.array:
-          names: Sequence[str]:
-          features:
-
-        Returns:
+            wells: np.array:
+            names: Sequence[str]:
+            features:
 
         """
         self._verify_untrained()
@@ -153,14 +142,14 @@ class WellClassifier(SaveableTrainable):
         if len(set(names)) == 1:
             logger.warning(f"Training a classifier for only 1 label: {names[0]}")
 
-    def _verify_test(self, wells: np.array, names: Sequence[str], features):
+    def _verify_test(self, wells: np.array, names: Sequence[str], features) -> None:
         """
 
 
         Args:
-          wells: np.array:
-          names: Sequence[str]:
-          features:
+            wells: np.array:
+            names: Sequence[str]:
+            features:
 
         Returns:
 
@@ -185,23 +174,23 @@ class WellClassifier(SaveableTrainable):
 
 
 class HasOob(WellClassifier, metaclass=abc.ABCMeta):
-    """ """
+    """"""
 
     @property
     @abcd.abstractmethod
     def oob_score(self) -> float:
-        """ """
+        """"""
         raise NotImplementedError()
 
     @property
     @abcd.abstractmethod
     def training_decision(self) -> DecisionFrame:
-        """ """
+        """"""
         raise NotImplementedError()
 
 
 class HasWeights(WellClassifier, metaclass=abc.ABCMeta):
-    """ """
+    """"""
 
     @property
     @abcd.abstractmethod
@@ -225,7 +214,7 @@ class BuildableWellClassifier(abcd.ABC):
         Returns a new classifier from parameters.
 
         Args:
-          **kwargs:
+            **kwargs:
 
         Returns:
 
@@ -238,7 +227,7 @@ class BuildableWellClassifier(abcd.ABC):
 
 
         Args:
-          path: PathLike:
+            path: PathLike:
 
         Returns:
 
@@ -251,24 +240,29 @@ class BuildableWellClassifier(abcd.ABC):
 class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=abc.ABCMeta):
     """
     A well classifier backed by a single scikit-learn classifier.
-    Note that the constructer is typed as requiring a `ForestClassifier`, but this is only for better tab completion.
+    Note that the constructor is typed as requiring a `ForestClassifier`, but this is only for better tab completion.
     It can accept any scikit-learn classifier.
 
     """
 
     def __init__(self, model: AnySklearnClassifier):
+        """
+
+        Args:
+            model:
+        """
         super().__init__()
         self.model = model
         self._trained_decision = None
 
     @classmethod
     def model_class(cls) -> Type:
-        """ """
+        """"""
         raise NotImplementedError()
 
     @property
     def params(self) -> Mapping[str, Any]:
-        """ """
+        """"""
         return self.model.get_params()
 
     @params.setter
@@ -277,7 +271,7 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
 
 
         Args:
-          **params:
+            **params:
 
         Returns:
 
@@ -287,7 +281,7 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
 
     @abcd.override_recommended
     def statistics(self) -> Mapping[str, Any]:
-        """ """
+        """"""
         return {}
 
     def load(self, path: PathLike) -> None:
@@ -295,9 +289,7 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
 
 
         Args:
-          path: PathLike:
-
-        Returns:
+            path: PathLike:
 
         """
         self._verify_untrained()
@@ -331,9 +323,7 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
 
 
         Args:
-          path: PathLike:
-
-        Returns:
+            path: PathLike:
 
         """
         self._verify_trained()
@@ -361,9 +351,7 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
 
 
         Args:
-          df: WellFrame:
-
-        Returns:
+            df: WellFrame:
 
         """
         self._verify_train(df["well"].values, df["name"].values, df.columns.values)
@@ -415,7 +403,7 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -432,12 +420,12 @@ class SklearnWellClassifier(WellClassifier, BuildableWellClassifier, metaclass=a
             )
         return DecisionFrame.of(y, labels, predictions, df["well"].values)
 
-    def _startup_string(self, df):
+    def _startup_string(self, df) -> str:
         """
 
 
         Args:
-          df:
+            df:
 
         Returns:
 
@@ -458,12 +446,17 @@ class SklearnWfClassifierWithOob(
     """"""
 
     def __init__(self, model: AnySklearnClassifier):
+        """
+
+        Args:
+            model:
+        """
         model.oob_score = True  # ignore user preference so that oob_score() is defined
         super().__init__(model)
         self._trained_decision = None
 
     def statistics(self) -> Mapping[str, Any]:
-        """ """
+        """"""
         return {**super().statistics(), **{"oob_score": self.oob_score}}
 
     def save_to_dir(
@@ -479,12 +472,13 @@ class SklearnWfClassifierWithOob(
 
 
         Args:
-          path: PathLike:
-          exist_ok: bool:  (Default value = True)
-          figures:
-          sort:
-          runs:
-          label_colors:
+            path:
+            exist_ok:
+            figures:
+            sort:
+            runs:
+            label_colors:
+
         Returns:
 
         """
@@ -518,7 +512,7 @@ class SklearnWfClassifierWithOob(
 
     @property
     def oob_score(self) -> float:
-        """ """
+        """"""
         self._verify_trained()
         logger.debug("Calculating out-of-bag score...")
         return self.model.oob_score_
@@ -554,7 +548,9 @@ class SklearnWfClassifierWithWeights(SklearnWellClassifier, HasWeights, metaclas
 
 
 class Ut:
-    """Tiny utilities."""
+    """
+    Tiny utilities.
+    """
 
     @classmethod
     def depths(cls, model) -> Sequence[int]:
@@ -562,7 +558,7 @@ class Ut:
 
 
         Args:
-          model:
+            model:
 
         Returns:
 
@@ -571,7 +567,7 @@ class Ut:
 
 
 class WellForestClassifier(SklearnWfClassifierWithOob, SklearnWfClassifierWithWeights):
-    """ """
+    """"""
 
     cached_name = "WellForestClassifier"
 
@@ -593,26 +589,26 @@ class WellForestClassifier(SklearnWfClassifierWithOob, SklearnWfClassifierWithWe
 
     @classmethod
     def model_class(cls) -> Type[AnySklearnClassifier]:
-        """ """
+        """"""
         return RandomForestClassifier
 
     def depths(self) -> Sequence[int]:
-        """ """
+        """"""
         return Ut.depths(self)
 
 
 class WellClassifiers:
-    """ """
+    """"""
 
     _classifier_cache = {RandomForestClassifier.__qualname__: WellForestClassifier}
 
     @classmethod
-    def forest(cls, **kwargs):
+    def forest(cls, **kwargs) -> WellForestClassifier:
         """
 
 
         Args:
-          **kwargs:
+            **kwargs:
 
         Returns:
 
@@ -627,8 +623,8 @@ class WellClassifiers:
 
 
         Args:
-          model: Type[AnySklearnClassifier]:
-          **default_kwargs:
+            model: Type[AnySklearnClassifier]:
+            **default_kwargs:
 
         Returns:
 
@@ -671,7 +667,7 @@ class WellClassifiers:
 
 
         Args:
-          model:
+            model:
 
         Returns:
 

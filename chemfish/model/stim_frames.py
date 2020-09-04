@@ -21,7 +21,6 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
                 This will be used if expand_audio_inplace is called, or Chemfish is set to store waveforms.
             In the first two cases, the first nonzero value dictates the volume, where 255 is the max volume allowed by SauronX,
             which is in turn determined by the audio card, the amplifier setting, and the settings configured in the Toml
-
     """
 
     def expand_audio_inplace(
@@ -32,10 +31,9 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
         Also sets all solenoids and soft solenoids to have intensity 255.
 
         Args:
-            waveform_loader: A function mapping stimulus names to Waveform objects; The waveforms will be 'standardized' to range from 0 to 255.
+            waveform_loader: A function mapping stimulus names to Waveform objects.
+                             The waveforms will be 'standardized' to range from 0 to 255.
             is_legacy:
-
-        Returns:
 
         """
         for stim in self.columns:
@@ -52,24 +50,28 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
                 except Exception as e:
                     raise AlgorithmError(f"Failed to expand audio {orig_stim_name}") from e
 
-    def with_nonzero(self, stim_or_type: Union[str, Stimuli, StimulusType]):
+    def with_nonzero(self, stim_or_type: Union[str, Stimuli, StimulusType]) -> StimFrame:
         """
 
 
         Args:
             stim_or_type:
+            byteval:
 
         Returns:
 
         """
         return self.with_at_least(stim_or_type, 0)
 
-    def with_at_least(self, stim_or_type: Union[str, Stimuli, StimulusType], byteval: int):
+    def with_at_least(
+        self, stim_or_type: Union[str, Stimuli, StimulusType], byteval: int
+    ) -> StimFrame:
         """
 
 
         Args:
             stim_or_type:
+            byteval:
 
         Returns:
 
@@ -103,7 +105,6 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
         Returns:
 
         """
-        battery = Batteries.fetch(battery)
         battery = Batteries.fetch(battery)
         stimuli_in_batteries = (
             Stimuli.select(StimulusFrames, Stimuli, Assays, AssayPositions, Batteries)
@@ -146,7 +147,7 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
     @classmethod
     def _slice_stim(
         cls, stimframes, name: str, start_ms: Optional[int] = None, end_ms: Optional[int] = None
-    ):
+    ) -> StimFrame:
         """
 
 
@@ -173,8 +174,8 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
         Construct a dataframe suitable for plotting stimframes alongside MIs.
 
         Args:
-          battery: A name or ID of a battery
-          fps_for_sampling: Sample every x frames, starting at 0. This option should mostly be avoided.
+            battery: A name or ID of a battery
+            fps_for_sampling: Sample every x frames, starting at 0. This option should mostly be avoided.
 
         Returns:
 
@@ -244,8 +245,6 @@ class BatteryStimFrame(StimFrame):
         Returns a new stimframe with value 1 at the time the stimulus changed and 0 elsewhere.
         Calculates independently per stimulus.
 
-        Args:
-
         Returns:
 
         """
@@ -264,9 +263,9 @@ class BatteryStimFrame(StimFrame):
 
 
         Args:
-              battery:
-              start_ms:
-              end_ms:
+            battery:
+            start_ms:
+            end_ms:
 
         Returns:
 

@@ -59,8 +59,6 @@ class AChemfishCache(Generic[KEY, VALUE], metaclass=ABCMeta):
         Args:
             *keys:
 
-        Returns:
-
         """
         raise NotImplementedError()
 
@@ -89,7 +87,11 @@ class AChemfishCache(Generic[KEY, VALUE], metaclass=ABCMeta):
         return self.path_of(key).exists()
 
     def contents(self) -> Sequence[KEY]:
-        """ """
+        """
+
+        Returns:
+
+        """
         lst = []
         for path in self.cache_dir.iterdir():
             k = self.key_from_path(path)
@@ -124,9 +126,15 @@ class AChemfishCache(Generic[KEY, VALUE], metaclass=ABCMeta):
 
 
 class AWellCache(AChemfishCache[RunLike, WellFrame], metaclass=ABCMeta):
-    """ """
+    """"""
 
     def __init__(self, feature, cache_dir: PathLike, dtype):
+        """
+
+        Args:
+            feature:
+            cache_dir:
+        """
         raise NotImplementedError()
 
     def load_multiple(self, runs: RunsLike) -> WellFrame:
@@ -155,34 +163,47 @@ class AWellCache(AChemfishCache[RunLike, WellFrame], metaclass=ABCMeta):
 
 
 class ASensorCache(AChemfishCache[Tup[SensorNames, RunLike], SensorDataLike], metaclass=ABCMeta):
-    """ """
+    """"""
 
     def __init__(self, cache_dir: PathLike):
         raise NotImplementedError()
 
 
 class AStimCache(AChemfishCache[BatteryLike, BatteryStimFrame], metaclass=ABCMeta):
-    """ """
+    """"""
 
     def __init__(self, cache_dir: PathLike, dtype, loader):
+        """
+
+        Args:
+            cache_dir:
+            dtype:
+            loader:
+        """
         raise NotImplementedError()
 
     @property
     def is_expanded(self):
-        """ """
+        """"""
         raise NotImplementedError()
 
 
 class StimulusWaveform(Waveform):
-    """ """
+    """"""
 
     pass
 
 
 class AVideoCache(AChemfishCache[RunLike, SauronxVideo], metaclass=ABCMeta):
-    """ """
+    """"""
 
     def __init__(self, cache_dir: PathLike, shire_store: PathLike):
+        """
+
+        Args:
+            cache_dir:
+            shire_store:
+        """
         raise NotImplementedError()
 
 
@@ -190,6 +211,11 @@ class AnAudioStimulusCache(AChemfishCache[StimulusLike, Path], metaclass=ABCMeta
     """ """
 
     def __init__(self, cache_dir: PathLike):
+        """
+
+        Args:
+            cache_dir:
+        """
         raise NotImplementedError()
 
     def load_moviepy(self, stimulus: StimulusLike) -> AudioClip:
@@ -204,7 +230,7 @@ class AnAudioStimulusCache(AChemfishCache[StimulusLike, Path], metaclass=ABCMeta
         """
         raise NotImplementedError()
 
-    def load_pydub(self, name) -> pydub.AudioSegment:
+    def load_pydub(self, name: str) -> pydub.AudioSegment:
         """
 
 

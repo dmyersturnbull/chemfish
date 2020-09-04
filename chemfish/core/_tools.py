@@ -22,8 +22,8 @@ class InternalTools:
 
 
         Args:
-          class_:
-          *attributes:
+            class_:
+            *attributes:
 
         Returns:
 
@@ -39,8 +39,8 @@ class InternalTools:
 
 
         Args:
-          a: Collection[Any]:
-          b: Collection[Any]:
+            a: Collection[Any]:
+            b: Collection[Any]:
 
         Returns:
 
@@ -67,7 +67,7 @@ class InternalTools:
 
 
         Args:
-          *parts: Sequence[str]:
+            *parts: Sequence[str]:
 
         Returns:
 
@@ -82,14 +82,14 @@ class InternalTools:
         Each returned row is guaranteed to exist in the table at the time the query is executed.
 
         Args:
-          thing_class: The table (peewee model)
-          things: A list of lookup values -- each is an ID or unique varchar/char/enum field value
+            thing_class: The table (peewee model)
+            things: A list of lookup values -- each is an ID or unique varchar/char/enum field value
 
         Returns:
-          The ID of the row
+            The ID of the row
 
         Raises:
-          A: ValarLookupError If the row was not found
+            ValarLookupError: If the row was not found
 
         """
         things = InternalTools.listify(things)
@@ -102,15 +102,15 @@ class InternalTools:
         If just IDs are passed, just returns them -- this means that the return value is NOT GUARANTEED to be a valid row ID.
 
         Args:
-          thing_class: The table (peewee model)
-          things: A list of lookup values -- each is an ID or unique varchar/char/enum field value
-          keep_none: Include None values
+            thing_class: The table (peewee model)
+            things: A list of lookup values -- each is an ID or unique varchar/char/enum field value
+            keep_none: Include None values
 
         Returns:
-          The ID of the row
+            The ID of the row
 
         Raises:
-          A: ValarLookupError If the row was not found
+            ValarLookupError: If the row was not found
 
         """
         things = InternalTools.listify(things)
@@ -129,14 +129,14 @@ class InternalTools:
         If an ID is passed, just returns that -- this means that the return value is NOT GUARANTEED to be a valid row ID.
 
         Args:
-          thing_class: The table (peewee model)
-          thing: The lookup value -- an ID or unique varchar/char/enum field value
+            thing_class: The table (peewee model)
+            thing: The lookup value -- an ID or unique varchar/char/enum field value
 
         Returns:
-          The ID of the row
+            The ID of the row
 
         Raises:
-          A: ValarLookupError If the row was not found
+            ValarLookupError: If the row was not found
 
         """
         return thing if isinstance(thing, int) else thing_class.fetch(thing).id
@@ -147,7 +147,7 @@ class InternalTools:
 
 
         Args:
-          seq: Iterable[Any]:
+            seq: Iterable[Any]:
 
         Returns:
 
@@ -163,7 +163,7 @@ class InternalTools:
 
 
         Args:
-          seq: Iterable[Any]:
+            seq: Iterable[Any]:
 
         Returns:
 
@@ -186,10 +186,10 @@ class InternalTools:
         The order of iteration from the sequence is preserved.
 
         Args:
-          sequence_or_element: A single element of any type, or an untyped Iterable of elements.
+            sequence_or_element: A single element of any type, or an untyped Iterable of elements.
 
         Returns:
-          A list
+            A list
 
         """
         return list(InternalTools.iterify(sequence_or_element))
@@ -201,10 +201,10 @@ class InternalTools:
         Will return (an iterator from) the sequence as-is if it is Iterable, not a string, and not a bytes object.
 
         Args:
-          sequence_or_element: A single element of any type, or an untyped Iterable of elements.
+            sequence_or_element: A single element of any type, or an untyped Iterable of elements.
 
         Returns:
-          An Iterator
+            An Iterator
 
         """
         if Tools.is_true_iterable(sequence_or_element):
@@ -219,10 +219,10 @@ class InternalTools:
         In contrast, calling Wells.fetch().run will perform two queries.
 
         Args:
-          well: A well ID or instance
+            well: A well ID or instance
 
         Returns:
-          A wells instance
+            A wells instance
 
         """
         well = Wells.select(Wells, Runs).join(Runs).where(Wells.id == well).first()

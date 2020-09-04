@@ -17,15 +17,17 @@ class Fuzzy:
     """Fuzzy matching of labels for compounds, batches, and mandos objects."""
 
     @classmethod
-    def projects(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
+    def projects(
+        cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
+    ) -> Lookup:
         """
 
 
         Args:
-          s: str:
-          ref:
-          min_score: int:  (Default value = 75)
-          limit:
+            s: str:
+            ref:
+            min_score: int:  (Default value = 75)
+            limit:
 
         Returns:
 
@@ -46,15 +48,15 @@ class Fuzzy:
     @classmethod
     def experiments(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
-    ):
+    ) -> Lookup:
         """
 
 
         Args:
-          s: str:
-          ref:
-          min_score: int:  (Default value = 75)
-          limit:
+            s: str:
+            ref:
+            min_score: int:  (Default value = 75)
+            limit:
 
         Returns:
 
@@ -75,15 +77,15 @@ class Fuzzy:
     @classmethod
     def batteries(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
-    ):
+    ) -> Lookup:
         """
 
 
         Args:
-          s: str:
-          ref:
-          min_score: int:  (Default value = 75)
-          limit:
+            s: str:
+            ref:
+            min_score: int:  (Default value = 75)
+            limit:
 
         Returns:
 
@@ -102,15 +104,17 @@ class Fuzzy:
         return Lookup(df)
 
     @classmethod
-    def assays(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
+    def assays(
+        cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
+    ) -> Lookup:
         """
 
 
         Args:
-          s: str:
-          ref:
-          min_score: int:  (Default value = 75)
-          limit:
+            s: str:
+            ref:
+            min_score: int:  (Default value = 75)
+            limit:
 
         Returns:
 
@@ -129,15 +133,17 @@ class Fuzzy:
         return Lookup(df)
 
     @classmethod
-    def runs(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
+    def runs(
+        cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
+    ) -> Lookup:
         """
 
 
         Args:
-          s: str:
-          ref:
-          min_score: int:  (Default value = 75)
-          limit:
+            s: str:
+            ref:
+            min_score: int:  (Default value = 75)
+            limit:
 
         Returns:
 
@@ -156,15 +162,17 @@ class Fuzzy:
         return Lookup(df)
 
     @classmethod
-    def variants(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100):
+    def variants(
+        cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
+    ) -> Lookup:
         """
 
 
         Args:
-          s: str:
-          ref:
-          min_score: int:  (Default value = 75)
-          limit:
+            s: str:
+            ref:
+            min_score: int:  (Default value = 75)
+            limit:
 
         Returns:
 
@@ -183,46 +191,17 @@ class Fuzzy:
         return Lookup(df)
 
     @classmethod
-    def constructs(
-        cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
-    ):
-        """
-
-
-        Args:
-          s: str:
-          ref:
-          min_score: int:  (Default value = 75)
-          limit:
-
-        Returns:
-
-        """
-        logger.debug(f"Searching constructs for '{s}'...")
-        query = GeneticConstructs.select()
-        data = list(query)
-        raw = process.extract(s, {x.name for x in data}, limit=limit)
-        matches = {name: score for name, score in raw if score >= min_score}
-        constructs = {x.id: x.name for x in data if x.name in matches.keys()}
-        logger.debug(f"Done. Found {len(constructs)} rows.")
-        df = Lookups.constructs(constructs.keys())
-        df["name"] = df["id"].map(constructs.get)
-        df["score"] = df["name"].map(matches.get)
-        df = df.sort_values("score", ascending=False)
-        return Lookup(df)
-
-    @classmethod
     def compounds(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: int = 100
-    ):
+    ) -> Lookup:
         """
 
 
         Args:
-          s: str:
-          ref:
-          min_score: int:  (Default value = 75)
-          limit:
+            s: str:
+            ref:
+            min_score: int:  (Default value = 75)
+            limit:
 
         Returns:
 
@@ -243,15 +222,17 @@ class Fuzzy:
         return Lookup(df)
 
     @classmethod
-    def batches(cls, s: str, ref: Optional[RefLike] = None, min_score: int = 70, limit: int = 100):
+    def batches(
+        cls, s: str, ref: Optional[RefLike] = None, min_score: int = 70, limit: int = 100
+    ) -> Lookup:
         """
 
 
         Args:
-          s: str:
-          ref:
-          min_score: int:  (Default value = 70)
-          limit:
+            s: str:
+            ref:
+            min_score: int:  (Default value = 70)
+            limit:
 
         Returns:
 
@@ -274,15 +255,15 @@ class Fuzzy:
     @classmethod
     def mandos_objects(
         cls, s: str, ref: Optional[RefLike] = None, min_score: int = 75, limit: Optional[int] = 100
-    ):
+    ) -> Lookup:
         """
 
 
         Args:
-          s: str:
-          ref:
-          min_score: int:  (Default value = 75)
-          limit:
+            s: str:
+            ref:
+            min_score: int:  (Default value = 75)
+            limit:
 
         Returns:
 

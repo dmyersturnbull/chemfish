@@ -27,43 +27,32 @@ class ChemfishEnvironment:
     A collection of settings for Chemfish.
     Python files in Chemfish use this singleton class directly.
     This is loaded from a file in the user's home directory at ~/chemfish.config.
-        : username: The username in valar.users; no default
-        : cache_dir: The location of the top-level cache path; defaults to ~/valar-cache
-        : video_cache_dir:  The location of the cache for videos; defaults to  ~/valar-cache/videos
-        : shire_path: The local or remote path to the Shire (raw data storage); by default this a location on Valinor
-        : audio_waveform: Chemfish will **save** StimFrame objects to the cache with audio waveforms; Enabling this will cause audio_waveform= arguments to be always true
-        : matplotlib_style: The path to a Matplotlib stylesheet; defaults to Matplotlib default
-        : use_multicore_tsne: Enable the multicore_tsne package
-        : joblib_compression_level: Used in joblib.dump compress parameter if the filename ends with one of (‘.z’, ‘.gz’, ‘.bz2’, ‘.xz’ or ‘.lzma’); 3 by default
-        : chemfish_log_level: The log level recommended to be used for logging statements within Chemfish; set up by jupyter.py
-        : global_log_level: The log level recommended to be used for logging statements globally; set up by jupyter.py
-        : viz_file: Path to chemfish-specific visualization options in the style of Matplotlib RC
-        : n_cores: Default number of cores for some jobs, including with parallelize()
-        : jupyter_template: Path to a Jupyter template text file
 
-    Args:
-
-    Returns:
+    Attributes:
+        - username: The username in valar.users; no default
+        - cache_dir: The location of the top-level cache path; defaults to ~/valar-cache
+        - video_cache_dir:  The location of the cache for videos; defaults to  ~/valar-cache/videos
+        - shire_path: The local or remote path to the Shire (raw data storage); by default this a location on Valinor
+        - audio_waveform: Chemfish will **save** StimFrame objects to the cache with audio waveforms; Enabling this will cause audio_waveform= arguments to be always true
+        - matplotlib_style: The path to a Matplotlib stylesheet; defaults to Matplotlib default
+        - use_multicore_tsne: Enable the multicore_tsne package
+        - joblib_compression_level: Used in joblib.dump compress parameter if the filename ends with one of (‘.z’, ‘.gz’, ‘.bz2’, ‘.xz’ or ‘.lzma’); 3 by default
+        - chemfish_log_level: The log level recommended to be used for logging statements within Chemfish; set up by jupyter.py
+        - global_log_level: The log level recommended to be used for logging statements globally; set up by jupyter.py
+        - viz_file: Path to chemfish-specific visualization options in the style of Matplotlib RC
+        - n_cores: Default number of cores for some jobs, including with parallelize()
+        - jupyter_template: Path to a Jupyter template text file
 
     """
 
     def __init__(self):
+        """"""
         self.config_file = Path(CONFIG_PATH).expanduser()
         if not self.config_file.exists():
             raise MissingResourceError(f"No config file at path {self.config_file}")
         props = self._get_props()
 
         def _try(key: str, fallback=None):
-            """
-
-
-            Args:
-              key: str:
-              fallback:
-
-            Returns:
-
-            """
             return props.get(key, fallback)
 
         self.home = Path(__file__).parent.parent

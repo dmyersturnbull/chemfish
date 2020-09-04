@@ -14,23 +14,24 @@ class AccuracyCountFrame(BaseScoreFrame):
 
 
 class AccuracyFrame(ScoreFrameWithPrediction):
-    """Has columns 'label', 'score', 'prediction', and 'score_for_prediction', with one row per prediction."""
+    """
+    Has columns 'label', 'score', 'prediction', and 'score_for_prediction', with one row per prediction.
+    """
 
     @classmethod
     @abcd.overrides
     def required_columns(cls) -> Sequence[str]:
-        """ """
         return ["label", "prediction", "score", "score_for_prediction"]
 
     def counts(self) -> AccuracyCountFrame:
-        """ """
+        """"""
         df = self.copy()
         df["score"] = df["label"] == df["prediction"]
         df = self.groupby("label").sum()[["score"]]
         return AccuracyCountFrame(AccuracyCountFrame(df.reset_index()))
 
     def means(self) -> AccuracyCountFrame:
-        """ """
+        """"""
         df = self.copy()
         df["score"] = df["label"] == df["prediction"]
         df = self.groupby("label").mean()[["score"]] * 100.0
@@ -41,7 +42,7 @@ class AccuracyFrame(ScoreFrameWithPrediction):
 
 
         Args:
-          label:
+            label:
 
         Returns:
 
@@ -56,7 +57,7 @@ class AccuracyFrame(ScoreFrameWithPrediction):
 
 
         Args:
-          control_label: str:
+            control_label: str:
 
         Returns:
 
@@ -69,7 +70,7 @@ class AccuracyFrame(ScoreFrameWithPrediction):
 
 
         Args:
-          control_label: str:
+            control_label: str:
 
         Returns:
 
@@ -82,10 +83,10 @@ class AccuracyFrame(ScoreFrameWithPrediction):
         Plots a swarm plot with the class labels on the x-axis and the probability on the y-axis.
 
         Args:
-          renamer: A function mapping class labels to more human-friendly class labels
+            renamer: A function mapping class labels to more human-friendly class labels
 
         Returns:
-          A Matplotlib Figure
+            A Matplotlib Figure
 
         """
         return AccuracyPlotter("swarm").plot(self, renamer=renamer)
@@ -95,10 +96,10 @@ class AccuracyFrame(ScoreFrameWithPrediction):
         Plots a violin plot with the class labels on the x-axis and the probability on the y-axis.
 
         Args:
-          renamer: A function mapping class labels to more human-friendly class labels
+            renamer: A function mapping class labels to more human-friendly class labels
 
         Returns:
-          A Matplotlib Figure
+            A Matplotlib Figure
 
         """
         return AccuracyPlotter("violin").plot(self, renamer=renamer)
@@ -110,9 +111,9 @@ class AccuracyFrame(ScoreFrameWithPrediction):
         Plots a bar plot with the class labels on the x-axis and the average probability on the y-axis.
 
         Args:
-          renamer: A function mapping class labels to more human-friendly class labels
-          ci: Confidence interval 0.0-1.0
-          boot: Number of bootstarp samples
+            renamer: A function mapping class labels to more human-friendly class labels
+            ci: Confidence interval 0.0-1.0
+            boot: Number of bootstarp samples
 
         Returns:
           A Matplotlib Figure
@@ -127,11 +128,11 @@ class AccuracyFrame(ScoreFrameWithPrediction):
         Calculates a confidence interval of the mean from bootstrap over the wells (single rows).
 
         Args:
-          b: The number of bootstrap samples
-          q: The high quantile, between 0 and 1.
+            b: The number of bootstrap samples
+            q: The high quantile, between 0 and 1.
 
         Returns:
-          A DataFrame with columns 'label', 'lower', and 'upper'.
+            A DataFrame with columns 'label', 'lower', and 'upper'.
 
         """
         data = []

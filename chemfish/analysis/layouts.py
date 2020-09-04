@@ -3,17 +3,21 @@ from __future__ import annotations
 import colorsys
 import numbers
 
-import ipywidgets as widgets
-import pandas as pd
-from IPython.display import display
-from ipywidgets import Output
+try:
+    import ipywidgets as widgets
+    from IPython.display import display
+    from ipywidgets import Output
+except ImportError:
+    widgets = None
+    display = None
+    Output = None
 
 from chemfish.core.core_imports import *
 from chemfish.model.compound_names import *
 
 
 class LayoutFrame(UntypedDf):
-    """ """
+    """"""
 
     def drug_cols(self):
         """ """
@@ -34,11 +38,11 @@ class LayoutFrame(UntypedDf):
     def show(self, *what) -> pd.DataFrame:
         """
         Pivots to get an 8-by-12 DataFrame where the values in the cell are from the column `what`.
-        If `what` has > 1 element, concatentaes them separated by space.
+        If `what` has > 1 element, concatenates them separated by space.
         Uses Pandas colors for doses and Ns.
 
         Args:
-          *what:
+            *what:
 
         Returns:
 
@@ -54,14 +58,12 @@ class LayoutChecker:
     """ """
 
     @classmethod
-    def warn_wells(cls, template_plate: Union[TemplatePlates, int, str]):
+    def warn_wells(cls, template_plate: Union[TemplatePlates, int, str]) -> None:
         """
 
 
         Args:
-          template_plate:
-
-        Returns:
+            template_plate:
 
         """
         template_plate = TemplatePlates.fetch(template_plate)
@@ -83,25 +85,25 @@ class LayoutChecker:
 
 
 class LayoutParser:
-    """ """
+    """"""
 
     def parse(
         self,
         df: Union[PathLike, pd.DataFrame],
-        n_rows=8,
-        n_columns=12,
-        check_vals=True,
-        replace_nans=False,
-    ):
+        n_rows: int = 8,
+        n_columns: int = 12,
+        check_vals: bool = True,
+        replace_nans: bool = False,
+    ) -> LayoutFrame:
         """
 
 
         Args:
-          df:
-          n_rows:  (Default value = 8)
-          n_columns:  (Default value = 12)
-          check_vals:  (Default value = True)
-          replace_nans:  (Default value = False)
+            df:
+            n_rows:
+            n_columns:
+            check_vals:
+            replace_nans:
 
         Returns:
 
@@ -167,14 +169,12 @@ class LayoutParser:
             df.replace(np.nan, "-", inplace=True)
         return LayoutFrame(df.sort_values("i"))
 
-    def _check(self, df):
+    def _check(self, df) -> None:
         """
 
 
         Args:
-          df:
-
-        Returns:
+            df:
 
         """
         batches = set()
@@ -193,12 +193,12 @@ class LayoutParser:
             if not Tools.is_empty(batch):
                 Batches.fetch(batch)
 
-    def _duplicates(self, df):
+    def _duplicates(self, df) -> None:
         """
 
 
         Args:
-          df:
+            df:
 
         Returns:
 
@@ -211,12 +211,12 @@ class LayoutParser:
                 if not Tools.is_empty(batch):
                     batches.add(batch)
 
-    def _cols(self, df):
+    def _cols(self, df) -> Sequence[str]:
         """
 
 
         Args:
-          df:
+            df:
 
         Returns:
 
@@ -228,8 +228,8 @@ class LayoutParser:
 
 
         Args:
-          df:
-          row:
+            df:
+            row:
 
         Returns:
 
@@ -240,15 +240,15 @@ class LayoutParser:
             cols[d] = getattr(row, d)
         return cols
 
-    def _drugs(self, df, row):
+    def _drugs(self, df, row) -> Generator[Tup[Union[int, str], Union[int, str]], None, None]:
         """
 
 
         Args:
-          df:
-          row:
+            df:
+            row:
 
-        Returns:
+        Yields:
 
         """
         for i, b, d in self._drug_cols(df):
@@ -259,9 +259,9 @@ class LayoutParser:
 
 
         Args:
-          df:
+            df:
 
-        Returns:
+        Yields:
 
         """
         ii = 1
@@ -282,11 +282,11 @@ class LayoutParser:
 
 
         Args:
-          df: LayoutFrame:
-          name: str:
-          description: str:
-          plate_type:
-          whoami:
+            df: LayoutFrame:
+            name: str:
+            description: str:
+            plate_type:
+            whoami:
 
         Returns:
 
@@ -297,15 +297,7 @@ class LayoutParser:
         plate.save()
 
         def nq(q):
-            """
-
-
-            Args:
-              q:
-
-            Returns:
-
-            """
+            """"""
             return "" if Tools.is_empty(q) else q
 
         for row in df.itertuples():
@@ -341,11 +333,11 @@ class LayoutParser:
 
 
         Args:
-          df: LayoutFrame:
-          name: str:
-          description: str:
-          plate_type:
-          whoami:
+            df: LayoutFrame:
+            name: str:
+            description: str:
+            plate_type:
+            whoami:
 
         Returns:
 
@@ -356,18 +348,12 @@ class LayoutParser:
         ).where(TemplatePlates.name == name).execute()
 
         def nq(q):
-            """
-
-
-            Args:
-              q:
-
-            Returns:
-
-            """
+            """"""
             return "" if Tools.is_empty(q) else q
 
-        ftw_row = TemplateWells.select().where(TemplateWells.template_plate == nq(plate.id)).first()
+        ftw_row = (
+            TemplateWells.select().where(TemplateWells.template_plate == nq(plate.id)).first()
+        )
         ftt_row = (
             TemplateTreatments.select()
             .where(TemplateTreatments.template_plate == nq(plate.id))
@@ -409,15 +395,10 @@ class LayoutParser:
 
 
         Args:
-          df: LayoutFrame:
-          run: Union[int:
-          str:
-          Runs:
-          Submissions]:
-          dry: bool:
-          discard_solvents: bool:  (Default value = False)
-
-        Returns:
+            df: LayoutFrame:
+            run:
+            dry: bool:
+            discard_solvents: bool:  (Default value = False)
 
         """
         batch_dose_cols = [(batch_col, dose_col) for _, batch_col, dose_col in self._drug_cols(df)]
@@ -489,7 +470,9 @@ class LayoutParser:
 
 
 class LayoutVisualizer:
-    """Takes in a spreadsheet that contains layout parameters and returns a visualization of the layout"""
+    """
+    Takes in a spreadsheet that contains layout parameters and returns a visualization of the layout.
+    """
 
     def __init__(self, dfs: Union[str, pd.DataFrame, Sequence[Union[str, pd.DataFrame]]]):
         if not isinstance(dfs, list):
@@ -509,15 +492,7 @@ class LayoutVisualizer:
         return self._layout_dfs
 
     def _get_N_HexCol(self, num_of_colors: int):
-        """
-
-
-        Args:
-          num_of_colors: int:
-
-        Returns:
-
-        """
+        """"""
         hsv_tuples = [(x * 1.0 / num_of_colors, 0.25, 1) for x in range(num_of_colors)]
         hex_out = []
         for rgb in hsv_tuples:
@@ -530,8 +505,8 @@ class LayoutVisualizer:
 
 
         Args:
-          df: pd.DataFrame:
-          column: str:
+            df: pd.DataFrame:
+            column: str:
 
         Returns:
 
@@ -539,8 +514,6 @@ class LayoutVisualizer:
         new_df = df.pivot("row_i", "col_j", column).reset_index()
         new_df["row_i"] = new_df["row_i"].map(lambda i: chr(64 + i))
         new_df = new_df.set_index("row_i")
-        del new_df.columns.name
-        del new_df.index.name
         return new_df
 
     def _find_treatments(self, df: pd.DataFrame):
@@ -548,7 +521,7 @@ class LayoutVisualizer:
         Finds valid treatment pairs of batches and doses.
 
         Args:
-          df: pd.DataFrame:
+            df: pd.DataFrame:
 
         Returns:
 
@@ -573,8 +546,8 @@ class LayoutVisualizer:
         Adds color scheme to single dataframe. If df2 is provided, adds color scheme to df based on values of df2.
 
         Args:
-          df: pd.DataFrame:
-          df2: pd.DataFrame:  (Default value = None)
+            df:
+            df2:
 
         Returns:
 
@@ -588,27 +561,9 @@ class LayoutVisualizer:
         color_map = dict(zip(unique_vals, colors))
 
         def change_bg_cell(s):
-            """
-
-
-            Args:
-              s:
-
-            Returns:
-
-            """
             return ["background-color: " + color_map[val] for val in s]
 
         def style_helper_df(c):
-            """
-
-
-            Args:
-              c:
-
-            Returns:
-
-            """
             df1 = pd.DataFrame("", index=c.index, columns=c.columns)
             for x in df1.index:
                 for y in df1.columns:
@@ -626,7 +581,7 @@ class LayoutVisualizer:
 
 
         Args:
-          color_map:
+            color_map:
 
         Returns:
 
@@ -650,8 +605,8 @@ class LayoutVisualizer:
 
 
         Args:
-          num: int:
-          df: pd.DataFrame:
+            num: int:
+            df: pd.DataFrame:
 
         Returns:
 
@@ -668,7 +623,7 @@ class LayoutVisualizer:
 
 
         Args:
-          col_map:
+            col_map:
 
         Returns:
 
@@ -689,8 +644,8 @@ class LayoutVisualizer:
 
 
         Args:
-          df: pd.DataFrame:
-          label:
+            df: pd.DataFrame:
+            label:
 
         Returns:
 
@@ -759,7 +714,7 @@ class TemplateLayoutVisualizer(LayoutVisualizer):
         Generates df that can be used in LayoutParser
 
         Args:
-          template_plate: TemplatePlates:
+            template_plate: TemplatePlates:
 
         Returns:
 
@@ -809,7 +764,9 @@ class TemplateLayoutVisualizer(LayoutVisualizer):
 
 
 class SubmissionLayoutVisualizer(TemplateLayoutVisualizer):
-    """Takes in a Submission ID or Lookup_hash and returns out a TemplateLayoutVisualizer"""
+    """
+    Takes in a Submission ID or Lookup_hash and returns out a TemplateLayoutVisualizer.
+    """
 
     def __init__(self, submissions: Union[int, str, Sequence[Union[int, str, Submissions]]]):
         if isinstance(submissions, int) or isinstance(submissions, str):
@@ -826,7 +783,9 @@ class SubmissionLayoutVisualizer(TemplateLayoutVisualizer):
 
 
 class RunLayoutVisualizer(LayoutVisualizer):
-    """Takes in a Run ID or Run object and returns a LayoutVisualizer"""
+    """
+    Takes in a Run ID or Run object and returns a LayoutVisualizer.
+    """
 
     def __init__(self, runs: Union[int, Runs, Sequence[Union[int, Runs]]]):
         if isinstance(runs, Collection):
@@ -842,7 +801,7 @@ class RunLayoutVisualizer(LayoutVisualizer):
         Generates df that can be used in LayoutParser
 
         Args:
-          run: Runs:
+            run: Runs:
 
         Returns:
 
@@ -896,10 +855,6 @@ class BatchGetter:
     Useful for external batch sets.
     Maps structured names to batches rows from a regex pattern.
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(self, pattern: str, prefix: str, controls: Mapping[str, Union[str, int, Batches]]):
@@ -912,7 +867,7 @@ class BatchGetter:
 
 
         Args:
-          name: str:
+            name: str:
 
         Returns:
 
@@ -934,10 +889,6 @@ class DoseColumnIterator:
     For example, the initial Olson Lab set had a single compound per column,
     with doses from 100 down to 1.5625, but with one control per column in a semi-random row.
 
-    Args:
-
-    Returns:
-
     """
 
     def __init__(self, dose_range: Iterable[float], ignore: set):
@@ -951,7 +902,7 @@ class DoseColumnIterator:
 
 
         Args:
-          batch:
+            batch:
 
         Returns:
 
@@ -972,16 +923,13 @@ class LiteralImporter:
     """ """
 
     @classmethod
-    def replace_run(cls, run: Union[Runs, int, str]):
+    def replace_run(cls, run: Union[Runs, int, str]) -> None:
         """
-        Replaces Wells and Welltreatments according to their template_well and template_well treaments specified by the
+        Replaces Wells and WellTreatments according to their template_well and template_well treaments specified by the
         template_plate associated with its experiment.
 
         Args:
-          run:
-          run:
-
-        Returns:
+            run:
 
         """
         run = Tools.run(run)

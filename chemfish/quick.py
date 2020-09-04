@@ -55,7 +55,7 @@ generation_feature_preferences = {
 
 
 class AggType(SmartEnum):
-    """ """
+    """"""
 
     NONE = enum.auto()
     NAME = enum.auto()
@@ -64,7 +64,7 @@ class AggType(SmartEnum):
     RUN = enum.auto()
 
     def function(self) -> Callable[[WellFrame], WellFrame]:
-        """ """
+        """"""
         return {
             "none": lambda df: df,
             "name": lambda df: df.agg_by_name(),
@@ -78,7 +78,7 @@ class AggType(SmartEnum):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -91,7 +91,6 @@ class AggType(SmartEnum):
 @abcd.auto_eq()
 class Quick:
     """
-    ..rst
     A collection of ways to get data and plot data with nice defaults.
 
     Each instance can (and generally should) hold every kind of on-disk cache in the caches package.
@@ -100,41 +99,36 @@ class Quick:
     ### Methods
 
     Fetching methods:
-    * `Quick.df`:                  Returns a WellFrame for one or more runs
-    * `Quick.stim`:                Returns a StimFrame from a battery
-    * `Quick.df_and_stims`:        Returns a WellFrame and a StimFrame
-    * `Quick.video`:               Returns a SauronX video for a run
-    * `Quick.microphone_waveform`: Returns the waveform from the microphone for a run
-    * `Quick.stim_waveform`:       Returns the waveform from an audio stimulus
-    * Some methods delegating to `Quick.sensor_cache`
+        - `Quick.df`:                  Returns a WellFrame for one or more runs
+        - `Quick.stim`:                Returns a StimFrame from a battery
+        - `Quick.df_and_stims`:        Returns a WellFrame and a StimFrame
+        - `Quick.video`:               Returns a SauronX video for a run
+        - `Quick.microphone_waveform`: Returns the waveform from the microphone for a run
+        - `Quick.stim_waveform`:       Returns the waveform from an audio stimulus
+        - Some methods delegating to `Quick.sensor_cache`
 
     ### Plotting
 
     There are also plotting methods of a few types:
 
-    * streaming, which return iterators of (name, Figure) tuples. These include:
+    - streaming, which return iterators of (name, Figure) tuples. These include:
         * `Quick.traces`:        Simple time-traces of motion averaged for each name
         * `Quick.smears`:        Time-traces of 'confidence' intervals (80th by default)
         * `Quick.zmears`:        Time-traces of 'confidence' intervals after taking a Z-score with respect to the controls.
-    * heatmaps:
+    - heatmaps:
         * `Quick.rheat`:         White-to-black heatmaps of the raw features.
         * `Quick.zheat`:         Blue-to-white-to-red heatmaps of the Z-scores with respect to controls.
-    * misc:
+    - misc:
         * *diagonstics*:         Data from the time-dependent sensors alongside the stimframes
         * *bar*:                 Barplot of mean (or other aggregation) of the features per name
-    * images:
+    - images:
         * `Quick.webcam_snap`:         Pillow image from the webcam
         * `Quick.roi_snap`:            Pillow image from the main camera's initial snapshot, with the well grid ROI overlaid
         * `Quick.structures_on_plate`: A grid of the chemical structures on the plate
 
     The streaming plotters each have two variants:
-
-        * *singular* (ex `Quick.trace`), which call plt.show and return None.
-        * *plural* (ex `Quick.traces`), which return the iterators and don't display them
-
-    Args:
-
-    Returns:
+        - *singular* (ex `Quick.trace`), which call plt.show and return None.
+        - *plural* (ex `Quick.traces`), which return the iterators and don't display them
 
     """
 
@@ -221,6 +215,9 @@ class Quick:
         self.smoothing_factor = smoothing_factor
         self.min_log_severity = Severity.CAUTION
 
+    def change(self, **kwargs) -> Quick:
+        return self
+
     def trace(
         self,
         run: QsLike,
@@ -239,18 +236,17 @@ class Quick:
 
 
         Args:
-          run: QsLike:
-          smoothing:
-          namer:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          control_names:  (Default value = None)
-          control_types:  (Default value = None)
-          weights:
-          label_assays: bool:  (Default value = False)
-          always_plot_control: bool:  (Default value = False)
-          agg_type:
-        Returns:
+            run: QsLike:
+            smoothing:
+            namer:
+            start_ms:
+            end_ms:
+            control_names:
+            control_types:
+            weights:
+            label_assays:
+            always_plot_control:
+            agg_type:
 
         """
         for name, figure in self.traces(
@@ -281,23 +277,22 @@ class Quick:
         label_assays: bool = False,
         always_plot_control: bool = False,
         agg_type: Union[AggType, str] = AggType.NAME,
-    ) -> Iterator[Tup[str, Figure]]:
+    ) -> Generator[Tup[str, Figure], None, None]:
         """
 
 
         Args:
-          run: QsLike:
-          smoothing:
-          namer:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          control_names:  (Default value = None)
-          control_types:  (Default value = None)
-          weights:
-          label_assays: bool:  (Default value = False)
-          always_plot_control: bool:  (Default value = False)
-          agg_type:
-        Returns:
+            run: QsLike:
+            smoothing:
+            namer:
+            start_ms:
+            end_ms:
+            control_names:
+            control_types:
+            weights:
+            label_assays:
+            always_plot_control:
+            agg_type:
 
         """
         (
@@ -408,19 +403,15 @@ class Quick:
 
 
         Args:
-          run: QsLike:
-          smoothing:
-          namer:
-          ci:
-          show_means: bool:  (Default value = False)
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          control_names:  (Default value = None)
-          control_types:  (Default value = None)
-          weights:
-          label_assays: bool:  (Default value = False)
-
-        Returns:
+            run: QsLike:
+            smoothing:
+            namer:
+            start_ms:
+            end_ms:
+            control_names:
+            control_types:
+            weights:
+            label_assays:
 
         """
         for name, figure in self.smears(
@@ -452,25 +443,23 @@ class Quick:
         weights: Optional[np.array] = None,
         label_assays: bool = False,
         always_plot_control: bool = False,
-    ) -> Iterator[Tup[str, Figure]]:
+    ) -> Generator[Tup[str, Figure], None, None]:
         """
 
 
         Args:
-          run: QsLike:
-          smoothing:
-          namer:
-          ci:
-          show_means: bool:  (Default value = False)
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          control_names:  (Default value = None)
-          control_types:  (Default value = None)
-          weights:
-          label_assays: bool:  (Default value = False)
-          always_plot_control: bool:  (Default value = False)
+            run: QsLike:
+            smoothing:
+            namer:
+            start_ms:
+            end_ms:
+            control_names:
+            control_types:
+            weights:
+            label_assays:
+            always_plot_control:
 
-        Returns:
+        Yields:
 
         """
         (
@@ -529,21 +518,16 @@ class Quick:
 
 
         Args:
-          run: QsLike:
-          control_type: Union[None:
-          str:
-          int:
-          ControlTypes]:  (Default value = None)
-          control_name: Optional[str]:  (Default value = None)
-          smoothing:
-          namer:
-          ci:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          weights:
-          subtraction:
-
-        Returns:
+            run:
+            control_type:
+            control_name:
+            smoothing:
+            namer:
+            ci:
+            start_ms:
+            end_ms:
+            weights:
+            subtraction:
 
         """
         for name, figure in self.zmears(
@@ -573,27 +557,24 @@ class Quick:
         weights: Optional[np.array] = None,
         subtraction=None,
         label_assays: bool = False,
-    ) -> Iterator[Tup[str, Figure]]:
+    ) -> Generator[Tup[str, Figure], None, None]:
         """
 
 
         Args:
-          run: QsLike:
-          control_type: Union[None:
-          str:
-          int:
-          ControlTypes]:  (Default value = None)
-          control_name: Optional[str]:  (Default value = None)
-          smoothing:
-          namer:
-          ci:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          weights:
-          subtraction:
-          label_assays: bool:  (Default value = False)
+            run:
+            control_type:
+            control_name
+            smoothing:
+            namer:
+            ci:
+            start_ms:
+            end_ms:
+            weights:
+            subtraction:
+            label_assays:
 
-        Returns:
+        Yields:
 
         """
         (
@@ -659,9 +640,9 @@ class Quick:
 
 
         Args:
-          ci:
-          smoothing:
-          show_means:
+            ci:
+            smoothing:
+            show_means:
 
         Returns:
 
@@ -698,16 +679,16 @@ class Quick:
         If either is set, uses that one. Will raise a UserContradictionError if both are set.
 
         Args:
-          run: A run ID, name, or object
-          control_type: The name, ID, or object of a ControlTypes; or None
-          control_name: The name of an item in WellFrame.names(); or None
-          threshold: Show anything with a value +/- this as pure white
-          namer: A namer for WellFrameBuilder
-          start_ms: Cuts the dataframes, calculating milliseconds from the known framerate
-          end_ms: Cuts the dataframes, calculating milliseconds from the known framerate
-          show_name_lines: Show horizontal lines between different names
-          show_control_lines: Show horizontal lines between different control types
-          ignore_controls: Don't plot any control wells
+            run: A run ID, name, or object
+            control_type: The name, ID, or object of a ControlTypes; or None
+            control_name: The name of an item in WellFrame.names(); or None
+            threshold: Show anything with a value +/- this as pure white
+            namer: A namer for WellFrameBuilder
+             start_ms: Cuts the dataframes, calculating milliseconds from the known framerate
+            end_ms: Cuts the dataframes, calculating milliseconds from the known framerate
+            show_name_lines: Show horizontal lines between different names
+            show_control_lines: Show horizontal lines between different control types
+            ignore_controls: Don't plot any control wells
 
         Returns:
           The matplotlib Figure
@@ -718,7 +699,7 @@ class Quick:
         stimplotter = StimframesPlotter()
         zscores = self._control_subtract(df, control_type, control_name).threshold_zeros(threshold)
         if ignore_controls:
-            zscores = zscores.without_controls_matching()
+            zscores = zscores.without_controls()
         heater = HeatPlotter(
             symmetric=True,
             stimframes_plotter=stimplotter,
@@ -741,11 +722,11 @@ class Quick:
 
 
         Args:
-          run: QsLike:
-          namer:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          show_name_lines: bool:  (Default value = True)
+            run:
+            namer:
+            start_ms:
+            end_ms:
+            show_name_lines:
 
         Returns:
 
@@ -770,13 +751,13 @@ class Quick:
 
 
         Args:
-          run: QsLike:
-          namer:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          outlier_stds: Optional[float]:  (Default value = 5)
-          path_stub: Optional[PathLike]:  (Default value = None)
-          **kwargs:
+            run:
+            namer:
+            start_ms:
+            end_ms:
+            outlier_stds:
+            path_stub:
+            **kwargs:
 
         Returns:
 
@@ -811,14 +792,14 @@ class Quick:
 
 
         Args:
-          run: QsLike:
-          transform: WellTransform:
-          all_params:
-          recolor:
-          namer:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          path_stub: Optional[PathLike]:  (Default value = None)
+            run:
+            transform:
+            all_params:
+            recolor:
+            namer:
+            start_ms:
+            end_ms:
+            path_stub:
 
         Returns:
 
@@ -854,16 +835,15 @@ class Quick:
 
 
         Args:
-          run: QsLike:
-          save_dir: Optional[PathLike]:  (Default value = None)
-          namer:
-          model_fn: SklearnWfClassifierWithOob:  (Default value = WellForestClassifier)
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          color:
-          sort:
-          load_only: bool:  (Default value = False)
-          **kwargs:
+            run:
+            save_dir:
+            namer:
+            model_fn:
+            start_ms:
+            end_ms:
+            color:
+            sort:
+            **kwargs:
 
         Returns:
 
@@ -900,10 +880,11 @@ class Quick:
 
 
         Args:
-          run: RunLike:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
-          sensors: Optional[Sequence[
+            run:
+            start_ms:
+            end_ms:
+            sensors:
+
         Returns:
 
         """
@@ -930,8 +911,8 @@ class Quick:
 
 
         Args:
-          runs: RunsLike:
-          kind: DurationType:
+            runs:
+            kind:
 
         Returns:
 
@@ -949,11 +930,10 @@ class Quick:
 
 
         Args:
-          runs: QsLike:
-          label_with: Union[str:
-          TimelineLabelType]:  (Default value = TimelineLabelType.TIMES)
-          use_experiments: bool:  (Default value = True)
-          **kwargs:
+            runs:
+            label_with:
+            use_experiments:
+            **kwargs:
 
         Returns:
 
@@ -1009,17 +989,17 @@ class Quick:
             If the battery is not unique for the passed WellFrame, will emit a warning and use the battery with the lowest ID.
 
         Args:
-          run: Anything accepted by `Quick.df`
-          namer: A Namer to set `WellFrame['name']`, or None to use `self.default_namer`.
-          start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
-          end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
-          audio_waveform: Replace the audio stimuli with the values of a standardized waveform; great for plotting. Generally only useful for plotting.
+            run: Anything accepted by `Quick.df`
+            namer: A Namer to set `WellFrame['name']`, or None to use `self.default_namer`.
+            start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
+            end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
+            audio_waveform: Replace the audio stimuli with the values of a standardized waveform; great for plotting. Generally only useful for plotting.
 
         Returns:
-          The WellFrame
+            The WellFrame
 
         Raises:
-          MultipleMatchesError: If multiple batteries were found
+            MultipleMatchesError: If multiple batteries were found
 
         """
         df = self.df(run, namer, start_ms, end_ms)
@@ -1032,7 +1012,7 @@ class Quick:
 
 
         Args:
-          battery:
+            battery:
 
         Returns:
 
@@ -1041,6 +1021,9 @@ class Quick:
 
     def apps(self, battery: Union[Batteries, int, str]) -> AppFrame:
         """
+
+        Args:
+            battery:
 
         Returns:
 
@@ -1058,13 +1041,13 @@ class Quick:
         Get a BatteryStimFrame for a battery
 
         Args:
-          battery: A battery name, ID, or instance
-          start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
-          end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
-          audio_waveform: Replace the audio stimuli with the values of a standardized waveform; great for plotting. Generally only useful for plotting. If None then set True iff the battery is SauronX.
+            battery: A battery name, ID, or instance
+            start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
+            end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
+            audio_waveform: Replace the audio stimuli with the values of a standardized waveform; great for plotting. Generally only useful for plotting. If None then set True iff the battery is SauronX.
 
         Returns:
-          BatteryStimFrame
+            BatteryStimFrame
 
         """
         battery = Batteries.fetch(battery)
@@ -1081,7 +1064,7 @@ class Quick:
 
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -1096,9 +1079,9 @@ class Quick:
 
 
         Args:
-          run: RunLike:
-          start_ms:
-          end_ms:
+            run: RunLike:
+            start_ms:
+            end_ms:
 
         Returns:
 
@@ -1112,7 +1095,7 @@ class Quick:
 
 
         Args:
-          stimulus:
+            stimulus:
 
         Returns:
 
@@ -1124,7 +1107,7 @@ class Quick:
 
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -1136,7 +1119,7 @@ class Quick:
 
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -1148,7 +1131,7 @@ class Quick:
 
 
         Args:
-          run: RunLike:
+            run: RunLike:
 
         Returns:
 
@@ -1167,29 +1150,33 @@ class Quick:
             - A run ID, name, tag, or instance, or submission hash or instance
             - An iterable of any of the above
             - A WellFrame or DataFrame to be converted to a WellFrame
+
         If a WellFrame is passed, will return it immediately if no options are passed.
         For example, will only autofix if the DataFrame is fetched from a cache or Valar.
         More details are below.
+
         Rules for setting the WellFrame names:
             - In every case, will set the name column if `namer` is passed.
             - If `namer` is not set and `run` is a WellFrame or DataFrame, will keep the names of the passed WellFrame
             - If `namer` is not set and `run` is neither of those, will set the names with `self.default_namer`.
+
         Rules about sorting:
             - If `run` is a WellFrame or DataFrame, will keep its sorting
             - Otherwise will call `WellFrame.sort_std`.
+
         Applying fixes and checks:
             1) If `self.enable_checks` is True, will output warnings about the data to stdout.
             2) If `self.auto_fix` is True, will apply data standardization and fixes. These will happen after slicing (if applicable).
             2) If `self.discard_trash_controls` is not False, will discard those wells (if fresh).
 
         Args:
-          run: Any of the above
-          namer: A Namer to set `WellFrame['name']`, or None to use `self.default_namer` unless passing a WellFrame (in which case the existing names are used).
-          start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
-          end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
+            run: Any of the above
+            namer: A Namer to set `WellFrame['name']`, or None to use `self.default_namer` unless passing a WellFrame (in which case the existing names are used).
+            start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
+            end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
 
         Returns:
-          The WellFrame
+            The WellFrame
 
         """
         return self._df(run, namer, start_ms, end_ms)
@@ -1200,12 +1187,10 @@ class Quick:
         Called internally by `Quick.df`, but may also be useful outside.
 
         Args:
-          df: WellFrame:
-
-        Returns:
+            df: WellFrame:
 
         Raises:
-          MultipleGenerationsError: raises IncompatibleGenerationError
+            MultipleGenerationsError: raises IncompatibleGenerationError
 
         """
         used_generations = {ValarTools.generation_of(run) for run in df.unique_runs()}
@@ -1231,10 +1216,10 @@ class Quick:
         Saves the information as a CSV spreadsheet periodically (every 10 runs) while processing.
 
         Args:
-          wheres: ExpressionsLike:
-          min_severity: Severity:  (Default value = Severity.GOOD)
-          as_of: Optional[datetime]:  (Default value = None)
-          path:
+            wheres:
+            min_severity:
+            as_of:
+            path:
 
         Returns:
 
@@ -1266,11 +1251,12 @@ class Quick:
 
 
         Args:
-          wheres:
+            wheres:
+
         Returns:
-          The following tables are joined on.
-          Runs, Experiments, Projects, ProjectTypes, Batteries, Submissions, SauronConfigs, Saurons, Users, Plates
-          Ex: `query_runs([Batteries.id == 99, Saurons.id == 4)]`
+            The following tables are joined on.
+            Runs, Experiments, Projects, ProjectTypes, Batteries, Submissions, SauronConfigs, Saurons, Users, Plates
+            Ex: `query_runs([Batteries.id == 99, Saurons.id == 4)]`
 
         """
         wheres = InternalTools.listify(wheres)
@@ -1317,8 +1303,8 @@ class Quick:
         Also see `Quick.concerns`.
 
         Args:
-          df: WellFrame:
-          min_severity: Severity:  (Default value = Severity.CAUTION)
+            df:
+            min_severity:
 
         Returns:
 
@@ -1336,7 +1322,7 @@ class Quick:
             - Discarding "trash" wells, IF discard_trash is set
 
         Args:
-          df:
+            df:
 
         Returns:
 
@@ -1376,7 +1362,7 @@ class Quick:
                 )
         n = len(df)
         if len(self.discard_trash) > 0:
-            df = df.without_controls_matching(names=self.discard_trash)
+            df = df.without_controls(names=self.discard_trash)
             if len(df) != n:
                 logger.caution(f"Discarded {len(df) - n} trash controls")
         return df
@@ -1392,10 +1378,10 @@ class Quick:
 
 
         Args:
-          run: QsLike:
-          namer:
-          start_ms: Optional[int]:  (Default value = None)
-          end_ms: Optional[int]:  (Default value = None)
+            run:
+            namer:
+            start_ms:
+            end_ms:
 
         Returns:
 
@@ -1434,9 +1420,7 @@ class Quick:
 
 
         Args:
-          run:
-
-        Returns:
+            run:
 
         """
         if isinstance(run, (str, int, float, Runs, Submissions)):
@@ -1477,7 +1461,7 @@ class Quick:
 
 
         Args:
-          run:
+            run:
 
         Returns:
 
@@ -1508,7 +1492,7 @@ class Quick:
         # instead, we'll build the names in Quick.df()
         df = df.with_new_names(self.well_namer)
         df = df.with_new_display_names(self.well_namer)
-        return df.sort_std(), True
+        return df.sort_standard(), True
 
     def _everything(
         self, run, namer, start_ms, end_ms, control_names, control_types, weights, label_assays
@@ -1517,14 +1501,14 @@ class Quick:
         Only for plotting.
 
         Args:
-          run:
-          namer:
-          start_ms:
-          end_ms:
-          control_names:
-          control_types:
-          weights:
-          label_assays:
+            run:
+            namer:
+            start_ms:
+            end_ms:
+            control_names:
+            control_types:
+            weights:
+            label_assays:
 
         Returns:
 
@@ -1543,9 +1527,9 @@ class Quick:
 
 
         Args:
-          df:
-          control_names:
-          control_types:
+            df:
+            control_names:
+            control_types:
 
         Returns:
 
@@ -1553,7 +1537,7 @@ class Quick:
         if control_names is not None and control_types is not None:
             raise ContradictoryRequestError("Can't supply both control_names and control_types")
         if control_types is not None:
-            control_names = df.with_controls_matching(names=control_types).unique_names()
+            control_names = df.with_controls(names=control_types).unique_names()
         if control_names is None:
             control_names = df.with_controls().unique_names()
         return control_names
@@ -1569,10 +1553,10 @@ class Quick:
 
 
         Args:
-          df: WellFrame:
-          control_type: Optional[str]:
-          control_name: Optional[str]:
-          subtraction:
+            df: WellFrame:
+            control_type: Optional[str]:
+            control_name: Optional[str]:
+            subtraction:
 
         Returns:
 
@@ -1590,7 +1574,7 @@ class Quick:
         elif control_type is not None:
             return df.control_subtract(subtraction, control_type)
         else:
-            control_type = df.only_control_matching(positive=False)
+            control_type = Tools.only(df.only_control_matching(positive=False))
             return df.control_subtract(subtraction, control_type)
 
     def _stimframes_per_second(self, df: WellFrame) -> int:
@@ -1598,7 +1582,7 @@ class Quick:
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -1615,7 +1599,7 @@ class Quick:
 
 
         Args:
-          weights: Optional[np.array]:
+            weights: Optional[np.array]:
 
         Returns:
 
@@ -1640,10 +1624,10 @@ class Quick:
 
 
         Args:
-          df: WellFrame:
-          weights: Optional[np.array]:
-          start_ms: Optional[int]:
-          end_ms: Optional[int]:
+            df: WellFrame:
+            weights: Optional[np.array]:
+            start_ms: Optional[int]:
+            end_ms: Optional[int]:
 
         Returns:
 
@@ -1666,9 +1650,7 @@ class Quick:
 
 
         Args:
-          runs:
-
-        Returns:
+            runs:
 
         """
         return self.__delitem__(runs)
@@ -1711,8 +1693,8 @@ class Quicks:
 
 
         Args:
-          as_of: Optional[datetime]:
-          **kwargs:
+            as_of: Optional[datetime]:
+            **kwargs:
 
         Returns:
 
@@ -1725,8 +1707,8 @@ class Quicks:
 
 
         Args:
-          as_of: Optional[datetime]:
-          **kwargs:
+            as_of: Optional[datetime]:
+            **kwargs:
 
         Returns:
 
@@ -1739,8 +1721,8 @@ class Quicks:
 
 
         Args:
-          as_of: Optional[datetime]:
-          **kwargs:
+            as_of: Optional[datetime]:
+            **kwargs:
 
         Returns:
 
@@ -1753,8 +1735,8 @@ class Quicks:
 
 
         Args:
-          as_of: Optional[datetime]:
-          **kwargs:
+            as_of: Optional[datetime]:
+            **kwargs:
 
         Returns:
 
@@ -1767,9 +1749,9 @@ class Quicks:
 
 
         Args:
-          generation:
-          as_of: Optional[datetime]:
-          **kwargs:
+            generation:
+            as_of: Optional[datetime]:
+            **kwargs:
 
         Returns:
 

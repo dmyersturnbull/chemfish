@@ -3,17 +3,17 @@ Sample Insertion SQL Queries to populate test db. Make sure unique keys are diff
 */
 
 
--- Host: 127.0.0.1    Database: valartest
+-- Host: 127.0.0.1    Database: valar
 -- ------------------------------------------------------
 
 SET FOREIGN_KEY_CHECKS=0;
 
-DROP DATABASE IF EXISTS valartest;
-CREATE DATABASE valartest CHARACTER SET = 'utf8mb4' COLLATE 'utf8mb4_unicode_520_ci';
+DROP DATABASE IF EXISTS valar;
+CREATE DATABASE valar CHARACTER SET = 'utf8mb4' COLLATE 'utf8mb4_unicode_520_ci';
 DROP USER IF EXISTS 'kaletest'@'localhost';
-USE valartest;
+USE valar;
 CREATE USER 'kaletest'@'localhost' IDENTIFIED BY 'kale123';
-GRANT SELECT, INSERT, UPDATE, DELETE ON valartest.* TO 'kaletest'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON valar.* TO 'kaletest'@'localhost';
 
 
 --
@@ -1231,166 +1231,3 @@ CREATE TABLE `mandos_rules` (
   CONSTRAINT `mo_to_pred` FOREIGN KEY (`predicate_id`) REFERENCES `mandos_predicates` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
-
-
-SET FOREIGN_KEY_CHECKS=1;
-
-
-INSERT INTO refs (name,  description) VALUES ('manual', 'Manual');
-INSERT INTO refs (name, description) VALUES ('manual:high', 'High-priority');
-INSERT INTO refs (name, description) VALUES ('manual:johnson', 'User-added');
-
-INSERT INTO saurons (name) VALUES ('Elephant');
-
-INSERT INTO users (username, first_name, last_name) VALUES ('johnson', 'Jackie', 'Johnson');
-INSERT INTO users (username, first_name, last_name) VALUES ('annette', 'Annette', 'Antoinette');
-
-INSERT INTO locations (name, part_of) VALUES ('Local Group', NULL);
-INSERT INTO locations (name, part_of) VALUES ('Alpha Centauri', 1);
-INSERT INTO locations (name, part_of) VALUES ('Isle of the Deep', 2);
-
-INSERT INTO project_types(name, description) VALUES ('main', 'Main type of project');
-
-INSERT INTO projects(name, description, creator_id) VALUES ('eat', 'Eating food', 1);
-
-INSERT INTO stimuli(name, default_color, description, analog) VALUES ('spikes', '000000', 'Spikes, of course', 1);
-INSERT INTO stimuli(name, default_color, description, analog) VALUES ('gaps', '000000', 'Things to jump over', 0);
-
-INSERT INTO batteries(
-    name, description, length, author_id, assays_sha1
-) VALUES (
-    'buffet', 'Buffet', 30, 1, random_bytes(20)
-);
-
-INSERT INTO assays(
-    name, description, length, frames_sha1
-) VALUES (
-    'pizza', 'This pizza has one topping and is longer', 2000, random_bytes(20)
-);
-INSERT INTO assays(
-    name, description, length, frames_sha1
-) VALUES (
-    'salad', 'This salad has two ingredients and is shorter', 1000, random_bytes(20)
-);
-
-INSERT INTO stimulus_frames (assay_id, stimulus_id, frames, frames_sha1) VALUES (
-    1, 1, X'00000000000000000000ffffffffffffffffffff00000000000000000000', random_bytes(20)
-);
-
-INSERT INTO stimulus_frames (
-    assay_id, stimulus_id, frames, frames_sha1
-) VALUES (
-    2, 1, X'00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff', random_bytes(20)
-);
-INSERT INTO stimulus_frames (
-    assay_id, stimulus_id, frames, frames_sha1
-) VALUES (
-    2, 2, X'ffffffffffffffffffffffffffffff000000000000000000000000000000', random_bytes(20)
-);
-
-INSERT INTO assay_positions (battery_id, assay_id, start) VALUES (1, 1, 0);
-INSERT INTO assay_positions (battery_id, assay_id, start) VALUES (1, 2, 30);
-
-INSERT INTO experiments(
-    name, description, creator_id, project_id, battery_id, template_plate_id, default_acclimation_sec
-) VALUES (
-    'Eat', 'Eating a buffet', 1, 1, 1, NULL, 60
-);
-
-
-INSERT INTO sauron_configs (sauron_id, datetime_changed, description) VALUES (1, '2011-01-01 11:11:11', 'Nope');
-
-INSERT INTO sauron_settings (sauron_config_id, name, value) VALUES (1, 'frames_per_second', 1);
-
-INSERT INTO plate_types(name, n_rows, n_columns, well_shape, opacity) VALUES('2x3', 2, 3, 'square', 'opaque');
-
-INSERT INTO plates(plate_type_id, person_plated_id, datetime_plated) VALUES(1, 1, '2012-01-01 09:09:09');
-
-INSERT INTO submissions(
-    lookup_hash, experiment_id, user_id, person_plated_id, continuing_id,
-    datetime_plated, datetime_dosed, acclimation_sec, description
-) VALUES (
-    '123456789abc', 1, 1, 1, NULL,
-    '2011-01-01 09:09:09', '2012-01-01 10:10:10', 60, 'A submission of sorts'
-);
-
-INSERT INTO runs(
-    experiment_id, plate_id, description, experimentalist_id, submission_id, datetime_run, datetime_dosed,
-    name, tag, sauron_config_id, config_file_id, incubation_min, acclimation_sec
-) VALUES (
-    1, 1, 'Plate 1', 1, 1, '2012-01-01 11:11:11', '2012-01-01 10:10:10',
-    'run:1', '20120101.11111111.Elephant', 1, NULL, 61, 60
-);
-
--- drug (-) control
-INSERT INTO wells(
-    run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    1, 1, 1, 1, NULL, 10, 7
-);
--- drug (+) control, with drug
-INSERT INTO wells(
-    run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    1, 2, 2, 1, NULL, 10, 7
-);
--- different variant
-INSERT INTO wells(
-    run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    1, 3, NULL, 2, NULL, 10, 7
-);
--- single compound treatment
-INSERT INTO wells(
-    run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    1, 4, NULL, 1, NULL, 10, 7
-);
--- co-treatment, one without a compounds row
-INSERT INTO wells(
-    run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    1, 5, NULL, 1, NULL, 10, 7
-);
--- new well group
-INSERT INTO wells(
-    run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    1, 6, NULL, 1, 'a well group', 10, 7
-);
-
-INSERT INTO compounds(
-    inchi, inchikey, inchikey_connectivity, chembl_id, chemspider_id, smiles
-) VALUES (
-
-);
-INSERT INTO compounds(
-    inchi, inchikey, inchikey_connectivity, chembl_id, chemspider_id, smiles
-) VALUES (
-
-);
-INSERT INTO compounds(
-    inchi, inchikey, inchikey_connectivity, chembl_id, chemspider_id, smiles
-) VALUES (
-
-);
-
-INSERT INTO batches(
-    lookup_hash, tag, compound_id, made_from_id, supplier_id, ref_id,
-    legacy_internal_id, location_id, box_number, well_number, location_note,
-    amount, concentration_millimolar, solvent_id, molecular_weight, supplier_catalog_number,
-    person_ordered, date_ordered
-) VALUES (
-
-);
-
-INSERT INTO features (
-    id, name, description, dimensions, data_type
-) VALUES (
-    1, 'MI', 'motion index', '[t-1]', 'float'
-);
-INSERT INTO features (
-    id, name, description, dimensions, data_type
-) VALUES (
-    2, 'cd(10)', 'cd(10)', '[t-1]', 'float'
-);

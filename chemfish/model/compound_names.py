@@ -13,6 +13,11 @@ class CompoundNamer(metaclass=abc.ABCMeta):
     """
 
     def __init__(self, as_of: Optional[datetime] = datetime.now()):
+        """
+
+        Args:
+            as_of:
+        """
         self.as_of = as_of
 
     def get(self, compound: NullableCompoundLike) -> Optional[str]:
@@ -20,7 +25,7 @@ class CompoundNamer(metaclass=abc.ABCMeta):
         Get a single name for a single compound, or None if a name wasn't found.
 
         Args:
-          compound: NullableCompoundLike:
+            compound: NullableCompoundLike:
 
         Returns:
 
@@ -35,14 +40,13 @@ class CompoundNamer(metaclass=abc.ABCMeta):
     def map_to(self, compounds: NullableCompoundsLike) -> Sequence[Optional[str]]:
         """
         Maps each compound (or null) in a (non-nested) sequence to its name or None.
-        Ex:
-        ```
-        namer.map([1, 1, None])
-        # returns ['water', 'water', None]
-        ```
+
+        For example::
+            namer.map([1, 1, None])
+            # returns ['water', 'water', None]
 
         Args:
-          compounds: NullableCompoundsLike:
+            compounds: NullableCompoundsLike:
 
         Returns:
 
@@ -59,14 +63,12 @@ class CompoundNamer(metaclass=abc.ABCMeta):
         """
         Maps a list of lists/tuples of compounds.
         This is notably useful for processing wells on a plate, where each well has a list of compounds.
-        Ex:
-        ```
-        namer.map_2d([1, [1, Compounds.fetch(126)], [], None])
-        # returns [['water'], ['water', 'Haloperidol'], [], [None]]
-        ```
+        For example::
+            namer.map_2d([1, [1, Compounds.fetch(126)], [], None])
+            # returns [['water'], ['water', 'Haloperidol'], [], [None]]
 
         Args:
-          compounds: Iterable[Iterable[Optional[CompoundLike]]]:
+            compounds: Iterable[Iterable[Optional[CompoundLike]]]:
 
         Returns:
 
@@ -87,7 +89,7 @@ class CompoundNamer(metaclass=abc.ABCMeta):
 
 
         Args:
-          compound_ids: NullableCompoundsLike:
+            compound_ids: NullableCompoundsLike:
 
         Returns:
 
@@ -99,7 +101,7 @@ class CompoundNamer(metaclass=abc.ABCMeta):
 
 
         Args:
-          compounds:
+            compounds:
 
         Returns:
 
@@ -122,7 +124,7 @@ class BatchNamer(metaclass=abc.ABCMeta):
 
 
         Args:
-          batches: BatchesLike:
+            batches: BatchesLike:
 
         Returns:
 
@@ -134,7 +136,7 @@ class BatchNamer(metaclass=abc.ABCMeta):
 
 
         Args:
-          batches:
+            batches:
 
         Returns:
 
@@ -146,9 +148,17 @@ class BatchNamer(metaclass=abc.ABCMeta):
 
 
 class BatchNamerWrapping(BatchNamer):
-    """Get batch names from compound names, falling back to batch tags."""
+    """
+    Get batch names from compound names, falling back to batch tags.
+    """
 
     def __init__(self, compound_namer: CompoundNamer, use_bid_if_empty: bool = False):
+        """
+
+        Args:
+            compound_namer:
+            use_bid_if_empty:
+        """
         super().__init__(compound_namer.as_of)
         self.compound_namer = compound_namer
         self.use_bid_if_empty = use_bid_if_empty
@@ -158,7 +168,7 @@ class BatchNamerWrapping(BatchNamer):
 
 
         Args:
-          batches: BatchesLike:
+            batches: BatchesLike:
 
         Returns:
 
@@ -176,14 +186,14 @@ class BatchNamerWrapping(BatchNamer):
 
 
 class BatchNamerTag(BatchNamer):
-    """ """
+    """"""
 
     def fetch(self, batches: BatchesLike) -> Mapping[int, str]:
         """
 
 
         Args:
-          batches: BatchesLike:
+            batches: BatchesLike:
 
         Returns:
 
@@ -192,7 +202,7 @@ class BatchNamerTag(BatchNamer):
 
 
 class CidCompoundNamer(CompoundNamer):
-    """ """
+    """"""
 
     def fetch(self, compound_ids: CompoundsLike) -> Mapping[int, str]:
         """
@@ -208,9 +218,15 @@ class CidCompoundNamer(CompoundNamer):
 
 
 class SingleThingCompoundNamer(CompoundNamer):
-    """ """
+    """"""
 
     def __init__(self, attribute: str, as_of: datetime = datetime.now()):
+        """
+
+        Args:
+            attribute:
+            datetime:
+        """
         super().__init__(as_of)
         self.attribute = attribute
 
@@ -219,7 +235,7 @@ class SingleThingCompoundNamer(CompoundNamer):
 
 
         Args:
-          compound_ids: CompoundsLike:
+            compound_ids: CompoundsLike:
 
         Returns:
 
@@ -232,7 +248,9 @@ class SingleThingCompoundNamer(CompoundNamer):
 
 
 class TieredCompoundNamer(CompoundNamer):
-    """Checks sources in order, preferring sources with lower index."""
+    """
+    Checks sources in order, preferring sources with lower index.
+    """
 
     # high-precedence, manual, drugbank:5.0.10:secondary_id, chembl:api:fda_name, chembl:api:inn_name, chembl:api:usan_name, valinor, dmso_stocks, chembl:api:preferred_name
     elegant_sources: Sequence[RefLike] = [
@@ -268,7 +286,7 @@ class TieredCompoundNamer(CompoundNamer):
 
 
         Args:
-          sources:
+            sources:
 
         Returns:
 
@@ -284,7 +302,7 @@ class TieredCompoundNamer(CompoundNamer):
 
 
         Args:
-          compound_ids: CompoundsLike:
+            compound_ids: CompoundsLike:
 
         Returns:
 
@@ -313,14 +331,14 @@ class TieredCompoundNamer(CompoundNamer):
 
 
 class CompoundNamerEmpty(BatchNamer):
-    """ """
+    """"""
 
     def fetch(self, compound_ids: CompoundsLike) -> Mapping[int, str]:
         """
 
 
         Args:
-          compound_ids: CompoundsLike:
+            compound_ids: CompoundsLike:
 
         Returns:
 
@@ -329,14 +347,14 @@ class CompoundNamerEmpty(BatchNamer):
 
 
 class BatchNamerEmpty(BatchNamer):
-    """ """
+    """"""
 
     def fetch(self, batches: BatchesLike) -> Mapping[int, str]:
         """
 
 
         Args:
-          batches: BatchesLike:
+            batches: BatchesLike:
 
         Returns:
 
@@ -346,7 +364,7 @@ class BatchNamerEmpty(BatchNamer):
 
 @abcd.copy_docstring(TieredCompoundNamer)
 class CleaningTieredCompoundNamer(TieredCompoundNamer):
-    """ """
+    """"""
 
     def __init__(
         self,
@@ -357,6 +375,16 @@ class CleaningTieredCompoundNamer(TieredCompoundNamer):
         allow_numeric: bool = False,
         transform: Optional[Callable[[str], str]] = None,
     ):
+        """
+
+        Args:
+            sources:
+            max_length:
+            use_cid_if_empty:
+            as_of:
+            allow_numeric:
+            transform:
+        """
         cleaner = CompoundNameCleaner()
         transform = lambda s: cleaner.clean(transform(s))
         super().__init__(sources, max_length, use_cid_if_empty, as_of, allow_numeric, transform)
@@ -367,10 +395,6 @@ class CompoundNameCleaner:
     Contains an ordered list of substrings of compound names to discard.
     By default, will use resources/chem/unimportant_substrings.lines
     Also replaces names of Greek letters with their Unicode equivalents.
-
-    Args:
-
-    Returns:
 
     """
 
@@ -384,7 +408,7 @@ class CompoundNameCleaner:
 
 
         Args:
-          thestring: Optional[str]:
+            thestring: Optional[str]:
 
         Returns:
 
@@ -411,20 +435,20 @@ class CompoundNameCleaner:
 
 
 class CompoundNamers:
-    """ """
+    """"""
 
     @classmethod
     def empty(cls) -> CompoundNamerEmpty:
-        """ """
+        """"""
         return CompoundNamerEmpty()
 
     @classmethod
-    def inchikey(cls, as_of: Optional[datetime] = None):
+    def inchikey(cls, as_of: Optional[datetime] = None) -> CompoundNamer:
         """
 
 
         Args:
-          as_of: Optional[datetime]:  (Default value = None)
+            as_of:
 
         Returns:
 
@@ -432,12 +456,12 @@ class CompoundNamers:
         return SingleThingCompoundNamer("inchikey", as_of)
 
     @classmethod
-    def chembl(cls, as_of: Optional[datetime] = None):
+    def chembl(cls, as_of: Optional[datetime] = None) -> CompoundNamer:
         """
 
 
         Args:
-          as_of: Optional[datetime]:  (Default value = None)
+            as_of: Optional[datetime]:  (Default value = None)
 
         Returns:
 
@@ -450,14 +474,14 @@ class CompoundNamers:
         sources: Optional[Sequence[RefLike]] = None,
         max_length: int = 30,
         as_of: Optional[datetime] = None,
-    ):
+    ) -> CompoundNamer:
         """
 
 
         Args:
-          sources:
-          max_length: int:  (Default value = 30)
-          as_of: Optional[datetime]:  (Default value = None)
+            sources:
+            max_length:
+            as_of:
 
         Returns:
 
@@ -470,14 +494,14 @@ class CompoundNamers:
         sources: Optional[Sequence[RefLike]] = None,
         max_length: int = 30,
         as_of: Optional[datetime] = None,
-    ):
+    ) -> CompoundNamer:
         """
 
 
         Args:
-          sources:
-          max_length: int:  (Default value = 30)
-          as_of: Optional[datetime]:  (Default value = None)
+            sources:
+            max_length:
+            as_of:
 
         Returns:
 
@@ -492,14 +516,14 @@ class CompoundNamers:
         sources: Optional[Sequence[RefLike]] = None,
         max_length: int = 30,
         as_of: Optional[datetime] = None,
-    ):
+    ) -> CompoundNamer:
         """
 
 
         Args:
-          sources:
-          max_length: int:  (Default value = 30)
-          as_of: Optional[datetime]:  (Default value = None)
+            sources:
+            max_length:
+            as_of:
 
         Returns:
 
@@ -533,9 +557,9 @@ class BatchNamers:
 
 
         Args:
-          sources:
-          max_length: int:  (Default value = 30)
-          as_of: Optional[datetime]:  (Default value = None)
+            sources:
+            max_length:
+            as_of:
 
         Returns:
 
@@ -558,9 +582,9 @@ class BatchNamers:
 
 
         Args:
-          sources:
-          max_length: int:  (Default value = 30)
-          as_of: Optional[datetime]:  (Default value = None)
+            sources:
+            max_length:
+            as_of:
 
         Returns:
 

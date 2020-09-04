@@ -1,16 +1,19 @@
 from __future__ import annotations
 
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+
 from chemfish.core.core_imports import *
 from chemfish.model.compound_names import *
 from chemfish.viz.breakdown_plots import BreakdownBarPlotter, BreakdownPiePlotter
 
 
 class MandosFrame(UntypedDf):
-    """ """
+    """"""
 
     @classmethod
     def required_columns(cls) -> Sequence[str]:
-        """ """
+        """"""
         return [
             "rule_id",
             "compound",
@@ -27,7 +30,7 @@ class MandosFrame(UntypedDf):
 
     @classmethod
     def reserved_columns(cls) -> Sequence[str]:
-        """ """
+        """"""
         return [
             "rule_id",
             "compound",
@@ -43,15 +46,15 @@ class MandosFrame(UntypedDf):
             "ref",
         ]
 
-    def bar(self, colors: Union[None, bool, Sequence[str]] = None, ax=None):
+    def bar(
+        self, colors: Union[None, bool, Sequence[str]] = None, ax: Optional[Axes] = None
+    ) -> Figure:
         """
 
 
         Args:
-          colors: Union[None:
-          bool:
-          Sequence[str]]:  (Default value = None)
-          ax:
+            colors: Union[None:
+            ax:
 
         Returns:
 
@@ -61,15 +64,15 @@ class MandosFrame(UntypedDf):
         values = counts["count"].values
         return BreakdownBarPlotter().plot(labels, values, colors, ax=ax)
 
-    def pie(self, colors: Union[None, bool, Sequence[str]] = None, ax=None):
+    def pie(
+        self, colors: Union[None, bool, Sequence[str]] = None, ax: Optional[Axes] = None
+    ) -> Figure:
         """
 
 
         Args:
-          colors: Union[None:
-          bool:
-          Sequence[str]]:  (Default value = None)
-          ax:
+            colors:
+            ax:
 
         Returns:
 
@@ -92,13 +95,13 @@ class MandosFrame(UntypedDf):
         """
         return self.counts_by_col("object_name", multi_count=multi_count)
 
-    def counts_by_col(self, col: str, multi_count: bool = False):
+    def counts_by_col(self, col: str, multi_count: bool = False) -> UntypedDf:
         """
 
 
         Args:
-          col: str:
-          multi_count: bool:  (Default value = False)
+            col: str:
+            multi_count: bool:  (Default value = False)
 
         Returns:
 
@@ -161,7 +164,7 @@ class MandosSearch:
 
 
         Args:
-          as_of: datetime:
+            as_of: datetime:
 
         Returns:
 
@@ -174,7 +177,7 @@ class MandosSearch:
 
 
         Args:
-          as_of: datetime:
+            as_of: datetime:
 
         Returns:
 
@@ -187,7 +190,7 @@ class MandosSearch:
 
 
         Args:
-          as_of: datetime:
+            as_of: datetime:
 
         Returns:
 
@@ -199,7 +202,7 @@ class MandosSearch:
 
 
         Args:
-          where:
+            where:
 
         Returns:
 
@@ -212,7 +215,7 @@ class MandosSearch:
 
 
         Args:
-          name: Optional[str]:
+            name: Optional[str]:
 
         Returns:
 
@@ -233,7 +236,7 @@ class MandosSearch:
 
 
         Args:
-          name: Optional[str]:
+            name: Optional[str]:
 
         Returns:
 
@@ -254,8 +257,8 @@ class MandosSearch:
 
 
         Args:
-          col_name:  (Default value = None)
-          namer:
+            col_name:
+            namer:
 
         Returns:
 
@@ -272,9 +275,7 @@ class MandosSearch:
 
 
         Args:
-          refs: Set[Union[str:
-          int:
-          Refs]]:  (Default value = None)
+            refs:
 
         Returns:
 
@@ -353,9 +354,7 @@ class MandosSearch:
 
 
         Args:
-          df: pd.DataFrame:
-
-        Returns:
+            df: pd.DataFrame:
 
         """
         if self.batch_refs is None:
@@ -377,9 +376,7 @@ class MandosSearch:
 
 
         Args:
-          df: pd.DataFrame:
-
-        Returns:
+            df: pd.DataFrame:
 
         """
         objs = set(df["object_id"])
@@ -396,9 +393,7 @@ class MandosSearch:
 
 
         Args:
-          df: pd.DataFrame:
-
-        Returns:
+            df: pd.DataFrame:
 
         """
         rules = set(df["rule_id"].unique())
@@ -410,16 +405,14 @@ class MandosSearch:
         )
         self._add_tags(df, tags, "rule_id")
 
-    def _add_tags(self, df: pd.DataFrame, tags, name):
+    def _add_tags(self, df: pd.DataFrame, tags, name) -> None:
         """
 
 
         Args:
-          df: pd.DataFrame:
-          tags:
-          name:
-
-        Returns:
+            df: pd.DataFrame:
+            tags:
+            name:
 
         """
         lookup = defaultdict(lambda: [])
@@ -454,9 +447,7 @@ class MandosSearches:
 
 
         Args:
-          compounds: Union[Compounds:
-          int:
-          str]:
+            compounds:
 
         Returns:
 
@@ -489,10 +480,8 @@ class MandosSearches:
 
 
         Args:
-          compound: Union[Compounds:
-          int:
-          str]:
-          as_of: datetime:
+            compound:
+            as_of: datetime:
 
         Returns:
 
@@ -506,10 +495,8 @@ class MandosSearches:
 
 
         Args:
-          compound: Union[Compounds:
-          int:
-          str]:
-          as_of: datetime:
+            compound:
+            as_of: datetime:
 
         Returns:
 
@@ -523,10 +510,8 @@ class MandosSearches:
 
 
         Args:
-          compound: Union[Compounds:
-          int:
-          str]:
-          as_of: datetime:
+            compound:
+            as_of: datetime:
 
         Returns:
 
@@ -540,7 +525,7 @@ class MandosSearches:
 
 
         Args:
-          compounds: Set[int]:
+            compounds:
 
         Returns:
 

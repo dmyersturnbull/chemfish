@@ -3,7 +3,7 @@ from chemfish.core.core_imports import *
 
 
 class FeatureType:
-    """ """
+    """"""
 
     def __init__(
         self,
@@ -64,14 +64,12 @@ class FeatureType:
         return self.from_blob(wf.floats, well, stringent=stringent)
 
     @abcd.abstractmethod
-    def to_blob(self, arr: np.array):
+    def to_blob(self, arr: np.array) -> None:
         """
 
 
         Args:
             arr: np.array:
-
-        Returns:
 
         """
         raise NotImplementedError()
@@ -105,9 +103,9 @@ class FeatureType:
 
 
 class _ConsecutiveFrameFeature(FeatureType, metaclass=abcd.ABCMeta):
-    """ """
+    """"""
 
-    def from_blob(self, blob: bytes, well: Union[Wells, int], stringent: bool = False):
+    def from_blob(self, blob: bytes, well: Union[Wells, int], stringent: bool = False) -> np.array:
         """
 
 
@@ -136,13 +134,13 @@ class _ConsecutiveFrameFeature(FeatureType, metaclass=abcd.ABCMeta):
 
 
 class _Mi(_ConsecutiveFrameFeature):
-    """ """
+    """"""
 
     def __init__(self, interpolated: bool):
         v = Features.select().where(Features.name == "MI").first()
         super().__init__(v, True, 4, 1000, "(10³)", interpolated, DataGeneration.all_generations())
 
-    def to_blob(self, arr: np.array):
+    def to_blob(self, arr: np.array) -> bytes:
         """
 
 
@@ -156,7 +154,7 @@ class _Mi(_ConsecutiveFrameFeature):
 
 
 class _Diff(_ConsecutiveFrameFeature):
-    """ """
+    """"""
 
     def __init__(
         self, name: str, tau: int, recommended_scale: int, recommended_unit: str, interpolated: bool
@@ -171,7 +169,7 @@ class _Diff(_ConsecutiveFrameFeature):
             v, True, 4, recommended_scale, recommended_unit, interpolated, generations=generations
         )
 
-    def to_blob(self, arr: np.array):
+    def to_blob(self, arr: np.array) -> bytes:
         """
 
 
@@ -185,7 +183,9 @@ class _Diff(_ConsecutiveFrameFeature):
 
 
 class FeatureTypes:
-    """The feature types in valar.features."""
+    """
+    The feature types in valar.features.
+    """
 
     MI = _Mi(False)
     cd_10 = _Diff("cd", 10, 1, "", False)
@@ -196,10 +196,11 @@ class FeatureTypes:
     @classmethod
     def of(cls, f: Union[FeatureType, str]) -> FeatureType:
         """
-        Fetches a feature from its INTERNAL name.
+        Fetches a feature from its **internal** name.
 
         Args:
-            f: A value in FeatureType.internal_name in one of the FeatureType entries in FeatureTypes.known
+            f: A value in FeatureType.internal_name in one of the FeatureType entries in ``FeatureTypes.known``
+
         Returns:
             The FeatureType
 

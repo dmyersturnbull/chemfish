@@ -7,7 +7,7 @@ from chemfish.core.core_imports import *
 
 
 class StatTools:
-    """ """
+    """"""
 
     @classmethod
     def kde(
@@ -40,6 +40,14 @@ class MetricInfo:
     """A type of 2D metric such as ROC or Precision-Recall."""
 
     def __init__(self, name: str, score: str, false: str, true: str):
+        """
+
+        Args:
+            name:
+            score:
+            false:
+            true:
+        """
         self.name, self.score, self.false, self.true = name, score, false, true
 
     @classmethod
@@ -49,7 +57,7 @@ class MetricInfo:
 
     @classmethod
     def pr(cls):
-        """ """
+        """"""
         return MetricInfo(
             "Precision" + Chars.en + "Recall",
             "average precision (%)",
@@ -62,7 +70,9 @@ class MetricInfo:
 @abcd.auto_eq()
 @abcd.auto_hash()
 class MetricData:
-    """Typically either ROC or Precision-Recall curves."""
+    """
+    Typically either ROC or Precision-Recall curves.
+    """
 
     def __init__(
         self,
@@ -165,7 +175,7 @@ class BaseScoreFrame(TypedDf):
         """ """
         return [c for c in ["label", "control", "class"] if c in self.columns]
 
-    def by_label(self, label: Union[str, Iterable[str]]):
+    def by_label(self, label: Union[str, Iterable[str]]) -> __qualname__:
         """
 
 
@@ -181,7 +191,7 @@ class BaseScoreFrame(TypedDf):
             return self.__class__(self[self["label"].isin(label)])
 
     @classmethod
-    def simple(cls, classes: pd.Series, scores: pd.Series):
+    def simple(cls, classes: pd.Series, scores: pd.Series) -> BaseScoreFrame:
         """
 
 
@@ -196,7 +206,7 @@ class BaseScoreFrame(TypedDf):
         df.columns = ["label", "score"]
         return BaseScoreFrame(df)
 
-    def sort_pretty(self, more_controls: Optional[Set[str]] = None):
+    def sort_pretty(self, more_controls: Optional[Set[str]] = None) -> __qualname__:
         """
         Sorts by the names with a natural sort, but putting control names at the top.
         To do this, relies on the name to determine whether a row is a control.
@@ -211,7 +221,7 @@ class BaseScoreFrame(TypedDf):
             ValarTools.sort_controls_first(self, "label", more_controls=more_controls)
         )
 
-    def sort_first(self, names: Sequence[str]):
+    def sort_first(self, names: Sequence[str]) -> __qualname__:
         """
         Sorts these names first, keeping the rest in the same order.
 
@@ -282,7 +292,7 @@ class BaseScoreFrame(TypedDf):
         return self.__class__(summary.reset_index())
 
     def set_controls_from_names(self) -> BaseScoreFrame:
-        """ """
+        """"""
         z = self.copy()
         controls = {s.name: s.name for s in ControlTypes.select()}
         z["control"] = z["name"].map(lambda s: controls.get(s))
@@ -303,8 +313,6 @@ class BaseScoreFrame(TypedDf):
         """
 
         class X(cls):
-            """ """
-
             pass
 
         X.__name__ = class_name
@@ -321,7 +329,6 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
     @classmethod
     @abcd.overrides
     def required_columns(cls) -> Sequence[str]:
-        """ """
         return ["label", "prediction", "score", "score_for_prediction"]
 
     def rocs(self, control_label: str) -> Sequence[MetricData]:
@@ -453,7 +460,9 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
 @abcd.auto_hash()
 @abcd.auto_eq()
 class KdeData:
-    """Kernel density estimation data."""
+    """
+    Kernel density estimation data.
+    """
 
     def __init__(
         self,
@@ -462,6 +471,7 @@ class KdeData:
         density: Sequence[float],
         params: Optional[Mapping[str, Any]],
     ):
+        """"""
         self.samples, self.support, self.density = samples, support, density
         self.params = params
 
@@ -472,8 +482,8 @@ class KdeData:
 
 
         Args:
-            support_start: Optional[float]:  (Default value = None)
-            support_end: Optional[float]:  (Default value = None)
+            support_start:
+            support_end:
 
         Returns:
 
@@ -491,7 +501,7 @@ class KdeData:
 
 
         Args:
-            df: BaseScoreFrame:
+            df:
             **kwargs:
 
         Returns:
@@ -505,7 +515,7 @@ class KdeData:
 
 
         Args:
-            samples: Sequence[float]:
+            samples:
             **kwargs:
 
         Returns:

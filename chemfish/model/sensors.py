@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import io
 
-import numpy as np
 from PIL import Image, ImageDraw
 
 from chemfish.core.core_imports import *
@@ -12,7 +11,9 @@ from chemfish.model.audio import *
 
 @enum.unique
 class SensorNames(SmartEnum):
-    """Enum of SensorNames. Put all Sensors that are involved in sensor_caches in here."""
+    """
+    Enum of SensorNames. Put all Sensors that are involved in sensor_caches in here.
+    """
 
     PHOTORESISTOR = 1
     THERMISTOR = 2
@@ -24,7 +25,7 @@ class SensorNames(SmartEnum):
 
 
 class MicrophoneWaveform(Waveform):
-    """ """
+    """"""
 
     pass
 
@@ -35,26 +36,33 @@ class MicrophoneWaveform(Waveform):
 class BatteryTimeData:
     """
     BatteryTimeData object (contains start/end timestamps, length of battery, etc.) for a given run.
-    These are the emperical values, not the expected ones!
+    These are the empirical values, not the expected ones!
 
     """
 
     def __init__(self, run: RunLike, start_ms: int, end_ms: int):
+        """
+
+        Args:
+            run:
+            start_ms:
+            end_ms:
+        """
         self.run, self.start_ms, self.end_ms = Tools.run(run), int(start_ms), int(end_ms)
 
     @property
     def start_end_dts(self) -> Tup[datetime, datetime]:
-        """ """
+        """"""
         return self.start_dt, self.end_dt
 
     @property
     def start_dt(self) -> datetime:
-        """ """
+        """"""
         return self.run.datetime_run + timedelta(milliseconds=self.start_ms)
 
     @property
     def end_dt(self) -> datetime:
-        """ """
+        """"""
         return self.run.datetime_run + timedelta(milliseconds=self.end_ms)
 
     def __len__(self) -> int:
@@ -69,8 +77,8 @@ class ChemfishSensor:
         Sensor wrapper object that holds converted sensor_data for a given run.
 
         Args:
-          run: Run ID, Submission ID, Submission Object, or Run Object
-          sensor_data: Converted Sensor_data
+            run: Run ID, Submission ID, Submission Object, or Run Object
+            sensor_data: Converted Sensor_data
 
         """
         self._sensor_data = sensor_data
@@ -118,7 +126,7 @@ class ChemfishSensor:
 class TimeData(ChemfishSensor, metaclass=abc.ABCMeta):
     """
     BatteryTimeData object (contains start/end timestamps, length of battery, etc.) for a given run.
-    These are the emperical values, not the expected ones!
+    These are the empirical values, not the expected ones!
 
     """
 
@@ -182,7 +190,7 @@ class StimulusTimeData(TimeData):
 
 
 class CameraTimeData(TimeData):
-    """ """
+    """"""
 
     @property
     def abbrev(self) -> str:
@@ -214,7 +222,7 @@ class ImageSensor(ChemfishSensor):
         self, color: str = "black", roi_ref: Union[int, str, Refs] = 63
     ) -> ChemfishSensor:
         """
-        Draws a grid, returing a new ImageSensor.
+        Draws a grid, returning a new ImageSensor.
 
         Args:
             color: A color code recognized by PIL (Python Imaging Library), such as a hex code starting with #
@@ -243,12 +251,10 @@ class ImageSensor(ChemfishSensor):
 
     @property
     def abbrev(self) -> str:
-        """ """
         return "roi"
 
     @property
     def symbol(self) -> str:
-        """ """
         return "📷"
 
 
@@ -303,12 +309,11 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
         Slices Sensor data
 
         Args:
-            start_ms: param end_ms:
-            start_ms: Optional[int]:
-            end_ms: Optional[int]:
+            start_ms:
+            end_ms:
 
         Returns:
-            a copy of this class
+            A copy of this class
 
         """
         started = (
@@ -359,12 +364,10 @@ class PhotoresistorSensor(TimeDepChemfishSensor):
 
     @property
     def abbrev(self) -> str:
-        """ """
         return "photo"
 
     @property
     def symbol(self) -> str:
-        """ """
         return "🌣"
 
     @property
@@ -374,16 +377,14 @@ class PhotoresistorSensor(TimeDepChemfishSensor):
 
 
 class ThermistorSensor(TimeDepChemfishSensor):
-    """ """
+    """"""
 
     @property
     def abbrev(self) -> str:
-        """ """
         return "therm"
 
     @property
     def symbol(self) -> str:
-        """ """
         return "🌡"
 
     @property
@@ -417,12 +418,10 @@ class MicrophoneWaveFormSensor(TimeDepChemfishSensor):
 
     @property
     def abbrev(self) -> str:
-        """ """
         return "wav"
 
     @property
     def symbol(self) -> str:
-        """ """
         return "🔊"
 
     @property
@@ -436,12 +435,10 @@ class MicrophoneRawSensor(TimeDepChemfishSensor):
 
     @property
     def abbrev(self) -> str:
-        """ """
         return "mic"
 
     @property
     def symbol(self) -> str:
-        """ """
         return "🎤"
 
     @property

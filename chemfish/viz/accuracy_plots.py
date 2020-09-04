@@ -12,6 +12,11 @@ class MetricPlotter:
     """
 
     def __init__(self, metric_info: MetricInfo):
+        """
+
+        Args:
+            metric_info:
+        """
         self.info = metric_info
 
     def plot(self, data: Sequence[MetricData]) -> Figure:
@@ -19,7 +24,7 @@ class MetricPlotter:
 
 
         Args:
-          data: Sequence[MetricData]:
+            data: Sequence[MetricData]:
 
         Returns:
 
@@ -47,7 +52,7 @@ class MetricPlotter:
 
 @enum.unique
 class AccuracyPlotStyle(enum.Enum):
-    """ """
+    """"""
 
     SWARM = 1
     VIOLIN = 2
@@ -59,7 +64,7 @@ class AccuracyPlotStyle(enum.Enum):
 
 
         Args:
-          s:
+            s:
 
         Returns:
 
@@ -91,7 +96,10 @@ class AccuracyPlotter(KvrcPlotting):
         See `AccuracyPlotter.plot?` for more info.
 
         Args:
-          style: Can be 'swarm', 'violin', or 'bar'
+            style: Can be 'swarm', 'violin', or 'bar'
+            y_bounds:
+            y_label:
+            extra_params:
         """
         self._style = AccuracyPlotStyle.of(style)
         self._y_bounds = y_bounds
@@ -111,14 +119,11 @@ class AccuracyPlotter(KvrcPlotting):
         It relies on chemfish_rc/KVRC params beggining with 'acc_'; ex: `acc_bar_edge_width` and `acc_point_size`.
 
         Args:
-          df: Any BaseScoreFrame (DataFrame) with columns (at least) 'label' and 'score'
-          renamer: Alter the labels for display. Ex, by setting `renamer={'optovin': 'opto'}`.
-          df: BaseScoreFrame:
-          renamer: Optional[Callable[[str]:
-          str]]:  (Default value = None)
+            df: Any BaseScoreFrame (DataFrame) with columns (at least) 'label' and 'score'
+            renamer: Alter the labels for display. Ex, by setting `renamer={'optovin': 'opto'}`.
 
         Returns:
-          The Figure
+            The Figure
 
         """
         if isinstance(renamer, Mapping):
@@ -203,8 +208,8 @@ class AccuracyPlotter(KvrcPlotting):
 
 
         Args:
-          ax:
-          new_value:
+            ax:
+            new_value:
 
         Returns:
 
@@ -215,13 +220,13 @@ class AccuracyPlotter(KvrcPlotting):
             patch.set_width(new_value)
             patch.set_x(patch.get_x() + diff * 0.5)  # recenter
 
-    def _fix(self, x_labels, ax):
+    def _fix(self, x_labels, ax) -> Figure:
         """
 
 
         Args:
-          x_labels:
-          ax:
+            x_labels:
+            ax:
 
         Returns:
 
@@ -241,10 +246,6 @@ class AccuracyDistPlotter(KvrcPlotting):
     """
     Plots a Kernel Density Estimate with seaborn for probability (or score) across compounds.
     Chooses decent defaults. Change the axis/figure after if needed.
-
-    Args:
-
-    Returns:
 
     """
 
@@ -273,12 +274,9 @@ class AccuracyDistPlotter(KvrcPlotting):
         Each argument is a 2-tuple of (support, density).
 
         Args:
-          treatments: Support and density for non-controls, typically covered in black.
-          negatives: Support and density for negative controls
-          positives: Support and density for positive controls
-          treatments: KdeData:
-          negatives:
-          positives:
+            treatments: Support and density for non-controls, typically covered in black.
+            negatives: Support and density for negative controls
+            positives: Support and density for positive controls
 
         Returns:
 
@@ -335,12 +333,12 @@ class AccuracyDistPlotter(KvrcPlotting):
         If you have multiple labels, use line breaks (\n) in `label`.
 
         Args:
-          ax: Axes:
-          x: float:
-          label: Optional[str]:
-          textx:
-          texty:
-          text_kwargs:  (Default value = None)
+            ax: Axes:
+            x: float:
+            label: Optional[str]:
+            textx:
+            texty:
+            text_kwargs:  (Default value = None)
 
         Returns:
 

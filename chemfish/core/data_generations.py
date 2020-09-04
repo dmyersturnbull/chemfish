@@ -17,10 +17,6 @@ class DataGeneration(enum.Enum):
         - POINTGREY_ALPHA:   Saurons running PointGrey cameras without the new stimuli and sensors. Saurons 2 and 4.
         - POINTGREY:         Saurons running PointGrey cameras after integrating sensors and the white and UV LEDs. Saurons 10, 11, 12, and 13.
 
-    Args:
-
-    Returns:
-
     """
 
     PIKE_MGH = enum.auto()
@@ -35,7 +31,7 @@ class DataGeneration(enum.Enum):
 
 
         Args:
-          s:
+            s:
 
         Returns:
 

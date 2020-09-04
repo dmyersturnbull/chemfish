@@ -9,7 +9,7 @@ from chemfish.lookups import *
 
 
 class MandosLookups(LookupTool):
-    """ """
+    """"""
 
     @classmethod
     def predicates(

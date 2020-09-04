@@ -3,7 +3,7 @@ from chemfish.model.audio import Waveform
 
 
 class AudioExpansion:
-    """ """
+    """"""
 
     @classmethod
     def expand(
@@ -17,12 +17,10 @@ class AudioExpansion:
         Embeds a waveform into a stimframes array.
 
         Args:
-          stimseries: param stim:
-          waveform: param is_legacy:
-          stimseries: pd.Series:
-          stim:
-          waveform: Waveform:
-          is_legacy: bool:
+            stimseries:
+            stim:
+            waveform:
+            is_legacy:
 
         Returns:
 

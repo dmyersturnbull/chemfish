@@ -12,7 +12,9 @@ DEFAULT_CACHE_DIR = chemfish_env.cache_dir / "stimuli"
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class AudioStimulusCache(AnAudioStimulusCache):
-    """A cache for audio files for stimuli."""
+    """
+    A cache for audio files for stimuli.
+    """
 
     def __init__(self, cache_dir: PathLike = DEFAULT_CACHE_DIR):
         self._cache_dir = Tools.prepped_dir(cache_dir)
@@ -28,7 +30,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
 
 
         Args:
-          stimulus: StimulusLike:
+            stimulus: StimulusLike:
 
         Returns:
 
@@ -41,7 +43,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
 
 
         Args:
-          path: PathLike:
+            path: PathLike:
 
         Returns:
 
@@ -54,7 +56,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
         Returns the local path, downloading if necessary.
 
         Args:
-          stimulus: StimulusLike:
+            stimulus: StimulusLike:
 
         Returns:
 
@@ -69,9 +71,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
 
 
         Args:
-          *keys: StimulusLike:
-
-        Returns:
+            *keys: StimulusLike:
 
         """
         for stimulus in keys:
@@ -99,7 +99,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
 
 
         Args:
-          stimulus: StimulusLike:
+            stimulus: StimulusLike:
 
         Returns:
 
@@ -116,7 +116,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
 
 
         Args:
-          stimulus: StimulusLike:
+            stimulus: StimulusLike:
 
         Returns:
 
@@ -133,7 +133,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
 
 
         Args:
-          stimulus: StimulusLike:
+            stimulus: StimulusLike:
 
         Returns:
 

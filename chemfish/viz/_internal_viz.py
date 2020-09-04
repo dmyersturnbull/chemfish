@@ -13,7 +13,7 @@ FigureSeqLike = Union[Figure, Iterator[Figure], Iterator[Tup[str, Figure]], Mapp
 
 
 class InternalVizTools:
-    """ """
+    """"""
 
     @classmethod
     def preferred_units_per_sec(cls, mark_every_ms: int, total_ms: float) -> Tup[str, float]:
@@ -21,8 +21,8 @@ class InternalVizTools:
 
 
         Args:
-          mark_every_ms: int:
-          total_ms: float:
+            mark_every_ms: int:
+            total_ms: float:
 
         Returns:
 
@@ -47,7 +47,7 @@ class InternalVizTools:
 
 
         Args:
-          n_ms_total:
+            n_ms_total:
 
         Returns:
 
@@ -67,7 +67,7 @@ class InternalVizTools:
 
 
         Args:
-          categories: Sequence[str]:
+            categories:
 
         Returns:
 
@@ -83,9 +83,9 @@ class InternalVizTools:
 
 
         Args:
-          names: Sequence[str]:
-          controls: Sequence[Optional[str]]:
-          recycle_ok: bool:  (Default value = False)
+            names:
+            controls:
+            recycle_ok:
 
         Returns:
 
@@ -101,9 +101,9 @@ class InternalVizTools:
 
 
         Args:
-          names: Sequence[str]:
-          controls: Sequence[Optional[str]]:
-          recycle_ok: bool:  (Default value = False)
+            names:
+            controls:
+            recycle_ok:
 
         Returns:
 
@@ -143,7 +143,7 @@ class InternalVizTools:
 
 
         Args:
-          categories: Sequence[str]:
+            categories:
 
         Returns:
 
@@ -156,7 +156,7 @@ class InternalVizTools:
 
 
         Args:
-          categories: Sequence[str]:
+            categories:
 
         Returns:
 
@@ -170,7 +170,7 @@ class InternalVizTools:
 
 
         Args:
-          categories: Sequence[str]:
+            categories:
 
         Returns:
 
@@ -183,8 +183,8 @@ class InternalVizTools:
 
 
         Args:
-          categories: Sequence[str]:
-          available: Sequence[str]:
+            categories:
+            available:
 
         Returns:
 
@@ -201,7 +201,7 @@ class InternalVizTools:
 
 
 class KvrcPlotting:
-    """ """
+    """"""
 
     pass
 

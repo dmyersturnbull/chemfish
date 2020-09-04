@@ -1,14 +1,18 @@
+from dataclasses import dataclass
+
 from chemfish.core.core_imports import *
 
 
+@dataclass(frozen=True, order=True)
 class RoiBounds:
-    """ """
+    """
 
-    def __init__(self, x0: int, y0: int, x1: int, y1: int) -> None:
-        self.x0 = x0
-        self.y0 = y0
-        self.x1 = x1
-        self.y1 = y1
+    """
+
+    x0: int
+    y0: int
+    x1: int
+    y1: int
 
     def __repr__(self) -> str:
         return f"({self.x0},{self.y0})→({self.x1},{self.y1})"
@@ -17,13 +21,14 @@ class RoiBounds:
         return repr(self)
 
 
+@dataclass(frozen=True, order=True)
 class WellRoi(RoiBounds):
-    """ """
+    """
 
-    def __init__(self, row: int, column: int, x0: int, y0: int, x1: int, y1: int) -> None:
-        self.row_index = row
-        self.column_index = column
-        super().__init__(x0, y0, x1, y1)
+    """
+
+    row_index: int
+    column_index: int
 
     def __repr__(self) -> str:
         return (
@@ -32,7 +37,9 @@ class WellRoi(RoiBounds):
 
 
 class RoiTools:
-    """ """
+    """
+
+    """
 
     @classmethod
     def verify_roi(cls, roi: Rois, width: int, height: int, desc: str = "") -> None:
@@ -44,8 +51,6 @@ class RoiTools:
             width: int:
             height: int:
             desc:
-
-        Returns:
 
         """
         return cls.verify_coords(roi.x0, roi.y0, roi.x1, roi.y1, width, height, desc=desc)
@@ -65,8 +70,6 @@ class RoiTools:
             width: int:
             height: int:
             desc:
-
-        Returns:
 
         """
         msg = " for " + str(desc) if len(desc) > 0 else ""

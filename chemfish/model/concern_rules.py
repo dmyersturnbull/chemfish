@@ -19,7 +19,7 @@ DEFINITELY_BAD_CONTROLS = {c: control_types[c] for c in {"no drug transfer", "lo
 
 
 class ConcernRule:
-    """ """
+    """"""
 
     @property
     def clazz(self) -> Type[Concern]:
@@ -55,16 +55,15 @@ class ConcernRule:
 
 
         Args:
-          run: Runs:
-          *args:
+            run: Runs:
+            *args:
 
         Returns:
 
         """
         # noinspection PyArgumentList
         concern = self.clazz(run, Severity.CRITICAL, *args)
-        concern.severity = self.severity(concern)
-        return concern
+        return self.clazz(run, self.severity(concern), *args)
 
 
 class MissingSensorConcernRule(ConcernRule):
@@ -83,7 +82,7 @@ class MissingSensorConcernRule(ConcernRule):
 
 
         Args:
-          concern: MissingSensorConcern:
+            concern: MissingSensorConcern:
 
         Returns:
 
@@ -115,7 +114,7 @@ class MissingSensorConcernRule(ConcernRule):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -130,7 +129,7 @@ class MissingSensorConcernRule(ConcernRule):
 
 
 class SensorLengthConcernRule(ConcernRule):
-    """ """
+    """"""
 
     def __init__(self, as_of: datetime, sensor_cache):
         self.as_of = as_of
@@ -146,7 +145,7 @@ class SensorLengthConcernRule(ConcernRule):
 
 
         Args:
-          concern: SensorLengthConcern:
+            concern: SensorLengthConcern:
 
         Returns:
 
@@ -164,7 +163,7 @@ class SensorLengthConcernRule(ConcernRule):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -196,11 +195,11 @@ class SensorLengthConcernRule(ConcernRule):
 class TargetTimeConcernRule(ConcernRule):
     """
     Processes deviations from expected treatment, wait, and acclimation durations.
-        Looks for rows in the `Annotations` tables with names:
+        Looks for rows in the ``Annotations`` tables with names:
             - expected :: seconds :: acclimation
             - expected :: seconds :: wait
             - expected :: seconds :: treatment
-        When it can't find an annotation, falls back to the value in `Concerns.expected_times`.
+        When it can't find an annotation, falls back to the value in ``Concerns.expected_times``.
         Otherwise, yields a concern for each run, each of the 3 kinds, and each corresponding annotations.
 
     """
@@ -290,7 +289,7 @@ class TargetTimeConcernRule(ConcernRule):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -309,8 +308,8 @@ class TargetTimeConcernRule(ConcernRule):
 
 
         Args:
-          run: Runs:
-          kind: TargetTimeKind:
+            run: Runs:
+            kind: TargetTimeKind:
 
         Returns:
 
@@ -326,8 +325,8 @@ class TargetTimeConcernRule(ConcernRule):
 
 
         Args:
-          run: Runs:
-          kind: TargetTimeKind:
+            run: Runs:
+            kind: TargetTimeKind:
 
         Returns:
 
@@ -346,8 +345,8 @@ class TargetTimeConcernRule(ConcernRule):
 
 
         Args:
-          run: Runs:
-          kind: TargetTimeKind:
+            run: Runs:
+            kind: TargetTimeKind:
 
         Returns:
 
@@ -385,7 +384,7 @@ class TargetTimeConcernRule(ConcernRule):
 
 
         Args:
-          kind: TargetTimeKind:
+            kind: TargetTimeKind:
 
         Returns:
 
@@ -401,8 +400,8 @@ class TargetTimeConcernRule(ConcernRule):
 
 
         Args:
-          run: Runs:
-          kind: TargetTimeKind:
+            run: Runs:
+            kind: TargetTimeKind:
 
         Returns:
 
@@ -416,7 +415,7 @@ class TargetTimeConcernRule(ConcernRule):
 
 
 class BatchConcernRule(ConcernRule):
-    """ """
+    """"""
 
     def __init__(self, as_of: datetime):
         self.as_of = as_of
@@ -431,7 +430,7 @@ class BatchConcernRule(ConcernRule):
 
 
         Args:
-          concern: BatchConcern:
+            concern: BatchConcern:
 
         Returns:
 
@@ -443,7 +442,7 @@ class BatchConcernRule(ConcernRule):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -461,7 +460,7 @@ class BatchConcernRule(ConcernRule):
 
 
 class AnnotationConcernRule(ConcernRule):
-    """ """
+    """"""
 
     def __init__(self, as_of: datetime):
         self.as_of = as_of
@@ -476,7 +475,7 @@ class AnnotationConcernRule(ConcernRule):
 
 
         Args:
-          concern: AnnotationConcern:
+            concern: AnnotationConcern:
 
         Returns:
 
@@ -488,7 +487,7 @@ class AnnotationConcernRule(ConcernRule):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -512,7 +511,7 @@ class AnnotationConcernRule(ConcernRule):
 
 
 class ToFixConcernRule(ConcernRule):
-    """ """
+    """"""
 
     def __init__(self, as_of: datetime):
         self.as_of = as_of
@@ -527,7 +526,7 @@ class ToFixConcernRule(ConcernRule):
 
 
         Args:
-          concern: ToFixConcern:
+            concern: ToFixConcern:
 
         Returns:
 
@@ -542,9 +541,9 @@ class ToFixConcernRule(ConcernRule):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
-        Returns:
+        Yields:
 
         """
         runs = {run.id: run for run in Runs.fetch_all(df.unique_runs())}
@@ -561,8 +560,8 @@ class ToFixConcernRule(ConcernRule):
 
 
         Args:
-          level: str:
-          runs:
+            level: str:
+            runs:
 
         Returns:
 
@@ -581,7 +580,7 @@ class ToFixConcernRule(ConcernRule):
 
 
 class GenerationConcernRule(ConcernRule):
-    """ """
+    """"""
 
     def __init__(self, as_of: datetime, feature: Union[FeatureType, str]):
         self.as_of = as_of
@@ -597,7 +596,7 @@ class GenerationConcernRule(ConcernRule):
 
 
         Args:
-          concern: GenerationConcern:
+            concern: GenerationConcern:
 
         Returns:
 
@@ -609,7 +608,7 @@ class GenerationConcernRule(ConcernRule):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -624,7 +623,7 @@ class GenerationConcernRule(ConcernRule):
 
 
 class ImpossibleTimeConcernRule(ConcernRule):
-    """ """
+    """"""
 
     def __init__(self, as_of: datetime):
         self.as_of = as_of
@@ -639,7 +638,7 @@ class ImpossibleTimeConcernRule(ConcernRule):
 
 
         Args:
-          concern: ImpossibleTimeConcern:
+            concern: ImpossibleTimeConcern:
 
         Returns:
 
@@ -656,7 +655,7 @@ class ImpossibleTimeConcernRule(ConcernRule):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -694,7 +693,7 @@ class ImpossibleTimeConcernRule(ConcernRule):
 
 
 class NFeaturesConcernRule(ConcernRule):
-    """ """
+    """"""
 
     def __init__(self, as_of: datetime, feature: Union[None, FeatureType, str]):
         self.as_of = as_of
@@ -710,7 +709,7 @@ class NFeaturesConcernRule(ConcernRule):
 
 
         Args:
-          concern: NFeaturesConcern:
+            concern: NFeaturesConcern:
 
         Returns:
 
@@ -737,7 +736,7 @@ class NFeaturesConcernRule(ConcernRule):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -754,7 +753,7 @@ class NFeaturesConcernRule(ConcernRule):
 
 
 class WellConcernRule(ConcernRule):
-    """ """
+    """"""
 
     def __init__(self, as_of: datetime):
         self.as_of = as_of
@@ -769,7 +768,7 @@ class WellConcernRule(ConcernRule):
 
 
         Args:
-          concern: WellConcern:
+            concern: WellConcern:
 
         Returns:
 
@@ -793,7 +792,7 @@ class WellConcernRule(ConcernRule):
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -809,7 +808,7 @@ class WellConcernRule(ConcernRule):
             Returns:
 
             """
-            x = {v: len(dfx.with_controls_matching(c)) for c, v in TRASH_CONTROLS.items()}
+            x = {v: len(dfx.with_controls(c)) for c, v in TRASH_CONTROLS.items()}
             return {a: b for a, b in x.items() if b > 0}
 
         for run in df.unique_runs():
@@ -818,7 +817,7 @@ class WellConcernRule(ConcernRule):
 
 
 class ConcernRuleCollection:
-    """ """
+    """"""
 
     def __init__(
         self,
@@ -842,7 +841,7 @@ class ConcernRuleCollection:
 
 
         Args:
-          df: WellFrame:
+            df: WellFrame:
 
         Returns:
 
@@ -869,7 +868,7 @@ class ConcernRuleCollection:
 
 
 class SimpleConcernRuleCollection(ConcernRuleCollection):
-    """ """
+    """"""
 
     @property
     def rules(self) -> Sequence[ConcernRule]:
@@ -899,7 +898,7 @@ class SensorConcernRuleCollection(ConcernRuleCollection):
 
 
 class Concerns:
-    """ """
+    """"""
 
     @classmethod
     def default_collection(

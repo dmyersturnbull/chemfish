@@ -5,10 +5,10 @@ from chemfish.model.metrics import *
 
 
 class DoseResponseFrame(TypedDf):
-    """ """
+    """"""
 
     def without_controls(self):
-        """ """
+        """"""
         return self.__class__(self[self["control"].isna()])
 
     def _scores(self, i: int) -> BaseScoreFrame:
@@ -29,7 +29,7 @@ class DoseResponseFrame(TypedDf):
         )
         return BaseScoreFrame.make_into(df, f"ScoreFrame{i}")
 
-    def sort_pretty(self, more_controls: Optional[Set[str]] = None):
+    def sort_pretty(self, more_controls: Optional[Set[str]] = None) -> __qualname__:
         """
         Sorts by the names with a natural sort, but putting control names at the top.
         To do this, relies on the name to determine whether a row is a control.
@@ -44,12 +44,12 @@ class DoseResponseFrame(TypedDf):
             ValarTools.sort_controls_first(self, "label", more_controls=more_controls)
         )
 
-    def sort_first(self, names: Sequence[str]):
+    def sort_first(self, names: Sequence[str]) -> __qualname__:
         """
         Sorts these names first, keeping the rest in the same order.
 
         Args:
-          names: Sequence[str]:
+            names: Sequence[str]:
 
         Returns:
 
@@ -74,7 +74,9 @@ class DoseResponseFrame1D(DoseResponseFrame):
         return ["label", "x_value", "x_text", "upper_1", "lower_1", "score_1"]
 
     def scores(self) -> BaseScoreFrame:
-        """Returns a BaseScoreFrame of the scores."""
+        """
+        Returns a BaseScoreFrame of the scores.
+        """
         return self._scores(1)
 
 

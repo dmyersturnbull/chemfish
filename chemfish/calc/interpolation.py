@@ -4,18 +4,34 @@ from chemfish.core.core_imports import *
 
 
 class InterpolationFailedError(AlgorithmError):
-    """ """
+    """"""
 
     def __init__(self, msg: str, feature: str, well: int):
+        """
+
+        Args:
+            msg:
+            feature:
+            well:
+        """
         super().__init__(msg)
         self.feature = feature
         self.well = well
 
 
 class FeatureTimestampMismatchError(InterpolationFailedError):
-    """ """
+    """"""
 
     def __init__(self, feature: str, well: int, n_features: int, n_timestamps: int, n_ideal: int):
+        """
+
+        Args:
+            feature:
+            well:
+            n_features:
+            n_timestamps:
+            n_ideal:
+        """
         feature = Features.fetch(feature).name
         msg = f"Could not interpolate {feature}: {n_features} features != {n_timestamps} timestamps; ideal is {n_ideal}"
         super(FeatureTimestampMismatchError, self).__init__(msg, feature, well)
@@ -25,7 +41,7 @@ class FeatureTimestampMismatchError(InterpolationFailedError):
 
 
 class FeatureInterpolation:
-    """ """
+    """"""
 
     def __init__(self, feature: Features):
         self.feature = feature

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 
 import librosa
 import librosa.display as ldisplay
@@ -65,35 +66,30 @@ class AudioTools:
         return pydub.AudioSegment.from_file(path)
 
 
+@dataclass(frozen=True)
 class Waveform:
     """
     Contains an array representing an audio waveform.
     Aso has a sampling rate, a name, an optional description, and optional file path.
 
     """
+    name: str
+    path: Optional[str]
+    data: np.array
+    sampling_rate: float
+    minimum: float
+    maximum: float
+    description: Optional[str] = None
+    start_ms: Optional[float] = None
+    end_ms: Optional[float] = None
 
-    def __init__(
-        self,
-        name: str,
-        path: Optional[str],
-        data: np.array,
-        sampling_rate: float,
-        minimum: float,
-        maximum: float,
-        description: Optional[str] = None,
-        start_ms: Optional[float] = None,
-        end_ms: Optional[float] = None,
-    ):
-        self.name = name
-        self.description = description
-        self.path = path
-        self.data = data
-        self.start_ms = start_ms
-        self.end_ms = end_ms
-        self.sampling_rate = sampling_rate
-        self.minimum = minimum
-        self.maximum = maximum
-        self.n_ms = len(self.data) / self.sampling_rate * 1000
+
+    @property
+    def n_ms(self) -> float:
+        """
+
+        """
+        return len(self.data) / self.sampling_rate * 1000
 
     def standardize_sauronx(self, minimum: float = 0, maximum: float = 255) -> Waveform:
         """
@@ -101,9 +97,8 @@ class Waveform:
         This is useful for various purposes in Chemfish, such as embedding into plots.
 
         Args:
-          minimum: Normally 0
-          maximum: Normally 255
-          ms_freq: Normally 1000, though possibly 25 or 50 for legacy data
+            minimum: Normally 0
+            maximum: Normally 255
 
         Returns:
             The same Waveform as a copy
@@ -119,7 +114,6 @@ class Waveform:
         Args:
             minimum: Normally 0
             maximum: Normally 255
-            ms_freq: Normally 1000, though possibly 25 or 50 for legacy data
 
         Returns:
             The same Waveform as a copy
@@ -147,7 +141,7 @@ class Waveform:
         y = (y - y.min()) * (maximum - minimum) / (y.max() - y.min()) + minimum
         y = y.round().astype(np.int32)
         s = Waveform(self.name, self.path, y, 1000, minimum, maximum, self.description)
-        s.n_ms = int(s.n_ms)
+        #s.n_ms = int(s.n_ms)  # TODO: all ok, right?
         return s
 
     def normalize(self, minimum: float = -1, maximum: float = 1) -> Waveform:

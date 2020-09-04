@@ -11,6 +11,10 @@ from chemfish.viz._internal_viz import *
 @abcd.auto_eq()
 @abcd.auto_repr_str()
 class StimframesPlotter(CakeLayer, KvrcPlotting):
+    """
+
+    """
+
     def __init__(
         self,
         should_label: bool = True,
@@ -49,11 +53,11 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
 
 
         Args:
-          stimframes: StimFrame:
-          ax:
-          assays:
-          starts_at_ms: int:  (Default value = 0)
-          battery:
+             stimframes:
+             ax:
+             assays:
+             starts_at_ms:
+             battery:
 
         Returns:
 
@@ -132,10 +136,10 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
 
 
         Args:
-          stim:
-          r:
-          ax:
-          kind:
+            stim:
+            r:
+            ax:
+            kind:
 
         Returns:
 
@@ -193,10 +197,10 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
 
 
         Args:
-          assays:
-          starts_at_ms:
-          n_ms:
-          ax:
+            assays:
+            starts_at_ms:
+            n_ms:
+            ax:
 
         Returns:
 
@@ -256,10 +260,10 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
 
 
         Args:
-          stimframes:
-          ax:
-          starts_at_ms:
-          total_ms:
+            stimframes:
+            ax:
+            starts_at_ms:
+            total_ms:
 
         Returns:
 
@@ -272,15 +276,15 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
             ax.set_xticks([])
         ax.get_yaxis().set_ticks([])
 
-    def _label_x(self, stimframes, ax2, starts_at_ms, total_ms):
+    def _label_x(self, stimframes, ax2, starts_at_ms, total_ms) -> None:
         """
 
 
         Args:
-          stimframes:
-          ax2:
-          starts_at_ms:
-          total_ms:
+            stimframes:
+            ax2:
+            starts_at_ms:
+            total_ms:
 
         Returns:
 
@@ -307,7 +311,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
 
 
         Args:
-          stimframes:
+            stimframes:
 
         Returns:
 
