@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import dataclass
 import traceback
 
@@ -205,7 +206,25 @@ class Quick:
         return int(round(self.smoothing_factor * fps))
 
     def using(self, **kwargs) -> Quick:
-        return self
+        """
+        Makes a copy of this Quick with altered fields.
+
+        Example:
+            Simple::
+
+                quick = quick.using(namer=Namers.well(), smoothing=1)
+
+        Args:
+            **kwargs: Fields to change
+
+        Returns:
+            A new Quick with the attributes changed
+        """
+
+        return Quick(**{
+            field.name: kwargs.get(field.name, getattr(self, field.name))
+            for field in dataclasses.fields(self.__class__)
+        })
 
     def traces(
         self,
@@ -371,7 +390,7 @@ class Quick:
         control_name = Tools.only(control_name, name="control types")
         zscores = self._control_subtract(
             df, control_type, control_name, subtraction=subtraction
-        ).agg_by_name()
+        ).agg_by_name("mean")
         if self.zscore_min_max is None:
             y_min = zscores.quantile(0.001, axis=1).min()
             y_max = zscores.quantile(0.999, axis=1).max()
@@ -417,14 +436,14 @@ class Quick:
         Returns:
 
         """
-        top_bander = lambda group: group.agg_by_name(lambda s: s.quantile(self.smear_ci)).smooth(
+        top_bander = lambda group: group.agg_by_name(["name"], "quantile", q=1-self.smear_ci).smooth(
             window_size=smoothing
         )
-        bottom_bander = lambda group: group.agg_by_name(lambda s: s.quantile(1 - self.smear_ci)).smooth(
+        bottom_bander = lambda group: group.agg_by_name(["name"], "quantile", q=1-self.smear_ci).smooth(
             window_size=smoothing
         )
         mean_bander = (
-            (lambda group: group.agg_by_name().smooth(window_size=smoothing))
+            (lambda group: group.agg_by_name("mean").smooth(window_size=smoothing))
             if self.show_smear_means
             else None
         )
@@ -1001,7 +1020,7 @@ class Quick:
                 # we still need to slice it if it's not fresh
                 df = df.slice_ms(start_ms, end_ms)
             df = df.with_new_names(self.well_namer)
-            df = df.with_new_display_names(df["name"])
+            df = df.with_new("display_name", df["name"])
         except NoFeaturesError as err:
             # we can't raise in an except block or we'll get a "During handling of the above exception"
             if isinstance(err, NoFeaturesError):
@@ -1087,7 +1106,7 @@ class Quick:
             df = WellFrameBuilder.runs(run).with_feature(self.feature).build()
         # instead, we'll build the names in Quick.df()
         df = df.with_new_names(self.well_namer)
-        df = df.with_new_display_names(self.well_namer)
+        df = df.with_new("display_name", self.well_namer)
         return df.sort_standard(), True
 
     def _everything(

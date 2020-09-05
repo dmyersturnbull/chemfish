@@ -136,9 +136,9 @@ class CachingWellFrameBuilder(WellFrameBuilder):
         if self._namer is not None:
             df = df.with_new_names(self._namer)
         if self._display_namer is not None:
-            df = df.with_new_display_names(self._display_namer)
+            df = df.with_new("display_name", self._display_namer)
         elif self._namer is not None:
-            df = df.with_new_display_names(self._namer)
+            df = df.with_new("display_name", self._namer)
         if self._packer is not None:
             df = df.with_new_packs(self._packer)
         if self._sizer is not None:

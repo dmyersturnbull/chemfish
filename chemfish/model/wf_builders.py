@@ -160,7 +160,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         self._required_runs: Set[Runs] = set()
         self._required_wells: Set[Wells] = set()
         self._columns = dict(
-            WellFrameColumns.required
+            WellFrameColumns.required_fns
         )  # type: Dict[str, Callable[[Wells, Treatments], Any]]
         self._feature = None  # type: Optional[FeatureType]
         self._namer = WellNamers.well()  # type: WellNamer
@@ -273,7 +273,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         Returns:
 
         """
-        if name in [c[0] for c in WellFrameColumns.reserved]:
+        if name in [c[0] for c in WellFrameColumns.reserved_fns]:
             raise ReservedError(
                 f"Column name {name} is reserved. Use a column in WellFrameColumns or choose another name."
             )
@@ -582,7 +582,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
             for s in WellFrameColumnTools.int32_cols:
                 df[s] = df[s].astype(np.int32)
         else:
-            for c in [k for k, thefn in WellFrameColumns.required]:
+            for c in [k for k, thefn in WellFrameColumns.required_fns]:
                 df[c] = None
             logger.warning("The WellFrame is empty")
 

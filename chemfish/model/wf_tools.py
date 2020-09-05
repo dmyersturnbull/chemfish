@@ -93,7 +93,7 @@ class WellFrameColumns:
     )
 
     # the order here dictates the order of index columns
-    required = [
+    required_fns = [
         well,
         index,
         row,
@@ -129,20 +129,64 @@ class WellFrameColumns:
         datetime_plated,
         datetime_inserted,
     ]
-    reserved = [*required, project_description]
-    required_names = ["name", "pack", *[x[0] for x in required]]
-    # _feature is reserved but unused
+
+    reserved_fns = [*required_fns, project_description]
+
+    required_names = ["name", "pack", *[x[0] for x in required_fns]]
+
+    # feature is reserved but unused
     reserved_names = [
         "name",
         "pack",
         "display_name",
         "size",
-        *[x[0] for x in reserved],
+        "marker",
+        *[x[0] for x in reserved_fns],
         "compound_names",
-        "_feature",
         "feature",
-        "issues",
     ]
+
+    essential_cols = {
+        "name",
+        "pack",
+        "compound_names",
+        "control_type",
+        "control_type_id",
+        "battery_id",
+        "battery_name",
+        "treatments",
+        "c_ids",
+        "b_ids",
+        "n_fish",
+        "age",
+        "variant_id",
+        "variant_name",
+        "well_group",
+    }
+
+    important_cols = {
+        *essential_cols,
+        "sauron_config"
+    }
+
+    display_cols = {"display_name", "size", "color", "marker"}
+
+    position_cols = {"well", "well_index", "well_label", "row", "column"}
+
+    special_cols = {"name", "pack", "display_name", "size", "compound_names", "color", "marker"}
+
+    machine_cols = {"sauron_config", "sauron"}
+
+    battery_cols = {"battery_id", "battery_name"}
+
+    experiment_cols = {
+        "experiment_id",
+        "experiment_name",
+        "battery_id",
+        "battery_name",
+        "template_plate_id",
+        "template_plate_name",
+    }
 
 
 class WellFrameColumnTools:
@@ -173,56 +217,6 @@ class WellFrameColumnTools:
         "_feature",
     ]
     _o_date_cols = ["datetime_dosed"]
-
-    well_position_cols = {"well", "well_index", "well_label", "row", "column"}
-
-    unimportant_cols = {
-        *well_position_cols,
-        "run",
-        "submission",
-        "physical_plate",
-        "run_description",
-        "tag",
-        "experiment_id",
-        "experiment_name",
-        "template_plate_id",
-        "template_plate_name",
-        "datetime_dosed",
-        "datetime_plated",
-        "datetime_inserted",
-        "datetime_run",
-        "person_plated",
-        "person_run",
-        "display_name",
-        "color",
-        "marker",
-    }
-
-    non_treatment_cols = {
-        *unimportant_cols,
-        "sauron_config",
-        "sauron",
-        "battery_id",
-        "battery_name",
-    }
-
-    special_cols = {"name", "pack", "display_name", "size", "compound_names", "color", "marker"}
-
-    machine_cols = {
-        "sauron_config",
-        "sauron",
-    }
-
-    battery_cols = {"battery_id", "battery_name"}
-
-    experiment_cols = {
-        "experiment_id",
-        "experiment_name",
-        "battery_id",
-        "battery_name",
-        "template_plate_id",
-        "template_plate_name",
-    }
 
     @classmethod
     def from_nan(cls, df: pd.DataFrame):

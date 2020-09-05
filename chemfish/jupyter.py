@@ -44,4 +44,7 @@ def _plot_all(it: Iterable[Tup[str, Figure]]) -> None:
 
 plt.show_all = _plot_all
 
+Namers = WellNamers
+Cols = WellFrameColumns
+
 register_matplotlib_converters()

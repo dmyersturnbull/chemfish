@@ -19,10 +19,10 @@ class TraceBase(CakeLayer, KvrcPlotting):
     def __init__(
         self,
         top_bander: Callable[[WellFrame], pd.DataFrame] = lambda group: group.agg_by_name(
-            lambda s: s.quantile(0.8)
+            "quantile", q=0.8
         ).smooth(window_size=10),
         bottom_bander: Callable[[WellFrame], pd.DataFrame] = lambda group: group.agg_by_name(
-            lambda s: s.quantile(0.8)
+            "quantile", q=0.2
         ).smooth(window_size=10),
         mean_bander: Optional[Callable[[WellFrame], pd.DataFrame]] = None,
         mean_band_color: Optional[str] = None,
@@ -146,7 +146,7 @@ class TraceBase(CakeLayer, KvrcPlotting):
         if self._banded and len(group) > 2:
             if self._mean_bander is None:
                 mean_band = (
-                    group.agg_by_name().smooth(window_size=10).iloc[0, :].values
+                    group.agg_by_name("mean").smooth(window_size=10).iloc[0, :].values
                 )  # won't matter
                 ax1.plot(
                     mean_band,
@@ -208,10 +208,10 @@ class TracePlotter(KvrcPlotting):
         trace_to_stimuli_height_ratio: Optional[Tup[float, float]] = None,
         always_plot_control: bool = False,
         top_bander: Callable[[WellFrame], pd.DataFrame] = lambda group: group.agg_by_name(
-            lambda s: s.quantile(0.8)
+            "quantile", q=0.8
         ).smooth(window_size=10),
         bottom_bander: Callable[[WellFrame], pd.DataFrame] = lambda group: group.agg_by_name(
-            lambda s: s.quantile(0.8)
+            "quantile", q=0.2
         ).smooth(window_size=10),
         mean_bander: Optional[Callable[[WellFrame], pd.DataFrame]] = None,
         mean_band_color: Optional[str] = None,
@@ -457,7 +457,7 @@ class TracePlotter(KvrcPlotting):
         Returns:
 
         """
-        z = WellFrame.of(
+        z = AbsWellFrame.of(
             pd.concat(
                 [
                     df.with_name(name),

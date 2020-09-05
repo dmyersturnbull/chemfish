@@ -22,8 +22,6 @@ class DoseResponseFrame(TypedDf):
 
         """
         upper, lower, score = "upper_" + str(i), "lower_" + str(i), "score_" + str(i)
-        if score not in self.columns:
-            raise MissingColumnError(f"No column {score}")
         df = self[["label", "x_value", upper, lower, score]].rename(
             columns={upper: "upper", lower: "lower", score: "score"}
         )

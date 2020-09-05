@@ -92,6 +92,7 @@ from chemfish.ml.transformers import *
 # model
 from chemfish.model import *
 from chemfish.model.app_frames import *
+from chemfish.model.well_names import *
 from chemfish.model.assay_frames import *
 from chemfish.model.audio import *
 from chemfish.model.case_control_comparisons import *

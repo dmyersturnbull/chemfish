@@ -307,10 +307,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         Returns:
 
         """
-        if self._mark_every_n_ms is None:
-            return InternalVizTools.preferred_tick_ms_interval(len(stimframes) / self._fps * 1000)
-        else:
-            return self._mark_every_n_ms
+        return InternalVizTools.preferred_tick_ms_interval(len(stimframes) / self._fps * 1000)
 
 
 __all__ = ["StimframesPlotter"]
