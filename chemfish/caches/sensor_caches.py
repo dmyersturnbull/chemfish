@@ -81,7 +81,77 @@ class SensorCache(ASensorCache):
         return BatteryTimeData(run, millis[0], millis[-1])
 
     @abcd.overrides
-    def load(self, tup: Tup[SensorNames, RunLike]):
+    def load_photosensor(self, run: RunLike) -> PhotoresistorSensor:
+        """
+
+
+        Args:
+            run:
+
+        Returns:
+
+        """
+        # noinspection PyTypeChecker
+        return self.load((SensorNames.PHOTORESISTOR, run))
+
+    @abcd.overrides
+    def load_thermosensor(self, run: RunLike) -> ThermistorSensor:
+        """
+
+
+        Args:
+            run:
+
+        Returns:
+
+        """
+        # noinspection PyTypeChecker
+        return self.load((SensorNames.THERMISTOR, run))
+
+    @abcd.overrides
+    def load_wav(self, run: RunLike) -> MicrophoneRawSensor:
+        """
+
+
+        Args:
+            run:
+
+        Returns:
+
+        """
+        # noinspection PyTypeChecker
+        return self.load((SensorNames.MICROPHONE, run))
+
+    @abcd.overrides
+    def load_preview(self, run: RunLike) -> ImageSensor:
+        """
+
+
+        Args:
+            run:
+
+        Returns:
+
+        """
+        # noinspection PyTypeChecker
+        return self.load((SensorNames.PREVIEW, run))
+
+    @abcd.overrides
+    def load_webcam(self, run: RunLike) -> ImageSensor:
+        """
+
+
+        Args:
+            run:
+
+        Returns:
+
+        """
+        # noinspection PyTypeChecker
+        return self.load((SensorNames.WEBCAM, run))
+
+    @abcd.overrides
+    def load(self, tup: Tup[SensorNames, RunLike]) -> ChemfishSensor:
         """
 
 

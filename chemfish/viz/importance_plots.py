@@ -1,7 +1,8 @@
 from chemfish.core.core_imports import *
 from chemfish.viz import CakeComponent
 from chemfish.viz._internal_viz import *
-from chemfish.viz.color_schemes import *
+
+from pocketutils.plotting.color_schemes import FancyCmaps
 
 
 @abcd.auto_eq()
@@ -17,7 +18,7 @@ class ImportancePlotter(CakeComponent, KvrcPlotting):
     def __init__(
         self,
         scatter: bool = False,
-        cmap: Union[str, Colormap] = FancyCmaps.white_black(),
+        cmap: Union[str, Colormap] = FancyCmaps.white_black(bad="#333333"),
         vmax_quantile: Optional[float] = 0.95,
     ):
         """

@@ -272,6 +272,7 @@ class TracePlotter(KvrcPlotting):
             starts_at_ms:
             extra:
             assays:
+            run_dict:
             battery:
 
         Yields:
@@ -306,6 +307,7 @@ class TracePlotter(KvrcPlotting):
                 name in control_names and name not in all_control_names
             ):
                 sub = self._select(df, name, control_names)
+                logger.info(f"Plotting {name} against {control_names[name]}")
                 yield self._plot_single(
                     sub,
                     name,

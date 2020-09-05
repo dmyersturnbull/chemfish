@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 
 from chemfish.core.core_imports import *
 from chemfish.model.treatment_names import *
@@ -18,16 +19,11 @@ class WellNamer:
         return self.__class__.__name__
 
 
+@dataclass(frozen=True)
 class CompositeWellNamer(WellNamer):
     """"""
 
-    def __init__(self, *namers):
-        """
-
-        Args:
-            *namers:
-        """
-        self.namers = namers
+    namers: Sequence[WellNamer]
 
     def __call__(self, df) -> Sequence[str]:
         """
@@ -54,7 +50,7 @@ class CompositeWellNamer(WellNamer):
         return CompositeWellNamer([*self.namers, other])
 
 
-@abcd.auto_repr_str()
+@dataclass(frozen=True)
 class SimpleMappingWellNamer(WellNamer):
     """
     A namer for discrete categories of some column.
@@ -63,15 +59,8 @@ class SimpleMappingWellNamer(WellNamer):
 
     """
 
-    def __init__(self, column: str, mapping: Mapping[[Any], str]):
-        """
-
-        Args:
-            column:
-            mapping:
-        """
-        self.column = column
-        self.mapping = mapping
+    column: str
+    mapping: Mapping[[Any], str]
 
     def __call__(self, df) -> Sequence[str]:
         """
@@ -86,6 +75,7 @@ class SimpleMappingWellNamer(WellNamer):
 
 class BuiltWellNamer(WellNamer):
     """"""
+
 
     def __init__(self):
         self._bits = []

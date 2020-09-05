@@ -225,7 +225,7 @@ class WellFrameColumnTools:
     }
 
     @classmethod
-    def from_nan(cls, df):
+    def from_nan(cls, df: pd.DataFrame):
         """
         Temporarily replace NaNs and Nones to little-used values.
 
@@ -248,7 +248,7 @@ class WellFrameColumnTools:
         return df
 
     @classmethod
-    def to_nan(cls, df):
+    def to_nan(cls, df: pd.DataFrame):
         """
         Undoes WellFrameColumnTools._from_nan
 

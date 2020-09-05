@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 
 import sklearn.metrics as skmetrics
 from statsmodels.nonparametric.kde import KDEUnivariate
@@ -33,22 +34,14 @@ class StatTools:
         return dens.support, dens.density
 
 
-@abcd.auto_repr_str()
-@abcd.auto_eq()
-@abcd.auto_hash()
+@dataclass(frozen=True)
 class MetricInfo:
     """A type of 2D metric such as ROC or Precision-Recall."""
 
-    def __init__(self, name: str, score: str, false: str, true: str):
-        """
-
-        Args:
-            name:
-            score:
-            false:
-            true:
-        """
-        self.name, self.score, self.false, self.true = name, score, false, true
+    name: str
+    score: str
+    false: str
+    true: str
 
     @classmethod
     def roc(cls):
@@ -66,31 +59,21 @@ class MetricInfo:
         )
 
 
-@abcd.auto_repr_str()
-@abcd.auto_eq()
-@abcd.auto_hash()
+@dataclass(frozen=True)
 class MetricData:
     """
     Typically either ROC or Precision-Recall curves.
     """
 
-    def __init__(
-        self,
-        label: str,
-        control: Optional[str],
-        score: float,
-        false: Sequence[float],
-        true: Sequence[float],
-    ):
-        if len(false) != len(true):
-            raise LengthMismatchError(f"FPR has length {len(false)} but TPR has length {len(true)}")
-        self.label, self.control, self.score, self.false, self.true = (
-            label,
-            control,
-            score,
-            false,
-            true,
-        )
+    label: str
+    control: Optional[str]
+    score: float
+    false: Sequence[float]
+    true: Sequence[float]
+
+    def __post_init__(self):
+        if len(self.false) != len(self.true):
+            raise LengthMismatchError(f"FPR has length {len(self.false)} but TPR has length {len(self.true)}")
 
     @classmethod
     def roc(
@@ -456,24 +439,16 @@ class ScoreFrameWithPrediction(BaseScoreFrame):
         return true, score
 
 
-@abcd.auto_repr_str()
-@abcd.auto_hash()
-@abcd.auto_eq()
+@dataclass(frozen=True)
 class KdeData:
     """
     Kernel density estimation data.
     """
 
-    def __init__(
-        self,
-        samples: np.array,
-        support: Sequence[float],
-        density: Sequence[float],
-        params: Optional[Mapping[str, Any]],
-    ):
-        """"""
-        self.samples, self.support, self.density = samples, support, density
-        self.params = params
+    samples: np.array
+    support: Sequence[float]
+    density: Sequence[float]
+    params: Optional[Mapping[str, Any]]
 
     def density_df(
         self, support_start: Optional[float] = None, support_end: Optional[float] = None

@@ -50,7 +50,7 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
         gs.update(hspace=chemfish_rc.trace_hspace)
         # plot the sensors in turn
         for i, data in enumerate(sensors):
-            x_vals, y_vals = data.timing_data, data.sensor_data
+            x_vals, y_vals = data.timing_data, data.data
             ax = figure.add_subplot(gs[i])
             if isinstance(data, MicrophoneWaveFormSensor):
                 ax.scatter(

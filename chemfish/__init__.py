@@ -7,8 +7,9 @@ from importlib.metadata import PackageNotFoundError
 from importlib.metadata import metadata as __load
 from pathlib import Path
 
-logger = logging.getLogger(Path(__file__).parent.name)
 
+pkg = Path(__file__).absolute().parent.name
+logger = logging.getLogger(pkg)
 __metadata = None
 try:
     __metadata = __load(Path(__file__).absolute().parent.name)
@@ -24,15 +25,11 @@ try:
     __maintainer__ = __metadata["maintainer"]
     __contact__ = __metadata["maintainer"]
 except PackageNotFoundError:  # pragma: no cover
-    logger.error(
-        "Could not load package __metadata for {}. Is it installed?".format(
-            Path(__file__).absolute().parent.name
-        )
-    )
+    logger.error(f"Could not load package metadata for {pkg}. Is it installed?")
 
 
 if __name__ == "__main__":  # pragma: no cover
     if __metadata is not None:
-        print(f"__metadata['name'] (v{__metadata['version']})")
+        print(f"{pkg} (v{__metadata['version']})")
     else:
         print("Unknown project info")

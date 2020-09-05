@@ -1,11 +1,13 @@
 from matplotlib import gridspec
 
+from pocketutils.plotting.color_schemes import *
+from pocketutils.plotting.fig_tools import FigureTools
+
 from chemfish.core.core_imports import *
 from chemfish.model.stim_frames import StimFrame
 from chemfish.model.well_frames import WellFrame
 from chemfish.viz import CakeComponent
 from chemfish.viz._internal_viz import *
-from chemfish.viz.color_schemes import *
 from chemfish.viz.figures import FigureTools
 from chemfish.viz.stim_plots import *
 
@@ -50,7 +52,7 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
         self._cmap = (
             cmap
             if cmap is not None
-            else (FancyCmaps.blue_white_red() if symmetric else FancyCmaps.white_black())
+            else (FancyCmaps.blue_white_red(bad="#333333") if symmetric else FancyCmaps.white_black(bad="#333333"))
         )
         self._symmetric = symmetric
         self._vmax_quantile = vmax_quantile

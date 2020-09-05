@@ -56,7 +56,6 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
 
         Args:
             stim_or_type:
-            byteval:
 
         Returns:
 

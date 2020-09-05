@@ -520,7 +520,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
             for f in WellFeatures.select(
                 WellFeatures.id, WellFeatures.well_id, WellFeatures.type_id, WellFeatures.floats
             )
-            .where(WellFeatures.type_id == self._feature.id)
+            .where(WellFeatures.type_id == self._feature.valar_feature.id)
             .where(WellFeatures.well_id << [w.id for w in well_to_treatments.keys()])
         }
 

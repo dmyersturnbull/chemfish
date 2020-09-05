@@ -1,42 +1,38 @@
+from dataclasses import dataclass
 from chemfish.calc.interpolation import *
 from chemfish.core.core_imports import *
 
 
+@dataclass(frozen=True)
 class FeatureType:
-    """"""
+    """
 
-    def __init__(
-        self,
-        valar_feature: Features,
-        time_dependent: bool,
-        stride_in_bytes: int,
-        recommended_scale: int,
-        recommended_unit: str,
-        is_interpolated: bool,
-        generations: Set[DataGeneration],
-    ):
-        """
-        Args:
-            valar_feature: The Features row instance in Valar
-            time_dependent: Whether the feature corresponds to frames in the video (possibly differing by a constant)
-            stride_in_bytes: The number of bytes (in the poorly named features.floats) per value, such as 8 for a double value
-            recommended_scale: A multiplier of the values for display, such as 1000 for values on that order
-            recommended_unit: An arbitrary string to label units with; should account for the recommended_scale
-            is_interpolated: For time-dependent features, whether the feature is interpolated to align with the timesamps.
-                             This is generally a good idea for PointGrey+ features, and a bad idea for cameras with less accurate timestamps.
-            generations: Generations of video data this feature can apply to.
-        """
-        self.valar_feature = valar_feature
-        self.id = valar_feature.id
-        self.time_dependent = time_dependent
-        self.feature_name = valar_feature.name
-        self.external_name = self.feature_name + ("[⌇]" if is_interpolated else "")
-        self.stride_in_bytes = stride_in_bytes
-        self.recommended_scale = recommended_scale
-        self.recommended_unit = recommended_unit
-        self.is_interpolated = is_interpolated
-        self.internal_name = self.valar_feature.name + ("-i" if self.is_interpolated else "")
-        self.data_generations = generations
+    Attributes:
+        valar_feature: The Features row instance in Valar
+        time_dependent: Whether the feature corresponds to frames in the video (possibly differing by a constant)
+        stride_in_bytes: The number of bytes (in the poorly named features.floats) per value, such as 8 for a double value
+        recommended_scale: A multiplier of the values for display, such as 1000 for values on that order
+        recommended_unit: An arbitrary string to label units with; should account for the recommended_scale
+        is_interpolated: For time-dependent features, whether the feature is interpolated to align with the timesamps.
+                         This is generally a good idea for PointGrey+ features, and a bad idea for cameras with less accurate timestamps.
+        generations: Generations of video data this feature can apply to.
+    """
+
+    valar_feature: Features
+    time_dependent: bool
+    stride_in_bytes: int
+    recommended_scale: int
+    recommended_unit: str
+    is_interpolated: bool
+    generations: Set[DataGeneration]
+
+    @property
+    def internal_name(self):
+        return self.valar_feature.name + ("-i" if self.is_interpolated else "")
+
+    @property
+    def external_name(self):
+        return self.valar_feature.name + ("[⌇]" if self.is_interpolated else "")
 
     def calc(self, wf: WellFeatures, well: Union[Wells, int], stringent: bool = False) -> np.array:
         """

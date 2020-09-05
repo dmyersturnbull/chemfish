@@ -39,7 +39,7 @@ marker = "sys_platform == \"win32\""
 
 [[package]]
 name = "attrs"
-version = "20.1.0"
+version = "20.2.0"
 description = "Classes Without Boilerplate"
 category = "dev"
 optional = false
@@ -49,6 +49,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 dev = ["coverage (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface", "sphinx", "sphinx-rtd-theme", "pre-commit"]
 docs = ["sphinx", "sphinx-rtd-theme", "zope.interface"]
 tests = ["coverage (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "zope.interface"]
+tests_no_zope = ["coverage (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six"]
 
 [[package]]
 name = "audioread"
@@ -319,7 +320,7 @@ six = "*"
 
 [[package]]
 name = "hypothesis"
-version = "5.30.0"
+version = "5.32.0"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -344,7 +345,7 @@ sortedcontainers = ">=2.1.0,<3.0.0"
 
 [[package]]
 name = "identify"
-version = "1.4.30"
+version = "1.5.0"
 description = "File identification library for Python"
 category = "dev"
 optional = false
@@ -394,14 +395,14 @@ python-versions = "*"
 
 [[package]]
 name = "isort"
-version = "5.4.2"
+version = "5.5.1"
 description = "A Python utility / library to sort Python imports."
 category = "dev"
 optional = false
 python-versions = ">=3.6,<4.0"
 
 [package.extras]
-pipfile_deprecated_finder = ["pipreqs", "requirementslib", "tomlkit (>=0.5.3)"]
+pipfile_deprecated_finder = ["pipreqs", "requirementslib"]
 requirements_deprecated_finder = ["pipreqs", "pip-api"]
 colors = ["colorama (>=0.4.3,<0.5.0)"]
 
@@ -540,7 +541,7 @@ python-versions = "*"
 
 [[package]]
 name = "numba"
-version = "0.51.1"
+version = "0.51.2"
 description = "compiling Python code using LLVM"
 category = "main"
 optional = false
@@ -647,7 +648,7 @@ dev = ["pre-commit", "tox"]
 
 [[package]]
 name = "pocketutils"
-version = "0.3.0"
+version = "0.3.1"
 description = "Adorable little Python code for you to copy or import."
 category = "main"
 optional = false
@@ -656,38 +657,14 @@ python-versions = ">=3.7,<4"
 [package.extras]
 tools = ["dill (>=0.3,<1.0)", "jsonpickle (>=1,<2)", "joblib (>=0.16,<1.0)", "numpy (>=1.18,<2.0)", "pandas (>=1.1,<2.0)"]
 all = ["dill (>=0.3,<1.0)", "jsonpickle (>=1,<2)", "joblib (>=0.16,<1.0)", "numpy (>=1.18,<2.0)", "pandas (>=1.1,<2.0)", "matplotlib (>=3.3,<4.0)", "goatools (>=1,<2)", "requests (>=2,<3)", "uniprot (>=1.3,<2.0)", "colorama (>=0.4,<1.0)", "psutil (>=5,<6)", "ipython (>=7,<8)"]
+plotting = ["numpy (>=1.18,<2.0)", "pandas (>=1.1,<2.0)", "matplotlib (>=3.3,<4.0)"]
 biochem = ["numpy (>=1.18,<2.0)", "pandas (>=1.1,<2.0)", "goatools (>=1,<2)", "requests (>=2,<3)", "uniprot (>=1.3,<2.0)"]
 notebooks = ["pandas (>=1.1,<2.0)", "ipython (>=7,<8)"]
-plotting = ["matplotlib (>=3.3,<4.0)"]
 misc = ["colorama (>=0.4,<1.0)", "psutil (>=5,<6)"]
 
 [package.dependencies]
 importlib_metadata = ">=1.7,<2.0"
 tomlkit = ">=0.7,<1.0"
-
-[package.dependencies.dill]
-version = ">=0.3,<1.0"
-optional = true
-
-[package.dependencies.ipython]
-version = ">=7,<8"
-optional = true
-
-[package.dependencies.joblib]
-version = ">=0.16,<1.0"
-optional = true
-
-[package.dependencies.jsonpickle]
-version = ">=1,<2"
-optional = true
-
-[package.dependencies.numpy]
-version = ">=1.18,<2.0"
-optional = true
-
-[package.dependencies.pandas]
-version = ">=1.1,<2.0"
-optional = true
 
 [[package]]
 name = "pooch"
@@ -848,7 +825,7 @@ six = ">=1.5"
 
 [[package]]
 name = "python-levenshtein"
-version = "0.11.2"
+version = "0.12.0"
 description = "Python extension for computing string edit distances and similarities."
 category = "main"
 optional = true
@@ -1309,7 +1286,7 @@ dev = []
 
 [metadata]
 python-versions = ">=3.8, <4"
-content-hash = "a64adbf31d1f70ee4514a3b65ad14961f458bbbfd39ed49dabf1bb9213c6a648"
+content-hash = "720706ecedfc81f80b2a8d0b632c7887b8474a54fc0d49261517b84b946ee8b9"
 
 [metadata.files]
 alabaster = [
@@ -1329,8 +1306,8 @@ atomicwrites = [
     {file = "atomicwrites-1.4.0.tar.gz", hash = "sha256:ae70396ad1a434f9c7046fd2dd196fc04b12f9e91ffb859164193be8b6168a7a"},
 ]
 attrs = [
-    {file = "attrs-20.1.0-py2.py3-none-any.whl", hash = "sha256:2867b7b9f8326499ab5b0e2d12801fa5c98842d2cbd22b35112ae04bf85b4dff"},
-    {file = "attrs-20.1.0.tar.gz", hash = "sha256:0ef97238856430dcf9228e07f316aefc17e8939fc8507e18c6501b761ef1a42a"},
+    {file = "attrs-20.2.0-py2.py3-none-any.whl", hash = "sha256:fce7fc47dfc976152e82d53ff92fa0407700c21acd20886a13777a0d20e655dc"},
+    {file = "attrs-20.2.0.tar.gz", hash = "sha256:26b54ddbbb9ee1d34d5d3668dd37d6cf74990ab23c828c2888dccdceee395594"},
 ]
 audioread = [
     {file = "audioread-2.1.8.tar.gz", hash = "sha256:073904fabc842881e07bd3e4a5776623535562f70b1655b635d22886168dd168"},
@@ -1512,12 +1489,12 @@ h5py = [
     {file = "h5py-2.10.0.tar.gz", hash = "sha256:84412798925dc870ffd7107f045d7659e60f5d46d1c70c700375248bf6bf512d"},
 ]
 hypothesis = [
-    {file = "hypothesis-5.30.0-py3-none-any.whl", hash = "sha256:4a57b7add9203c6244912ce6d67a2dc040fabb600d90268a022b2c7ca3bce046"},
-    {file = "hypothesis-5.30.0.tar.gz", hash = "sha256:d810af02dcb0edabb36dd77f3db01b89a4028098dad237bafeaf23060e1dd5be"},
+    {file = "hypothesis-5.32.0-py3-none-any.whl", hash = "sha256:f95ab883c6260026b3462c54fdbe2a14c4066f3ab603ed8c3b639fb2f0ed053d"},
+    {file = "hypothesis-5.32.0.tar.gz", hash = "sha256:92b993398097e9e135381d1590c72feda02b8635ce2b64e52ab8ecc0191fbe82"},
 ]
 identify = [
-    {file = "identify-1.4.30-py2.py3-none-any.whl", hash = "sha256:f9f84a4ff44e29b9cc23c4012c2c8954089860723f80ce63d760393e5f197108"},
-    {file = "identify-1.4.30.tar.gz", hash = "sha256:e105a62fd3a496c701fd1bc4e24eb695455b5efb97e722816d5bd988c3344311"},
+    {file = "identify-1.5.0-py2.py3-none-any.whl", hash = "sha256:0868312cb7402b48cf44fe3f568259f804ef4e983c143d11bf7a51ca311ebc34"},
+    {file = "identify-1.5.0.tar.gz", hash = "sha256:009f92ba753c467a99f6fd3eb395412cbc34077dd5a64313b62ba04297f2ab8e"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -1536,8 +1513,8 @@ iniconfig = [
     {file = "iniconfig-1.0.1.tar.gz", hash = "sha256:e5f92f89355a67de0595932a6c6c02ab4afddc6fcdc0bfc5becd0d60884d3f69"},
 ]
 isort = [
-    {file = "isort-5.4.2-py3-none-any.whl", hash = "sha256:60a1b97e33f61243d12647aaaa3e6cc6778f5eb9f42997650f1cc975b6008750"},
-    {file = "isort-5.4.2.tar.gz", hash = "sha256:d488ba1c5a2db721669cc180180d5acf84ebdc5af7827f7aaeaa75f73cf0e2b8"},
+    {file = "isort-5.5.1-py3-none-any.whl", hash = "sha256:a200d47b7ee8b7f7d0a9646650160c4a51b6a91a9413fd31b1da2c4de789f5d3"},
+    {file = "isort-5.5.1.tar.gz", hash = "sha256:92533892058de0306e51c88f22ece002a209dc8e80288aa3cec6d443060d584f"},
 ]
 jinja2 = [
     {file = "Jinja2-2.11.2-py2.py3-none-any.whl", hash = "sha256:f0a4641d3cf955324a89c04f3d94663aa4d638abe8f733ecd3582848e1c37035"},
@@ -1693,22 +1670,22 @@ nodeenv = [
     {file = "nodeenv-1.5.0.tar.gz", hash = "sha256:ab45090ae383b716c4ef89e690c41ff8c2b257b85b309f01f3654df3d084bd7c"},
 ]
 numba = [
-    {file = "numba-0.51.1-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:feb90cc4f7b29b552cfcefb7608aee9f136d89cba44c0037023026b636d52685"},
-    {file = "numba-0.51.1-cp36-cp36m-manylinux2014_i686.whl", hash = "sha256:347901c50a07e87c725e73bce40142e04e82c9c146af471fd6bf296c273e4c0d"},
-    {file = "numba-0.51.1-cp36-cp36m-manylinux2014_x86_64.whl", hash = "sha256:94565faba74e4945ae81d5eec4b2fbf696ae0fb58545716c264deabcdedda753"},
-    {file = "numba-0.51.1-cp36-cp36m-win32.whl", hash = "sha256:555646bc4ec19ba786ed8242835083ea21ae4b0f2fcda7049808de1fffc75a8e"},
-    {file = "numba-0.51.1-cp36-cp36m-win_amd64.whl", hash = "sha256:7f05e0cf8e10be8d90798a628de2b5deac22f59d3a4347465c06762e1bc24d1a"},
-    {file = "numba-0.51.1-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:fb9b5e154ab92eb44d5f6faaaec511fbc102a432f332a4cc979355a4281f5bd2"},
-    {file = "numba-0.51.1-cp37-cp37m-manylinux2014_i686.whl", hash = "sha256:daaedb35ab0ec6b74a970b85d54a8573750f57d3dcf4c9e00e4112178ae26806"},
-    {file = "numba-0.51.1-cp37-cp37m-manylinux2014_x86_64.whl", hash = "sha256:baadf6c5910b160f8a8b03c748f0f63f6c997fb92f4f6d9d60dfbab05ac66fc2"},
-    {file = "numba-0.51.1-cp37-cp37m-win32.whl", hash = "sha256:cdb4bbdc7a168afbb3b94630e5160eb227ff5df07fda61d461bd2f8a91af7f69"},
-    {file = "numba-0.51.1-cp37-cp37m-win_amd64.whl", hash = "sha256:bc8d267baef87af0c9838464338307d69e7dac18dc23b2e96108da76b220fe9c"},
-    {file = "numba-0.51.1-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:17c8bf1663d1b0cafa0fdc88a4fc4feb642fae87bd312eca3f8cfb1a8ae93569"},
-    {file = "numba-0.51.1-cp38-cp38-manylinux2014_i686.whl", hash = "sha256:0cf9ee333fda98e2b057561ed696ba169b59f43e853f066ffc8c13661bdf4753"},
-    {file = "numba-0.51.1-cp38-cp38-manylinux2014_x86_64.whl", hash = "sha256:1eba3e446d66286b299ea59cfe42483a61562b2b09cdf74ef24988a287bd217e"},
-    {file = "numba-0.51.1-cp38-cp38-win32.whl", hash = "sha256:dc019921e2e6b567e15d07c0aca52b39900a1344467f399dccab400a6faeddf4"},
-    {file = "numba-0.51.1-cp38-cp38-win_amd64.whl", hash = "sha256:75e8858fb74d80c1532568b61d6e66ac0cd9cca5dc4ddec0df46a14652a8a36f"},
-    {file = "numba-0.51.1.tar.gz", hash = "sha256:1e765b1a41535684bf3b0465c1d0a24dcbbff6af325270c8f4dad924c0940160"},
+    {file = "numba-0.51.2-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:af798310eeb318c56cdb83254abbe9a938cc0182d08671d7f9f032dc817e064d"},
+    {file = "numba-0.51.2-cp36-cp36m-manylinux2014_i686.whl", hash = "sha256:93e18350f2094e7432321c1275730a3143b94af012fb609cc180fa376c44867f"},
+    {file = "numba-0.51.2-cp36-cp36m-manylinux2014_x86_64.whl", hash = "sha256:9e2bb1f129bfadd757ad7a9c18ab79c3ab25ce6d6a68e58565d6c52ad07b3566"},
+    {file = "numba-0.51.2-cp36-cp36m-win32.whl", hash = "sha256:31cdf6b6d1301d5fb6c4fcb8b4c711ba5c9f60ba2fca008b550da9b56185367c"},
+    {file = "numba-0.51.2-cp36-cp36m-win_amd64.whl", hash = "sha256:df6edca13c04a31fdb5addf5205199478a7da372712829157ef491e8a6e7031f"},
+    {file = "numba-0.51.2-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:a628122dacfcba9a3ea68a9e95578c6b6391016e34962c46550ea8e189e0412e"},
+    {file = "numba-0.51.2-cp37-cp37m-manylinux2014_i686.whl", hash = "sha256:106736d5a8dab6bebce989d4ab1b3f169c264582598f172e6e5b736210d2e834"},
+    {file = "numba-0.51.2-cp37-cp37m-manylinux2014_x86_64.whl", hash = "sha256:a12f16fdb4ca5edc94e2ef412e4e768c29217ef9b6fdfc237d064ebe30acfe14"},
+    {file = "numba-0.51.2-cp37-cp37m-win32.whl", hash = "sha256:025b033fd31c44bba17802293c81270084b5454b5b055b8c10c394385c232f00"},
+    {file = "numba-0.51.2-cp37-cp37m-win_amd64.whl", hash = "sha256:081788f584fa500339e9b74bf02e3c5029d408c114e555ada19cae0b92721416"},
+    {file = "numba-0.51.2-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:5416b584183fd599afda11b947b64f89450fcf26a9c15b408167f412b98a3a94"},
+    {file = "numba-0.51.2-cp38-cp38-manylinux2014_i686.whl", hash = "sha256:05da65dca2ac28a192c9d8f20e9e477eb1237205cfc4d131c414f5f8092c6639"},
+    {file = "numba-0.51.2-cp38-cp38-manylinux2014_x86_64.whl", hash = "sha256:aee435e3b7e465dd49971f8ea76aa414532a87736916cb399534e017334d1138"},
+    {file = "numba-0.51.2-cp38-cp38-win32.whl", hash = "sha256:bbbe2432433b11d3fadab0226a84c1a81918cb905ba1aeb022249e8d2ba8856c"},
+    {file = "numba-0.51.2-cp38-cp38-win_amd64.whl", hash = "sha256:259e7c15b24feec4a99fb41eb8c47b5ad49b544d1a5ad40ad0252ef531ba06fd"},
+    {file = "numba-0.51.2.tar.gz", hash = "sha256:16bd59572114adbf5f600ea383880d7b2071ae45477e84a24994e089ea390768"},
 ]
 numexpr = [
     {file = "numexpr-2.7.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:c169e1424d495b7efefe69c046cbf89ae0dc7a071a89b6b844ae328ac48fccbc"},
@@ -1835,8 +1812,8 @@ pluggy = [
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
 pocketutils = [
-    {file = "pocketutils-0.3.0-py3-none-any.whl", hash = "sha256:5c5f401f962171bb415fe2bc624535ff42239ba29234e7de770f0abb7630865b"},
-    {file = "pocketutils-0.3.0.tar.gz", hash = "sha256:729f2f2460fa648751bdbbda848efce2882505953c95caf765e85cbd1d3590d0"},
+    {file = "pocketutils-0.3.1-py3-none-any.whl", hash = "sha256:e92a9c19c3f12b69a59d1c660e0fea12b64311ff3859583bfdfd4146bf1ec57a"},
+    {file = "pocketutils-0.3.1.tar.gz", hash = "sha256:91167ecee2c33159460b328def1c814f8d3aaec7a9ed20cab1470edf0065ae6f"},
 ]
 pooch = [
     {file = "pooch-1.1.1-py3-none-any.whl", hash = "sha256:fca9c057ee731053439cd556422d452eae9a04553308431111c68f0cc57d3340"},
@@ -1895,7 +1872,7 @@ python-dateutil = [
     {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
 ]
 python-levenshtein = [
-    {file = "python-Levenshtein-0.11.2.tar.gz", hash = "sha256:c1311c71beb5b6eecea4bba200a626331ef67110357448be47ba1bfe3c4aa305"},
+    {file = "python-Levenshtein-0.12.0.tar.gz", hash = "sha256:033a11de5e3d19ea25c9302d11224e1a1898fe5abd23c61c7c360c25195e3eb1"},
 ]
 pytz = [
     {file = "pytz-2020.1-py2.py3-none-any.whl", hash = "sha256:a494d53b6d39c3c6e44c3bec237336e14305e4f29bbf800b599253057fbb79ed"},

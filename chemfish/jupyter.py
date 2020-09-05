@@ -11,9 +11,11 @@ from chemfish.startup import *
 
 pd.Series.reverse = pd.DataFrame.reverse = lambda self: self[::-1]
 from pocketutils.notebooks.magic_template import *
+from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 
 from chemfish import __version__
-from chemfish.core.environment import chemfish_env
+from chemfish.startup import *
 
 (
     MagicTemplate.from_path(chemfish_env.jupyter_template)
@@ -28,5 +30,18 @@ J.full_width()
 # noinspection PyTypeChecker
 display(HTML("<style>.container { width:100% !important; }</style>"))
 logger.debug("Set Jupyter & Pandas display options")
+
+
+def _plot_all(it: Iterable[Tup[str, Figure]]) -> None:
+    """
+
+    Args:
+        it:
+    """
+    for name, figure in it:
+        print(f"Plotting {name}")
+        plt.show(figure)
+
+plt.show_all = _plot_all
 
 register_matplotlib_converters()

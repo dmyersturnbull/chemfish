@@ -36,7 +36,7 @@ class ChemfishRc(KvrcCore):
         self.general_color_cycler = config.new_classmethod(
             "general_color_cycler",
             None,
-            KvrcColorSchemes,
+            FancyColorSchemes,
             desc="Override cycler with the name of a function in KvrcColorCyclers.",
         )
         self.general_note_font_size = config.new_font_size(

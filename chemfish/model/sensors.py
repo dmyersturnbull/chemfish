@@ -72,7 +72,7 @@ class BatteryTimeData:
 class ChemfishSensor:
     """"""
 
-    def __init__(self, run: RunLike, sensor_data: SensorDataLike):
+    def __init__(self, run: RunLike, sensor_data: Union[SensorDataLike, Image]):
         """
         Sensor wrapper object that holds converted sensor_data for a given run.
 
@@ -90,12 +90,7 @@ class ChemfishSensor:
         return self._run
 
     @property
-    def data(self) -> SensorData:
-        """ """
-        return self._sensor_data
-
-    @property
-    def sensor_data(self) -> SensorDataLike:
+    def data(self) -> Union[SensorDataLike, Image]:
         """ """
         return self._sensor_data
 
@@ -136,7 +131,7 @@ class TimeData(ChemfishSensor, metaclass=abc.ABCMeta):
 
     def timestamps(self) -> Sequence[datetime]:
         """ """
-        return [self.run.datetime_run + timedelta(milliseconds=int(ms)) for ms in self.sensor_data]
+        return [self.run.datetime_run + timedelta(milliseconds=int(ms)) for ms in self.data]
 
     def timestamp_at(self, ind: int) -> datetime:
         """
@@ -148,7 +143,7 @@ class TimeData(ChemfishSensor, metaclass=abc.ABCMeta):
         Returns:
 
         """
-        return self.run.datetime_run + timedelta(milliseconds=int(self.sensor_data[ind]))
+        return self.run.datetime_run + timedelta(milliseconds=int(self.data[ind]))
 
     @property
     def start_ms(self) -> int:
@@ -218,6 +213,11 @@ class ImageSensor(ChemfishSensor):
         super().__init__(run, sensor_data)
         self._sensor_data = Image.open(io.BytesIO(sensor_data))
 
+    @property
+    def data(self) -> Image:
+        """ """
+        return self._sensor_data
+
     def draw_roi_grid(
         self, color: str = "black", roi_ref: Union[int, str, Refs] = 63
     ) -> ChemfishSensor:
@@ -234,7 +234,7 @@ class ImageSensor(ChemfishSensor):
 
         """
         new = deepcopy(self)
-        draw = ImageDraw.Draw(new)
+        draw = ImageDraw.Draw(new.data)
         roi_ref = Refs.fetch(roi_ref).id
         rois = list(
             Rois.select(Rois, Wells)
@@ -331,7 +331,7 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
                 i1 = i
                 break
         sliced_time = [started, *self.timing_data[i0:i1], finished]
-        sliced_vals = [0, *self.sensor_data[i0:i1], 0]
+        sliced_vals = [0, *self.data[i0:i1], 0]
         millis, values = (
             np.array(
                 sliced_time[

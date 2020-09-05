@@ -57,15 +57,10 @@ class AutoScreenTracer:
         if deltat > timedelta(hours=24):
             logger.caution(f"Quick is {deltat} earlier than now")
         if self.quick.enable_checks:
-            logger.caution(
-                "Quick had enable_checks=True. Disabling here because AutoScreenTracer handles this itself."
-            )
-            self.quick.enable_checks = False
+            logger.caution("Quick had enable_checks=True. AutoScreenTracer handles this itself.")
         if self.quick.auto_fix:
-            logger.caution(
-                "Quick had auto_fix=True. Disabling here because AutoScreenTracer handles this itself."
-            )
-            self.quick.auto_fix = False
+            logger.caution("Quick had auto_fix=True. AutoScreenTracer handles this itself.")
+        self.quick = self.quick.using(enable_checks=True, auto_fix=True)
         w = lambda b: "with" if b else "without"
         logger.info(
             f"Plotting {w(traces)} traces and with sensors {', '.join([str(s) for s in self.plot_sensors])}"
@@ -223,37 +218,36 @@ class AutoScreenTracer:
         q0 = self.quick
         # save traces and heatmaps
         def trace_it():
-            """ """
-            yield from q0.traces(df, control_types=control, always_plot_control=False)
+            yield from q0.traces(df, control_types=control)
 
         if self.traces and control is not None:
             logger.debug("Plotting traces...")
             self.saver.save_all(trace_it(), path / "traces")
         logger.debug("Plotting heatmaps...")
-        self.saver.save(q0.rheat(df, show_name_lines=False), path / "rheat")
+        self.saver.save(q0.rheat(df), path / "rheat")
         if control is not None:
             self.saver.save(
-                q0.zheat(df, control_type=control, show_name_lines=False, show_control_lines=True),
+                q0.zheat(df, control_type=control),
                 path / "zheat",
             )
         # diagnostics
         logger.debug("Plotting diagnostics...")
         try:
-            figure = q0.diagnostics(run, sensors=self.plot_sensors)
+            figure = q0.sensor_plots(run, sensors=self.plot_sensors)
             self.saver.save(figure, path / "diagnostics")
-        except:  # need base exception for RuntimeError: Internal psf_fseek() failed from soundfile
+        except Exception:  # need base exception for RuntimeError: Internal psf_fseek() failed from soundfile
             logger.error("Failed to get main sensor data", exc_info=True)
         # sensor data info
         logger.debug("Saving additional sensor data...")
         try:
-            img = q0.sensor_cache.load(SensorNames.PREVIEW, run).sensor_data  # type Image
+            img = q0.sensor_cache.load_preview(run).data  # type Image
             img.save(path / "preview.png", "png")
-        except:
+        except Exception:
             logger.minor("No ROI preview")
         try:
-            img = q0.sensor_cache.load(SensorNames.WEBCAM, run).sensor_data  # type Image
+            img = q0.sensor_cache.load(SensorNames.WEBCAM, run).data  # type Image
             img.save(path / "snap.png", "png")
-        except:
+        except Exception:
             logger.minor("No webcam snapshot")
         # additional info
         # logger.debug("Saving structures...")

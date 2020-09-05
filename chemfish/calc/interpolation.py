@@ -34,7 +34,7 @@ class FeatureTimestampMismatchError(InterpolationFailedError):
         """
         feature = Features.fetch(feature).name
         msg = f"Could not interpolate {feature}: {n_features} features != {n_timestamps} timestamps; ideal is {n_ideal}"
-        super(FeatureTimestampMismatchError, self).__init__(msg, feature, well)
+        super().__init__(msg, feature, well)
         self.n_features = n_features
         self.n_timestamps = n_timestamps
         self.n_ideal = n_ideal

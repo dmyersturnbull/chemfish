@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import matplotlib.ticker as ticker
 
 from chemfish.core.core_imports import *
@@ -8,38 +9,24 @@ from chemfish.viz import *
 from chemfish.viz._internal_viz import *
 
 
-@abcd.auto_eq()
-@abcd.auto_repr_str()
+@dataclass(frozen=True)
 class StimframesPlotter(CakeLayer, KvrcPlotting):
     """
 
+
+    Attributes:
+        should_label: Show axis labels
+        mark_every_n_ms: Explicitly control the number of x ticks per ms; otherwise chooses nice defaults.
+        fps: IGNORED. Legacy option.
+        audio_waveform: Show audio stimuli as waveforms. This requires that the stimframes passed have embedded (expanded) waveforms.
+        assay_labels: Show a label at the bottom for each assay
+        legacy: Whether the batteries being plotted are legacy
     """
-
-    def __init__(
-        self,
-        should_label: bool = True,
-        mark_every_n_ms: Optional[int] = None,
-        audio_waveform: bool = True,
-        assay_labels: bool = False,
-        legacy: bool = False,
-    ):
-        """
-        Constructor.
-
-        Args:
-            should_label: Show axis labels
-            mark_every_n_ms: Explicitly control the number of x ticks per ms; otherwise chooses nice defaults.
-            fps: IGNORED. Legacy option.
-            audio_waveform: Show audio stimuli as waveforms. This requires that the stimframes passed have embedded (expanded) waveforms.
-            assay_labels: Show a label at the bottom for each assay
-            legacy: Whether the batteries being plotted are legacy
-        """
-        self._should_label = should_label
-        self._mark_every_n_ms = mark_every_n_ms
-        self._audio_waveform = audio_waveform
-        self._assay_labels = assay_labels
-        self._legacy = legacy
-        self._fps = 25 if legacy else 1000
+    should_label: bool = True
+    mark_every_n_ms: Optional[int] = None
+    audio_waveform: bool = True
+    assay_labels: bool = False
+    legacy: bool = False
 
     def plot(
         self,
@@ -154,7 +141,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         y = r[r > 0]
         if not np.any(r > 0):
             return ax, None, None
-        if stim.audio_file is not None and self._audio_waveform:
+        if stim.audio_file is not None and self.audio_waveform:
             ax.scatter(
                 x,
                 y,
@@ -205,7 +192,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         Returns:
 
         """
-        if not self._assay_labels and not chemfish_rc.assay_lines_without_text:
+        if not self.assay_labels and not chemfish_rc.assay_lines_without_text:
             return
         for a in assays.itertuples():
             start = (a.start_ms - starts_at_ms) * self._fps / 1000
@@ -223,7 +210,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
             alpha = chemfish_rc.assay_line_alpha
             height = (
                 chemfish_rc.assay_line_with_text_height
-                if self._assay_labels
+                if self.assay_labels
                 else chemfish_rc.assay_line_without_text_height
             )
             lines = ax.vlines(
@@ -238,7 +225,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
                 -height, start, end, lw=width, colors=color, clip_on=False, alpha=0.0, zorder=1
             )
             lines.set_alpha(alpha)
-            if self._assay_labels and not ValarTools.assay_is_background(a.assay_id):
+            if self.assay_labels and not ValarTools.assay_is_background(a.assay_id):
                 minsec = a.start
                 text = (
                     a.simplified_name + " (" + minsec + ")"
@@ -268,7 +255,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         Returns:
 
         """
-        if self._should_label:
+        if self.should_label:
             self._label_x(stimframes, ax, starts_at_ms, total_ms)
             ax.grid(False)
             ax.set_ylabel(chemfish_rc.stimplot_y_label)
@@ -305,6 +292,10 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
                 )
             )
         )
+
+    @property
+    def _fps(self):
+        return 25 if self.legacy else 1000
 
     def _best_marks(self, stimframes):
         """

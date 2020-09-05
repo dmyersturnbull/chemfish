@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 import traceback
 
 from PIL.Image import Image
@@ -11,8 +12,6 @@ from chemfish.caches.stim_caches import *
 from chemfish.caches.video_caches import *
 from chemfish.caches.wf_caches import *
 
-# from chemfish.calc.chem import ChemSimplifer
-# from chemfish.calc.chem_graphics import ChemGraphicsKit
 from chemfish.core.core_imports import *
 from chemfish.ml import *
 from chemfish.ml.classifiers import *
@@ -25,7 +24,6 @@ from chemfish.model.concerns import *
 from chemfish.model.features import *
 from chemfish.model.sensors import *
 from chemfish.model.stim_frames import *
-from chemfish.model.videos import *
 from chemfish.model.well_names import *
 from chemfish.model.wf_builders import *
 from chemfish.viz._internal_viz import *
@@ -45,8 +43,6 @@ QsLike = Union[
     Union[int, Runs, Submissions, str],
     Iterable[Union[int, Runs, Submissions, str]],
 ]
-
-DEFAULT_NAMER = WellNamers.elegant()
 
 generation_feature_preferences = {
     **{g: FeatureTypes.MI for g in DataGeneration.pike_generations()},
@@ -86,9 +82,8 @@ class AggType(SmartEnum):
         return self.function()(df)
 
 
-@abcd.external
-@abcd.auto_info()
-@abcd.auto_eq()
+
+@dataclass(frozen=True)
 class Quick:
     """
     A collection of ways to get data and plot data with nice defaults.
@@ -130,152 +125,96 @@ class Quick:
         - *singular* (ex `Quick.trace`), which call plt.show and return None.
         - *plural* (ex `Quick.traces`), which return the iterators and don't display them
 
+    Attributes:
+        feature: Generate WellFrames and plots using this feature.
+        generation: Generation permitted
+        as_of: Enables additional methods by setting max datetime for those queries. This includes querying by flexible Peewee Expressions
+        well_cache: A FrameCache for saving WellFrames on disk
+        facade: An optional FrameFacade for saving WellFrames into memory
+        stim_cache: A StimCache for saving StimFrames objects on disk
+        default_namer: By default, draw WellFrames with this Namer
+        enable_checks: Warn about missing frames, 'concern' rows in the annotations table, suspicious batches, and more; see Concerns.warn_common_checks for full info
+        auto_fix: Applies fixes to WellFrames
+        sensor_cache: A SensorCache.
+        video_cache: A VideoCache.
+        compound_namer: Fill in 'compound_names' column in WellFrame using this function. May also be used in other places.
+                        NOTE: A copy will be made with `compound_namer.as_of` set to `as_of`.
+        audio_stimulus_cache: An AudioStimulusCache for caching audio files, etc.
+        quantile: A quantile for setting min and max on various plot types, including sensor plots and z-score plots (also see zscore_min_max)
+        trace_ymax: If set, limit the y axis on traces to this; great for features like cd(10) but less so for MI
+        zscore_min_max: If set, limit zmear bounds to +/- this value; otherwise a percentile will be chosen
+        discard_trash: Automatically discard wells with control type in Concerns.trash_controls if True, or a passed set
+        smoothing_factor: This times the frames per second = default smoothing window size
+        label_assays:
+        always_plot_control:
+        smear_show_mean:
+        threshold: Show anything with a value +/- this as pure white
+        show_name_lines: Show horizontal lines between different names
+        show_control_lines: Show horizontal lines between different control types
+        ignore_controls: Don't plot any control wells
+        tsne_recolor:
+        enable_audio_waveform:
+
     """
 
-    def __init__(
-        self,
-        feature: Union[str, FeatureType],
-        generation: Union[str, DataGeneration],
-        as_of: datetime,
-        cache: WellCache,
-        stim_cache: StimframeCache,
-        audio_stimulus_cache: AudioStimulusCache,
-        sensor_cache: SensorCache,
-        video_cache: VideoCache,
-        enable_checks: bool = True,
-        auto_fix: bool = True,
-        discard_trash: Union[bool, Set[ControlLike]] = False,
-        compound_namer: CompoundNamer = CompoundNamers.tiered(),
-        well_namer: Optional[WellNamer] = DEFAULT_NAMER,
-        quantile: Optional[float] = 0.95,
-        trace_ymax: Optional[float] = None,
-        zscore_min_max: Optional[float] = None,
-        smoothing_factor: float = 0.1,
-    ):
-        """
-        Builds a new Quick.
-        WARNING: The details of the arguments auto_fix and enable_checks are subject to change.
-        In particular, more auto-fixes could be added in the future. If this is unacceptable for your use, disable this option.
+    DEFAULT_NAMER = WellNamers.elegant()
 
-        Args:
-            feature: Generate WellFrames and plots using this feature.
-            generation: Generation permitted
-            as_of: Enables additional methods by setting max datetime for those queries. This includes querying by flexible Peewee Expressions
-            cache: A FrameCache for saving WellFrames on disk
-            facade: An optional FrameFacade for saving WellFrames into memory
-            stim_cache: A StimCache for saving StimFrames objects on disk
-            default_namer: By default, draw WellFrames with this Namer
-            enable_checks: Warn about missing frames, 'concern' rows in the annotations table, suspicious batches, and more; see Concerns.warn_common_checks for full info
-            auto_fix: Applies fixes to WellFrames
-            sensor_cache: A SensorCache.
-            video_cache: A VideoCache.
-            compound_namer: Fill in 'compound_names' column in WellFrame using this function. May also be used in other places.
-                            NOTE: A copy will be made with `compound_namer.as_of` set to `as_of`.
-            audio_stimulus_cache: An AudioStimulusCache for caching audio files, etc.
-            quantile: A quantile for setting min and max on various plot types, including sensor plots and z-score plots (also see zscore_min_max)
-            trace_ymax: If set, limit the y axis on traces to this; great for features like cd(10) but less so for MI
-            zscore_min_max: If set, limit zmear bounds to +/- this value; otherwise a percentile will be chosen
-            discard_trash: Automatically discard wells with control type in Concerns.trash_controls if True, or a passed set
-            smoothing_factor: This times the frames per second = default smoothing window size
-        """
-        if as_of > datetime.now():
+    DEFAULT_TRASH_CONTROLS = frozenset({"ignore", "near-WT (-)", "no drug transfer", "low drug transfer"})
+
+    feature: Union[str, FeatureType]
+    generation: Union[str, DataGeneration]
+    as_of: datetime
+    cache: WellCache
+    stim_cache: StimframeCache
+    audio_stimulus_cache: AudioStimulusCache
+    sensor_cache: SensorCache
+    video_cache: VideoCache
+    enable_checks: bool = True
+    auto_fix: bool = True
+    discard_controls: Set[ControlLike] = DEFAULT_TRASH_CONTROLS
+    compound_namer: CompoundNamer = CompoundNamers.tiered()
+    well_namer: Optional[WellNamer] = DEFAULT_NAMER
+    quantile: Optional[float] = 0.95
+    trace_ymax: Optional[float] = None
+    zscore_min_max: Optional[float] = None
+    smoothing_factor: float = 0.1
+    label_assays: bool = False
+    always_plot_control: bool = False
+    show_smear_means: bool = False
+    smear_ci: float = 0.8
+    min_log_severity: Severity = Severity.CAUTION
+    zheat_threshold: float = 1.0
+    zheat_show_control_lines: bool = True
+    zheat_show_name_lines: bool = True
+    zheat_ignore_controls: bool = False
+    enable_audio_waveform: bool = True
+
+    def __post_init__(self):
+        if self.as_of > datetime.now():
             logger.warning(
-                f"as_of is set {Tools.delta_time_to_str((as_of - datetime.now()).total_seconds())} in the future"
+                f"as_of is set {Tools.delta_time_to_str((self.as_of - datetime.now()).total_seconds())} in the future"
             )
-        self.feature = FeatureTypes.of(feature)
-        self.generation = DataGeneration.of(generation)
-        self.as_of = as_of
-        self.well_namer = well_namer
-        self.compound_namer = copy(compound_namer)
-        self.compound_namer.as_of = as_of
-        self.well_cache = cache
-        self.stim_cache = stim_cache
-        # TODO this ignores the cache dir
-        self.expanded_stim_cache = StimframeCache(
-            waveform_loader=audio_stimulus_cache.load_waveform
+
+    @property
+    def _expanded_stim_cache(self) -> StimframeCache:
+        return StimframeCache(
+            waveform_loader=self.audio_stimulus_cache.load_waveform
         )
-        self.sensor_cache = sensor_cache
-        self.video_cache = video_cache
-        self.audio_stimulus_cache = audio_stimulus_cache
-        self.enable_checks = enable_checks
-        self.auto_fix = auto_fix
-        self.quantile = quantile
-        self.trace_ymax = trace_ymax
-        self.zscore_min_max = zscore_min_max
-        if discard_trash is False:
-            self.discard_trash = set()
-        elif discard_trash is True:
-            control_types = {c.name: c for c in ControlTypes.select()}
-            self.discard_trash = {
-                c: control_types[c]
-                for c in {"ignore", "near-WT (-)", "no drug transfer", "low drug transfer"}
-            }
-        else:
-            self.discard_trash = discard_trash
-        self.smoothing_factor = smoothing_factor
-        self.min_log_severity = Severity.CAUTION
 
-    def change(self, **kwargs) -> Quick:
+    def _get_smoothing(self, fps: int) -> int:
+        return int(round(self.smoothing_factor * fps))
+
+    def using(self, **kwargs) -> Quick:
         return self
-
-    def trace(
-        self,
-        run: QsLike,
-        smoothing: Optional[int] = None,
-        namer: Optional[WellNamer] = None,
-        start_ms: Optional[int] = None,
-        end_ms: Optional[int] = None,
-        control_names=None,
-        control_types=None,
-        weights: Optional[np.array] = None,
-        label_assays: bool = False,
-        always_plot_control: bool = False,
-        agg_type: Union[AggType, str] = AggType.NAME,
-    ) -> None:
-        """
-
-
-        Args:
-            run: QsLike:
-            smoothing:
-            namer:
-            start_ms:
-            end_ms:
-            control_names:
-            control_types:
-            weights:
-            label_assays:
-            always_plot_control:
-            agg_type:
-
-        """
-        for name, figure in self.traces(
-            run,
-            smoothing=smoothing,
-            namer=namer,
-            start_ms=start_ms,
-            end_ms=end_ms,
-            control_names=control_names,
-            control_types=control_types,
-            weights=weights,
-            label_assays=label_assays,
-            always_plot_control=always_plot_control,
-            agg_type=agg_type,
-        ):
-            plt.show(figure)
 
     def traces(
         self,
         run: QsLike,
-        smoothing: Optional[int] = None,
-        namer: Optional[WellNamer] = None,
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
         control_names=None,
         control_types=None,
         weights: Optional[np.array] = None,
-        label_assays: bool = False,
-        always_plot_control: bool = False,
         agg_type: Union[AggType, str] = AggType.NAME,
     ) -> Generator[Tup[str, Figure], None, None]:
         """
@@ -283,15 +222,11 @@ class Quick:
 
         Args:
             run: QsLike:
-            smoothing:
-            namer:
             start_ms:
             end_ms:
             control_names:
             control_types:
             weights:
-            label_assays:
-            always_plot_control:
             agg_type:
 
         """
@@ -305,16 +240,15 @@ class Quick:
             extra_gs,
             extra_fn,
         ) = self._everything(
-            run, namer, start_ms, end_ms, control_names, control_types, weights, label_assays
+            run, start_ms, end_ms, control_names, control_types, weights
         )
         battery = df.only("battery_id")
-        if smoothing is None:
-            smoothing = int(round(self.smoothing_factor * fps))
+        smoothing = self._get_smoothing(fps)
         tracer = TracePlotter(
             feature=self.feature,
             stimframes_plotter=stimplotter,
             extra_gridspec_slots=extra_gs,
-            always_plot_control=always_plot_control,
+            always_plot_control=self.always_plot_control,
             y_bounds=(0, self.trace_ymax) if self.trace_ymax else None,
         )
         run_dict = {
@@ -332,132 +266,25 @@ class Quick:
             battery=battery,
         )
 
-    '''
-    def structures(self, *compounds, **kwargs) -> Image:
-        """
-
-
-        Args:
-          *compounds:
-          **kwargs:
-
-        Returns:
-
-        """
-        return ChemGraphicsKit().draw_grid(compounds, **kwargs)
-
-    def structures_on_plate(
-        self, run: RunLike, simplify: bool = False, aggressive: bool = False
-    ) -> Image:
-        """
-        Plots a grid of the compound structures on the plate.
-
-        Args:
-          run: A run ID, instance, name, or tag, or submission hash or instance
-          simplify: Desalts and deduplicates structures
-          aggressive: Simplify 'aggressively', removing all but the largest connected component of each structure
-          run: RunLike:
-          simplify:
-          aggressive:
-
-        Returns:
-          A Pillow Image
-
-        """
-        run = ValarTools.run(run)
-        kit = ChemGraphicsKit(ChemSimplifer(aggressive).simplify if simplify else lambda s: s)
-
-        def nameit(wt: WellTreatments) -> str:
-            """
-
-
-            Args:
-              wt: WellTreatments:
-
-            Returns:
-
-            """
-            if wt.batch.compound is None:
-                return "b" + str(wt.batch.id)
-            vals = self.compound_namer.fetch(wt.batch.compound)
-            return "; ".join(["b" + str(k) if v is None else v for k, v in vals.items()])
-
-        return kit.draw_plate(run, labels=nameit)
-    '''
-
-    def smear(
-        self,
-        run: QsLike,
-        smoothing: Optional[int] = None,
-        namer: Optional[WellNamer] = None,
-        ci: float = 0.8,
-        show_means: bool = False,
-        start_ms: Optional[int] = None,
-        end_ms: Optional[int] = None,
-        control_names=None,
-        control_types=None,
-        weights: Optional[np.array] = None,
-        label_assays: bool = False,
-    ) -> None:
-        """
-
-
-        Args:
-            run: QsLike:
-            smoothing:
-            namer:
-            start_ms:
-            end_ms:
-            control_names:
-            control_types:
-            weights:
-            label_assays:
-
-        """
-        for name, figure in self.smears(
-            run,
-            smoothing=smoothing,
-            namer=namer,
-            ci=ci,
-            show_means=show_means,
-            start_ms=start_ms,
-            end_ms=end_ms,
-            control_names=control_names,
-            control_types=control_types,
-            weights=weights,
-            label_assays=label_assays,
-        ):
-            plt.show(figure)
-
     def smears(
         self,
         run: QsLike,
-        smoothing: Optional[int] = None,
-        namer: Optional[WellNamer] = None,
-        ci: float = 0.8,
-        show_means: bool = False,
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
         control_names=None,
         control_types=None,
         weights: Optional[np.array] = None,
-        label_assays: bool = False,
-        always_plot_control: bool = False,
     ) -> Generator[Tup[str, Figure], None, None]:
         """
 
 
         Args:
             run: QsLike:
-            smoothing:
-            namer:
             start_ms:
             end_ms:
             control_names:
             control_types:
             weights:
-            label_assays:
-            always_plot_control:
 
         Yields:
 
@@ -472,19 +299,18 @@ class Quick:
             extra_gs,
             extra_fn,
         ) = self._everything(
-            run, namer, start_ms, end_ms, control_names, control_types, weights, label_assays
+            run, start_ms, end_ms, control_names, control_types, weights
         )
         battery = df.only("battery_id")
-        if smoothing is None:
-            smoothing = int(round(self.smoothing_factor * fps))
-        top_bander, bottom_bander, mean_bander = self._banders(ci, smoothing, show_means)
+        smoothing = self._get_smoothing(fps)
+        top_bander, bottom_bander, mean_bander = self._banders(smoothing)
         run_dict = {
             n: df.with_name(n).unique_runs() for n in df.unique_names()
         }  # prior to agg_samples
         tracer = TracePlotter(
             feature=self.feature,
             stimframes_plotter=stimplotter,
-            always_plot_control=always_plot_control,
+            always_plot_control=self.always_plot_control,
             bottom_bander=bottom_bander,
             top_bander=top_bander,
             mean_bander=mean_bander,
@@ -501,62 +327,15 @@ class Quick:
             battery=battery,
         )
 
-    def zmear(
-        self,
-        run: QsLike,
-        control_type: Union[None, str, int, ControlTypes] = None,
-        control_name: Optional[str] = None,
-        smoothing: Optional[int] = None,
-        namer: Optional[WellNamer] = None,
-        ci: float = 0.8,
-        start_ms: Optional[int] = None,
-        end_ms: Optional[int] = None,
-        weights: Optional[np.array] = None,
-        subtraction=None,
-    ) -> None:
-        """
-
-
-        Args:
-            run:
-            control_type:
-            control_name:
-            smoothing:
-            namer:
-            ci:
-            start_ms:
-            end_ms:
-            weights:
-            subtraction:
-
-        """
-        for name, figure in self.zmears(
-            run,
-            control_type=control_type,
-            control_name=control_name,
-            smoothing=smoothing,
-            namer=namer,
-            ci=ci,
-            start_ms=start_ms,
-            end_ms=end_ms,
-            weights=weights,
-            subtraction=subtraction,
-        ):
-            plt.show(figure)
-
     def zmears(
         self,
         run: QsLike,
         control_type: Union[None, str, int, ControlTypes] = None,
         control_name: Optional[str] = None,
-        smoothing: Optional[int] = None,
-        namer: Optional[WellNamer] = None,
-        ci: float = 0.8,
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
         weights: Optional[np.array] = None,
         subtraction=None,
-        label_assays: bool = False,
     ) -> Generator[Tup[str, Figure], None, None]:
         """
 
@@ -565,14 +344,10 @@ class Quick:
             run:
             control_type:
             control_name
-            smoothing:
-            namer:
-            ci:
             start_ms:
             end_ms:
             weights:
             subtraction:
-            label_assays:
 
         Yields:
 
@@ -587,11 +362,10 @@ class Quick:
             extra_gs,
             extra_fn,
         ) = self._everything(
-            run, namer, start_ms, end_ms, control_name, control_type, weights, label_assays
+            run, start_ms, end_ms, control_name, control_type, weights
         )
         battery = df.only("battery_id")
-        if smoothing is None:
-            smoothing = int(round(self.smoothing_factor * fps))
+        smoothing = self._get_smoothing(fps)
         if control_name is None:
             control_name = df.with_controls().unique_names()
         control_name = Tools.only(control_name, name="control types")
@@ -603,9 +377,7 @@ class Quick:
             y_max = zscores.quantile(0.999, axis=1).max()
         else:
             y_min, y_max = -self.zscore_min_max, self.zscore_min_max
-        top_bander, bottom_bander, mean_bander = self._banders(
-            ci, smoothing, True
-        )  # TODO True, right?
+        top_bander, bottom_bander, mean_bander = self._banders(smoothing)
         run_dict = {
             n: df.with_name(n).unique_runs() for n in df.unique_names()
         }  # prior to agg_samples
@@ -635,27 +407,25 @@ class Quick:
             )
             yield name, figure
 
-    def _banders(self, ci, smoothing, show_means):
+    def _banders(self, smoothing):
         """
 
 
         Args:
-            ci:
             smoothing:
-            show_means:
 
         Returns:
 
         """
-        top_bander = lambda group: group.agg_by_name(lambda s: s.quantile(ci)).smooth(
+        top_bander = lambda group: group.agg_by_name(lambda s: s.quantile(self.smear_ci)).smooth(
             window_size=smoothing
         )
-        bottom_bander = lambda group: group.agg_by_name(lambda s: s.quantile(1 - ci)).smooth(
+        bottom_bander = lambda group: group.agg_by_name(lambda s: s.quantile(1 - self.smear_ci)).smooth(
             window_size=smoothing
         )
         mean_bander = (
             (lambda group: group.agg_by_name().smooth(window_size=smoothing))
-            if show_means
+            if self.show_smear_means
             else None
         )
         return top_bander, bottom_bander, mean_bander
@@ -665,13 +435,8 @@ class Quick:
         run: QsLike,
         control_type: Union[None, str, int, ControlTypes] = None,
         control_name: Optional[str] = None,
-        threshold: float = 1.0,
-        namer: Optional[WellNamer] = None,
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
-        show_control_lines: bool = True,
-        show_name_lines: bool = True,
-        ignore_controls: bool = False,
     ) -> Figure:
         """
         Makes a heatmap of z-scores with respect to controls.
@@ -682,30 +447,26 @@ class Quick:
             run: A run ID, name, or object
             control_type: The name, ID, or object of a ControlTypes; or None
             control_name: The name of an item in WellFrame.names(); or None
-            threshold: Show anything with a value +/- this as pure white
-            namer: A namer for WellFrameBuilder
-             start_ms: Cuts the dataframes, calculating milliseconds from the known framerate
+            start_ms: Cuts the dataframes, calculating milliseconds from the known framerate
             end_ms: Cuts the dataframes, calculating milliseconds from the known framerate
-            show_name_lines: Show horizontal lines between different names
-            show_control_lines: Show horizontal lines between different control types
-            ignore_controls: Don't plot any control wells
 
         Returns:
           The matplotlib Figure
 
         """
-        df, stimframes = self.df_and_stims(run, namer, start_ms, end_ms, audio_waveform=None)
-        battery = df.only("battery_id")
+        df = self.df(run, start_ms, end_ms)
+        battery = df.only("battery_name")
+        stimframes = self.stimframes(battery, start_ms, end_ms, audio_waveform=True)
         stimplotter = StimframesPlotter()
-        zscores = self._control_subtract(df, control_type, control_name).threshold_zeros(threshold)
-        if ignore_controls:
+        zscores = self._control_subtract(df, control_type, control_name).threshold_zeros(self.zheat_threshold)
+        if self.zheat_ignore_controls:
             zscores = zscores.without_controls()
         heater = HeatPlotter(
             symmetric=True,
             stimframes_plotter=stimplotter,
             vmax_quantile=self.quantile,
-            name_sep_line=show_name_lines,
-            control_sep_line=show_control_lines,
+            name_sep_line=self.zheat_show_name_lines,
+            control_sep_line=self.zheat_show_control_lines,
         )
         figure = heater.plot(zscores, stimframes, starts_at_ms=start_ms, battery=battery)
         return figure
@@ -713,77 +474,32 @@ class Quick:
     def rheat(
         self,
         run: QsLike,
-        namer: Optional[WellNamer] = None,
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
-        show_name_lines: bool = True,
     ) -> Figure:
         """
 
 
         Args:
             run:
-            namer:
             start_ms:
             end_ms:
-            show_name_lines:
 
         Returns:
 
         """
-        df, stimframes = self.df_and_stims(run, namer, start_ms, end_ms, audio_waveform=None)
-        battery = df.only("battery_id")
+        df = self.df(run, start_ms, end_ms)
+        battery = df.only("battery_name")
+        stimframes = self.stimframes(battery, start_ms, end_ms, audio_waveform=True)
         stimplotter = StimframesPlotter()
-        heater = HeatPlotter(stimframes_plotter=stimplotter, name_sep_line=show_name_lines)
+        heater = HeatPlotter(stimframes_plotter=stimplotter, name_sep_line=self.zheat_show_name_lines)
         return heater.plot(df, stimframes, starts_at_ms=start_ms, battery=battery)
-
-    def tsne(
-        self,
-        run: QsLike,
-        namer: Optional[WellNamer] = None,
-        start_ms: Optional[int] = None,
-        end_ms: Optional[int] = None,
-        outlier_stds: Optional[float] = 5,
-        path_stub: Optional[PathLike] = None,
-        **kwargs,
-    ) -> Tup[WellFrame, Figure]:
-        """
-
-
-        Args:
-            run:
-            namer:
-            start_ms:
-            end_ms:
-            outlier_stds:
-            path_stub:
-            **kwargs:
-
-        Returns:
-
-        """
-        all_params = {"outlier_stds": outlier_stds, **kwargs}
-        # noinspection PyTypeChecker
-        transform = SklearnTransform(TSNE(**kwargs))
-        if outlier_stds is not None:
-            transform = WellTransforms.compose(transform, OutlierStdTransform(outlier_stds))
-        return self.transform(
-            run,
-            transform,
-            all_params,
-            namer=namer,
-            start_ms=start_ms,
-            end_ms=end_ms,
-            path_stub=path_stub,
-        )
 
     def transform(
         self,
         run: QsLike,
         transform: WellTransform,
         all_params: Mapping[str, Any],
-        recolor: bool = True,
-        namer: Optional[WellNamer] = None,
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
         path_stub: Optional[PathLike] = None,
@@ -795,8 +511,6 @@ class Quick:
             run:
             transform:
             all_params:
-            recolor:
-            namer:
             start_ms:
             end_ms:
             path_stub:
@@ -804,7 +518,7 @@ class Quick:
         Returns:
 
         """
-        df = self.df(run, namer=namer, start_ms=start_ms, end_ms=end_ms)
+        df = self.df(run, start_ms=start_ms, end_ms=end_ms)
         trans = transform.fit(df)
         if path_stub is not None:
             path_stub = Path(path_stub)
@@ -814,8 +528,10 @@ class Quick:
             trans.to_hdf(h5_path)
             Tools.save_json(all_params, json_path)
             logger.info(f"Saved {h5_path} and {json_path}")
+        recolor = len(df["color"].unique()) == 1
         figure = WellPlotters.basic(trans, recolor=recolor)
         if path_stub is not None:
+            # noinspection PyUnboundLocalVariable
             FigureSaver().save(figure, pdf_path)
         return trans, figure
 
@@ -823,11 +539,9 @@ class Quick:
         self,
         run: QsLike,
         save_dir: PathLike,
-        namer: Optional[WellNamer] = None,
         model_fn: SklearnWfClassifierWithOob = WellForestClassifier,
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
-        color: bool = False,
         sort: bool = True,
         **kwargs,
     ) -> WellForestClassifier:
@@ -837,11 +551,9 @@ class Quick:
         Args:
             run:
             save_dir:
-            namer:
             model_fn:
             start_ms:
             end_ms:
-            color:
             sort:
             **kwargs:
 
@@ -850,14 +562,14 @@ class Quick:
         """
         save_dir = Tools.prepped_dir(save_dir, exist_ok=False)
         class_path = ClassifierPath(save_dir)
-        df = self.df(run, namer=namer, start_ms=start_ms, end_ms=end_ms)
+        df = self.df(run, start_ms=start_ms, end_ms=end_ms)
         model = model_fn.build(**kwargs)
         if class_path.exists():
             logger.info(f"Loading existing model at {save_dir}")
             model.load(save_dir)
         else:
             model.train(df)
-        if color:
+        if len(df["color"].unique()) == 1:
             controls = df.with_controls().sort_values("control_type")
             label_colors = InternalVizTools.assign_color_dict_x(
                 controls.names(), controls["control_type"]
@@ -869,7 +581,7 @@ class Quick:
         FigureTools.clear()
         return model
 
-    def diagnostics(
+    def sensor_plots(
         self,
         run: RunLike,
         start_ms: Optional[int] = None,
@@ -891,17 +603,20 @@ class Quick:
         run = Tools.run(run, join=True)
         if sensors is None:
             sensors = ["thermistor", "photoresistor", "microphone"]
-        stimframes = self.stim(run.experiment.battery, start_ms, end_ms, audio_waveform=True)
+        stimframes = self.stimframes(run.experiment.battery, start_ms, end_ms, audio_waveform=True)
         stimplotter = StimframesPlotter(audio_waveform=True)
         sensor_data = []
         for sensor in sensors:
             sensor = SensorNames.of(sensor)
             if sensor == SensorNames.MICROPHONE:
                 sensor_data.append(
-                    self.sensor_cache.load((SensorNames.MICROPHONE, run)).waveform(1000)
+                    self.sensor_cache.load_wav(run).waveform(1000)
                 )
             else:
-                self.sensor_cache.load((sensor, run)).slice_ms(start_ms, end_ms)
+                sdata = self.sensor_cache.load((sensor, run))
+                if isinstance(sdata, TimeDepChemfishSensor):
+                    sdata = sdata.slice_ms(start_ms, end_ms)
+                sensor_data.append(sdata)
         return SensorPlotter(stimplotter=stimplotter, quantile=self.quantile).diagnostics(
             run, stimframes, sensor_data, start_ms=start_ms
         )
@@ -940,12 +655,11 @@ class Quick:
         """
         return TimelinePlots.of(runs, label_with, use_experiments=use_experiments, **kwargs)
 
-    def stim_plot(
+    def stimframes_plot(
         self,
         battery: Union[StimFrame, Batteries, int, str],
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
-        audio_waveform: bool = True,
         label_assays: bool = False,
         stimframes: Optional[BatteryStimFrame] = None,
     ) -> Figure:
@@ -953,9 +667,11 @@ class Quick:
 
 
         Args:
-            battery: param start_ms:
-            end_ms: param audio_waveform:
-            label_assays: param stimframes: If supplied:
+            battery:
+            start_ms:
+            end_ms:
+            label_assays:
+            stimframes: If supplied:
                 - `audio_waveform` is ignored
                 - `start_ms` and `end_ms` will be attempted, BUT!
                    If `stimframes` was already sliced, the result will be wrong
@@ -965,47 +681,14 @@ class Quick:
         """
         battery = Batteries.fetch(battery)
         assays = AssayFrame.of(battery)
+        audio_waveform = self.enable_audio_waveform and not ValarTools.battery_is_legacy(battery)
         if stimframes is None:
-            stimframes = self.stim(battery, start_ms, end_ms, audio_waveform)
+            stimframes = self.stimframes(battery, start_ms, end_ms, audio_waveform=None)
         else:
             stimframes = stimframes.slice_ms(battery, start_ms, end_ms)
-            audio_waveform = False
         plotter = StimframesPlotter(audio_waveform=audio_waveform, assay_labels=label_assays)
         ax = plotter.plot(stimframes, assays=assays, starts_at_ms=start_ms, battery=battery)
         return ax.get_figure()
-
-    def df_and_stims(
-        self,
-        run: QsLike,
-        namer: Optional[WellNamer] = None,
-        start_ms: Optional[int] = None,
-        end_ms: Optional[int] = None,
-        audio_waveform: Optional[bool] = None,
-    ) -> Tup[WellFrame, BatteryStimFrame]:
-        """
-        Fetches both a WellFrame and a BatteryStimFrame for it.
-        See `Quick.df` and `Quick.stim` for more info.
-        WARNING:
-            If the battery is not unique for the passed WellFrame, will emit a warning and use the battery with the lowest ID.
-
-        Args:
-            run: Anything accepted by `Quick.df`
-            namer: A Namer to set `WellFrame['name']`, or None to use `self.default_namer`.
-            start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
-            end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
-            audio_waveform: Replace the audio stimuli with the values of a standardized waveform; great for plotting. Generally only useful for plotting.
-
-        Returns:
-            The WellFrame
-
-        Raises:
-            MultipleMatchesError: If multiple batteries were found
-
-        """
-        df = self.df(run, namer, start_ms, end_ms)
-        battery = df.only("battery_name")
-        stimframes = self.stim(battery, start_ms, end_ms, audio_waveform=audio_waveform)
-        return df, stimframes
 
     def assays(self, battery: Union[Batteries, int, str]) -> AssayFrame:
         """
@@ -1030,7 +713,7 @@ class Quick:
         """
         return AppFrame.of(battery)
 
-    def stim(
+    def stimframes(
         self,
         battery: BatteryLike,
         start_ms: Optional[int] = None,
@@ -1054,94 +737,14 @@ class Quick:
         if audio_waveform is None:
             audio_waveform = ValarTools.battery_is_legacy(battery)
         if audio_waveform:
-            stimframes = self.expanded_stim_cache.load(battery)
+            stimframes = self._expanded_stim_cache.load(battery)
         else:
             stimframes = self.stim_cache.load(battery)
         return stimframes.slice_ms(battery, start_ms, end_ms)
 
-    def video(self, run: RunLike) -> SauronxVideo:
-        """
-
-
-        Args:
-            run: RunLike:
-
-        Returns:
-
-        """
-        run = ValarTools.run(run)
-        return self.video_cache.load(run)
-
-    def microphone_waveform(
-        self, run: RunLike, start_ms: Optional[int] = None, end_ms: Optional[int] = None
-    ) -> MicrophoneWaveform:
-        """
-
-
-        Args:
-            run: RunLike:
-            start_ms:
-            end_ms:
-
-        Returns:
-
-        """
-        run = ValarTools.run(run)
-        x: MicrophoneWaveform = self.sensor_cache.load(SensorNames.MICROPHONE, run)
-        return x.slice_ms(start_ms, end_ms)
-
-    def stim_waveform(self, stimulus: StimulusLike) -> StimulusWaveform:
-        """
-
-
-        Args:
-            stimulus:
-
-        Returns:
-
-        """
-        return self.audio_stimulus_cache.load_waveform(stimulus)
-
-    def webcam_snap(self, run: RunLike) -> Image:
-        """
-
-
-        Args:
-            run: RunLike:
-
-        Returns:
-
-        """
-        return self.sensor_cache.load(SensorNames.WEBCAM, run).sensor_data
-
-    def roi_snap(self, run: RunLike) -> Image:
-        """
-
-
-        Args:
-            run: RunLike:
-
-        Returns:
-
-        """
-        return self.sensor_cache.load(SensorNames.PREVIEW, run).sensor_data
-
-    def battery_time_data(self, run: RunLike) -> BatteryTimeData:
-        """
-
-
-        Args:
-            run: RunLike:
-
-        Returns:
-
-        """
-        return self.sensor_cache.bt_data(run)
-
     def df(
         self,
         run: QsLike,
-        namer: Optional[WellNamer] = None,
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
     ) -> WellFrame:
@@ -1171,7 +774,6 @@ class Quick:
 
         Args:
             run: Any of the above
-            namer: A Namer to set `WellFrame['name']`, or None to use `self.default_namer` unless passing a WellFrame (in which case the existing names are used).
             start_ms: The milliseconds after the first frame to slice starting at, or None to mean 0; uses the ideal framerate
             end_ms: The milliseconds after the first frame to slice until, or None to mean the feature end; uses the ideal framerate
 
@@ -1179,7 +781,7 @@ class Quick:
             The WellFrame
 
         """
-        return self._df(run, namer, start_ms, end_ms)
+        return self._df(run, start_ms, end_ms)
 
     def errors(self, df: WellFrame) -> None:
         """
@@ -1204,7 +806,7 @@ class Quick:
                 f"Wrong generation {used_generation}; expected {self.generation}"
             )
 
-    def spit_concerns(
+    def write_concerns(
         self,
         wheres: ExpressionsLike,
         min_severity: Severity = Severity.GOOD,
@@ -1212,7 +814,7 @@ class Quick:
         path: Optional[PathLike] = None,
     ) -> Sequence[Concern]:
         """
-        Finds `Concern`s on runs matching the conditions `wheres` (which are processed by `Quick.query_runs`).
+        Finds ``Concern``s on runs matching the conditions ``wheres`` (which are processed by ``Quick.query_runs``).
         Saves the information as a CSV spreadsheet periodically (every 10 runs) while processing.
 
         Args:
@@ -1224,10 +826,7 @@ class Quick:
         Returns:
 
         """
-        q0 = copy(self)
-        q0.enable_checks = False
-        q0.auto_fix = False
-        q0.as_of = datetime.now()
+        q0 = self.using(enable_checks=False, auto_fix=False, as_of=datetime.now() if as_of is None else as_of)
         runs = q0.query_runs(wheres)
         logger.notice(f"Spitting issues for {len(runs)} runs")
         coll = SimpleConcernRuleCollection(q0.feature, q0.sensor_cache, as_of, min_severity)
@@ -1256,7 +855,7 @@ class Quick:
         Returns:
             The following tables are joined on.
             Runs, Experiments, Projects, ProjectTypes, Batteries, Submissions, SauronConfigs, Saurons, Users, Plates
-            Ex: `query_runs([Batteries.id == 99, Saurons.id == 4)]`
+            Ex: ``query_runs([Batteries.id == 99, Saurons.id == 4)]``
 
         """
         wheres = InternalTools.listify(wheres)
@@ -1299,8 +898,8 @@ class Quick:
 
     def log_concerns(self, df: WellFrame, min_severity: Severity = Severity.CAUTION) -> None:
         """
-        Emit logger messages for concerns in this WellFrame, only for level >= `min_severity`.
-        Also see `Quick.concerns`.
+        Emit logger messages for concerns in this WellFrame, only for level >= ``min_severity``.
+        Also see ``Quick.concerns``.
 
         Args:
             df:
@@ -1315,7 +914,7 @@ class Quick:
     def fix(self, df):
         """
         Applies fixes.
-        These are performed automatically when auto_fix=True.
+        These are performed automatically when ``auto_fix=True``.
         These fixes are:
             - 0s between assays for legacy run
             - NaN "unification": If any well has a NaN in a position, sets all wells to have NaN there
@@ -1361,8 +960,8 @@ class Quick:
                     )
                 )
         n = len(df)
-        if len(self.discard_trash) > 0:
-            df = df.without_controls(names=self.discard_trash)
+        if len(self.discard_controls) > 0:
+            df = df.without_controls(names=self.discard_controls)
             if len(df) != n:
                 logger.caution(f"Discarded {len(df) - n} trash controls")
         return df
@@ -1370,7 +969,6 @@ class Quick:
     def _df(
         self,
         run: QsLike,
-        namer: Optional[WellNamer] = None,
         start_ms: Optional[int] = None,
         end_ms: Optional[int] = None,
     ) -> WellFrame:
@@ -1379,7 +977,6 @@ class Quick:
 
         Args:
             run:
-            namer:
             start_ms:
             end_ms:
 
@@ -1403,9 +1000,8 @@ class Quick:
             else:
                 # we still need to slice it if it's not fresh
                 df = df.slice_ms(start_ms, end_ms)
-            if namer is not None:
-                df = df.with_new_names(namer)
-                df = df.with_new_display_names(namer)
+            df = df.with_new_names(self.well_namer)
+            df = df.with_new_display_names(df["name"])
         except NoFeaturesError as err:
             # we can't raise in an except block or we'll get a "During handling of the above exception"
             if isinstance(err, NoFeaturesError):
@@ -1415,7 +1011,7 @@ class Quick:
                 raise err
         return df
 
-    def _no_such_features_message(self, run):
+    def _no_such_features_message(self, run) -> str:
         """
 
 
@@ -1484,9 +1080,9 @@ class Quick:
                 "Will not fetch from flexible queries unless Quick.as_of is set."
             )
         elif is_expression:
-            df = CachingWellFrameBuilder(self.well_cache, self.as_of).where(run).build()
-        elif self.well_cache is not None:
-            df = self.well_cache.load(run)
+            df = CachingWellFrameBuilder(self.cache, self.as_of).where(run).build()
+        elif self.cache is not None:
+            df = self.cache.load(run)
         else:
             df = WellFrameBuilder.runs(run).with_feature(self.feature).build()
         # instead, we'll build the names in Quick.df()
@@ -1495,30 +1091,30 @@ class Quick:
         return df.sort_standard(), True
 
     def _everything(
-        self, run, namer, start_ms, end_ms, control_names, control_types, weights, label_assays
+        self, run, start_ms, end_ms, control_names, control_types, weights
     ):
         """
         Only for plotting.
 
         Args:
             run:
-            namer:
             start_ms:
             end_ms:
             control_names:
             control_types:
             weights:
-            label_assays:
 
         Returns:
 
         """
-        df, stimframes = self.df_and_stims(run, namer, start_ms, end_ms, audio_waveform=True)
+        df = self.df(run, start_ms, end_ms)
+        battery = df.only("battery_name")
+        stimframes = self.stimframes(battery, start_ms, end_ms, audio_waveform=True)
         control_names = self._control_names(df, control_names, control_types)
-        fps = self._stimframes_per_second(df)
+        fps = Tools.only((ValarTools.frames_per_second(run) for run in df.unique_runs()))
         weights = self._slice_weight_ms(df, weights, start_ms, end_ms)
         extra_gs, extra_fn = self._weighter(weights)
-        stimplotter = StimframesPlotter(assay_labels=label_assays, audio_waveform=True)
+        stimplotter = StimframesPlotter(assay_labels=self.label_assays, audio_waveform=True)
         assays = AssayFrame.of(df.only("battery_name"))
         return df, stimframes, assays, control_names, fps, stimplotter, extra_gs, extra_fn
 
@@ -1577,23 +1173,6 @@ class Quick:
             control_type = Tools.only(df.only_control_matching(positive=False))
             return df.control_subtract(subtraction, control_type)
 
-    def _stimframes_per_second(self, df: WellFrame) -> int:
-        """
-
-
-        Args:
-            df: WellFrame:
-
-        Returns:
-
-        """
-        if all((Tools.is_empty(z) for z in df["submission"].unique())):
-            return 25
-        elif all((not Tools.is_empty(z) for z in df["submission"].unique())):
-            return 1000
-        else:
-            raise MultipleFrameratesError("Can't combine legacy and SauronX data")
-
     def _weighter(self, weights: Optional[np.array]):
         """
 
@@ -1647,16 +1226,6 @@ class Quick:
 
     def delete(self, runs: Union[RunsLike, peewee.Query, ExpressionLike]) -> None:
         """
-
-
-        Args:
-            runs:
-
-        """
-        return self.__delitem__(runs)
-
-    def __delitem__(self, runs: Union[RunsLike, peewee.Query, ExpressionLike]) -> None:
-        """
         Deletes one or more runs from self.facade (if it exists) or self.cache (if it exists).
         Does nothing if neither is defined.
         """
@@ -1669,8 +1238,8 @@ class Quick:
         if not all([isinstance(r, Runs) for r in runs]):
             raise XTypeError("Bad query type")
         for run in runs:
-            if self.well_cache is not None:
-                self.well_cache.delete(run)
+            if self.cache is not None:
+                self.cache.delete(run)
         logger.notice(f"Deleted {len(runs)} run(s) from the cache(s)")
 
     def __repr__(self):

@@ -1,150 +1,23 @@
 from __future__ import annotations
 
-import matplotlib.backends.backend_pdf
-import matplotlib.font_manager
 import matplotlib.legend as mlegend
 from matplotlib import patches
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-# noinspection PyProtectedMember
-from chemfish.core._tools import *
+from pocketutils.plotting.corners import Corner, Corners
+from pocketutils.plotting.color_schemes import FancyCmaps, FancyColorSchemes
+from pocketutils.plotting.fig_tools import FigureTools as _FigureTools
+from pocketutils.plotting.fig_savers import FigureSaver
+
 from chemfish.core.core_imports import *
 from chemfish.viz._internal_viz import *
 
-# noinspection PyProtectedMember
-from chemfish.viz._kvrc_utils import KvrcColorSchemes as _iku
-from chemfish.viz.fig_savers import *
 
-
-class Corner:
-    """Just used for text alignment. I hate it, but at least I won't keep getting the wrong params."""
-
-    def __init__(self, bottom: bool, left: bool):
-        """
-
-        Args:
-            bottom:
-            left:
-        """
-        self.name = ("bottom" if bottom else "top") + " " + "left" if left else "right"
-        self.x = 0.0 if left else 1.0
-        self.y = 0.0 if bottom else 1.0
-        self.horizontalalignment = "left" if left else "right"
-        # yes, these should be reversed: we want them above or below the figures
-        self.verticalalignment = "top" if bottom else "bottom"
-
-    def params(self) -> Mapping[str, Any]:
-        """
-
-        Returns:
-
-        """
-        return {
-            "x": self.x,
-            "y": self.y,
-            "horizontalalignment": self.horizontalalignment,
-            "verticalalignment": self.verticalalignment,
-        }
-
-    def __eq__(self, other):
-        return type(self) == type(other) and self.x == other.x and self.y == other.y
-
-    def __repr__(self):
-        return "Corner(" + self.name + ")"
-
-    def __str__(self):
-        return repr(self)
-
-
-class Corners:
-    """The four corners of a Matplotlib axes with arguments for adding a text box."""
-
-    BOTTOM_LEFT = Corner(True, True)
-    TOP_LEFT = Corner(False, True)
-    BOTTOM_RIGHT = Corner(True, False)
-    TOP_RIGHT = Corner(False, False)
-
-
-class FigureTools:
+class FigureTools(_FigureTools):
     """"""
 
-    darken_palette = _iku.darken_palette
-    darken_color = _iku.darken_color
-
-    @classmethod
-    def cm2in(cls, tup):
-        """
-
-
-        Args:
-            tup:
-
-        Returns:
-
-        """
-        if Tools.is_true_iterable(tup):
-            return [x / 2.54 for x in tup]
-        else:
-            return float(tup) / 2.54
-
-    @classmethod
-    def open_figs(cls) -> Sequence[Figure]:
-        """
-        Returns all currently open figures.
-        """
-        return [plt.figure(num=i) for i in plt.get_fignums()]
-
-    @classmethod
-    def open_fig_map(cls) -> Mapping[str, Figure]:
-        """
-        Returns all currently open figures as a dict mapping their labels `Figure.label` to their instances.
-        Note that `Figure.label` is often empty in practice.
-
-        Args:
-
-        Returns:
-
-        """
-        return {label: plt.figure(label=label) for label in plt.get_figlabels()}
-
-    @classmethod
-    @contextmanager
-    def clearing(cls, yes: bool = True) -> Generator[None, None, None]:
-        """
-        Context manager to clear and close all figures created during its lifespan.
-        When the context manager exits, calls `clf` and `close` on all figures created under it.
-
-        Args:
-            yes: If False, does nothing
-
-        Yields:
-
-        """
-        oldfigs = copy(plt.get_fignums())
-        yield
-        if yes:
-            for fig in [plt.figure(num=i) for i in plt.get_fignums() if i not in oldfigs]:
-                fig.clf()
-                plt.close(fig)
-
-    @classmethod
-    @contextmanager
-    def hiding(cls, yes: bool = True) -> Generator[None, None, None]:
-        """
-        Context manager to hide figure display by setting `plt.interactive(False)`.
-
-        Args:
-            yes: If False, does nothing
-
-        Yields:
-
-        """
-        isint = plt.isinteractive()
-        if yes:
-            plt.interactive(False)
-        yield
-        if yes:
-            plt.interactive(isint)
+    darken_palette = FancyColorSchemes.darken_palette
+    darken_color = FancyColorSchemes.darken_color
 
     @classmethod
     @contextmanager
@@ -168,8 +41,8 @@ class FigureTools:
         )
         kwargs = {k: v for k, v in kwargs.items() if k not in {"path", "hide", "clear"}}
         with chemfish_rc.using(*args, **kwargs):
-            with FigureTools.clearing(clear):
-                with FigureTools.hiding(hide):
+            with cls.clearing(clear):
+                with cls.hiding(hide):
                     yield
 
     @classmethod
@@ -189,40 +62,6 @@ class FigureTools:
         """
         path = str(path).replace("/", os.sep)
         FigureSaver(**kwargs).save(figure, path, names=names)
-
-    @classmethod
-    def plot1d(
-        cls,
-        values: np.array,
-        figsize: Optional[Tup[float, float]] = None,
-        x0=None,
-        y0=None,
-        x1=None,
-        y1=None,
-        **kwargs,
-    ) -> Axes:
-        """
-        Plots a 1D array and returns the axes.
-        kwargs are passed to `Axes.plot`.
-
-        Args:
-            values: np.array:
-            figsize:
-            x0:  (Default value = None)
-            y0:  (Default value = None)
-            x1:  (Default value = None)
-            y1:  (Default value = None)
-            **kwargs:
-
-        Returns:
-
-        """
-        figure = plt.figure(figsize=figsize)
-        ax = figure.add_subplot(1, 1, 1)  # Axes
-        ax.plot(values, **kwargs)
-        ax.set_xlim((x0, x1))
-        ax.set_ylim((y0, y1))
-        return ax
 
     @classmethod
     def add_aligned_colorbar(
@@ -266,40 +105,6 @@ class FigureTools:
         return cbar
 
     @classmethod
-    def text_matrix(
-        cls,
-        ax: Axes,
-        data: pd.DataFrame,
-        color_fn: Optional[Callable[[str], str]] = None,
-        adjust_x: float = 0,
-        adjust_y: float = 0,
-        **kwargs,
-    ) -> None:
-        """
-        Adds a matrix of text.
-
-        Args:
-            ax: Axes
-            data: The matrix of any text values; will be converted to strings and empty strings will be ignored
-            color_fn: An optional function mapping (pre-conversion-to-str) values to colors
-            adjust_x: Add this value to the x coordinates
-            adjust_y: Add this value to the y coordinates
-            **kwargs: Passed to `ax.text`
-
-        """
-        for r, row in enumerate(data.index):
-            for c, col in enumerate(data.columns):
-                value = data.iat[r, c]
-                if str(value) != "":
-                    ax.text(
-                        r + adjust_x,
-                        c + adjust_y,
-                        str(value),
-                        color=None if color_fn is None else color_fn(value),
-                        **kwargs,
-                    )
-
-    @classmethod
     def manual_legend(
         cls,
         ax: Axes,
@@ -312,7 +117,7 @@ class FigureTools:
         """
         Creates legend handles manually and adds them as the legend on the Axes.
         This is unfortunately necessary in cases where, for ex, only a handle per color is wanted -- not a handle per color and marker shape.
-        Applies `FigureTools.fix_labels` and applies chemfish_rc defaults unless they're overridden in kwargs.
+        Applies `cls.fix_labels` and applies chemfish_rc defaults unless they're overridden in kwargs.
 
         Args:
             ax: Axes:
@@ -335,7 +140,7 @@ class FigureTools:
             raise XValueError("patch_size cannot be passed as an argument and kwargs")
         if "patch_alpha" in kwargs:
             raise XValueError("patch_alpha cannot be passed as an argument and kwargs")
-        handles = FigureTools.manual_legend_handles(
+        handles = cls.manual_legend_handles(
             labels, colors, patch_size=patch_size, patch_alpha=patch_alpha
         )
         return ax.legend(handles=handles, **kwargs)
@@ -351,9 +156,9 @@ class FigureTools:
     ) -> Sequence[patches.Patch]:
         """
         Creates legend handles manually. Does not add the patches to the Axes.
-        Also see `FigureTools.manual_legend`.
+        Also see `cls.manual_legend`.
         This is unfortunately necessary in cases where, for ex, only a handle per color is wanted -- not a handle per color and marker shape.
-        Applies `FigureTools.fix_labels`.
+        Applies `cls.fix_labels`.
 
         Args:
             labels:
@@ -371,7 +176,7 @@ class FigureTools:
         for key in legend_dict:
             data_key = patches.Patch(
                 color=legend_dict[key],
-                label=FigureTools.fix_labels(key),
+                label=cls.fix_labels(key),
                 linewidth=patch_size,
                 alpha=patch_alpha,
                 **patch_properties,
@@ -533,126 +338,6 @@ class FigureTools:
             return fix(name)
 
     @classmethod
-    def despine(cls, ax: Axes) -> Axes:
-        """
-        Removes all spines and ticks on an Axes.
-
-        Args:
-            ax: Axes:
-
-        Returns:
-
-        """
-        ax.set_yticks([])
-        ax.set_yticks([])
-        ax.set_xticklabels([])
-        ax.set_yticklabels([])
-        ax.spines["top"].set_visible(False)
-        ax.spines["bottom"].set_visible(False)
-        ax.spines["right"].set_visible(False)
-        ax.spines["left"].set_visible(False)
-        ax.get_xaxis().set_ticks([])
-        ax.get_yaxis().set_ticks([])
-        return ax
-
-    @classmethod
-    def clear(cls) -> int:
-        """
-        Removes all matplotlib figures from memory.
-        Here because it's confusing to remember.
-        Logs an error if not all figures were closed.
-
-        Returns:
-            The number of closed figures
-
-        """
-        n = len(plt.get_fignums())
-        plt.clf()
-        plt.close("all")
-        m = len(plt.get_fignums())
-        if m == 0:
-            logger.debug(f"Cleared {n} figure{'s' if n>1 else ''}.")
-        else:
-            logger.error(f"Failed to close figures. Cleared {n - m}; {m} remain.")
-        return n
-
-    @classmethod
-    def font_paths(cls) -> Sequence[str]:
-        """
-
-        Returns:
-
-        """
-        return matplotlib.font_manager.findSystemFonts(fontpaths=None)
-
-    @classmethod
-    def add_note_01_coords(cls, ax: Axes, x: float, y: float, s: str, **kwargs) -> Axes:
-        """
-        Adds text without a box, using chemfish_rc['general_note_font_size'] (unless overridden in kwargs).
-        `x` and `y` are in coordinates (0, 1).
-
-        Args:
-            ax: Axes:
-            x: float:
-            y: float:
-            s: str:
-            **kwargs:
-
-        Returns:
-
-        """
-        fontsize, kwargs = InternalTools.from_kwargs(
-            kwargs, "fontsize", chemfish_rc.general_note_font_size
-        )
-        t = ax.text(x, y, s=s, fontsize=fontsize, transform=ax.transAxes, **kwargs)
-        t.set_bbox(dict(alpha=0.0))
-        return ax
-
-    @classmethod
-    def add_note_data_coords(cls, ax: Axes, x: float, y: float, s: str, **kwargs) -> Axes:
-        """
-        Adds text without a box, using chemfish_rc['general_note_font_size'] (unless overridden in kwargs).
-        `x` and `y` are in data coordinates.
-
-        Args:
-            ax: Axes:
-            x: float:
-            y: float:
-            s: str:
-            **kwargs:
-
-        Returns:
-
-        """
-        fontsize, kwargs = InternalTools.from_kwargs(
-            kwargs, "fontsize", chemfish_rc.general_note_font_size
-        )
-        t = ax.text(x, y, s=s, fontsize=fontsize, **kwargs)
-        t.set_bbox(dict(alpha=0.0))
-        return ax
-
-    @classmethod
-    def stamp(cls, ax: Axes, text: str, corner: Corner, **kwargs) -> Axes:
-        """
-        Adds a "stamp" in the corner.
-
-        Example:
-            Stamping::
-
-                FigureTools.stamp(ax, 'hello', Corners.TOP_RIGHT)
-
-        Args:
-            ax: Axes:
-            text: str:
-            corner: Corner:
-            **kwargs:
-
-        Returns:
-
-        """
-        return FigureTools._text(ax, text, corner, **kwargs)
-
-    @classmethod
     def stamp_runs(cls, ax: Axes, run_ids: Iterable[int]) -> Axes:
         """
         Stamps the run ID(s) in the upper-left corner.
@@ -670,7 +355,7 @@ class FigureTools:
             run_ids = Tools.unique(run_ids)
             if len(run_ids) <= chemfish_rc.stamp_max_runs:
                 text = Tools.join(run_ids, sep=", ", prefix="r")
-                return FigureTools._text(ax, text, Corners.TOP_LEFT)
+                return cls.stamp(ax, text, Corners.TOP_LEFT)
 
     @classmethod
     def stamp_time(cls, ax: Axes) -> Axes:
@@ -685,28 +370,7 @@ class FigureTools:
         """
         if chemfish_rc.stamp_on:
             text = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            return FigureTools._text(ax, text, Corners.TOP_RIGHT)
-
-    @classmethod
-    def _text(cls, ax: Axes, text: str, corner: Corner, **kwargs) -> Axes:
-        """
-
-
-        Args:
-            ax: Axes:
-            text: str:
-            corner: Corner:
-            **kwargs:
-
-        Returns:
-
-        """
-        fontsize, kwargs = InternalTools.from_kwargs(
-            kwargs, "fontsize", chemfish_rc.stamp_font_size
-        )
-        t = ax.text(s=text, **corner.params(), fontsize=fontsize, transform=ax.transAxes, **kwargs)
-        t.set_bbox(dict(alpha=0.0))
-        return ax
+            return cls.stamp(ax, text, Corners.TOP_RIGHT)
 
 
 class _Pub:
@@ -752,4 +416,4 @@ class _Pub:
 
 Pub = _Pub()
 
-__all__ = ["FigureTools", "FigureSaver", "Corners", "Corner", "Pub"]
+__all__ = ["FigureTools", "FigureSaver", "Corners", "Corner", "Pub", "FancyColorSchemes", "FancyCmaps"]

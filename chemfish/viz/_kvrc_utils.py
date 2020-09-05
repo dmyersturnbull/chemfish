@@ -4,16 +4,17 @@ import ast
 import textwrap
 from functools import total_ordering
 
+from pocketutils.plotting.color_schemes import *
+
 import matplotlib
 import matplotlib.cm as cmaps
 from matplotlib import colors as mcolors
 from matplotlib.figure import Figure
 from matplotlib.markers import MarkerStyle
+from pocketutils.plotting.ref_dims import RefDims
 
 from chemfish.core.core_imports import *
 from chemfish.viz import plt
-from chemfish.viz.color_schemes import *
-from chemfish.viz.smart_dimensions import RefDims
 
 
 @total_ordering
@@ -105,11 +106,11 @@ class KvrcDefaults:
 
     markers = InternalTools.load_resource("viz", "markers.strings")
 
-    dark_colors = KvrcColorSchemes.qualitiative_26()
-    light_colors = KvrcColorSchemes.qualitiative_26()
-    treatment_colors = KvrcColorSchemes.qualitiative_26()
+    dark_colors = FancyColorSchemes.qualitiative_26()
+    light_colors = FancyColorSchemes.qualitiative_26()
+    treatment_colors = FancyColorSchemes.qualitiative_26()
 
-    control_colors = KvrcColorSchemes.grayscales()
+    control_colors = FancyColorSchemes.grayscales()
 
     control_color_dict = {"solvent (-)": "#777777", "killed (+)": "#000000", "empty (-)": "#aaaaaa"}
 
@@ -319,7 +320,7 @@ class KvrcConfig:
         """
 
         def find(v):
-            return getattr(KvrcColorSchemes, v)
+            return getattr(FancyColorSchemes, v)
 
         return self.key(key, find, fallback, d=desc)
 
@@ -371,6 +372,7 @@ class KvrcConfig:
         Args:
             key:
             fallback:
+            desc:
 
         Returns:
 
@@ -386,6 +388,7 @@ class KvrcConfig:
         Args:
             key:
             fallback:
+            desc:
 
         Returns:
 
@@ -438,6 +441,7 @@ class KvrcConfig:
         Args:
             key:
             fallback:
+            desc:
 
         Returns:
 
@@ -550,6 +554,7 @@ class KvrcConfig:
         Args:
             key:
             fallback:
+            desc:
 
         Returns:
 
@@ -1417,4 +1422,4 @@ class KvrcCore:
         )
 
 
-__all__ = ["KvrcDefaults", "KvrcConfig", "KvrcCore", "KvrcColorSchemes"]
+__all__ = ["KvrcDefaults", "KvrcConfig", "KvrcCore", "FancyColorSchemes"]

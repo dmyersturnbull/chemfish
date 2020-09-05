@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from matplotlib import dates as mdates
 
 from chemfish.core.core_imports import *
@@ -93,33 +94,19 @@ class DurationType(SmartEnum):
             raise XTypeError(str(self))
 
 
-@abcd.auto_eq()
-@abcd.auto_repr_str()
+@dataclass(frozen=True)
 class TimelinePlotter(KvrcPlotting):
     """
     Plots timelines, mostly for when plates were run.
     Colors are assigned per experiment, with a legend label each.
 
+    Attributes:
+        use_times: Sets the y-values to the actual times; great for precision but tends to require a large height
     """
-
-    def __init__(
-        self,
-        use_times: bool = False,
-        date_format: str = "%Y-%m-%d",
-        x_locator=mdates.DayLocator(),
-        n_y_positions: int = 10,
-    ):
-        """
-        Constructors.
-
-        Args:
-            use_times: Sets the y-values to the actual times; great for precision but tends to require a large height
-            date_format:
-            x_locator:
-            n_y_positions:
-        """
-        self.use_times, self.date_format, self.x_locator = use_times, date_format, x_locator
-        self.n_y_positions = n_y_positions
+    use_times: bool = False
+    date_format: str = "%Y-%m-%d"
+    x_locator = mdates.DayLocator()
+    n_y_positions: int = 10
 
     def plot(
         self,
@@ -255,13 +242,13 @@ class TimelinePlots:
         return figure
 
 
+@dataclass(frozen=True)
 class RunDurationPlotter:
     """
     Plotters for durations between events like treatment and running (a plate).
     """
 
-    def __init__(self, attribute: str):
-        self._attribute = attribute
+    attribute: str
 
     def plot(self, kde_in_minutes: KdeData) -> Figure:
         """

@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from abc import ABCMeta
-
 import pydub
-from moviepy.audio.io.AudioFileClip import AudioClip, AudioFileClip
+from moviepy.audio.io.AudioFileClip import AudioClip
 
 from chemfish.core.core_imports import *
 from chemfish.core.valar_singleton import *
 from chemfish.model.audio import *
 from chemfish.model.sensors import *
+from chemfish.model.assay_frames import AssayFrame
 from chemfish.model.stim_frames import BatteryStimFrame
 from chemfish.model.videos import *
 from chemfish.model.well_frames import *
@@ -169,6 +168,18 @@ class ASensorCache(AChemfishCache[Tup[SensorNames, RunLike], SensorDataLike], me
         raise NotImplementedError()
 
 
+class AAssayCache(AChemfishCache[BatteryLike, AssayFrame], metaclass=ABCMeta):
+    """"""
+
+    def __init__(self, cache_dir: PathLike):
+        """
+
+        Args:
+            cache_dir:
+        """
+        raise NotImplementedError()
+
+
 class AStimCache(AChemfishCache[BatteryLike, BatteryStimFrame], metaclass=ABCMeta):
     """"""
 
@@ -259,6 +270,7 @@ __all__ = [
     "AChemfishCache",
     "ASensorCache",
     "AWellCache",
+    "AAssayCache",
     "AStimCache",
     "AnAudioStimulusCache",
     "AVideoCache",

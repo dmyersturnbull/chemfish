@@ -618,8 +618,8 @@ class GenerationConcernRule(ConcernRule):
         runs = {run.id: run for run in Runs.fetch_all(df.unique_runs())}
         for run in df.unique_runs():
             generation = ValarTools.generation_of(run)
-            if generation not in self.feature.data_generations:
-                yield self._new(runs[run], self.feature.data_generations, generation)
+            if generation not in self.feature.generations:
+                yield self._new(runs[run], self.feature.generations, generation)
 
 
 class ImpossibleTimeConcernRule(ConcernRule):

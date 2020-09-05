@@ -923,7 +923,7 @@ class WellFrame(TypedDf):
             The aggregated WellFrame
 
         """
-        return self.__class__.of(self.groupby(level="name", sort=False).apply(function))
+        return self.__class__.of(self.untyped().groupby(level="name", sort=False).apply(function))
 
     def agg_by_important(
         self, function: Callable[[pd.DataFrame], pd.DataFrame] = np.mean
@@ -1462,7 +1462,7 @@ class WellFrame(TypedDf):
         df = self.copy()  # we'll change this inplace
         # columns that can be null
         # we have to replace these or Pandas groupby will drop rows where it's None or NaN
-        df = WellFrameColumnTools.from_nan(df.reset_index())
+        df = WellFrameColumnTools.from_nan(df.untyped().reset_index())
         groupby_cols = [r for r in self.index.names if r not in exclude]
         for c in exclude:
             if c in df.columns:

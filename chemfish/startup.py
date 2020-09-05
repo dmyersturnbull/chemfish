@@ -61,7 +61,6 @@ from chemfish.analysis.mandos_searches import *
 from chemfish.analysis.phenosearches import *
 from chemfish.caches.audio_caches import *
 from chemfish.caches.caching_wfs import *
-from chemfish.caches.datasets import *
 
 # caches
 from chemfish.caches.sensor_caches import *

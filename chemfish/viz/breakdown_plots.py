@@ -2,24 +2,19 @@
 Plotting code for distributions by class,
 especially for info from Mandos.
 """
+from dataclasses import dataclass
 
 from chemfish.core.core_imports import *
 from chemfish.viz._internal_viz import *
 from chemfish.viz.figures import *
 
 
+@dataclass(frozen=True)
 class BreakdownBarPlotter(KvrcPlotting):
     """"""
 
-    def __init__(self, bar_width: float = chemfish_rc.acc_bar_width_fraction, kwargs=None):
-        """
-
-        Args:
-            bar_width:
-            kwargs:
-        """
-        self.bar_width = bar_width
-        self.kwargs = {} if kwargs is None else kwargs
+    bar_width: float = chemfish_rc.acc_bar_width_fraction
+    kwargs: Optional[Mapping[str, Any]] = None
 
     def plot(self, labels, sizes, colors=None, ax=None):
         """
@@ -41,7 +36,8 @@ class BreakdownBarPlotter(KvrcPlotting):
             colors = InternalVizTools.assign_colors(labels)
         elif colors is False or colors is None:
             colors = ["black" for _ in labels]
-        bars = ax.bar(labels, sizes, **self.kwargs)
+        kwargs = {} if self.kwargs is None else self.kwargs
+        bars = ax.bar(labels, sizes, **kwargs)
         if colors is not None:
             for bar, color in zip(bars, colors):
                 patch = bar
@@ -58,15 +54,12 @@ class BreakdownBarPlotter(KvrcPlotting):
         return ax.get_figure()
 
 
-@abcd.auto_eq()
-@abcd.auto_repr_str()
+@dataclass(frozen=True)
 class BreakdownPiePlotter(KvrcPlotting):
     """Code to make pretty pie charts with holes in the center."""
 
-    def __init__(self, figsize=None, radius: float = 1.0, kwargs=None):
-        self._figsize = (chemfish_rc.width, chemfish_rc.width) if figsize is None else figsize
-        self._radius = radius
-        self._kwargs = {} if kwargs is None else kwargs
+    radius: float = 1.0
+    kwargs: Optional[Mapping[str, Any]] = None
 
     def plot(self, labels, sizes, colors=None, explode=None, ax=None) -> Figure:
         """
@@ -87,8 +80,9 @@ class BreakdownPiePlotter(KvrcPlotting):
         if explode is None:
             explode = [0.0 for _ in sizes]
         if ax is None:
-            figure = plt.figure(figsize=self._figsize)
+            figure = plt.figure(figsize=(chemfish_rc.width, chemfish_rc.width))
             ax = figure.add_subplot(1, 1, 1)
+        kwargs = {} if self.kwargs is None else self.kwargs
         wedges, labs = ax.pie(
             sizes,
             colors=colors,
@@ -104,8 +98,8 @@ class BreakdownPiePlotter(KvrcPlotting):
                 "antialiased": True,
             },
             textprops={"linespacing": chemfish_rc.general_linespacing},
-            radius=self._radius,
-            **self._kwargs,
+            radius=self.radius,
+            **kwargs,
         )
         for i, t in enumerate(labs):
             t.set_color(colors[i])

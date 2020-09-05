@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 
 from chemfish.core.core_imports import *
 from chemfish.model.metrics import *
@@ -6,18 +7,13 @@ from chemfish.viz._internal_viz import *
 from chemfish.viz.figures import FigureTools
 
 
+@dataclass(frozen=True)
 class MetricPlotter:
     """
     Plots ROC and Precision-Recall curves as 2D line plots.
     """
 
-    def __init__(self, metric_info: MetricInfo):
-        """
-
-        Args:
-            metric_info:
-        """
-        self.info = metric_info
+    metric_info: MetricInfo
 
     def plot(self, data: Sequence[MetricData]) -> Figure:
         """
