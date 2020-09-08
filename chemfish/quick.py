@@ -1292,6 +1292,20 @@ class Quicks:
         return cls.choose(DataGeneration.POINTGREY, as_of=as_of, **kwargs)
 
     @classmethod
+    def new(cls, as_of: Optional[datetime], **kwargs):
+        """
+
+
+        Args:
+            as_of: Optional[datetime]:
+            **kwargs:
+
+        Returns:
+
+        """
+        return cls.choose(DataGeneration.POINTGREY, as_of=as_of, **kwargs)
+
+    @classmethod
     def legacy_pike_sauronx(cls, as_of: Optional[datetime], **kwargs):
         """
 
