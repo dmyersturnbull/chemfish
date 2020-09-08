@@ -145,16 +145,6 @@ class ConfusionMatrix(UntypedDf):
         """
         return ConfusionMatrix(self.where(np.tril(np.ones(self.shape)).astype(np.bool)))
 
-    def log(self) -> ConfusionMatrix:
-        """
-        Takes the log10 of every value in this ConfusionMatrix, returning a new one.
-        """
-        return ConfusionMatrix(self.applymap(np.log10))
-
-    def negative(self) -> ConfusionMatrix:
-        """"""
-        return ConfusionMatrix(self.applymap(lambda x: -x))
-
     def sort(self, **kwargs) -> ConfusionMatrix:
         """
         Sorts this confusion matrix to show clustering. The same ordering is applied to the rows and columns.

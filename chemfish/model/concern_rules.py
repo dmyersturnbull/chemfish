@@ -172,8 +172,7 @@ class SensorLengthConcernRule(ConcernRule):
             generation = ValarTools.generation_of(run)
             if generation is not DataGeneration.POINTGREY:
                 continue  # not supported -- yet
-            # TODO hardcoded
-            sensor = Sensors.fetch("sauronx-tinkerkit-photosensor-ms")
+            sensor = ValarTools.standard_sensor("photosensor_millis", generation)
             run = Runs.fetch(run)
             sampling = float(
                 ValarTools.toml_item(run, "sauron.hardware.sensors.sampling_interval_milliseconds")
@@ -181,7 +180,7 @@ class SensorLengthConcernRule(ConcernRule):
             expected = np.float(run.experiment.battery.length / sampling)
             photo_data = None
             try:
-                photo_data = self.sensor_cache.load((SensorNames.PHOTORESISTOR, run))
+                photo_data = self.sensor_cache.load((SensorNames.PHOTOSENSOR, run))
             except ValarLookupError:
                 pass  # hit debug below
             if photo_data is None:

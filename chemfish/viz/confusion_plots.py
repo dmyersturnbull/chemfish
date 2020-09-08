@@ -7,9 +7,8 @@ from chemfish.viz.figures import FigureTools
 
 @dataclass(frozen=True)
 class ConfusionPlotter(KvrcPlotting):
-    """
+    """"""
 
-    """
     vmin: float = 0
     vmax: float = 1
     renamer_fn: Callable[[str], str] = lambda s: s
@@ -93,9 +92,7 @@ class ConfusionPlotter(KvrcPlotting):
 
 
 class ConfusionPlots:
-    """
-
-    """
+    """"""
 
     @classmethod
     def plot(

@@ -5,9 +5,7 @@ from chemfish.core.core_imports import *
 
 @dataclass(frozen=True, order=True)
 class RoiBounds:
-    """
-
-    """
+    """"""
 
     x0: int
     y0: int
@@ -23,9 +21,7 @@ class RoiBounds:
 
 @dataclass(frozen=True, order=True)
 class WellRoi(RoiBounds):
-    """
-
-    """
+    """"""
 
     row_index: int
     column_index: int
@@ -37,9 +33,7 @@ class WellRoi(RoiBounds):
 
 
 class RoiTools:
-    """
-
-    """
+    """"""
 
     @classmethod
     def verify_roi(cls, roi: Rois, width: int, height: int, desc: str = "") -> None:

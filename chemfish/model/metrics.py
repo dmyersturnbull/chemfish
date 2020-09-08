@@ -73,7 +73,9 @@ class MetricData:
 
     def __post_init__(self):
         if len(self.false) != len(self.true):
-            raise LengthMismatchError(f"FPR has length {len(self.false)} but TPR has length {len(self.true)}")
+            raise LengthMismatchError(
+                f"FPR has length {len(self.false)} but TPR has length {len(self.true)}"
+            )
 
     @classmethod
     def roc(

@@ -17,13 +17,12 @@ class InvalidWellFrameError(ConstructionError):
 
 
 class AbsWellFrame(TypedDf):
-
     def __getitem__(self, item) -> __qualname__:
         if isinstance(item, str) and item in self.index.names:
             return self.index.get_level_values(item)
         else:
             return super().__getitem__(item)
-            #return self.vanilla().reset_index().__getitem__(item)
+            # return self.vanilla().reset_index().__getitem__(item)
 
     @classmethod
     def of(cls, df: pd.DataFrame) -> __qualname__:
@@ -827,21 +826,30 @@ class AbsWellFrame(TypedDf):
         """ """
         return self["run"].unique().tolist()
 
-    def agg_by_name(self, function: Union[str, Callable[[pd.DataFrame], pd.DataFrame]] = "mean") -> AbsWellFrame:
+    def agg_by_name(
+        self,
+        function: Union[str, Callable[[pd.DataFrame], pd.DataFrame]] = "mean",
+        **function_kwargs,
+    ) -> AbsWellFrame:
         """
         Aggregates by the 'name' column alone. All other meta column will be dropped.
 
         Args:
             function:
+            function_kwargs:
 
         Returns:
             The aggregated WellFrame
 
         """
-        return self.agg_by(["name", "control_type", "control_type_id"], function)
+        return self.agg_by(
+            ["name", "control_type", "control_type_id"], function, function_kwargs=function_kwargs
+        )
 
     def agg_by_important(
-        self, function: Union[str, Callable[[pd.DataFrame], pd.DataFrame]] = "mean"
+        self,
+        function: Union[str, Callable[[pd.DataFrame], pd.DataFrame]] = "mean",
+        **function_kwargs,
     ) -> AbsWellFrame:
         """
         Aggregates by battery, Sauron config, name, pack (if any), size (if any) and information about the contents of the well.
@@ -850,15 +858,18 @@ class AbsWellFrame(TypedDf):
 
         Args:
             function:
+            function_kwargs:
 
         Returns:
             The aggregated WellFrame
 
         """
-        return self.agg_by(WellFrameColumns.important_cols, function)
+        return self.agg_by(WellFrameColumns.important_cols, function, **function_kwargs)
 
     def agg_by_all(
-        self, function: Union[str, Callable[[pd.DataFrame], pd.DataFrame]] = "mean"
+        self,
+        function: Union[str, Callable[[pd.DataFrame], pd.DataFrame]] = "mean",
+        **function_kwargs,
     ) -> AbsWellFrame:
         """
         Aggregates by every index name except those specific to well position.
@@ -866,12 +877,17 @@ class AbsWellFrame(TypedDf):
 
         Args:
             function:
+            function_kwargs:
 
         Returns:
             The aggregated WellFrame
 
         """
-        return self.agg_by({c for c in WellFrameColumns.required_names if c not in WellFrameColumns.position_cols}, function)
+        return self.agg_by(
+            {c for c in WellFrameColumns.required_names if c not in WellFrameColumns.position_cols},
+            function,
+            function_kwargs=function_kwargs,
+        )
 
     def agg_by(
         self,
@@ -907,15 +923,38 @@ class AbsWellFrame(TypedDf):
             if c not in index_names:
                 df.drop(c, axis=1, inplace=True)
         if std_fn is None:
-            return GroupedWellFrame(df.groupby(index_names, sort=False, dropna=False).apply(function))
+            return GroupedWellFrame(
+                df.groupby(index_names, sort=False, dropna=False).apply(function)
+            )
         else:
             return GroupedWellFrame(std_fn(df.groupby(index_names, sort=False, dropna=False)))
 
     def _get_fn(self, function, function_kwargs) -> Optional[Callable[[GroupBy], pd.DataFrame]]:
         if callable(function):
             function = function.__name__
-        if function in ["mean", "std", "median", "var", "sum", "sem", "prod", "size", "min", "max", "first", "last", "quantile"]:
-            return lambda group: getattr(group, function)(**function_kwargs)
+        assert isinstance(function, str)
+        if function in [
+            "mean",
+            "std",
+            "median",
+            "var",
+            "sum",
+            "sem",
+            "prod",
+            "size",
+            "min",
+            "max",
+            "first",
+            "last",
+            "quantile",
+        ]:
+
+            def call(group: GroupBy):
+                f = getattr(group, function)
+                return f(**function_kwargs)
+
+            call.__name__ += ":" + function + ":" + Tools.join_kv(function_kwargs, sep=",")
+            return call
 
     def z_score(self, control_type: Union[None, str, int, ControlTypes]) -> __qualname__:
         """
@@ -1104,7 +1143,9 @@ class AbsWellFrame(TypedDf):
             x = namer.map_2d(self["c_ids"])
             return self._with_new("compound_names", x, tuple)
 
-    def with_new(self, meta_col: str, setter: Union[pd.Series, pd.Index, Sequence[str], WellNamer]) -> __qualname__:
+    def with_new(
+        self, meta_col: str, setter: Union[pd.Series, pd.Index, Sequence[str], WellNamer]
+    ) -> __qualname__:
         """
 
 
@@ -1224,7 +1265,6 @@ class GroupedWellFrame(AbsWellFrame):
     def columns_to_drop(cls) -> Sequence[str]:
         """ """
         return ["__sort", "level_1"]
-
 
 
 class WellFrame(AbsWellFrame):

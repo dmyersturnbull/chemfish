@@ -5,6 +5,7 @@ from matplotlib.colors import to_rgb
 from moviepy.audio.AudioClip import CompositeAudioClip
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
+from chemfish.model.cache_interfaces import ASauronxVideo
 from chemfish.core.core_imports import *
 from chemfish.core.video_core import VideoCore
 from chemfish.model.roi_tools import *
@@ -64,7 +65,7 @@ def _concat_audio(clips):
 
 @abcd.auto_info()
 @abcd.auto_eq(exclude=lambda a: a != "video")
-class SauronxVideo:
+class SauronxVideo(ASauronxVideo):
     """
     A video from a SauronX or legacy Sauron run.
     This is a wrapper around a MoviePy VideoClip.

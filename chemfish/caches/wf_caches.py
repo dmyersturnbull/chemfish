@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 
 from chemfish.core.core_imports import *
-from chemfish.model.cache_interfaces import AWellCache
+from chemfish.model.cache_interfaces import AWellCache, ASensorCache
 from chemfish.model.features import FeatureType, FeatureTypes
 from chemfish.model.well_names import WellNamers
 from chemfish.model.wf_builders import *
@@ -35,6 +35,21 @@ class WellCache(AWellCache):
         cache_dir = Path(cache_dir) / ("-" if self.feature is None else self.feature.internal_name)
         self._cache_dir = Tools.prepped_dir(cache_dir)
         self._dtype = dtype
+        self._sensor_cache = None
+
+    @abcd.overrides
+    def with_sensor_cache(self, sensor_cache: Optional[ASensorCache] = None) -> WellCache:
+        """
+
+
+        Args:
+            sensor_cache:
+
+        Returns:
+
+        """
+        self._sensor_cache = sensor_cache
+        return self
 
     @abcd.overrides
     def with_dtype(self, dtype) -> WellCache:
@@ -130,6 +145,7 @@ class WellCache(AWellCache):
         elif len(runs) > 0:
             wf = (
                 WellFrameBuilder.runs(runs)
+                .with_sensor_cache(self._sensor_cache)
                 .with_feature(self.feature, self._dtype)
                 .with_names(WellNamers.well())
                 .build()

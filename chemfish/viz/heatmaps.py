@@ -52,7 +52,11 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
         self._cmap = (
             cmap
             if cmap is not None
-            else (FancyCmaps.blue_white_red(bad="#333333") if symmetric else FancyCmaps.white_black(bad="#333333"))
+            else (
+                FancyCmaps.blue_white_red(bad="#333333")
+                if symmetric
+                else FancyCmaps.white_black(bad="#333333")
+            )
         )
         self._symmetric = symmetric
         self._vmax_quantile = vmax_quantile
@@ -90,9 +94,7 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
             ax1.pcolormesh(df, vmin=vmin, vmax=vmax, cmap=self._cmap)
         self._adjust(df, ax1)
         if stimframes is not None:
-            self._stimframes_plotter.plot(
-                stimframes, ax2, starts_at_ms=starts_at_ms, battery=battery
-            )
+            self._stimframes_plotter.plot(stimframes, battery, ax2, starts_at_ms=starts_at_ms)
         logger.minor(
             f"Plotted heatmap with {n_plots} rows. Took {round(time.monotonic() - t0, 1)}s."
         )

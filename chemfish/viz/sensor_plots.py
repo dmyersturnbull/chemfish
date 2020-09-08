@@ -20,6 +20,7 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
         self,
         run,
         stimframes: StimFrame,
+        battery: BatteryLike,
         sensors: Sequence[TimeDepChemfishSensor],
         start_ms: Optional[int] = None,
     ) -> Figure:
@@ -28,9 +29,10 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
 
         Args:
             run:
-            stimframes: StimFrame:
-            sensors: Sequence[TimeDepChemfishSensor]:
-            start_ms: Optional[int]:  (Default value = None)
+            stimframes:
+            battery:
+            sensors:
+            start_ms:
 
         Returns:
 
@@ -52,7 +54,7 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
         for i, data in enumerate(sensors):
             x_vals, y_vals = data.timing_data, data.data
             ax = figure.add_subplot(gs[i])
-            if isinstance(data, MicrophoneWaveFormSensor):
+            if isinstance(data, MicrophoneWaveformSensor):
                 ax.scatter(
                     x_vals,
                     y_vals,
@@ -79,7 +81,7 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
             ax.set_xlim(data.bt_data.start_ms, data.bt_data.end_ms)
         # finally add the stimframes
         ax2 = figure.add_subplot(gs[n])
-        self.stimplotter.plot(stimframes, ax=ax2, starts_at_ms=start_ms)
+        self.stimplotter.plot(stimframes, battery, ax=ax2, starts_at_ms=start_ms)
         ax2.set_ylabel(
             "⚑" if chemfish_rc.sensor_use_symbols else "stimuli",
             rotation=0 if chemfish_rc.sensor_use_symbols else 90,

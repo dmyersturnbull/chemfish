@@ -63,7 +63,7 @@ class AudioTools:
 
         """
         path = str(Path(path))
-        return pydub.AudioSegment.from_file(path)
+        x = pydub.AudioSegment.from_file(path)
 
 
 @dataclass(frozen=True)
@@ -73,6 +73,7 @@ class Waveform:
     Aso has a sampling rate, a name, an optional description, and optional file path.
 
     """
+
     name: str
     path: Optional[str]
     data: np.array
@@ -83,12 +84,9 @@ class Waveform:
     start_ms: Optional[float] = None
     end_ms: Optional[float] = None
 
-
     @property
     def n_ms(self) -> float:
-        """
-
-        """
+        """"""
         return len(self.data) / self.sampling_rate * 1000
 
     def standardize_sauronx(self, minimum: float = 0, maximum: float = 255) -> Waveform:
@@ -141,7 +139,7 @@ class Waveform:
         y = (y - y.min()) * (maximum - minimum) / (y.max() - y.min()) + minimum
         y = y.round().astype(np.int32)
         s = Waveform(self.name, self.path, y, 1000, minimum, maximum, self.description)
-        #s.n_ms = int(s.n_ms)  # TODO: all ok, right?
+        # s.n_ms = int(s.n_ms)  # TODO: all ok, right?
         return s
 
     def normalize(self, minimum: float = -1, maximum: float = 1) -> Waveform:

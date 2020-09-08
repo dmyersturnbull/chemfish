@@ -47,7 +47,12 @@ class FeatureInterpolation:
         self.feature = feature
 
     def interpolate(
-        self, feature_arr: np.array, well: Union[int, Wells], stringent: bool = False
+        self,
+        feature_arr: np.array,
+        frame_timestamps: np.array,
+        stim_timestamps: np.array,
+        well: Union[int, Wells],
+        stringent: bool = False,
     ) -> np.array:
         """
         Interpolates a time-dependent, frame-by-frame feature for a well using timestamps.
@@ -57,6 +62,8 @@ class FeatureInterpolation:
 
         Args:
             feature_arr: The array of the feature; not affected
+            frame_timestamps:
+            stim_timestamps:
             well: The well instance or ID
             stringent: Raise exceptions for small errors
 
@@ -66,10 +73,8 @@ class FeatureInterpolation:
         """
         run = InternalTools.well(well).run
         ideal_framerate = ValarTools.frames_per_second(run)
-        all_frames_ms = ValarTools.download_frame_timestamps(run)
-        stimtimes = ValarTools.download_stimulus_timestamps(run)
         battery = run.experiment.battery
-        actual_battery_start_ms, actual_battery_stop_ms = stimtimes[0], stimtimes[-1]
+        actual_battery_start_ms, actual_battery_stop_ms = stim_timestamps[0], stim_timestamps[-1]
         expected_stop_ms = actual_battery_start_ms + battery.length
         # differs by >= than 2 frames
         if abs(actual_battery_stop_ms - expected_stop_ms) >= 2 * 1000 / ideal_framerate:
@@ -85,8 +90,8 @@ class FeatureInterpolation:
                 raise RefusingRequestError(msg)
             else:
                 logger.debug(msg)
-        frames_ms = all_frames_ms[
-            (all_frames_ms >= actual_battery_start_ms) & (all_frames_ms <= expected_stop_ms)
+        frames_ms = frame_timestamps[
+            (frame_timestamps >= actual_battery_start_ms) & (frame_timestamps <= expected_stop_ms)
         ]
         return self._interpolate(
             feature_arr,

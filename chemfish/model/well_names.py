@@ -76,7 +76,6 @@ class SimpleMappingWellNamer(WellNamer):
 class BuiltWellNamer(WellNamer):
     """"""
 
-
     def __init__(self):
         self._bits = []
         self._labels = []

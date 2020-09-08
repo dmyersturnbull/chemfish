@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import io
-
 from PIL import Image, ImageDraw
 
 from chemfish.core.core_imports import *
@@ -15,13 +13,29 @@ class SensorNames(SmartEnum):
     Enum of SensorNames. Put all Sensors that are involved in sensor_caches in here.
     """
 
-    PHOTORESISTOR = 1
-    THERMISTOR = 2
-    MICROPHONE = 3
-    WEBCAM = 4
-    PREVIEW = 5
-    STIMULUS_TIMING = 6
-    CAMERA_TIMING = 7
+    PHOTOSENSOR = enum.auto()
+    THERMOSENSOR = enum.auto()
+    MICROPHONE = enum.auto()
+    SECONDARY_CAMERA = enum.auto()
+    PREVIEW_FRAME = enum.auto()
+    STIMULUS_TIMING = enum.auto()
+    CAMERA_TIMING = enum.auto()
+    RAW_SECONDARY_CAMERA = enum.auto()
+    RAW_PREVIEW_FRAME = enum.auto()
+    RAW_MICROPHONE_RECORDING = enum.auto()
+    RAW_MICROPHONE_MILLIS = enum.auto()
+    RAW_CAMERA_MILLIS = enum.auto()
+    RAW_STIMULUS_MILLIS = enum.auto()
+    RAW_STIMULUS_VALUES = enum.auto()
+    RAW_STIMULUS_IDS = enum.auto()
+    RAW_PHOTOSENSOR_MILLIS = enum.auto()
+    RAW_PHOTOSENSOR_VALUES = enum.auto()
+    RAW_THERMOSENSOR_MILLIS = enum.auto()
+    RAW_THERMOSENSOR_VALUES = enum.auto()
+
+    @property
+    def extension(self) -> str:
+        return ".flac" if self is SensorNames.MICROPHONE else ".bytes"
 
 
 class MicrophoneWaveform(Waveform):
@@ -72,7 +86,7 @@ class BatteryTimeData:
 class ChemfishSensor:
     """"""
 
-    def __init__(self, run: RunLike, sensor_data: Union[SensorDataLike, Image]):
+    def __init__(self, run: RunLike, sensor_data: Union[SensorDataLike, Image.Image]):
         """
         Sensor wrapper object that holds converted sensor_data for a given run.
 
@@ -90,7 +104,7 @@ class ChemfishSensor:
         return self._run
 
     @property
-    def data(self) -> Union[SensorDataLike, Image]:
+    def data(self) -> Union[SensorDataLike, Image.Image]:
         """ """
         return self._sensor_data
 
@@ -198,6 +212,20 @@ class CameraTimeData(TimeData):
         return "🎥"
 
 
+class RawData(ChemfishSensor):
+    """"""
+
+    @property
+    def abbrev(self) -> str:
+        """ """
+        return "raw"
+
+    @property
+    def symbol(self) -> str:
+        """ """
+        return "⚒"
+
+
 class ImageSensor(ChemfishSensor):
     def __init__(self, run: RunLike, sensor_data: SensorDataLike):
         """
@@ -211,10 +239,9 @@ class ImageSensor(ChemfishSensor):
 
         """
         super().__init__(run, sensor_data)
-        self._sensor_data = Image.open(io.BytesIO(sensor_data))
 
     @property
-    def data(self) -> Image:
+    def data(self) -> Image.Image:
         """ """
         return self._sensor_data
 
@@ -359,7 +386,7 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
         return len(self.data)
 
 
-class PhotoresistorSensor(TimeDepChemfishSensor):
+class PhotosensorSensor(TimeDepChemfishSensor):
     """ """
 
     @property
@@ -376,7 +403,7 @@ class PhotoresistorSensor(TimeDepChemfishSensor):
         return 1
 
 
-class ThermistorSensor(TimeDepChemfishSensor):
+class ThermosensorSensor(TimeDepChemfishSensor):
     """"""
 
     @property
@@ -393,7 +420,7 @@ class ThermistorSensor(TimeDepChemfishSensor):
         return 1
 
 
-class MicrophoneWaveFormSensor(TimeDepChemfishSensor):
+class MicrophoneWaveformSensor(TimeDepChemfishSensor):
     """ """
 
     # TODO: Not sure if this is right... Don't know what it's supposed to be doing either...
@@ -430,7 +457,7 @@ class MicrophoneWaveFormSensor(TimeDepChemfishSensor):
         return self.samples_per_sec / 1000
 
 
-class MicrophoneRawSensor(TimeDepChemfishSensor):
+class MicrophoneSensor(TimeDepChemfishSensor):
     """ """
 
     @property
@@ -444,11 +471,11 @@ class MicrophoneRawSensor(TimeDepChemfishSensor):
     @property
     def values_per_ms(self) -> float:
         """ """
-        return 44.1  # TODO really? At 44100khz?
+        return 44.1  # TODO 44100 kHz
 
     def waveform(
         self, ds_rate: int, start_ms: Optional[int] = None, end_ms: Optional[int] = None
-    ) -> MicrophoneWaveFormSensor:
+    ) -> MicrophoneWaveformSensor:
         """
 
 
@@ -461,7 +488,7 @@ class MicrophoneRawSensor(TimeDepChemfishSensor):
 
         """
         sliced_sensor = self.slice_ms(start_ms, end_ms)
-        return MicrophoneWaveFormSensor(
+        return MicrophoneWaveformSensor(
             self.run,
             sliced_sensor.timing_data,
             sliced_sensor.data,
@@ -475,10 +502,10 @@ __all__ = [
     "SensorNames",
     "ChemfishSensor",
     "TimeDepChemfishSensor",
-    "PhotoresistorSensor",
-    "MicrophoneRawSensor",
-    "MicrophoneWaveFormSensor",
-    "ThermistorSensor",
+    "PhotosensorSensor",
+    "MicrophoneSensor",
+    "MicrophoneWaveformSensor",
+    "ThermosensorSensor",
     "StimulusTimeData",
     "BatteryTimeData",
     "ImageSensor",

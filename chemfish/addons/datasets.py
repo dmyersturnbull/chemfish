@@ -5,6 +5,7 @@ from chemfish.model.compound_names import *
 from chemfish.model.treatment_names import *
 from chemfish.model.well_frames import *
 from chemfish.model.well_names import *
+from chemfish.caches.sensor_caches import *
 
 
 class ChemfishDatasetTools:
@@ -303,6 +304,7 @@ class _SimpleFlamesDataset(ChemfishDataset):
     def __init__(self, name: str, wheres, namer, compound_namer):
         super().__init__()
         self.__name, self.namer, self.compound_namer = name, namer, compound_namer
+        self.sensor_cache = SensorCache()
         self.wheres = [wheres] if isinstance(wheres, ExpressionLike) else wheres
 
     @property
@@ -317,6 +319,7 @@ class _SimpleFlamesDataset(ChemfishDataset):
         query = (
             CachingWellFrameBuilder(WellCache("cd(10)-i"), today)
             .with_feature("cd(10)-i")
+            .with_sensor_cache(self.sensor_cache)
             .with_compound_names(self.compound_namer)
             .with_names(self.namer)
         )

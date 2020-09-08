@@ -164,10 +164,7 @@ class WellFrameColumns:
         "well_group",
     }
 
-    important_cols = {
-        *essential_cols,
-        "sauron_config"
-    }
+    important_cols = {*essential_cols, "sauron_config"}
 
     display_cols = {"display_name", "size", "color", "marker"}
 

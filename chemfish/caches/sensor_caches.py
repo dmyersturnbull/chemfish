@@ -1,11 +1,11 @@
 import soundfile
+from PIL import Image
 
 from chemfish.core.core_imports import *
 from chemfish.model.cache_interfaces import ASensorCache
 from chemfish.model.sensors import *
 
 DEFAULT_CACHE_DIR = chemfish_env.cache_dir / "sensors"
-bdata_names = {"sauronx-microphone-wav", "preview", "webcam"}
 
 
 @abcd.auto_eq()
@@ -24,7 +24,7 @@ class SensorCache(ASensorCache):
         return self._cache_dir
 
     @abcd.overrides
-    def path_of(self, tup: Tup[SensorLike, RunLike]) -> Path:
+    def path_of(self, tup: Tup[SensorNames, RunLike]) -> Path:
         """
 
 
@@ -35,12 +35,10 @@ class SensorCache(ASensorCache):
 
         """
         sensor, run = tup
-        sensor = Sensors.fetch(sensor)
-        ext = ".flac" if "microphone-wav" in sensor.name else ".bytes"
-        return self.cache_dir / str(run.id) / (sensor.name + ext)
+        return self.cache_dir / str(run.id) / (sensor.name.lower() + sensor.extension)
 
     @abcd.overrides
-    def key_from_path(self, path: PathLike) -> Tup[SensorLike, RunLike]:
+    def key_from_path(self, path: PathLike) -> Tup[SensorNames, RunLike]:
         """
 
 
@@ -53,10 +51,10 @@ class SensorCache(ASensorCache):
         path = Path(path).relative_to(self.cache_dir)
         run = int(re.compile(r"^r([0-9]+)$").fullmatch(path.parent.name).group(1))
         sensor = re.compile(r"^r([a-z0-9\-_]+)\..+$").fullmatch(path.name).group(1)
-        return sensor, run
+        return SensorNames[sensor.upper()], run
 
     @abcd.overrides
-    def download(self, *sensors: Iterable[Tup[SensorLike, RunLike]]) -> None:
+    def download(self, *sensors: Iterable[Tup[SensorNames, RunLike]]) -> None:
         """
 
 
@@ -77,11 +75,11 @@ class SensorCache(ASensorCache):
         Returns:
 
         """
-        millis = self._download("sauronx-stimulus-ms", run)
+        millis = self._download("stimulus_millis", run)
         return BatteryTimeData(run, millis[0], millis[-1])
 
     @abcd.overrides
-    def load_photosensor(self, run: RunLike) -> PhotoresistorSensor:
+    def load_photosensor(self, run: RunLike) -> PhotosensorSensor:
         """
 
 
@@ -92,10 +90,10 @@ class SensorCache(ASensorCache):
 
         """
         # noinspection PyTypeChecker
-        return self.load((SensorNames.PHOTORESISTOR, run))
+        return self.load((SensorNames.PHOTOSENSOR, run))
 
     @abcd.overrides
-    def load_thermosensor(self, run: RunLike) -> ThermistorSensor:
+    def load_thermosensor(self, run: RunLike) -> ThermosensorSensor:
         """
 
 
@@ -106,10 +104,10 @@ class SensorCache(ASensorCache):
 
         """
         # noinspection PyTypeChecker
-        return self.load((SensorNames.THERMISTOR, run))
+        return self.load((SensorNames.THERMOSENSOR, run))
 
     @abcd.overrides
-    def load_wav(self, run: RunLike) -> MicrophoneRawSensor:
+    def load_wav(self, run: RunLike) -> MicrophoneSensor:
         """
 
 
@@ -134,7 +132,7 @@ class SensorCache(ASensorCache):
 
         """
         # noinspection PyTypeChecker
-        return self.load((SensorNames.PREVIEW, run))
+        return self.load((SensorNames.PREVIEW_FRAME, run))
 
     @abcd.overrides
     def load_webcam(self, run: RunLike) -> ImageSensor:
@@ -148,7 +146,7 @@ class SensorCache(ASensorCache):
 
         """
         # noinspection PyTypeChecker
-        return self.load((SensorNames.WEBCAM, run))
+        return self.load((SensorNames.SECONDARY_CAMERA, run))
 
     @abcd.overrides
     def load(self, tup: Tup[SensorNames, RunLike]) -> ChemfishSensor:
@@ -162,42 +160,45 @@ class SensorCache(ASensorCache):
 
         """
         sensor_name, run = tup
-        sensor_name = SensorNames.of(sensor_name)
         run = ValarTools.run(run)
-        # TODO hardcoded names
-        if sensor_name == SensorNames.PHOTORESISTOR:
-            return PhotoresistorSensor(
+        if sensor_name == SensorNames.PHOTOSENSOR:
+            return PhotosensorSensor(
                 run,
-                self._download("sauronx-tinkerkit-photosensor-ms", run),
-                self._download("sauronx-tinkerkit-photosensor-values", run),
+                self._download("photosensor_millis", run),
+                self._download("photosensor_values", run),
                 self.bt_data(run),
                 None,
             )
-        elif sensor_name == SensorNames.THERMISTOR:
-            return ThermistorSensor(
+        elif sensor_name == SensorNames.THERMOSENSOR:
+            return ThermosensorSensor(
                 run,
-                self._download("sauronx-tinkerkit-thermosensor-ms", run),
-                self._download("sauronx-tinkerkit-thermosensor-values", run),
+                self._download("thermosensor_millis", run),
+                self._download("thermosensor_values", run),
                 self.bt_data(run),
                 None,
             )
         elif sensor_name == SensorNames.MICROPHONE:
-            self._download("sauronx-microphone-wav", run)
-            millis = np.repeat(self._download("sauronx-microphone-ms", run), 1024)
-            data, sampling_rate = soundfile.read(self.path_of(("sauronx-microphone-wav", run)))
-            return MicrophoneRawSensor(run, millis, data, self.bt_data(run), sampling_rate)
+            self._download("microphone_recording", run)
+            millis = np.repeat(self._download("microphone_millis", run), 1024)
+            self._download("microphone_recording", run)
+            data, sampling_rate = soundfile.read(
+                self.path_of((SensorNames.RAW_MICROPHONE_RECORDING, run))
+            )
+            return MicrophoneSensor(run, millis, data, self.bt_data(run), sampling_rate)
         elif sensor_name == SensorNames.STIMULUS_TIMING:
-            return StimulusTimeData(run, self._download("sauronx-stimulus-ms", run))
+            return StimulusTimeData(run, self._download("stimulus_millis", run))
         elif sensor_name == SensorNames.CAMERA_TIMING:
-            return CameraTimeData(run, self._download("sauronx-snapshot-ms", run))
-        elif sensor_name == SensorNames.WEBCAM:
-            return ImageSensor(run, self._download("webcam", run))
-        elif sensor_name == SensorNames.PREVIEW:
-            return ImageSensor(run, self._download("preview", run)).draw_roi_grid()
+            return CameraTimeData(run, self._download("camera_millis", run))
+        elif sensor_name == SensorNames.SECONDARY_CAMERA:
+            return ImageSensor(run, self._download("secondary_camera", run))
+        elif sensor_name == SensorNames.PREVIEW_FRAME:
+            return ImageSensor(run, self._download("preview_frame", run))
         else:
             raise UnsupportedOpError(f"Sensor of type {sensor_name} cannot be loaded")
 
-    def _download(self, sensor: SensorLike, run: RunLike) -> bytes:
+    def _download(
+        self, std_sensor: str, run: RunLike
+    ) -> Union[None, np.array, bytes, str, Image.Image]:
         """
         Fetches sensor data if cache is available. Downloads if cache not present.
 
@@ -209,14 +210,13 @@ class SensorCache(ASensorCache):
             Raw/Converted Sensor Data
 
         """
-        sensor = Sensors.fetch(sensor)
         run = ValarTools.run(run)
-        path = self.path_of((sensor, run))
+        generation = ValarTools.generation_of(run)
+        sensor = Sensors.fetch(ValarTools.standard_sensor(std_sensor, generation))
+        sname = SensorNames["RAW_" + std_sensor.upper()]
+        path = self.path_of((sname, run))
         if path.exists():
-            if sensor.name in bdata_names:
-                return path.read_bytes()
-            else:
-                return ValarTools.convert_sensor_data_from_bytes(sensor, path.read_bytes())
+            return ValarTools.convert_sensor_data_from_bytes(sensor, path.read_bytes())
         Tools.prep_file(path, exist_ok=False)
         logger.minor(f"Downloading {sensor.name} for run r{run.id} from Valar...")
         data = (
@@ -228,10 +228,7 @@ class SensorCache(ASensorCache):
         if data is None:
             raise ValarLookupError(f"No data for sensor {sensor.id} on run r{run.name}")
         path.write_bytes(data.floats)
-        if sensor.name in bdata_names:
-            return data.floats
-        else:
-            return ValarTools.convert_sensor_data_from_bytes(sensor, data.floats)
+        return ValarTools.convert_sensor_data_from_bytes(sensor, data.floats)
 
 
 __all__ = ["SensorCache"]

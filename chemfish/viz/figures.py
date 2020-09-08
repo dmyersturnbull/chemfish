@@ -416,4 +416,12 @@ class _Pub:
 
 Pub = _Pub()
 
-__all__ = ["FigureTools", "FigureSaver", "Corners", "Corner", "Pub", "FancyColorSchemes", "FancyCmaps"]
+__all__ = [
+    "FigureTools",
+    "FigureSaver",
+    "Corners",
+    "Corner",
+    "Pub",
+    "FancyColorSchemes",
+    "FancyCmaps",
+]

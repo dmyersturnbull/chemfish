@@ -6,15 +6,14 @@
         "end_date": "2014-01-01",
         "has_submission": false,
         "quality": 1,
+        "historical": true,
         "saurons": [
             "MGH"
         ],
-        "required_sensors": [
-            "legacy-assay-milliseconds"
-        ],
-        "optional_sensors": [
-            "legacy-temperature-celsius"
-        ]
+        "sensors": {
+            "extra:assay_millis": "legacy-assay-milliseconds",
+            "extra:assay_temp": "legacy-temperature-celsius"
+        }
     },
     {
         "name": "PIKE_LEGACY",
@@ -23,13 +22,12 @@
         "end_date": "2017-01-01",
         "has_submission": false,
         "quality": 1,
+        "historical": true,
         "saurons": ["1", "2", "3"],
-        "required_sensors": [
-            "legacy-assay-milliseconds"
-        ],
-        "optional_sensors": [
-            "legacy-temperature-celsius"
-        ]
+        "sensors": {
+            "extra:assay_millis": "legacy-assay-milliseconds",
+            "extra:assay_temp": "legacy-temperature-celsius"
+        }
     },
     {
         "name": "PIKE_SAURONX",
@@ -38,18 +36,14 @@
         "end_date": "",
         "has_submission": true,
         "quality": 2,
+        "historical": false,
         "saurons": ["1", "2", "3"],
-        "required_sensors": [
-            "sauronx-snapshot-ms",
-            "sauronx-stimulus-id",
-            "sauronx-stimulus-ms",
-            "sauronx-stimulus-value"
-        ],
-        "optional_sensors": [],
-        "camera_millis_sensor": "sauronx-snapshot-ms",
-        "stimulus_millis_sensor": "sauronx-stimulus-ms",
-        "stimulus_ids_sensor": "sauronx-stimulus-id",
-        "stimulus_values_sensor": "sauronx-stimulus_value"
+        "sensors": {
+            "camera_millis": "sauronx-snapshot-ms",
+            "stimulus_ids": "sauronx-stimulus-id",
+            "stimulus_millis": "sauronx-stimulus-ms",
+            "stimulus_values": "sauronx-stimulus-value"
+        }
     },
     {
         "name": "POINTGREY_ALPHA",
@@ -58,31 +52,22 @@
         "end_date": "2020-01-01",
         "has_submission": true,
         "quality": 2,
+        "historical": false,
         "saurons": ["4"],
-        "required_sensors": [
-            "sauronx-snapshot-ms",
-            "sauronx-stimulus-id",
-            "sauronx-stimulus-ms",
-            "sauronx-stimulus-value"
-        ],
-        "optional_sensors": [
-            "sauronx-decibels",
-            "sauronx-microphone-ms",
-            "sauronx-microphone-wav",
-            "sauronx-tinkerkit-photosensor-ms",
-            "sauronx-tinkerkit-photosensor-values",
-            "sauronx-tinkerkit-thermosensor-ms",
-            "sauronx-tinkerkit-thermosensor-values",
-            "webcam",
-            "preview"
-        ],
-        "camera_millis_sensor": "sauronx-snapshot-ms",
-        "stimulus_millis_sensor": "sauronx-stimulus-ms",
-        "stimulus_ids_sensor": "sauronx-stimulus-id",
-        "stimulus_values_sensor": "sauronx-stimulus_value",
-        "secondary_camera_sensor": "webcam",
-        "preview_frame_sensor": "preview",
-        "microphone_sensor": "sauronx-microphone-wav"
+        "sensors": {
+            "camera_millis": "sauronx-snapshot-ms",
+            "stimulus_ids": "sauronx-stimulus-id",
+            "stimulus_millis": "sauronx-stimulus-ms",
+            "stimulus_values": "sauronx-stimulus-value",
+            "secondary_camera": "webcam",
+            "preview_frame": "preview",
+            "microphone_recording": "sauronx-microphone-wav",
+            "microphone_millis": "sauronx-microphone-ms",
+            "photosensor_millis": "sauronx-tinkerkit-photosensor-ms",
+            "photosensor_values": "sauronx-tinkerkit-photosensor-values",
+            "thermosensor_millis": "sauronx-tinkerkit-thermosensor-ms",
+            "thermosensor_values": "sauronx-tinkerkit-thermosensor-values"
+        }
     },
     {
         "name": "POINTGREY",
@@ -91,30 +76,26 @@
         "end_date": "",
         "has_submission": true,
         "quality": 4,
-        "saurons": ["Thor", "Smaug", "Drake", "Wyrm"],
-        "required_sensors": [
-            "sauronx-snapshot-ms",
-            "sauronx-stimulus-id",
-            "sauronx-stimulus-ms",
-            "sauronx-stimulus-value"
+        "historical": false,
+        "saurons": [
+            "Thor",
+            "Smaug",
+            "Drake",
+            "Wyrm"
         ],
-        "optional_sensors": [
-            "sauronx-decibels",
-            "sauronx-microphone-ms",
-            "sauronx-microphone-wav",
-            "sauronx-tinkerkit-photosensor-ms",
-            "sauronx-tinkerkit-photosensor-values",
-            "sauronx-tinkerkit-thermosensor-ms",
-            "sauronx-tinkerkit-thermosensor-values",
-            "webcam",
-            "preview"
-        ],
-        "camera_millis_sensor": "sauronx-snapshot-ms",
-        "stimulus_millis_sensor": "sauronx-stimulus-ms",
-        "stimulus_ids_sensor": "sauronx-stimulus-id",
-        "stimulus_values_sensor": "sauronx-stimulus_value",
-        "secondary_camera_sensor": "webcam",
-        "preview_frame_sensor": "preview",
-        "microphone_sensor": "sauronx-microphone-wav"
+        "sensors": {
+            "camera_millis": "sauronx-snapshot-ms",
+            "stimulus_ids": "sauronx-stimulus-id",
+            "stimulus_millis": "sauronx-stimulus-ms",
+            "stimulus_values": "sauronx-stimulus-value",
+            "secondary_camera": "webcam",
+            "preview_frame": "preview",
+            "microphone_recording": "sauronx-microphone-wav",
+            "microphone_millis": "sauronx-microphone-ms",
+            "photosensor_millis": "sauronx-tinkerkit-photosensor-ms",
+            "photosensor_values": "sauronx-tinkerkit-photosensor-values",
+            "thermosensor_millis": "sauronx-tinkerkit-thermosensor-ms",
+            "thermosensor_values": "sauronx-tinkerkit-thermosensor-values"
+        }
     }
 ]

@@ -34,8 +34,8 @@ class MetricPlotter:
             # print(type(value.false), type(value.true), type(value.label), type(color))
             label = "" if value.label is None else FigureTools.fix_labels(value.label)
             ax.plot(value.false, value.true, label=label, color=color, alpha=0.8, clip_on=False)
-        ax.set_xlabel(FigureTools.fix_labels(self.info.false))
-        ax.set_ylabel(FigureTools.fix_labels(self.info.true))
+        ax.set_xlabel(FigureTools.fix_labels(self.metric_info.false))
+        ax.set_ylabel(FigureTools.fix_labels(self.metric_info.true))
         pad = 0
         ax.set_xlim(-pad, 100)
         # scale to get a similar % of padding per axis, rather than raw amount
@@ -102,7 +102,11 @@ class AccuracyPlotter(KvrcPlotting):
         self._y_label = y_label
         self._extra_params = {} if extra_params is None else extra_params
 
-    def plot(self, df: BaseScoreFrame, renamer: Optional[Callable[[str], str]] = None) -> Figure:
+    def plot(
+        self,
+        df: BaseScoreFrame,
+        renamer: Union[None, Mapping[str, str], Callable[[str], str]] = None,
+    ) -> Figure:
         """
         TODO This is way too complex
         Note that `df` should have replicate rows (with the same label but different scores) to plot a violin or swarm.

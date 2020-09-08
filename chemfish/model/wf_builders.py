@@ -7,6 +7,7 @@ from chemfish.model.treatments import Treatments as Treatments
 from chemfish.model.well_frames import *
 from chemfish.model.well_names import WellNamer, WellNamers
 from chemfish.model.wf_tools import *
+from chemfish.model.cache_interfaces import ASensorCache
 
 
 class WellFrameBuildError(ConstructionError):
@@ -173,6 +174,9 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         self._generation: Optional[DataGeneration] = None
         self._limit: Optional[int] = None
         self._dtype = None
+        self._sensor_cache = None
+        self._frame_timestamp_map: Dict[Runs, np.array] = {}
+        self._stim_timestamp_map: Dict[Runs, np.array] = {}
 
     @classmethod
     def wells(
@@ -207,6 +211,10 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         wfb = cls(None).where(Runs.id << runs)
         wfb._required_runs = runs
         return wfb
+
+    def with_sensor_cache(self, sensor_cache: ASensorCache) -> WellFrameBuilder:
+        self._sensor_cache = sensor_cache
+        return self
 
     def where(self, where: ExpressionsLike) -> WellFrameBuilder:
         """
@@ -249,6 +257,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
 
         Args:
             feature:
+            dtype:
 
         Returns:
 
@@ -516,13 +525,41 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         if self._feature is None:
             return None
         return {
-            f.well.id: self._feature.calc(f, f.well)
+            f.well.id: self._calc(f)
             for f in WellFeatures.select(
                 WellFeatures.id, WellFeatures.well_id, WellFeatures.type_id, WellFeatures.floats
             )
             .where(WellFeatures.type_id == self._feature.valar_feature.id)
             .where(WellFeatures.well_id << [w.id for w in well_to_treatments.keys()])
         }
+
+    def _calc(self, f: WellFeatures):
+        if self._sensor_cache is not None and self._feature.is_interpolated:
+            frame_timestamps = self._get_timestamps(
+                f.well.run, "camera_millis", self._frame_timestamp_map
+            )
+            stim_timestamps = self._get_timestamps(
+                f.well.run, "stimulus_millis", self._stim_timestamp_map
+            )
+        else:
+            frame_timestamps = None
+            stim_timestamps = None
+        return self._feature.calc(f, frame_timestamps, stim_timestamps, f.well)
+
+    def _get_timestamps(
+        self, run: Runs, name: str, mapping: Dict[Runs, np.array]
+    ) -> Optional[np.array]:
+        if run in mapping:
+            return mapping[run]
+        else:
+            sensor = ValarTools.standard_sensor(name, ValarTools.generation_of(run))
+            sensor_data: SensorData = (
+                SensorData.select()
+                .where(SensorData.sensor_id == sensor.id)
+                .where(SensorData.run_id == run.id)
+                .first()
+            )
+            return ValarTools.convert_sensor_data_from_bytes(sensor, sensor_data.floats)
 
     def _build_df(self, well_to_treatments, features):
         """

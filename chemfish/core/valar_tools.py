@@ -4,6 +4,8 @@ import subprocess
 
 from natsort import natsorted
 from pocketutils.core.dot_dict import NestedDotDict
+import io
+from PIL import Image
 
 from chemfish.core._imports import *
 from chemfish.core._tools import *
@@ -42,30 +44,6 @@ class ValarTools:
     LEGACY_FRAMERATE = 25
 
     @classmethod
-    def download_frame_timestamps(cls, run: RunLike) -> np.array:
-        """
-        Downloads the timestamps that SauronX recorded for the frame capture times, or None if the sensor was not defined.
-        Will always return None for legacy data.
-        In pre-PointGrey data, these are the timestamps that MATLAB received the frames.
-        In PointGrey data, these are the timestamps that the image was taken (according to the camera firmware).
-
-        Args:
-            run: The run
-
-        Returns:
-            The numpy array of floats, or None
-
-        """
-        run = Runs.fetch(run)
-        sensor = ValarTools.standard_sensor("camera_millis_sensor", ValarTools.generation_of(run))
-        return ValarTools.convert_sensor_data(
-            SensorData.select()
-            .where(SensorData.run_id == run.id)
-            .where(SensorData.sensor_id == sensor.id)
-            .first()
-        )
-
-    @classmethod
     def required_sensors(cls, generation: DataGeneration) -> Set[Sensors]:
         """
 
@@ -76,76 +54,26 @@ class ValarTools:
 
         """
         gens = {x["name"]: x for x in InternalTools.load_resource("core", "generations.json")}
-        return set(Sensors.fetch_all(gens[generation.name]["required_sensors"]))
-
-    @classmethod
-    def optional_sensors(cls, generation: DataGeneration) -> Set[Sensors]:
-        """
-
-        Args:
-            generation:
-
-        Returns:
-
-        """
-        gens = {x["name"]: x for x in InternalTools.load_resource("core", "generations.json")}
-        return set(Sensors.fetch_all(gens[generation.name]["optional_sensors"]))
+        return set(Sensors.fetch_all(gens[generation.name]["sensors"].values()))
 
     @classmethod
     def standard_sensor(cls, name: str, generation: DataGeneration) -> Sensors:
         """
 
         Args:
+            name: sensor name (key in ``generations.json``)
             generation:
 
         Returns:
 
         """
         gens = {x["name"]: x for x in InternalTools.load_resource("core", "generations.json")}
-        return Sensors.fetch(gens[generation.name][name])
-
-    @classmethod
-    def download_stimulus_timestamps(cls, run: RunLike) -> Optional[np.array]:
-        """
-        Downloads the timestamps that SauronX recorded for the stimuli, or None if the sensor was not defined.
-        Will always return None for legacy data.
-
-        Args:
-            run: The run
-
-        Returns:
-            The numpy array of floats, or None
-
-        """
-        run = Runs.fetch(run)
-        sensor = ValarTools.standard_sensor("stimulus_millis_sensor", ValarTools.generation_of(run))
-        return ValarTools.convert_sensor_data(
-            SensorData.select()
-            .where(SensorData.run_id == run.id)
-            .where(SensorData.sensor_id == sensor.id)
-            .first()
-        )
-
-    @classmethod
-    def convert_sensor_data(cls, data: SensorData) -> Union[None, np.array, bytes, str]:
-        """
-        Downloads and converts sensor data.
-        See `InternalTools.convert_sensor_data_from_bytes` for details.
-
-        Args:
-            data: The ID or instance of a row in sensor_data
-
-        Returns:
-            The converted data
-
-        """
-        data = SensorData.fetch(data)
-        return ValarTools.convert_sensor_data_from_bytes(data.sensor, data.floats)
+        return Sensors.fetch(gens[generation.name]["sensors"][name])
 
     @classmethod
     def convert_sensor_data_from_bytes(
         cls, sensor: Union[str, int, Sensors], data: bytes
-    ) -> Union[None, np.array, bytes, str]:
+    ) -> Union[None, np.array, bytes, str, Image.Image]:
         """
         Convert the sensor data to its appropriate type as defined by `sensors.data_type`.
         WARNING:
@@ -163,27 +91,35 @@ class ValarTools:
         if data is None:
             return None
         if dt == "byte":
-            return np.frombuffer(data, dtype=np.byte)
+            return np.frombuffer(data, dtype=np.int16)
         if dt == "unsigned_byte":
-            return np.frombuffer(data, dtype=np.byte) + 2 ** 7
+            return np.frombuffer(data, dtype=np.int16) + 2 ** 7
         if dt == "short":
-            return np.frombuffer(data, dtype=">i2").astype(np.int64)
+            return np.frombuffer(data, dtype=">i2").astype(np.int32)
         if dt == "unsigned_short":
-            return np.frombuffer(data, dtype=">i2").astype(np.int64) + 2 ** 15
+            return np.frombuffer(data, dtype=">i2").astype(np.int32) + 2 ** 15
         if dt == "int":
             return np.frombuffer(data, dtype=">i4").astype(np.int64)
         if dt == "unsigned_int":
             return np.frombuffer(data, dtype=">i4").astype(np.int64) + 2 ** 31
+        if dt == "long":
+            return np.frombuffer(data, dtype=">i8").astype(np.int64)
+        if dt == "unsigned_long":
+            return np.frombuffer(data, dtype=">i8").astype(np.int64) + 2 ** 63
         if dt == "float":
             return np.frombuffer(data, dtype=">f4").astype(np.float64)
         if dt == "double":
             return np.frombuffer(data, dtype=">f8").astype(np.float64)
-        if dt == "utf8_char":
-            return str(dt, encoding="utf-8")
-        elif dt == "other":
-            return data
+        if dt == "string:utf8":
+            return str(data, encoding="utf-8")
+        if dt == "string:utf16":
+            return str(data, encoding="utf-16")
+        if dt == "string:utf32":
+            return str(data, encoding="utf-32")
+        elif dt.startswith("image:") or dt == "other":
+            return Image.open(io.BytesIO(data))
         else:
-            raise UnsupportedOpError(f"Oh no! Sensor cache doesn't recognize dtype {dt}")
+            return data
 
     @classmethod
     def stimulus_wavelength_colors(cls) -> Mapping[str, str]:

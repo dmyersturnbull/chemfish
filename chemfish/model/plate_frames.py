@@ -56,7 +56,7 @@ class PlateFrame(UntypedDf):
         feature = FeatureTypes.of(feature)
         wb1 = Tools.wb1_from_run(run)
         data = {
-            wb1.index_to_label(wf.well.well_index): feature.calc(wf, wf.well)
+            wb1.index_to_label(wf.well.well_index): feature.calc(wf, None, None, wf.well)
             for wf in WellFeatures.select(WellFeatures, Wells)
             .join(Wells)
             .where(Wells.run == run)

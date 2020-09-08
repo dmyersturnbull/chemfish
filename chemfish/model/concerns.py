@@ -284,9 +284,7 @@ class ImpossibleTimeConcern(Concern):
 
 @dataclass(frozen=True, order=True)
 class MissingSensorConcern(Concern):
-    """
-
-    """
+    """"""
 
     generation: DataGeneration
     expected: Set[Sensors]
@@ -294,9 +292,7 @@ class MissingSensorConcern(Concern):
 
     @property
     def missing(self) -> Set[Sensors]:
-        """
-
-        """
+        """"""
         return self.expected - self.actual
 
     def as_dict(self) -> Mapping[str, Any]:
@@ -317,9 +313,7 @@ class MissingSensorConcern(Concern):
 
 @dataclass(frozen=True, order=True)
 class WellConcern(Concern):
-    """
-
-    """
+    """"""
 
     trash: Mapping[ControlTypes, int]
 
@@ -342,9 +336,7 @@ class WellConcern(Concern):
 
 @dataclass(frozen=True, order=True)
 class BatchConcern(Concern):
-    """
-
-    """
+    """"""
 
     batch: Batches
     annotation: BatchAnnotations
@@ -363,9 +355,7 @@ class BatchConcern(Concern):
 
 @dataclass(frozen=True, order=True)
 class _AnnotationConcern(Concern, metaclass=abc.ABCMeta):
-    """
-
-    """
+    """"""
 
     annotation: Annotations
 
@@ -382,39 +372,29 @@ class _AnnotationConcern(Concern, metaclass=abc.ABCMeta):
 
 @dataclass(frozen=True, order=True)
 class _ErrorConcern(Concern, metaclass=abc.ABCMeta):
-    """
-
-    """
+    """"""
 
     expected: float
     actual: float
 
     @property
     def raw_diff(self) -> float:
-        """
-
-        """
+        """"""
         return self.actual - self.expected
 
     @property
     def raw_error(self) -> float:
-        """
-
-        """
+        """"""
         return abs(self.raw_diff)
 
     @property
     def relative_error(self) -> float:
-        """
-
-        """
+        """"""
         return abs(self.relative_diff)
 
     @property
     def relative_diff(self) -> float:
-        """
-
-        """
+        """"""
         if self.expected == 0 or np.isinf(self.expected):
             logger.debug(f"Expected value is {self.expected}. Setting relative_diff=+inf")
             return np.inf
@@ -423,9 +403,7 @@ class _ErrorConcern(Concern, metaclass=abc.ABCMeta):
 
     @property
     def log2_diff(self) -> float:
-        """
-
-        """
+        """"""
         if self.expected == 0 or np.isinf(self.expected):
             logger.debug(f"Expected value is {self.expected}. Setting log2_diff=+inf")
             return np.inf
@@ -463,9 +441,7 @@ class SensorLengthConcern(_ErrorConcern):
 
 @dataclass(frozen=True, order=True)
 class TargetTimeConcern(_ErrorConcern):
-    """
-
-    """
+    """"""
 
     kind: TargetTimeKind
     annotation: Optional[Annotations]
@@ -488,9 +464,7 @@ class TargetTimeConcern(_ErrorConcern):
 
 @dataclass(frozen=True, order=True)
 class AnnotationConcern(_AnnotationConcern):
-    """
-
-    """
+    """"""
 
     def description(self) -> str:
         return (
@@ -503,9 +477,7 @@ class AnnotationConcern(_AnnotationConcern):
 
 @dataclass(frozen=True, order=True)
 class ToFixConcern(_AnnotationConcern):
-    """
-
-    """
+    """"""
 
     fixed_with: Optional[Annotations]
 
@@ -521,9 +493,7 @@ class ToFixConcern(_AnnotationConcern):
 
 @dataclass(frozen=True, order=True)
 class NFeaturesConcern(_ErrorConcern):
-    """
-
-    """
+    """"""
 
     def as_dict(self) -> Mapping[str, Any]:
         """ """
@@ -536,9 +506,7 @@ class NFeaturesConcern(_ErrorConcern):
 
 @dataclass(frozen=True, order=True)
 class GenerationConcern(Concern):
-    """
-
-    """
+    """"""
 
     expected_generations: Set[DataGeneration]
     actual_generation: DataGeneration

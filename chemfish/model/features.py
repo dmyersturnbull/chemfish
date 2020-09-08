@@ -34,18 +34,31 @@ class FeatureType:
     def external_name(self):
         return self.valar_feature.name + ("[⌇]" if self.is_interpolated else "")
 
-    def calc(self, wf: WellFeatures, well: Union[Wells, int], stringent: bool = False) -> np.array:
+    def calc(
+        self,
+        wf: WellFeatures,
+        frame_timestamps: Optional[np.array],
+        stim_timestamps: Optional[np.array],
+        well: Union[Wells, int],
+        stringent: bool = False,
+    ) -> np.array:
         """
 
 
         Args:
             wf: WellFeatures:
+            frame_timestamps: Required if is_interpolated
+            stim_timestamps: Required if is_interpolated
             well:
             stringent:
 
         Returns:
 
         """
+        if self.is_interpolated and (frame_timestamps is None or stim_timestamps is None):
+            raise ValueError(
+                f"frame_timestamps and stim_timestamps must be non-None for interpolated feature ${self.internal_name}"
+            )
         if well is None and wf is not None:
             well = wf.well
         elif well is not None and wf is None:
@@ -57,7 +70,9 @@ class FeatureType:
             )
             if wf is None:
                 raise ValarLookupError(f"No feature {self.valar_feature.name} for well {well}")
-        return self.from_blob(wf.floats, well, stringent=stringent)
+        return self.from_blob(
+            wf.floats, frame_timestamps, stim_timestamps, well, stringent=stringent
+        )
 
     @abcd.abstractmethod
     def to_blob(self, arr: np.array) -> None:
@@ -71,13 +86,22 @@ class FeatureType:
         raise NotImplementedError()
 
     @abcd.abstractmethod
-    def from_blob(self, blob: bytes, well: Union[Wells, int], stringent: bool = False):
+    def from_blob(
+        self,
+        blob: bytes,
+        frame_timestamps: np.array,
+        stim_timestamps: np.array,
+        well: Union[Wells, int],
+        stringent: bool = False,
+    ):
         """
 
 
         Args:
             blob: bytes:
             well:
+            frame_timestamps:
+            stim_timestamps:
             stringent:
 
         Returns:
@@ -101,13 +125,22 @@ class FeatureType:
 class _ConsecutiveFrameFeature(FeatureType, metaclass=abcd.ABCMeta):
     """"""
 
-    def from_blob(self, blob: bytes, well: Union[Wells, int], stringent: bool = False) -> np.array:
+    def from_blob(
+        self,
+        blob: bytes,
+        frame_timestamps: Optional[np.array],
+        stim_timestamps: Optional[np.array],
+        well: Union[Wells, int],
+        stringent: bool = False,
+    ) -> np.array:
         """
 
 
         Args:
             blob: bytes:
             well:
+            frame_timestamps:
+            stim_timestamps:
             stringent:
 
         Returns:
@@ -115,7 +148,7 @@ class _ConsecutiveFrameFeature(FeatureType, metaclass=abcd.ABCMeta):
         """
         well = Wells.fetch(well)
         if len(blob) == 0:
-            logger.warning(f"Empty {self.feature_name} feature array for well {well.id}")
+            logger.warning(f"Empty {self.valar_feature.name} feature array for well {well.id}")
             return np.empty(0, dtype=np.float32)
         floats = Tools.blob_to_signed_floats(blob)
         floats.setflags(write=1)  # blob_to_floats gets read-only arrays
@@ -124,7 +157,7 @@ class _ConsecutiveFrameFeature(FeatureType, metaclass=abcd.ABCMeta):
         floats[0] = 0.0
         if self.is_interpolated:
             return FeatureInterpolation(self.valar_feature).interpolate(
-                floats, well, stringent=stringent
+                floats, frame_timestamps, stim_timestamps, well, stringent=stringent
             )
         return floats
 

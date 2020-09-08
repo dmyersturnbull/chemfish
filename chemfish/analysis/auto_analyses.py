@@ -42,7 +42,7 @@ class AutoScreenTracer:
         self.path = Tools.prepped_dir(path)
         self.redo = redo
         self.traces = traces
-        self.plot_sensors = [SensorNames.PHOTORESISTOR] if plot_sensors is None else plot_sensors
+        self.plot_sensors = [SensorNames.PHOTOSENSOR] if plot_sensors is None else plot_sensors
         self.metric = metric
         self.saver = FigureSaver(clear=True) if saver is None else copy(saver)
         self.saver._save_under = None
@@ -240,12 +240,12 @@ class AutoScreenTracer:
         # sensor data info
         logger.debug("Saving additional sensor data...")
         try:
-            img = q0.sensor_cache.load_preview(run).data  # type Image
+            img = q0.sensor_cache.load_preview(run).data  # type Image.Image
             img.save(path / "preview.png", "png")
         except Exception:
             logger.minor("No ROI preview")
         try:
-            img = q0.sensor_cache.load(SensorNames.WEBCAM, run).data  # type Image
+            img = q0.sensor_cache.load(SensorNames.SECONDARY_CAMERA, run).data  # type Image.Image
             img.save(path / "snap.png", "png")
         except Exception:
             logger.minor("No webcam snapshot")

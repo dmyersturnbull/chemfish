@@ -7,6 +7,7 @@ from chemfish.model.assay_frames import *
 from chemfish.model.stim_frames import *
 from chemfish.viz import *
 from chemfish.viz._internal_viz import *
+from chemfish.viz.figures import FigureTools
 
 
 @dataclass(frozen=True)
@@ -17,24 +18,22 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
     Attributes:
         should_label: Show axis labels
         mark_every_n_ms: Explicitly control the number of x ticks per ms; otherwise chooses nice defaults.
-        fps: IGNORED. Legacy option.
         audio_waveform: Show audio stimuli as waveforms. This requires that the stimframes passed have embedded (expanded) waveforms.
         assay_labels: Show a label at the bottom for each assay
-        legacy: Whether the batteries being plotted are legacy
     """
+
     should_label: bool = True
     mark_every_n_ms: Optional[int] = None
     audio_waveform: bool = True
     assay_labels: bool = False
-    legacy: bool = False
 
     def plot(
         self,
         stimframes: StimFrame,
+        battery: Union[Batteries, str, int],
         ax: Optional[Axes] = None,
         assays: AssayFrame = None,
         starts_at_ms: int = 0,
-        battery: Union[None, Batteries, str, int] = None,
     ) -> Axes:
         """
 
@@ -51,15 +50,12 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         """
         # prep / define stuff
         t0 = time.monotonic()
-        if battery is not None:
-            battery = Batteries.fetch(battery)
-        if battery is None:
-            logger.debug(f"Plotting battery with {len(stimframes)} stimframes...")
-        else:
-            logger.debug(f"Plotting battery {battery.id} with {len(stimframes)} stimframes...")
+        battery = Batteries.fetch(battery)
+        logger.debug(f"Plotting battery {battery.id} with {len(stimframes)} stimframes...")
         if starts_at_ms is None:
             starts_at_ms = 0
-        n_ms = len(stimframes) * 1000 / self._fps
+        sfps = ValarTools.battery_stimframes_per_second(battery)
+        n_ms = int(len(stimframes) * 1000 / sfps)
         if ax is None:
             figure = plt.figure(figsize=(chemfish_rc.trace_width, chemfish_rc.trace_height))
             ax = figure.add_subplot(111)
@@ -81,17 +77,15 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         for kind, c in stimulus_list:
             stim = all_stims[c]
             kind = ValarTools.stimulus_type(stim)
-            _ax, _name, _color = self._plot_stim(stim, stimframes[c].values, ax, kind)
+            _ax, _name, _color = self._plot_stim(stim, stimframes[c].values, ax)
             if _name is not None and stim.audio_file_id is None:  # TODO permit
                 ordered.append((kind.value, _name, _color))  # kind first for sort order later
         ordered = sorted(ordered)
         # plot the assay bounds / labels as needed
         if assays is not None:
-            self._plot_assays(assays, starts_at_ms, n_ms, ax)
+            self._plot_assays(assays, starts_at_ms, n_ms, ax, battery)
         # set the axis labels and legend
-        self._axis_labels(stimframes, ax, starts_at_ms=starts_at_ms, total_ms=n_ms)
-        from chemfish.viz.figures import FigureTools
-
+        self._axis_labels(stimframes, ax, starts_at_ms=starts_at_ms, total_ms=n_ms, battery=battery)
         if chemfish_rc.stimplot_legend_on:
             ordered_names, ordered_colors = [k[1] for k in ordered], [k[2] for k in ordered]
             FigureTools.manual_legend(
@@ -118,7 +112,9 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         logger.debug(f"Finished plotting battery. Took {round(time.monotonic() - t0, 1)}s.")
         return ax
 
-    def _plot_stim(self, stim, r, ax, kind):
+    def _plot_stim(
+        self, stim: Stimuli, r: pd.Series, ax: Axes
+    ) -> Tup[Axes, Optional[str], Optional[str]]:
         """
 
 
@@ -126,7 +122,6 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
             stim:
             r:
             ax:
-            kind:
 
         Returns:
 
@@ -179,7 +174,9 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
             )
         return ax, ValarTools.stimulus_display_name(c), chemfish_rc.get_stimulus_colors()[stim.name]
 
-    def _plot_assays(self, assays, starts_at_ms, n_ms, ax):
+    def _plot_assays(
+        self, assays: pd.DataFrame, starts_at_ms: int, n_ms: int, ax: Axes, battery: Batteries
+    ) -> None:
         """
 
 
@@ -194,9 +191,10 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         """
         if not self.assay_labels and not chemfish_rc.assay_lines_without_text:
             return
+        sfps = ValarTools.battery_stimframes_per_second(battery)
         for a in assays.itertuples():
-            start = (a.start_ms - starts_at_ms) * self._fps / 1000
-            end = (a.end_ms - starts_at_ms) * self._fps / 1000
+            start = (a.start_ms - starts_at_ms) * sfps / 1000
+            end = (a.end_ms - starts_at_ms) * sfps / 1000
             if start < 0 or end < 0:
                 continue
             if a.end_ms > n_ms + starts_at_ms:
@@ -242,7 +240,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
                     alpha=chemfish_rc.assay_text_alpha,
                 )
 
-    def _axis_labels(self, stimframes, ax, starts_at_ms, total_ms):
+    def _axis_labels(self, stimframes, ax, starts_at_ms, total_ms, battery):
         """
 
 
@@ -256,14 +254,21 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
 
         """
         if self.should_label:
-            self._label_x(stimframes, ax, starts_at_ms, total_ms)
+            self._label_x(stimframes, ax, starts_at_ms, total_ms, battery)
             ax.grid(False)
             ax.set_ylabel(chemfish_rc.stimplot_y_label)
         else:
             ax.set_xticks([])
         ax.get_yaxis().set_ticks([])
 
-    def _label_x(self, stimframes, ax2, starts_at_ms, total_ms) -> None:
+    def _label_x(
+        self,
+        stimframes: pd.DataFrame,
+        ax2: Axes,
+        starts_at_ms: int,
+        total_ms: int,
+        battery: Batteries,
+    ) -> None:
         """
 
 
@@ -276,28 +281,23 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         Returns:
 
         """
-        assert starts_at_ms is not None
-        assert self._fps is not None
-        mark_every = self._best_marks(stimframes)
+        sfps = ValarTools.battery_stimframes_per_second(battery)
+        mark_every = self._best_marks(stimframes, sfps)
         units, units_per_sec = InternalVizTools.preferred_units_per_sec(mark_every, total_ms)
-        mark_freq = mark_every / 1000 * self._fps
+        mark_freq = mark_every / 1000 * sfps
         # TODO  + 5*mark_freq ??
         ax2.set_xticks(np.arange(0, np.ceil(len(stimframes)) + mark_freq, mark_freq))
         ax2.set_xlabel(f"time ({units})")
         ax2.xaxis.set_major_formatter(
             ticker.FuncFormatter(
                 lambda frame, pos: "{0:g}".format(
-                    round((frame / self._fps + starts_at_ms / 1000) * units_per_sec),
+                    round((frame / sfps + starts_at_ms / 1000) * units_per_sec),
                     chemfish_rc.trace_time_n_decimals,
                 )
             )
         )
 
-    @property
-    def _fps(self):
-        return 25 if self.legacy else 1000
-
-    def _best_marks(self, stimframes):
+    def _best_marks(self, stimframes, sfps):
         """
 
 
@@ -307,7 +307,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
         Returns:
 
         """
-        return InternalVizTools.preferred_tick_ms_interval(len(stimframes) / self._fps * 1000)
+        return InternalVizTools.preferred_tick_ms_interval(len(stimframes) / sfps * 1000)
 
 
 __all__ = ["StimframesPlotter"]

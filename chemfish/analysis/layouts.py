@@ -351,9 +351,7 @@ class LayoutParser:
             """"""
             return "" if Tools.is_empty(q) else q
 
-        ftw_row = (
-            TemplateWells.select().where(TemplateWells.template_plate == nq(plate.id)).first()
-        )
+        ftw_row = TemplateWells.select().where(TemplateWells.template_plate == nq(plate.id)).first()
         ftt_row = (
             TemplateTreatments.select()
             .where(TemplateTreatments.template_plate == nq(plate.id))

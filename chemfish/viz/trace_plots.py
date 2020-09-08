@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import matplotlib.ticker as ticker
 
 from chemfish.core.core_imports import *
@@ -55,7 +57,7 @@ class TraceBase(CakeLayer, KvrcPlotting):
 
     def plot(
         self,
-        subdf: WellFrame,
+        subdf: AbsWellFrame,
         s: str,
         control_names: Sequence[str],
         ax1: Axes,
@@ -201,18 +203,26 @@ class TraceBase(CakeLayer, KvrcPlotting):
 class TracePlotter(KvrcPlotting):
     """"""
 
+    @classmethod
+    def default_top_bander(cls, group: AbsWellFrame):
+        return group.agg_by_name("quantile", q=0.8).smooth(window_size=10)
+
+    @classmethod
+    def default_bottom_bander(cls, group: AbsWellFrame):
+        return group.agg_by_name("quantile", q=0.8).smooth(window_size=10)
+
+    DEFAULT_BOTTOM_BANDER = lambda group: group.agg_by_name("quantile", q=0.2).smooth(
+        window_size=10
+    )
+
     def __init__(
         self,
         stimframes_plotter: Optional[StimframesPlotter] = None,
         y_bounds: Optional[Tup[float, float]] = None,
         trace_to_stimuli_height_ratio: Optional[Tup[float, float]] = None,
         always_plot_control: bool = False,
-        top_bander: Callable[[WellFrame], pd.DataFrame] = lambda group: group.agg_by_name(
-            "quantile", q=0.8
-        ).smooth(window_size=10),
-        bottom_bander: Callable[[WellFrame], pd.DataFrame] = lambda group: group.agg_by_name(
-            "quantile", q=0.2
-        ).smooth(window_size=10),
+        top_bander: Callable[[WellFrame], pd.DataFrame] = default_top_bander,
+        bottom_bander: Callable[[WellFrame], pd.DataFrame] = default_bottom_bander,
         mean_bander: Optional[Callable[[WellFrame], pd.DataFrame]] = None,
         mean_band_color: Optional[str] = None,
         with_bar: bool = False,
@@ -378,7 +388,7 @@ class TracePlotter(KvrcPlotting):
 
     def _plot_single(
         self,
-        sub: WellFrame,
+        sub: AbsWellFrame,
         name,
         starts_at_ms,
         control_names: Sequence[str],
@@ -396,10 +406,10 @@ class TracePlotter(KvrcPlotting):
 
 
         Args:
-            sub: WellFrame:
+            sub:
             name:
             starts_at_ms:
-            control_names: Sequence[str]:
+            control_names:
             stimframes:
             assays:
             run_dict:
@@ -440,12 +450,14 @@ class TracePlotter(KvrcPlotting):
         )
         if ax2 is not None:
             self._stimframes_plotter.plot(
-                stimframes, ax2, assays=assays, starts_at_ms=starts_at_ms, battery=battery
+                stimframes, battery, ax2, assays=assays, starts_at_ms=starts_at_ms
             )
             ax2.set_rasterization_zorder(1)
         return name, member.get_figure()
 
-    def _select(self, df: WellFrame, name: str, control_names: Mapping[str, Sequence[str]]):
+    def _select(
+        self, df: WellFrame, name: str, control_names: Mapping[str, Sequence[str]]
+    ) -> AbsWellFrame:
         """
 
 

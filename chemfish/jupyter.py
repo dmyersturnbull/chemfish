@@ -42,6 +42,7 @@ def _plot_all(it: Iterable[Tup[str, Figure]]) -> None:
         print(f"Plotting {name}")
         plt.show(figure)
 
+
 plt.show_all = _plot_all
 
 Namers = WellNamers

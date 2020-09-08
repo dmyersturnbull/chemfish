@@ -293,6 +293,7 @@ class HitWellFrame(WellFrame):
         """
         hitwells = set(hits.reset_index()["well_id"].unique())
         scores = hits.reset_index().set_index("well_id")["score"].to_dict()
+        # no features
         hitdf = (
             WellFrameBuilder(None)
             .where(Wells.id << hitwells)

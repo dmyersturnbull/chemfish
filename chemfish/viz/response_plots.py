@@ -17,6 +17,7 @@ class UnsupportedPlotOption(UnsupportedOpError):
 @dataclass(frozen=True)
 class Position:
     """"""
+
     left: bool
     right: bool
     top: bool
@@ -26,9 +27,7 @@ class Position:
 
 
 class Miniaxis:
-    """
-
-    """
+    """"""
 
     def __init__(self, ax: Axes, position: Position):
         """

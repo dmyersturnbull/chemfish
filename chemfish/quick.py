@@ -83,7 +83,6 @@ class AggType(SmartEnum):
         return self.function()(df)
 
 
-
 @dataclass(frozen=True)
 class Quick:
     """
@@ -160,7 +159,9 @@ class Quick:
 
     DEFAULT_NAMER = WellNamers.elegant()
 
-    DEFAULT_TRASH_CONTROLS = frozenset({"ignore", "near-WT (-)", "no drug transfer", "low drug transfer"})
+    DEFAULT_TRASH_CONTROLS = frozenset(
+        {"ignore", "near-WT (-)", "no drug transfer", "low drug transfer"}
+    )
 
     feature: Union[str, FeatureType]
     generation: Union[str, DataGeneration]
@@ -198,9 +199,7 @@ class Quick:
 
     @property
     def _expanded_stim_cache(self) -> StimframeCache:
-        return StimframeCache(
-            waveform_loader=self.audio_stimulus_cache.load_waveform
-        )
+        return StimframeCache(waveform_loader=self.audio_stimulus_cache.load_waveform)
 
     def _get_smoothing(self, fps: int) -> int:
         return int(round(self.smoothing_factor * fps))
@@ -221,10 +220,12 @@ class Quick:
             A new Quick with the attributes changed
         """
 
-        return Quick(**{
-            field.name: kwargs.get(field.name, getattr(self, field.name))
-            for field in dataclasses.fields(self.__class__)
-        })
+        return Quick(
+            **{
+                field.name: kwargs.get(field.name, getattr(self, field.name))
+                for field in dataclasses.fields(self.__class__)
+            }
+        )
 
     def traces(
         self,
@@ -258,9 +259,7 @@ class Quick:
             stimplotter,
             extra_gs,
             extra_fn,
-        ) = self._everything(
-            run, start_ms, end_ms, control_names, control_types, weights
-        )
+        ) = self._everything(run, start_ms, end_ms, control_names, control_types, weights)
         battery = df.only("battery_id")
         smoothing = self._get_smoothing(fps)
         tracer = TracePlotter(
@@ -317,9 +316,7 @@ class Quick:
             stimplotter,
             extra_gs,
             extra_fn,
-        ) = self._everything(
-            run, start_ms, end_ms, control_names, control_types, weights
-        )
+        ) = self._everything(run, start_ms, end_ms, control_names, control_types, weights)
         battery = df.only("battery_id")
         smoothing = self._get_smoothing(fps)
         top_bander, bottom_bander, mean_bander = self._banders(smoothing)
@@ -380,9 +377,7 @@ class Quick:
             stimplotter,
             extra_gs,
             extra_fn,
-        ) = self._everything(
-            run, start_ms, end_ms, control_name, control_type, weights
-        )
+        ) = self._everything(run, start_ms, end_ms, control_name, control_type, weights)
         battery = df.only("battery_id")
         smoothing = self._get_smoothing(fps)
         if control_name is None:
@@ -436,12 +431,12 @@ class Quick:
         Returns:
 
         """
-        top_bander = lambda group: group.agg_by_name(["name"], "quantile", q=1-self.smear_ci).smooth(
-            window_size=smoothing
-        )
-        bottom_bander = lambda group: group.agg_by_name(["name"], "quantile", q=1-self.smear_ci).smooth(
-            window_size=smoothing
-        )
+        top_bander = lambda group: group.agg_by_name(
+            ["name"], "quantile", q=1 - self.smear_ci
+        ).smooth(window_size=smoothing)
+        bottom_bander = lambda group: group.agg_by_name(
+            ["name"], "quantile", q=1 - self.smear_ci
+        ).smooth(window_size=smoothing)
         mean_bander = (
             (lambda group: group.agg_by_name("mean").smooth(window_size=smoothing))
             if self.show_smear_means
@@ -477,7 +472,9 @@ class Quick:
         battery = df.only("battery_name")
         stimframes = self.stimframes(battery, start_ms, end_ms, audio_waveform=True)
         stimplotter = StimframesPlotter()
-        zscores = self._control_subtract(df, control_type, control_name).threshold_zeros(self.zheat_threshold)
+        zscores = self._control_subtract(df, control_type, control_name).threshold_zeros(
+            self.zheat_threshold
+        )
         if self.zheat_ignore_controls:
             zscores = zscores.without_controls()
         heater = HeatPlotter(
@@ -511,7 +508,9 @@ class Quick:
         battery = df.only("battery_name")
         stimframes = self.stimframes(battery, start_ms, end_ms, audio_waveform=True)
         stimplotter = StimframesPlotter()
-        heater = HeatPlotter(stimframes_plotter=stimplotter, name_sep_line=self.zheat_show_name_lines)
+        heater = HeatPlotter(
+            stimframes_plotter=stimplotter, name_sep_line=self.zheat_show_name_lines
+        )
         return heater.plot(df, stimframes, starts_at_ms=start_ms, battery=battery)
 
     def transform(
@@ -628,9 +627,7 @@ class Quick:
         for sensor in sensors:
             sensor = SensorNames.of(sensor)
             if sensor == SensorNames.MICROPHONE:
-                sensor_data.append(
-                    self.sensor_cache.load_wav(run).waveform(1000)
-                )
+                sensor_data.append(self.sensor_cache.load_wav(run).waveform(1000))
             else:
                 sdata = self.sensor_cache.load((sensor, run))
                 if isinstance(sdata, TimeDepChemfishSensor):
@@ -706,7 +703,7 @@ class Quick:
         else:
             stimframes = stimframes.slice_ms(battery, start_ms, end_ms)
         plotter = StimframesPlotter(audio_waveform=audio_waveform, assay_labels=label_assays)
-        ax = plotter.plot(stimframes, assays=assays, starts_at_ms=start_ms, battery=battery)
+        ax = plotter.plot(stimframes, battery, assays=assays, starts_at_ms=start_ms)
         return ax.get_figure()
 
     def assays(self, battery: Union[Batteries, int, str]) -> AssayFrame:
@@ -845,7 +842,9 @@ class Quick:
         Returns:
 
         """
-        q0 = self.using(enable_checks=False, auto_fix=False, as_of=datetime.now() if as_of is None else as_of)
+        q0 = self.using(
+            enable_checks=False, auto_fix=False, as_of=datetime.now() if as_of is None else as_of
+        )
         runs = q0.query_runs(wheres)
         logger.notice(f"Spitting issues for {len(runs)} runs")
         coll = SimpleConcernRuleCollection(q0.feature, q0.sensor_cache, as_of, min_severity)
@@ -1103,15 +1102,18 @@ class Quick:
         elif self.cache is not None:
             df = self.cache.load(run)
         else:
-            df = WellFrameBuilder.runs(run).with_feature(self.feature).build()
+            df = (
+                WellFrameBuilder.runs(run)
+                .with_sensor_cache(self.sensor_cache)
+                .with_feature(self.feature)
+                .build()
+            )
         # instead, we'll build the names in Quick.df()
         df = df.with_new_names(self.well_namer)
         df = df.with_new("display_name", self.well_namer)
         return df.sort_standard(), True
 
-    def _everything(
-        self, run, start_ms, end_ms, control_names, control_types, weights
-    ):
+    def _everything(self, run, start_ms, end_ms, control_names, control_types, weights):
         """
         Only for plotting.
 
@@ -1189,7 +1191,7 @@ class Quick:
         elif control_type is not None:
             return df.control_subtract(subtraction, control_type)
         else:
-            control_type = Tools.only(df.only_control_matching(positive=False))
+            control_type = Tools.only(df.unique_controls_matching(positive=False))
             return df.control_subtract(subtraction, control_type)
 
     def _weighter(self, weights: Optional[np.array]):
@@ -1354,14 +1356,15 @@ class Quicks:
         if "namer" in kwargs and "well_namer" not in kwargs:
             kwargs["well_namer"] = kwargs["namer"]
             del kwargs["namer"]  # it's ok -- this is already a copy
+        sensor_cache = SensorCache()
         audio_stimulus_cache = AudioStimulusCache()
         return Quick(
             feature,
             generation,
             as_of,
-            cache=WellCache(feature),
+            cache=WellCache(feature).with_sensor_cache(sensor_cache),
             stim_cache=StimframeCache(),
-            sensor_cache=SensorCache(),
+            sensor_cache=sensor_cache,
             video_cache=VideoCache(),
             audio_stimulus_cache=audio_stimulus_cache,
             **kwargs,

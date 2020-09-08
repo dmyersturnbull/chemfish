@@ -67,7 +67,7 @@ class DurationType(SmartEnum):
         else:
             return self.name.lower() + " duration"
 
-    def get_minutes(self, run: RunLike) -> float:
+    def get_seconds(self, run: RunLike) -> float:
         """
 
 
@@ -79,17 +79,15 @@ class DurationType(SmartEnum):
         """
         run = Tools.run(run, join=True)
         if self is DurationType.WAIT:
-            return ValarTools.wait_sec(run) / 60
+            return ValarTools.wait_sec(run)
         elif self is DurationType.TREATMENT:
-            return ValarTools.treatment_sec(run) / 60
+            return ValarTools.treatment_sec(run)
         elif self is DurationType.ACCLIMATION:
-            return run.acclimation_sec / 60
+            return run.acclimation_sec
         elif self is DurationType.TREATMENT_TO_START:
-            return (ValarTools.treatment_sec(run) + run.acclimation_sec) / 60
+            return ValarTools.treatment_sec(run) + run.acclimation_sec
         elif self is DurationType.PLATING_TO_START:
-            return (
-                ValarTools.treatment_sec(run) + ValarTools.wait_sec(run) + run.acclimation_sec
-            ) / 60
+            return ValarTools.treatment_sec(run) + ValarTools.wait_sec(run) + run.acclimation_sec
         else:
             raise XTypeError(str(self))
 
@@ -102,11 +100,15 @@ class TimelinePlotter(KvrcPlotting):
 
     Attributes:
         use_times: Sets the y-values to the actual times; great for precision but tends to require a large height
+        date_format:
+        x_locator:
+        n_rows: int
     """
+
     use_times: bool = False
     date_format: str = "%Y-%m-%d"
     x_locator = mdates.DayLocator()
-    n_y_positions: int = 10
+    n_rows: int = 10
 
     def plot(
         self,
@@ -164,7 +166,7 @@ class TimelinePlotter(KvrcPlotting):
             if self.use_times:
                 y_val = idate.hour + idate.minute / 60
             else:
-                y_val = (y_index % self.n_y_positions) - self.n_y_positions // 2
+                y_val = (y_index % self.n_rows) - self.n_rows // 2
             # plot the markers
             ax.scatter(
                 idate,
@@ -235,7 +237,7 @@ class TimelinePlots:
         """
         runs = Tools.runs(runs)
         labels = TimelineLabelType.of(label_with).process(runs)
-        experiments = [r.experiment.name for r in runs] if use_experiments else ["" for r in runs]
+        experiments = [r.experiment.name for r in runs] if use_experiments else ["" for _ in runs]
         dates = [r.datetime_run for r in runs]
         # Good example: BioMol plate BM-2811, master. Drugs: adrenergic
         figure = TimelinePlotter(**kwargs).plot(dates, experiments, labels=labels)
@@ -272,9 +274,9 @@ class RunDurationPlotter:
         ax.set_ylabel("N runs")
         ax.set_yticks([])
         ax.set_yticklabels([])
-        ax.set_xlabel(self._attribute)
+        ax.set_xlabel(self.attribute)
         if len({m for m in minute_durations if m < 0}) > 0:
-            logger.error(f"Some {self._attribute} durations are negative")
+            logger.error(f"Some {self.attribute} durations are negative")
         ax.set_xlim(0, None)
         return ax.get_figure()
 
@@ -301,7 +303,7 @@ class RunDurationPlots:
 
         """
         t = DurationType.of(kind)
-        minutes = [t.get_minutes(r) for r in Tools.runs(runs)]
+        minutes = [t.get_seconds(r) for r in Tools.runs(runs)]
         kde = KdeData.from_samples(minutes, **({} if kde_params is None else kde_params))
         return RunDurationPlotter(t.description).plot(kde)
 
