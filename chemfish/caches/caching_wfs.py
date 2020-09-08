@@ -135,14 +135,9 @@ class CachingWellFrameBuilder(WellFrameBuilder):
             df = df.with_new_compound_names(self._compound_namer)
         if self._namer is not None:
             df = df.with_new_names(self._namer)
-        if self._display_namer is not None:
-            df = df.with_new("display_name", self._display_namer)
-        elif self._namer is not None:
-            df = df.with_new("display_name", self._namer)
+        df = df.with_new("display_name", df["name"])
         if self._packer is not None:
             df = df.with_new_packs(self._packer)
-        if self._sizer is not None:
-            df = df.with_new_sizes(self._sizer)
         df = self._internal_limit(df)
         df = self._internal_restrict_to_gen(df)
         return df.sort_standard()

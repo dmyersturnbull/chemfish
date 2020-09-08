@@ -70,6 +70,7 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
                     rasterized=chemfish_rc.sensor_rasterize,
                     linewidth=chemfish_rc.sensor_line_width,
                     c=chemfish_rc.sensor_line_color,
+                    drawstyle="steps-pre"
                 )
                 ax.set_ylim(
                     np.quantile(y_vals, 1 - self.quantile), np.quantile(y_vals, self.quantile)

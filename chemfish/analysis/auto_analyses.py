@@ -240,7 +240,7 @@ class AutoScreenTracer:
         # sensor data info
         logger.debug("Saving additional sensor data...")
         try:
-            img = q0.sensor_cache.load_preview(run).data  # type Image.Image
+            img = q0.sensor_cache.load_preview_frame(run).data  # type Image.Image
             img.save(path / "preview.png", "png")
         except Exception:
             logger.minor("No ROI preview")

@@ -325,10 +325,7 @@ class ChemfishRc(KvrcCore):
         # spectrogram and other audio settings
         self.audio_spectrogram_cmap = config.new_cmap("audio_spectrogram_cmap", None)
         self.audio_waveform_point_size = config.new_point_size(
-            "audio_waveform_point_size", 0.25 * mget("lines.markersize")
-        )
-        self.audio_waveform_line_width = config.new_line_width(
-            "audio_waveform_line_width", 0.25 * mget("lines.linewidth")
+            "audio_waveform_point_size", 0.01 * mget("lines.markersize")
         )
         self.audio_waveform_color = config.new_rgb("audio_waveform_color", "black")
 
@@ -344,13 +341,13 @@ class ChemfishRc(KvrcCore):
         self.video_neutral_control_color = config.new_rgb("video_neutral_control_color", "purple")
 
         # library-overview pie charts
-        self.mandos_pie_center_circle_fraction = config.new_fraction(
-            "mandos_pie_center_circle_fraction", 0.6
+        self.breakdown_pie_center_circle_fraction = config.new_fraction(
+            "breakdown_pie_center_circle_fraction", 0.6
         )
-        self.mandos_pie_outline_width = config.new_line_width(
-            "mandos_pie_outline_width", mget("lines.linewidth")
+        self.breakdown_pie_outline_width = config.new_line_width(
+            "breakdown_pie_outline_width", mget("lines.linewidth")
         )
-        self.mandos_pie_pct_distance = config.new_line_width("mandos_pie_pct_distance", 4.0)
+        self.breakdown_pie_pct_distance = config.new_line_width("mandos_pie_pct_distance", 4.0)
 
         # p-value markers on bar plots
         self.pval_color = config.new_rgb("pval_color", "#333333")

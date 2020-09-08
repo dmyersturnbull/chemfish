@@ -110,7 +110,7 @@ class KvrcDefaults:
     light_colors = FancyColorSchemes.qualitiative_26()
     treatment_colors = FancyColorSchemes.qualitiative_26()
 
-    control_colors = FancyColorSchemes.grayscales()
+    control_colors = FancyColorSchemes.grayscales()[1:]
 
     control_color_dict = {"solvent (-)": "#777777", "killed (+)": "#000000", "empty (-)": "#aaaaaa"}
 

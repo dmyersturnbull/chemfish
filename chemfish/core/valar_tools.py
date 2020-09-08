@@ -116,7 +116,7 @@ class ValarTools:
             return str(data, encoding="utf-16")
         if dt == "string:utf32":
             return str(data, encoding="utf-32")
-        elif dt.startswith("image:") or dt == "other":
+        elif dt.startswith("image:"):
             return Image.open(io.BytesIO(data))
         else:
             return data

@@ -107,7 +107,7 @@ class SensorCache(ASensorCache):
         return self.load((SensorNames.THERMOSENSOR, run))
 
     @abcd.overrides
-    def load_wav(self, run: RunLike) -> MicrophoneSensor:
+    def load_microphone(self, run: RunLike) -> MicrophoneSensor:
         """
 
 
@@ -121,7 +121,7 @@ class SensorCache(ASensorCache):
         return self.load((SensorNames.MICROPHONE, run))
 
     @abcd.overrides
-    def load_preview(self, run: RunLike) -> ImageSensor:
+    def load_preview_frame(self, run: RunLike) -> ImageSensor:
         """
 
 
@@ -135,7 +135,7 @@ class SensorCache(ASensorCache):
         return self.load((SensorNames.PREVIEW_FRAME, run))
 
     @abcd.overrides
-    def load_webcam(self, run: RunLike) -> ImageSensor:
+    def load_secondary_camera(self, run: RunLike) -> ImageSensor:
         """
 
 

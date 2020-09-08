@@ -167,9 +167,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         self._namer = WellNamers.well()  # type: WellNamer
         # make sure to leave this as None!
         # we'll use self._namer if it's None
-        self._display_namer: Union[None, WellNamer] = None
         self._packer: Optional[Callable[[pd.DataFrame], pd.Series]] = None
-        self._sizer: Optional[Callable[[pd.DataFrame], pd.Series]] = None
         self._compound_namer = None
         self._generation: Optional[DataGeneration] = None
         self._limit: Optional[int] = None
@@ -306,19 +304,6 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         self._namer = namer
         return self
 
-    def with_display_names(self, namer: WellNamer) -> WellFrameBuilder:
-        """
-        Set the 'display_name' column using this function.
-
-        Args:
-            namer: A Namer or function mapping pd.DataFrame to a Series with str type.
-
-        Returns:
-
-        """
-        self._display_namer = namer
-        return self
-
     def with_packs(self, packer: Callable[[pd.DataFrame], pd.Series]) -> WellFrameBuilder:
         """
         Set the 'pack' column using this function.
@@ -330,20 +315,6 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
 
         """
         self._packer = packer
-        return self
-
-    def with_sizes(self, sizer: Callable[[pd.DataFrame], pd.Series]) -> WellFrameBuilder:
-        """
-        Set the 'size' column using this function.
-
-        Args:
-            sizer: A function mapping pd.DataFrame to a Series with float type.
-
-        Returns:
-          self
-
-        """
-        self._sizer = sizer
         return self
 
     def with_compound_names(self, namer: CompoundNamer) -> WellFrameBuilder:
@@ -494,12 +465,13 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
             )
         else:
             df["compound_names"] = self._compound_namer.map_to(df["c_ids"])
+        df["pack"] = "" if self._packer is None else self._packer(df)
         df["name"] = str(df["well"]) if self._namer is None else self._namer(df)
         df["name"] = df["name"].map(str).astype(str)
-        df["display_name"] = df["name"] if self._display_namer is None else self._display_namer(df)
-        df["pack"] = "" if self._packer is None else self._packer(df)
-        if self._sizer is not None:  # optional column
-            df["size"] = self._sizer(df).astype(str)
+        df["display_name"] = df["name"]
+        df["color"] = '#000000'
+        df["size"] = 1.0
+        df["marker"] = '.'
         return WellFrame.of(df)
 
     def _select_query(self) -> peewee.Query:

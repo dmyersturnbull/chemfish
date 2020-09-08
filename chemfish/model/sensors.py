@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from PIL import Image, ImageDraw
+from scipy.interpolate import interp1d
 
 from chemfish.core.core_imports import *
 from chemfish.core.valar_singleton import *
@@ -68,6 +69,11 @@ class BatteryTimeData:
     def start_end_dts(self) -> Tup[datetime, datetime]:
         """"""
         return self.start_dt, self.end_dt
+
+    @property
+    def n_ms(self) -> int:
+        """"""
+        return self.end_ms - self.start_ms
 
     @property
     def start_dt(self) -> datetime:
@@ -331,7 +337,14 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
         """ """
         return self._bt_data
 
-    def slice_ms(self, start_ms: Optional[int], end_ms: Optional[int]) -> TimeDepChemfishSensor:
+    def interpolate(self, step_ms: int = 1, kind: str = 'zero', **kwargs) -> __qualname__:
+        n_samples = int(np.round(float(self.bt_data.n_ms) / step_ms))
+        new_timing = np.linspace(self.timing_data[0], self.timing_data[-1], n_samples)
+        interp = interp1d(self.timing_data, self.data, kind=kind, **kwargs)
+        values = interp(new_timing)
+        return self.__class__(self.run, new_timing, values, copy(self.bt_data), self.samples_per_sec)
+
+    def slice_ms(self, start_ms: Optional[int], end_ms: Optional[int]) -> __qualname__:
         """
         Slices Sensor data
 
@@ -440,7 +453,8 @@ class MicrophoneWaveformSensor(TimeDepChemfishSensor):
             .ds_chunk_mean(ds_rate)
             .normalize()
         )
-        td = np.linspace(timing_data[0], timing_data[-1], mwf.n_ms)
+        n_ms = int(np.round(mwf.n_ms))  # TODO warn?
+        td = np.linspace(timing_data[0], timing_data[-1], n_ms)
         super().__init__(run, td, mwf.data, battery_data, ds_rate)
 
     @property

@@ -89,11 +89,11 @@ class BreakdownPiePlotter(KvrcPlotting):
             labels=labels,
             autopct=None,
             startangle=90,
-            pctdistance=chemfish_rc.mandos_pie_pct_distance,
+            pctdistance=chemfish_rc.breakdown_pie_pct_distance,
             explode=explode,
             wedgeprops={
                 "edgecolor": "black",
-                "linewidth": chemfish_rc.mandos_pie_outline_width,
+                "linewidth": chemfish_rc.breakdown_pie_outline_width,
                 "linestyle": "-",
                 "antialiased": True,
             },
@@ -106,8 +106,8 @@ class BreakdownPiePlotter(KvrcPlotting):
         # draw circle
         centre_circle = plt.Circle(
             (0, 0),
-            chemfish_rc.mandos_pie_center_circle_fraction,
-            lw=chemfish_rc.mandos_pie_outline_width,
+            chemfish_rc.breakdown_pie_center_circle_fraction,
+            lw=chemfish_rc.breakdown_pie_outline_width,
             fc="white",
             edgecolor="black",
         )

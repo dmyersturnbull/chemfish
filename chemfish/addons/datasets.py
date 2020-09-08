@@ -120,19 +120,6 @@ class ChemfishDatasetTools:
         )
 
     @classmethod
-    def biomol_display_namer(cls, today: datetime) -> WellNamer:
-        """
-
-
-        Args:
-            today: datetime:
-
-        Returns:
-
-        """
-        return WellNamers.screening_plate()
-
-    @classmethod
     def dmt_simple_namer(cls, today: datetime) -> WellNamer:
         """
 
@@ -268,7 +255,6 @@ class LeoDataset2(ChemfishDataset):
             )
             .with_compound_names(ChemfishDatasetTools.biomol_compound_namer(today))
             .with_names(ChemfishDatasetTools.biomol_namer(today))
-            .with_display_names(ChemfishDatasetTools.biomol_display_namer(today))
             .build()
         )
         original_length = df.feature_length()

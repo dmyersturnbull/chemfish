@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from clana.visualize_cm import simulated_annealing
+from clana.optimize import simulated_annealing
 from matplotlib.figure import Figure
 
 from chemfish.core.core_imports import *
@@ -178,7 +178,7 @@ class ConfusionMatrix(UntypedDf):
                 f"Can't sort because rows {self.rows} and columns {self.columns} differ"
             )
         optimized = simulated_annealing(self.values, **kwargs)
-        perm = list(reversed(optimized["perm"]))
+        perm = list(reversed(optimized.perm))
         perm = {name: perm.index(i) for i, name in enumerate(self.rows)}
         logger.info(f"Permutation for rows {self.rows}: {perm}")
         return perm

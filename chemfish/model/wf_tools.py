@@ -141,6 +141,7 @@ class WellFrameColumns:
         "display_name",
         "size",
         "marker",
+        "color",
         *[x[0] for x in reserved_fns],
         "compound_names",
         "feature",

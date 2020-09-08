@@ -546,7 +546,7 @@ class Quick:
             trans.to_hdf(h5_path)
             Tools.save_json(all_params, json_path)
             logger.info(f"Saved {h5_path} and {json_path}")
-        recolor = len(df["color"].unique()) == 1
+        recolor = "color" not in df.index_names() or len(df["color"].unique()) == 1
         figure = WellPlotters.basic(trans, recolor=recolor)
         if path_stub is not None:
             # noinspection PyUnboundLocalVariable
@@ -619,22 +619,24 @@ class Quick:
 
         """
         run = Tools.run(run, join=True)
+        battery = run.experiment.battery
         if sensors is None:
-            sensors = ["thermistor", "photoresistor", "microphone"]
+            sensors = [SensorNames.PHOTOSENSOR, SensorNames.MICROPHONE]
         stimframes = self.stimframes(run.experiment.battery, start_ms, end_ms, audio_waveform=True)
         stimplotter = StimframesPlotter(audio_waveform=True)
         sensor_data = []
         for sensor in sensors:
-            sensor = SensorNames.of(sensor)
+            if isinstance(sensor, str):
+                sensor = SensorNames[sensor]
             if sensor == SensorNames.MICROPHONE:
-                sensor_data.append(self.sensor_cache.load_wav(run).waveform(1000))
+                sensor_data.append(self.sensor_cache.load_microphone(run).waveform(1000))
             else:
                 sdata = self.sensor_cache.load((sensor, run))
                 if isinstance(sdata, TimeDepChemfishSensor):
                     sdata = sdata.slice_ms(start_ms, end_ms)
                 sensor_data.append(sdata)
         return SensorPlotter(stimplotter=stimplotter, quantile=self.quantile).diagnostics(
-            run, stimframes, sensor_data, start_ms=start_ms
+            run, stimframes, battery, sensor_data, start_ms=start_ms
         )
 
     def durations(self, runs: RunsLike, kind: DurationType) -> Figure:
@@ -880,7 +882,7 @@ class Quick:
         try:
             # select while joining on the tables below
             wheres = Runs.id << {r.id for r in Tools.runs(wheres)}
-        except:
+        except Exception:
             pass
         query = (
             Runs.select(
