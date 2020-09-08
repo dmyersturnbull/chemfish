@@ -35,21 +35,22 @@ class AudioTools:
             return ipd.Audio(data=path)
 
     @classmethod
-    def to_wav(cls, path: PathLike):
+    def save(
+        cls, audio_segment: pydub.AudioSegment, path: PathLike, audio_format: str = "flac"
+    ) -> None:
         """
 
 
         Args:
+            audio_segment:
             path: PathLike:
+            audio_format:
 
         Returns:
 
         """
         path = Tools.prepped_file(path)
-        with path.open("rb") as rf:
-            song = pydub.AudioSegment(data=rf.read(), sample_width=2, frame_rate=44100, channels=1)
-        song.export(path.with_suffix("wav"), format="wav")
-        return path.with_suffix("wav")
+        audio_segment.export(path, format=audio_format)
 
     @classmethod
     def load_pydub(cls, path: PathLike) -> pydub.AudioSegment:
@@ -63,7 +64,8 @@ class AudioTools:
 
         """
         path = str(Path(path))
-        x = pydub.AudioSegment.from_file(path)
+        # TODO sample_width=2, frame_rate=44100, channels=1 ???
+        return pydub.AudioSegment.from_file(path)
 
 
 @dataclass(frozen=True)
@@ -78,8 +80,8 @@ class Waveform:
     path: Optional[str]
     data: np.array
     sampling_rate: float
-    minimum: float
-    maximum: float
+    minimum: Optional[float]
+    maximum: Optional[float]
     description: Optional[str] = None
     start_ms: Optional[float] = None
     end_ms: Optional[float] = None

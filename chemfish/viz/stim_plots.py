@@ -159,6 +159,7 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
                 linewidth=chemfish_rc.stimplot_line_width,
                 clip_on=chemfish_rc.stimplot_clip,
                 rasterized=chemfish_rc.rasterize_traces,
+                drawstyle="steps-post",
             )
         if chemfish_rc.stimplot_fill_alpha > 0:
             ax.fill_between(

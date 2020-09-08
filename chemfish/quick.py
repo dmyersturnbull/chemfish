@@ -621,20 +621,22 @@ class Quick:
         run = Tools.run(run, join=True)
         battery = run.experiment.battery
         if sensors is None:
-            sensors = [SensorNames.PHOTOSENSOR, SensorNames.MICROPHONE]
+            sensors = [SensorNames.PHOTOSENSOR, SensorNames.THERMOSENSOR, SensorNames.MICROPHONE]
         stimframes = self.stimframes(run.experiment.battery, start_ms, end_ms, audio_waveform=True)
         stimplotter = StimframesPlotter(audio_waveform=True)
         sensor_data = []
         for sensor in sensors:
             if isinstance(sensor, str):
                 sensor = SensorNames[sensor]
-            if sensor == SensorNames.MICROPHONE:
-                sensor_data.append(self.sensor_cache.load_microphone(run).waveform(1000))
-            else:
-                sdata = self.sensor_cache.load((sensor, run))
-                if isinstance(sdata, TimeDepChemfishSensor):
-                    sdata = sdata.slice_ms(start_ms, end_ms)
+            if sensor == SensorNames.MICROPHONE or sensor == SensorNames.MICROPHONE_WAVEFORM:
+                waveform = self.sensor_cache.load_waveform(run)
+                sensor_data.append(waveform)
+            elif sensor.is_time_dependent:
+                sdata = self.sensor_cache.load((sensor, run)).slice_ms(start_ms, end_ms)
                 sensor_data.append(sdata)
+            else:
+                raise TypeError(f"Sensor {sensor} is not time-dependent)")
+        logger.error(f"Types are {[type(s) for s in sensor_data]}")
         return SensorPlotter(stimplotter=stimplotter, quantile=self.quantile).diagnostics(
             run, stimframes, battery, sensor_data, start_ms=start_ms
         )

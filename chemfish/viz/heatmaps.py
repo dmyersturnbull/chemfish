@@ -89,7 +89,9 @@ class HeatPlotter(CakeComponent, KvrcPlotting):
         vmin, vmax = self._vmin_max(df)
         figure, ax1, ax2 = self._figure(len(df), stimframes is not None)
         if chemfish_rc.rasterize_heatmaps:
-            ax1.imshow(df, aspect="auto", vmin=vmin, vmax=vmax, cmap=self._cmap, interpolation='none')
+            ax1.imshow(
+                df, aspect="auto", vmin=vmin, vmax=vmax, cmap=self._cmap, interpolation="none"
+            )
         else:
             ax1.pcolormesh(df, vmin=vmin, vmax=vmax, cmap=self._cmap)
         self._adjust(df, ax1)

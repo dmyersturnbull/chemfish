@@ -12,6 +12,7 @@ from chemfish.core._tools import *
 from chemfish.core.data_generations import DataGeneration
 from chemfish.core.tools import *
 from chemfish.core.valar_singleton import *
+from chemfish.model.sensor_names import SensorNames
 
 _stimulus_display_colors = {
     s.name: "#" + s.default_color if s.audio_file is None else "black" for s in Stimuli.select()
@@ -44,7 +45,7 @@ class ValarTools:
     LEGACY_FRAMERATE = 25
 
     @classmethod
-    def required_sensors(cls, generation: DataGeneration) -> Set[Sensors]:
+    def required_sensors(cls, generation: DataGeneration) -> Mapping[SensorNames, Sensors]:
         """
 
         Args:
@@ -54,21 +55,21 @@ class ValarTools:
 
         """
         gens = {x["name"]: x for x in InternalTools.load_resource("core", "generations.json")}
-        return set(Sensors.fetch_all(gens[generation.name]["sensors"].values()))
+        return dict(Sensors.fetch_all(gens[generation.name]["sensors"]))
 
     @classmethod
-    def standard_sensor(cls, name: str, generation: DataGeneration) -> Sensors:
+    def standard_sensor(cls, sensor_name: SensorNames, generation: DataGeneration) -> Sensors:
         """
 
         Args:
-            name: sensor name (key in ``generations.json``)
+            sensor_name: sensor name (key in ``generations.json``)
             generation:
 
         Returns:
 
         """
         gens = {x["name"]: x for x in InternalTools.load_resource("core", "generations.json")}
-        return Sensors.fetch(gens[generation.name]["sensors"][name])
+        return Sensors.fetch(gens[generation.name]["sensors"][sensor_name.json_name])
 
     @classmethod
     def convert_sensor_data_from_bytes(
@@ -91,13 +92,13 @@ class ValarTools:
         if data is None:
             return None
         if dt == "byte":
-            return np.frombuffer(data, dtype=np.int16)
+            return np.frombuffer(data, dtype=np.byte).astype(np.int32)
         if dt == "unsigned_byte":
-            return np.frombuffer(data, dtype=np.int16) + 2 ** 7
+            return np.frombuffer(data, dtype=np.byte).astype(np.int32) + 2 ** 7
         if dt == "short":
-            return np.frombuffer(data, dtype=">i2").astype(np.int32)
+            return np.frombuffer(data, dtype=">i2").astype(np.int64)
         if dt == "unsigned_short":
-            return np.frombuffer(data, dtype=">i2").astype(np.int32) + 2 ** 15
+            return np.frombuffer(data, dtype=">i2").astype(np.int64) + 2 ** 15
         if dt == "int":
             return np.frombuffer(data, dtype=">i4").astype(np.int64)
         if dt == "unsigned_int":
@@ -116,8 +117,8 @@ class ValarTools:
             return str(data, encoding="utf-16")
         if dt == "string:utf32":
             return str(data, encoding="utf-32")
-        elif dt.startswith("image:"):
-            return Image.open(io.BytesIO(data))
+        # elif dt.startswith("image:"):
+        #    return Image.open(io.BytesIO(data))
         else:
             return data
 

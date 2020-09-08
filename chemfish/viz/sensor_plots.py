@@ -12,7 +12,7 @@ from chemfish.viz.stim_plots import StimframesPlotter
 class SensorPlotter(CakeComponent, KvrcPlotting):
     """"""
 
-    def __init__(self, stimplotter: Optional[StimframesPlotter] = None, quantile: float = 0.995):
+    def __init__(self, stimplotter: Optional[StimframesPlotter] = None, quantile: float = 0.9999):
         self.stimplotter = StimframesPlotter() if stimplotter is None else stimplotter
         self.quantile = quantile
 
@@ -52,44 +52,60 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
         gs.update(hspace=chemfish_rc.trace_hspace)
         # plot the sensors in turn
         for i, data in enumerate(sensors):
-            x_vals, y_vals = data.timing_data, data.data
             ax = figure.add_subplot(gs[i])
-            if isinstance(data, MicrophoneWaveformSensor):
-                ax.scatter(
-                    x_vals,
-                    y_vals,
-                    rasterized=chemfish_rc.sensor_rasterize,
-                    s=chemfish_rc.sensor_mic_point_size,
-                    c=chemfish_rc.sensor_mic_color,
+            try:
+                self._plot_one(data, ax)
+            except Exception:
+                logger.error(
+                    f"Failed to plot {data.name} (xl: {data.timing_data.shape}, yl: {data.data.shape}"
                 )
-                ax.set_ylim(ymin=-1, ymax=1)
-            else:
-                ax.plot(
-                    x_vals,
-                    y_vals,
-                    rasterized=chemfish_rc.sensor_rasterize,
-                    linewidth=chemfish_rc.sensor_line_width,
-                    c=chemfish_rc.sensor_line_color,
-                    drawstyle="steps-pre"
-                )
-                ax.set_ylim(
-                    np.quantile(y_vals, 1 - self.quantile), np.quantile(y_vals, self.quantile)
-                )
-            ax.get_xaxis().set_ticks([])
-            ax.get_yaxis().set_ticks([])
-            label = data.symbol if chemfish_rc.sensor_use_symbols else data.abbrev
-            ax.set_ylabel(label, rotation=(0 if chemfish_rc.sensor_use_symbols else 90))
-            ax.set_xlim(data.bt_data.start_ms, data.bt_data.end_ms)
+                raise
         # finally add the stimframes
-        ax2 = figure.add_subplot(gs[n])
-        self.stimplotter.plot(stimframes, battery, ax=ax2, starts_at_ms=start_ms)
-        ax2.set_ylabel(
+        ax = figure.add_subplot(gs[n])
+        self._plot_stimframes(stimframes, battery, start_ms, ax)
+        FigureTools.stamp_runs(figure.axes[0], run)
+        logger.minor(
+            f"Plotted data for sensors {[s.name for s in sensors]}. Took {round(time.monotonic() - t0, 1)}s."
+        )
+        return figure
+
+    def _plot_stimframes(
+        self, stimframes: StimFrame, battery: Batteries, start_ms: Optional[int], ax
+    ):
+        self.stimplotter.plot(stimframes, battery, ax=ax, starts_at_ms=start_ms)
+        ax.set_ylabel(
             "⚑" if chemfish_rc.sensor_use_symbols else "stimuli",
             rotation=0 if chemfish_rc.sensor_use_symbols else 90,
         )
-        FigureTools.stamp_runs(figure.axes[0], run)
-        logger.minor("Plotted sensor data. Took {round(time.monotonic() - t0, 1))}s.")
-        return figure
+
+    def _plot_one(self, data: TimeDepChemfishSensor, ax: Axes) -> None:
+        if not isinstance(data, TimeDepChemfishSensor):
+            raise TypeError(f"Type {type(data)} is not a TimeDepChemfishSensor")
+        x_vals, y_vals = data.timing_data, data.data
+        if isinstance(data, MicrophoneWaveformSensor):
+            ax.scatter(
+                x_vals,
+                y_vals,
+                rasterized=chemfish_rc.sensor_rasterize,
+                s=chemfish_rc.sensor_mic_point_size,
+                c=chemfish_rc.sensor_mic_color,
+            )
+            ax.set_ylim(ymin=-1, ymax=1)
+        else:
+            ax.plot(
+                x_vals,
+                y_vals,
+                rasterized=chemfish_rc.sensor_rasterize,
+                linewidth=chemfish_rc.sensor_line_width,
+                c=chemfish_rc.sensor_line_color,
+                drawstyle="steps-pre",
+            )
+            ax.set_ylim(np.quantile(y_vals, 1 - self.quantile), np.quantile(y_vals, self.quantile))
+        ax.get_xaxis().set_ticks([])
+        ax.get_yaxis().set_ticks([])
+        label = data.symbol if chemfish_rc.sensor_use_symbols else data.abbrev
+        ax.set_ylabel(label, rotation=(0 if chemfish_rc.sensor_use_symbols else 90))
+        ax.set_xlim(data.bt_data.start_ms, data.bt_data.end_ms)
 
 
 __all__ = ["SensorPlotter"]

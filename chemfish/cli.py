@@ -61,9 +61,9 @@ class ChemfishProcessor:
         Returns:
 
         """
-        if cmd is ChemfishCmd.init:
+        if cmd == ChemfishCmd.init:
             self.init()
-        elif cmd is ChemfishCmd.video:
+        elif cmd == ChemfishCmd.video:
             self.download_video(args)
         else:
             print(ChemfishResources.text("art", cmd.name + ".txt"))

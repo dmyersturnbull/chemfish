@@ -2,41 +2,12 @@ from __future__ import annotations
 
 from PIL import Image, ImageDraw
 from scipy.interpolate import interp1d
+import soundfile
 
 from chemfish.core.core_imports import *
 from chemfish.core.valar_singleton import *
 from chemfish.model.audio import *
-
-
-@enum.unique
-class SensorNames(SmartEnum):
-    """
-    Enum of SensorNames. Put all Sensors that are involved in sensor_caches in here.
-    """
-
-    PHOTOSENSOR = enum.auto()
-    THERMOSENSOR = enum.auto()
-    MICROPHONE = enum.auto()
-    SECONDARY_CAMERA = enum.auto()
-    PREVIEW_FRAME = enum.auto()
-    STIMULUS_TIMING = enum.auto()
-    CAMERA_TIMING = enum.auto()
-    RAW_SECONDARY_CAMERA = enum.auto()
-    RAW_PREVIEW_FRAME = enum.auto()
-    RAW_MICROPHONE_RECORDING = enum.auto()
-    RAW_MICROPHONE_MILLIS = enum.auto()
-    RAW_CAMERA_MILLIS = enum.auto()
-    RAW_STIMULUS_MILLIS = enum.auto()
-    RAW_STIMULUS_VALUES = enum.auto()
-    RAW_STIMULUS_IDS = enum.auto()
-    RAW_PHOTOSENSOR_MILLIS = enum.auto()
-    RAW_PHOTOSENSOR_VALUES = enum.auto()
-    RAW_THERMOSENSOR_MILLIS = enum.auto()
-    RAW_THERMOSENSOR_VALUES = enum.auto()
-
-    @property
-    def extension(self) -> str:
-        return ".flac" if self is SensorNames.MICROPHONE else ".bytes"
+from chemfish.model.sensor_names import SensorNames
 
 
 class MicrophoneWaveform(Waveform):
@@ -48,11 +19,10 @@ class MicrophoneWaveform(Waveform):
 @abcd.auto_repr_str()
 @abcd.auto_eq()
 @abcd.auto_hash()
-class BatteryTimeData:
+class _AbsBatteryTimeData(metaclass=abc.ABCMeta):
     """
     BatteryTimeData object (contains start/end timestamps, length of battery, etc.) for a given run.
-    These are the empirical values, not the expected ones!
-
+    These are EITHER empirical or expected.
     """
 
     def __init__(self, run: RunLike, start_ms: int, end_ms: int):
@@ -60,20 +30,35 @@ class BatteryTimeData:
 
         Args:
             run:
-            start_ms:
-            end_ms:
+            start_ms: From the stimulus_millis sensor: specifically ``stimulus_millis[0]``
+            end_ms:From the stimulus_millis sensor: specifically ``stimulus_millis[-1]``
         """
         self.run, self.start_ms, self.end_ms = Tools.run(run), int(start_ms), int(end_ms)
 
     @property
-    def start_end_dts(self) -> Tup[datetime, datetime]:
+    def start_dt(self) -> datetime:
         """"""
-        return self.start_dt, self.end_dt
+        raise NotImplementedError()
+
+    @property
+    def end_dt(self) -> datetime:
+        """"""
+        raise NotImplementedError()
 
     @property
     def n_ms(self) -> int:
         """"""
         return self.end_ms - self.start_ms
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+
+class EmpiricalBatteryTimeData(_AbsBatteryTimeData):
+    """
+    BatteryTimeData object (contains start/end timestamps, length of battery, etc.) for a given run.
+    These are the empirical values, not the expected ones!
+    """
 
     @property
     def start_dt(self) -> datetime:
@@ -85,14 +70,33 @@ class BatteryTimeData:
         """"""
         return self.run.datetime_run + timedelta(milliseconds=self.end_ms)
 
-    def __len__(self) -> int:
-        return len(self.data)
+
+class ExpectedBatteryTimeData(_AbsBatteryTimeData):
+    """
+    BatteryTimeData object (contains start/end timestamps, length of battery, etc.) for a given run.
+    The start time is empirical
+    """
+
+    @property
+    def start_dt(self) -> datetime:
+        """"""
+        return self.run.datetime_run + timedelta(milliseconds=self.start_ms)
+
+    @property
+    def end_dt(self) -> datetime:
+        """"""
+        battery = self.run.experiment.battery
+        return self.start_dt + timedelta(
+            seconds=battery.length / ValarTools.battery_stimframes_per_second(battery)
+        )
 
 
 class ChemfishSensor:
     """"""
 
-    def __init__(self, run: RunLike, sensor_data: Union[SensorDataLike, Image.Image]):
+    def __init__(
+        self, run: RunLike, sensor_data: Union[SensorDataLike, Image.Image, soundfile.SoundFile]
+    ):
         """
         Sensor wrapper object that holds converted sensor_data for a given run.
 
@@ -130,15 +134,22 @@ class ChemfishSensor:
         raise NotImplementedError()
 
     def __str__(self):
-        return "{}(r{} ℓ={})".format(self.__class__.__name__, self.run.id, len(self._sensor_data))
+        return "{}(r{} ℓ={})".format(
+            self.__class__.__name__,
+            self.run.id,
+            len(self._sensor_data) if hasattr(self._sensor_data, "__len__") else "?",
+        )
 
     def __repr__(self):
         return "{}(r{} ℓ={} @{})".format(
-            self.__class__.__name__, self.run.id, len(self._sensor_data), str(hex(id(self)))
+            self.__class__.__name__,
+            self.run.id,
+            len(self._sensor_data) if hasattr(self._sensor_data, "__len__") else "?",
+            str(hex(id(self))),
         )
 
 
-class TimeData(ChemfishSensor, metaclass=abc.ABCMeta):
+class TimeDataSensor(ChemfishSensor, metaclass=abc.ABCMeta):
     """
     BatteryTimeData object (contains start/end timestamps, length of battery, etc.) for a given run.
     These are the empirical values, not the expected ones!
@@ -190,7 +201,7 @@ class TimeData(ChemfishSensor, metaclass=abc.ABCMeta):
         return len(self.data)
 
 
-class StimulusTimeData(TimeData):
+class StimulusTimeData(TimeDataSensor):
     """ """
 
     @property
@@ -204,7 +215,7 @@ class StimulusTimeData(TimeData):
         return "⚑"
 
 
-class CameraTimeData(TimeData):
+class CameraTimeData(TimeDataSensor):
     """"""
 
     @property
@@ -218,7 +229,7 @@ class CameraTimeData(TimeData):
         return "🎥"
 
 
-class RawData(ChemfishSensor):
+class RawDataSensor(ChemfishSensor):
     """"""
 
     @property
@@ -284,11 +295,33 @@ class ImageSensor(ChemfishSensor):
 
     @property
     def abbrev(self) -> str:
-        return "roi"
+        return "img"
 
     @property
     def symbol(self) -> str:
         return "📷"
+
+    def __str__(self):
+        return "{}(r{} w={},h={})".format(
+            self.__class__.__name__, self.run.id, self._sensor_data.width, self._sensor_data.height
+        )
+
+    def __repr__(self):
+        return "{}(r{} w={},h={} @ {})".format(
+            self.__class__.__name__,
+            self.run.id,
+            self._sensor_data.width,
+            self._sensor_data.height,
+            str(hex(id(self))),
+        )
+
+
+class SecondaryCameraSensor(ImageSensor):
+    """"""
+
+
+class PreviewFrameSensor(ImageSensor):
+    """"""
 
 
 class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
@@ -299,7 +332,7 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
         run: RunLike,
         timing_data: np.array,
         sensor_data: np.array,
-        battery_data: BatteryTimeData,
+        battery_data: EmpiricalBatteryTimeData,
         samples_per_sec: Optional[int],
     ):
         """
@@ -333,16 +366,18 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
         return self._timing_data
 
     @property
-    def bt_data(self) -> BatteryTimeData:
+    def bt_data(self) -> EmpiricalBatteryTimeData:
         """ """
         return self._bt_data
 
-    def interpolate(self, step_ms: int = 1, kind: str = 'zero', **kwargs) -> __qualname__:
+    def interpolate(self, step_ms: int = 1, kind: str = "zero", **kwargs) -> __qualname__:
         n_samples = int(np.round(float(self.bt_data.n_ms) / step_ms))
         new_timing = np.linspace(self.timing_data[0], self.timing_data[-1], n_samples)
         interp = interp1d(self.timing_data, self.data, kind=kind, **kwargs)
         values = interp(new_timing)
-        return self.__class__(self.run, new_timing, values, copy(self.bt_data), self.samples_per_sec)
+        return self.__class__(
+            self.run, new_timing, values, copy(self.bt_data), self.samples_per_sec
+        )
 
     def slice_ms(self, start_ms: Optional[int], end_ms: Optional[int]) -> __qualname__:
         """
@@ -433,29 +468,42 @@ class ThermosensorSensor(TimeDepChemfishSensor):
         return 1
 
 
+class AccelSensor(TimeDepChemfishSensor):
+    """
+    Acceleration _magnitude_ from an accelerometer.
+    """
+
+    @property
+    def abbrev(self) -> str:
+        return "accel"
+
+    @property
+    def symbol(self) -> str:
+        return "🏍"
+
+    @property
+    def values_per_ms(self) -> int:
+        """ """
+        return 1
+
+
 class MicrophoneWaveformSensor(TimeDepChemfishSensor):
     """ """
 
-    # TODO: Not sure if this is right... Don't know what it's supposed to be doing either...
     def __init__(
         self,
         run: Runs,
+        waveform: MicrophoneWaveform,
         timing_data: np.array,
-        sensor_data: np.array,
-        battery_data: BatteryTimeData,
-        samples_per_sec: Optional[int],
-        ds_rate: int,
+        battery_data: EmpiricalBatteryTimeData,
+        samples_per_sec: int,
     ):
-        mwf = (
-            MicrophoneWaveform(
-                run.name, None, sensor_data, samples_per_sec, -1, -1, run.description
-            )
-            .ds_chunk_mean(ds_rate)
-            .normalize()
-        )
-        n_ms = int(np.round(mwf.n_ms))  # TODO warn?
-        td = np.linspace(timing_data[0], timing_data[-1], n_ms)
-        super().__init__(run, td, mwf.data, battery_data, ds_rate)
+        super().__init__(run, waveform.data, timing_data, battery_data, samples_per_sec)
+        self._waveform = waveform
+
+    @property
+    def waveform(self) -> MicrophoneWaveform:
+        return self._waveform
 
     @property
     def abbrev(self) -> str:
@@ -468,7 +516,7 @@ class MicrophoneWaveformSensor(TimeDepChemfishSensor):
     @property
     def values_per_ms(self) -> float:
         """ """
-        return self.samples_per_sec / 1000
+        return self.samples_per_sec * 1000
 
 
 class MicrophoneSensor(TimeDepChemfishSensor):
@@ -488,13 +536,13 @@ class MicrophoneSensor(TimeDepChemfishSensor):
         return 44.1  # TODO 44100 kHz
 
     def waveform(
-        self, ds_rate: int, start_ms: Optional[int] = None, end_ms: Optional[int] = None
+        self, downsample_to_hertz: int, start_ms: Optional[int] = None, end_ms: Optional[int] = None
     ) -> MicrophoneWaveformSensor:
         """
 
 
         Args:
-            ds_rate: int:
+            downsample_to_hertz: int:
             start_ms: Optional[int]:  (Default value = None)
             end_ms: Optional[int]:  (Default value = None)
 
@@ -502,13 +550,26 @@ class MicrophoneSensor(TimeDepChemfishSensor):
 
         """
         sliced_sensor = self.slice_ms(start_ms, end_ms)
+        waveform = MicrophoneWaveform(
+            name=self.run.name,
+            path=None,
+            data=sliced_sensor.data,
+            sampling_rate=self.samples_per_sec,
+            minimum=None,
+            maximum=-1,
+            description=self.run.name,
+            start_ms=None,
+            end_ms=None,
+        )
+        waveform = waveform.ds_chunk_mean(downsample_to_hertz).normalize()
+        n_ms = int(np.round(waveform.n_ms))
+        ideal_timing_data = np.linspace(self.timing_data[0], self.timing_data[-1], n_ms)
         return MicrophoneWaveformSensor(
-            self.run,
-            sliced_sensor.timing_data,
-            sliced_sensor.data,
-            self.bt_data,
-            int(self.values_per_ms * 1000),
-            ds_rate,
+            run=self.run,
+            waveform=waveform,
+            timing_data=ideal_timing_data,
+            battery_data=self.bt_data,
+            samples_per_sec=int(self.values_per_ms * 1000),
         )
 
 
@@ -521,10 +582,15 @@ __all__ = [
     "MicrophoneWaveformSensor",
     "ThermosensorSensor",
     "StimulusTimeData",
-    "BatteryTimeData",
+    "TimeDataSensor",
+    "ExpectedBatteryTimeData",
+    "EmpiricalBatteryTimeData",
     "ImageSensor",
     "SensorNames",
     "MicrophoneWaveform",
     "CameraTimeData",
     "SensorNames",
+    "SecondaryCameraSensor",
+    "PreviewFrameSensor",
+    "RawDataSensor",
 ]

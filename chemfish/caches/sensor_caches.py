@@ -1,11 +1,23 @@
 import soundfile
 from PIL import Image
+import pydub
 
 from chemfish.core.core_imports import *
 from chemfish.model.cache_interfaces import ASensorCache
 from chemfish.model.sensors import *
 
 DEFAULT_CACHE_DIR = chemfish_env.cache_dir / "sensors"
+
+name_to_sensor: Mapping[SensorNames, Type[ChemfishSensor]] = {
+    SensorNames.THERMOSENSOR: ThermosensorSensor,
+    SensorNames.PHOTOSENSOR: PhotosensorSensor,
+    SensorNames.MICROPHONE: MicrophoneSensor,
+    SensorNames.STIMULUS_MILLIS: StimulusTimeData,
+    SensorNames.CAMERA_MILLIS: CameraTimeData,
+    SensorNames.PREVIEW_FRAME: PreviewFrameSensor,
+    SensorNames.SECONDARY_CAMERA: SecondaryCameraSensor,
+    **{name: RawDataSensor for name in list(SensorNames) if name.is_raw},
+}
 
 
 @abcd.auto_eq()
@@ -63,9 +75,12 @@ class SensorCache(ASensorCache):
 
         """
         for sensor, run in sensors:
-            self._download(sensor, run)
+            # doing this is SO much simpler
+            # otherwise we'd have to duplicate the switch logic
+            # to handle raw and composite sensors separately
+            self.load((sensor, run))
 
-    def bt_data(self, run: RunLike) -> BatteryTimeData:
+    def bt_data(self, run: RunLike) -> EmpiricalBatteryTimeData:
         """
 
 
@@ -75,8 +90,8 @@ class SensorCache(ASensorCache):
         Returns:
 
         """
-        millis = self._download("stimulus_millis", run)
-        return BatteryTimeData(run, millis[0], millis[-1])
+        millis = self._download_raw(SensorNames.RAW_STIMULUS_MILLIS, run)
+        return EmpiricalBatteryTimeData(run, millis[0], millis[-1])
 
     @abcd.overrides
     def load_photosensor(self, run: RunLike) -> PhotosensorSensor:
@@ -121,6 +136,20 @@ class SensorCache(ASensorCache):
         return self.load((SensorNames.MICROPHONE, run))
 
     @abcd.overrides
+    def load_waveform(self, run: RunLike) -> MicrophoneWaveformSensor:
+        """
+
+
+        Args:
+            run:
+
+        Returns:
+
+        """
+        # noinspection PyTypeChecker
+        return self.load((SensorNames.MICROPHONE_WAVEFORM, run))
+
+    @abcd.overrides
     def load_preview_frame(self, run: RunLike) -> ImageSensor:
         """
 
@@ -161,49 +190,87 @@ class SensorCache(ASensorCache):
         """
         sensor_name, run = tup
         run = ValarTools.run(run)
-        if sensor_name == SensorNames.PHOTOSENSOR:
-            return PhotosensorSensor(
-                run,
-                self._download("photosensor_millis", run),
-                self._download("photosensor_values", run),
-                self.bt_data(run),
-                None,
-            )
-        elif sensor_name == SensorNames.THERMOSENSOR:
-            return ThermosensorSensor(
-                run,
-                self._download("thermosensor_millis", run),
-                self._download("thermosensor_values", run),
-                self.bt_data(run),
-                None,
-            )
-        elif sensor_name == SensorNames.MICROPHONE:
-            self._download("microphone_recording", run)
-            millis = np.repeat(self._download("microphone_millis", run), 1024)
-            self._download("microphone_recording", run)
-            data, sampling_rate = soundfile.read(
-                self.path_of((SensorNames.RAW_MICROPHONE_RECORDING, run))
-            )
-            return MicrophoneSensor(run, millis, data, self.bt_data(run), sampling_rate)
-        elif sensor_name == SensorNames.STIMULUS_TIMING:
-            return StimulusTimeData(run, self._download("stimulus_millis", run))
-        elif sensor_name == SensorNames.CAMERA_TIMING:
-            return CameraTimeData(run, self._download("camera_millis", run))
-        elif sensor_name == SensorNames.SECONDARY_CAMERA:
-            return ImageSensor(run, self._download("secondary_camera", run))
-        elif sensor_name == SensorNames.PREVIEW_FRAME:
-            return ImageSensor(run, self._download("preview_frame", run))
+        for component in sensor_name.components:
+            logger.debug(f"Finding {component} for {sensor_name}")
+            self._download_raw(component, run)
+        # okay, now fetch the real one
+        if sensor_name.is_audio_waveform:
+            return self._load_audio_waveform(run)
+        if sensor_name.is_audio_composite:
+            return self._load_audio(run)
+        elif sensor_name.is_time_dependent:
+            return self._load_time_dep(sensor_name, run)
+        elif sensor_name.is_timing:
+            # noinspection PyTypeChecker
+            z: Type[TimeDataSensor] = name_to_sensor[sensor_name]
+            return z(run, self._download_raw(sensor_name.millis_component, run))
+        elif sensor_name.is_image:
+            # noinspection PyTypeChecker
+            z: Type[ImageSensor] = name_to_sensor[sensor_name]
+            return z(run, self._download_raw(sensor_name.raw_bytes_component, run))
+        elif sensor_name.is_raw:
+            return RawDataSensor(run, self._download_raw(sensor_name, run))
         else:
             raise UnsupportedOpError(f"Sensor of type {sensor_name} cannot be loaded")
 
-    def _download(
-        self, std_sensor: str, run: RunLike
+    def _load_audio_waveform(self, run: Runs) -> MicrophoneWaveformSensor:
+        path = self.path_of((SensorNames.MICROPHONE_WAVEFORM, run))
+        mic = self._load_audio(run).slice_ms(None, None)
+        if path.exists():
+            logger.debug(f"Loading waveform from {path}")
+            vec = np.load(str(path))
+            waveform = MicrophoneWaveform(
+                name=run.name,
+                path=None,
+                data=vec,
+                sampling_rate=mic.samples_per_sec,
+                minimum=-1,
+                maximum=-1,
+                description=run.name,
+                start_ms=None,
+                end_ms=None,
+            )
+            return MicrophoneWaveformSensor(
+                run=run,
+                waveform=waveform,
+                timing_data=mic.timing_data,
+                battery_data=mic.bt_data,
+                samples_per_sec=1000,
+            )
+        else:
+            logger.debug(f"Making waveform fresh")
+            waveform_sensor = mic.waveform(1000)
+            np.save(str(path), waveform_sensor.waveform.data)
+            return waveform_sensor
+
+    def _load_audio(self, run: Runs) -> MicrophoneSensor:
+        self._download_raw(SensorNames.RAW_MICROPHONE_RECORDING, run)
+        # why 1024?
+        millis = np.repeat(self._download_raw(SensorNames.RAW_MICROPHONE_MILLIS, run), 1024)
+        data, sampling_rate = soundfile.read(
+            self.path_of((SensorNames.RAW_MICROPHONE_RECORDING, run))
+        )
+        return MicrophoneSensor(run, millis, data, self.bt_data(run), sampling_rate)
+
+    def _load_time_dep(self, sensor_name: SensorNames, run: Runs) -> TimeDepChemfishSensor:
+        # noinspection PyTypeChecker
+        z: Type[TimeDepChemfishSensor] = name_to_sensor[sensor_name]
+        return z(
+            run,
+            self._download_raw(sensor_name.millis_component, run),
+            self._download_raw(sensor_name.values_component, run),
+            self.bt_data(run),
+            None,
+        )
+
+    def _download_raw(
+        self, sensor_name: SensorNames, run: RunLike
     ) -> Union[None, np.array, bytes, str, Image.Image]:
         """
         Fetches sensor data if cache is available. Downloads if cache not present.
 
         Args:
-            sensor:
+            sensor_name:
             run: RunLike:
 
         Returns:
@@ -212,13 +279,19 @@ class SensorCache(ASensorCache):
         """
         run = ValarTools.run(run)
         generation = ValarTools.generation_of(run)
-        sensor = Sensors.fetch(ValarTools.standard_sensor(std_sensor, generation))
-        sname = SensorNames["RAW_" + std_sensor.upper()]
-        path = self.path_of((sname, run))
+        sensor = Sensors.fetch(ValarTools.standard_sensor(sensor_name, generation))
+        path = self.path_of((sensor_name, run))
         if path.exists():
-            return ValarTools.convert_sensor_data_from_bytes(sensor, path.read_bytes())
+            logger.debug(f"Loading {sensor.name} from {path}")
+            if sensor_name.is_image:
+                return Image.open(path)
+            elif sensor_name == SensorNames.RAW_MICROPHONE_RECORDING:
+                return path.read_bytes()
+            else:
+                return np.load(str(path))
+                # return ValarTools.convert_sensor_data_from_bytes(sensor, path.read_bytes())
         Tools.prep_file(path, exist_ok=False)
-        logger.minor(f"Downloading {sensor.name} for run r{run.id} from Valar...")
+        logger.debug(f"Downloading {sensor.name} for run r{run.id} from Valar...")
         data = (
             SensorData.select(SensorData)
             .where(SensorData.run_id == run.id)
@@ -227,8 +300,13 @@ class SensorCache(ASensorCache):
         )
         if data is None:
             raise ValarLookupError(f"No data for sensor {sensor.id} on run r{run.name}")
-        path.write_bytes(data.floats)
-        return ValarTools.convert_sensor_data_from_bytes(sensor, data.floats)
+        converted = ValarTools.convert_sensor_data_from_bytes(sensor, data.floats)
+        if sensor_name.is_image or sensor_name == SensorNames.RAW_MICROPHONE_RECORDING:
+            path.write_bytes(converted)
+        else:
+            # noinspection PyTypeChecker
+            np.save(str(path), converted)
+        return converted
 
 
 __all__ = ["SensorCache"]

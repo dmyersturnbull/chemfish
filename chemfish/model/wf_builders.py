@@ -6,6 +6,7 @@ from chemfish.model.features import FeatureType, FeatureTypes
 from chemfish.model.treatments import Treatments as Treatments
 from chemfish.model.well_frames import *
 from chemfish.model.well_names import WellNamer, WellNamers
+from chemfish.model.sensor_names import SensorNames
 from chemfish.model.wf_tools import *
 from chemfish.model.cache_interfaces import ASensorCache
 
@@ -469,9 +470,9 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         df["name"] = str(df["well"]) if self._namer is None else self._namer(df)
         df["name"] = df["name"].map(str).astype(str)
         df["display_name"] = df["name"]
-        df["color"] = '#000000'
+        df["color"] = "#000000"
         df["size"] = 1.0
-        df["marker"] = '.'
+        df["marker"] = "."
         return WellFrame.of(df)
 
     def _select_query(self) -> peewee.Query:
@@ -508,10 +509,10 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
     def _calc(self, f: WellFeatures):
         if self._sensor_cache is not None and self._feature.is_interpolated:
             frame_timestamps = self._get_timestamps(
-                f.well.run, "camera_millis", self._frame_timestamp_map
+                f.well.run, SensorNames.CAMERA_MILLIS, self._frame_timestamp_map
             )
             stim_timestamps = self._get_timestamps(
-                f.well.run, "stimulus_millis", self._stim_timestamp_map
+                f.well.run, SensorNames.STIMULUS_MILLIS, self._stim_timestamp_map
             )
         else:
             frame_timestamps = None
@@ -519,7 +520,7 @@ class WellFrameBuilder(AbstractWellFrameBuilder):
         return self._feature.calc(f, frame_timestamps, stim_timestamps, f.well)
 
     def _get_timestamps(
-        self, run: Runs, name: str, mapping: Dict[Runs, np.array]
+        self, run: Runs, name: SensorNames, mapping: Dict[Runs, np.array]
     ) -> Optional[np.array]:
         if run in mapping:
             return mapping[run]

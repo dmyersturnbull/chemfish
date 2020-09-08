@@ -60,11 +60,11 @@ class DataGeneration(enum.Enum):
 
     def is_mgh(self) -> bool:
         """ """
-        return self is DataGeneration.PIKE_MGH
+        return self == DataGeneration.PIKE_MGH
 
     def is_ucsf(self) -> bool:
         """ """
-        return self is not DataGeneration.PIKE_MGH
+        return self != DataGeneration.PIKE_MGH
 
     @classmethod
     def pike_generations(cls) -> Set[DataGeneration]:

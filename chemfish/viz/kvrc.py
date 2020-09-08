@@ -316,7 +316,7 @@ class ChemfishRc(KvrcCore):
         )
         self.sensor_line_color = config.new_rgb("sensor_line_color", "#000000")
         self.sensor_mic_point_size = config.new_point_size(
-            "sensor_mic_point_size", 0.04 * mget("lines.markersize")
+            "sensor_mic_point_size", 0.001 * mget("lines.markersize")
         )
         self.sensor_mic_color = config.new_rgb("sensor_mic_color", "#000000")
         self.sensor_use_symbols = config.new_bool("sensor_use_symbols", False)
