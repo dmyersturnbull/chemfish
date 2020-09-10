@@ -85,6 +85,7 @@ class AssayFrameCache(AAssayCache):
         for battery in batteries:
             battery = Batteries.fetch(battery)
             if battery not in self:
+                logger.minor(f"Downloading AssayFrame for battery {battery.id}")
                 afs = AssayFrame.of(battery)
                 # noinspection PyTypeChecker
                 afs.to_csv(self.path_of(battery.id))

@@ -237,10 +237,9 @@ class ChemfishRc(KvrcCore):
         self.stimplot_line_width = config.new_line_width(
             "stimplot_line_width", mget("lines.linewidth")
         )
-        self.stimplot_audio_line_alpha = config.new_alpha("stimplot_audio_line_alpha", 1.0)
-        self.stimplot_audio_linecolor = config.new_rgb("stimplot_audio_line_color", "black")
-        self.stimplot_audio_line_width = config.new_line_width(
-            "stimplot_audio_line_width", mget("lines.linewidth")
+        self.stimplot_audio_point_color = config.new_rgb("stimplot_audio_point_color", "black")
+        self.stimplot_audio_point_size = config.new_point_size(
+            "stimplot_audio_point_size", 0.1 * mget("lines.markersize")
         )
         self.stimplot_cover_width = config.new_line_width(
             "stimplot_cover_width", 1.4 * self.stimplot_line_width
@@ -316,7 +315,7 @@ class ChemfishRc(KvrcCore):
         )
         self.sensor_line_color = config.new_rgb("sensor_line_color", "#000000")
         self.sensor_mic_point_size = config.new_point_size(
-            "sensor_mic_point_size", 0.001 * mget("lines.markersize")
+            "sensor_mic_point_size", 0.1 * mget("lines.markersize")
         )
         self.sensor_mic_color = config.new_rgb("sensor_mic_color", "#000000")
         self.sensor_use_symbols = config.new_bool("sensor_use_symbols", False)
@@ -325,7 +324,7 @@ class ChemfishRc(KvrcCore):
         # spectrogram and other audio settings
         self.audio_spectrogram_cmap = config.new_cmap("audio_spectrogram_cmap", None)
         self.audio_waveform_point_size = config.new_point_size(
-            "audio_waveform_point_size", 0.01 * mget("lines.markersize")
+            "audio_waveform_point_size", 0.1 * mget("lines.markersize")
         )
         self.audio_waveform_color = config.new_rgb("audio_waveform_color", "black")
 
@@ -347,7 +346,7 @@ class ChemfishRc(KvrcCore):
         self.breakdown_pie_outline_width = config.new_line_width(
             "breakdown_pie_outline_width", mget("lines.linewidth")
         )
-        self.breakdown_pie_pct_distance = config.new_line_width("mandos_pie_pct_distance", 4.0)
+        self.breakdown_pie_pct_distance = config.new_line_width("breakdown_pie_pct_distance", 4.0)
 
         # p-value markers on bar plots
         self.pval_color = config.new_rgb("pval_color", "#333333")

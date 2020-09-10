@@ -6,7 +6,30 @@ from chemfish.core.core_imports import *
 @enum.unique
 class SensorNames(SmartEnum):
     """
-    Enum of SensorNames. Put all Sensors that are involved in sensor_caches in here.
+    These are standard sensors.
+    Any ``SensorCache`` is required to handle all of them exactly.
+    However, a ``ChemfishSensor`` class might handle a more general case than called for here.
+    For example, the current implementation of ``MicrophoneWaveformSensor`` can handle any sampling rate,
+    whereas ``SensorNames.MICROPHONE_WAVEFORM`` here specifically uses 1000 Hz, as does the current implementation
+    of ``SensorCache``.
+
+    Each choice can be either _composite_ or _raw_.
+    Raw sensors correspond to ``Sensors`` rows (possibly multiple),
+    and they can be listed in the ``sensors`` section of the ``generations.json`` file.
+    See the function ``json_name`` (in general, turns into lowercase and strips 'RAW_').
+
+    Composite functions have a non-empty ``components`` that list the underlying raw sensors.
+    Raw sensors of course return an empty list.
+
+    For example, the ``PHOTOSENSOR`` choice is backed by
+    ``RAW_PHOTOSENSOR_MILLIS``, ``RAW_PHOTOSENSOR_VALUES``, and ``RAW_STIMULUS_MILLIS``.
+    The latter three are simply numpy arrays (saved as ``.npy`` files currently).
+    The composite photosensor is trimmed to the empirical start and end of the battery,
+    which requires the millisecond values from the stimuli and photosensor recordings.
+
+    As another example, the microphone waveform (``MICROPHONE_WAVEFORM``) requires the trimmed
+    audio recording (``MICROPHONE``), which in turn requires
+    ``RAW_MICROPHONE_RECORDING``, ``RAW_MICROPHONE_MILLIS``, and ``RAW_STIMULUS_MILLIS``.
     """
 
     PHOTOSENSOR = enum.auto()
@@ -40,12 +63,32 @@ class SensorNames(SmartEnum):
 
     @property
     def components(self) -> Sequence[SensorNames]:
-        if self.is_audio_composite:
-            return [SensorNames.RAW_MICROPHONE_MILLIS, SensorNames.RAW_MICROPHONE_RECORDING]
+        """
+        Lists other SensorNames that this one requires.
+
+        Returns:
+            A sequence of ``SensorNames`` choices, which may be empty
+        """
+        if self == SensorNames.MICROPHONE_WAVEFORM:
+            return [SensorNames.MICROPHONE]
+        elif self == SensorNames.MICROPHONE:
+            return [
+                SensorNames.RAW_MICROPHONE_MILLIS,
+                SensorNames.RAW_MICROPHONE_RECORDING,
+                SensorNames.RAW_STIMULUS_MILLIS,
+            ]
         elif self == SensorNames.PHOTOSENSOR:
-            return [SensorNames.RAW_PHOTOSENSOR_MILLIS, SensorNames.RAW_PHOTOSENSOR_VALUES]
+            return [
+                SensorNames.RAW_PHOTOSENSOR_MILLIS,
+                SensorNames.RAW_PHOTOSENSOR_VALUES,
+                SensorNames.RAW_STIMULUS_MILLIS,
+            ]
         elif self == SensorNames.THERMOSENSOR:
-            return [SensorNames.RAW_THERMOSENSOR_MILLIS, SensorNames.RAW_THERMOSENSOR_VALUES]
+            return [
+                SensorNames.RAW_THERMOSENSOR_MILLIS,
+                SensorNames.RAW_THERMOSENSOR_VALUES,
+                SensorNames.RAW_STIMULUS_MILLIS,
+            ]
         elif self == SensorNames.STIMULUS_MILLIS:
             return [
                 SensorNames.RAW_STIMULUS_IDS,
@@ -125,26 +168,10 @@ class SensorNames(SmartEnum):
         )
 
     @property
-    def extension(self) -> str:
-        if self.is_audio_composite or self is SensorNames.RAW_MICROPHONE_RECORDING:
-            return ".flac"
-        elif self.is_image:
-            return ".jpg"
-        else:
-            return ".npy"
-
-    @property
     def json_name(self) -> Optional[str]:
         if self.is_raw:
             return self.name.lower().replace("raw_", "")
         return None
-
-    @property
-    def py_class_name(self) -> str:
-        if self.is_raw:
-            return "RawData"
-        else:
-            return self.name.capitalize() + "Sensor"
 
 
 __all__ = ["SensorNames"]

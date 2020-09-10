@@ -140,16 +140,15 @@ class StimframesPlotter(CakeLayer, KvrcPlotting):
             ax.scatter(
                 x,
                 y,
-                alpha=chemfish_rc.stimplot_audio_line_alpha,
                 label=c,
-                s=chemfish_rc.stimplot_audio_line_width,
+                s=chemfish_rc.stimplot_audio_point_size,
                 clip_on=chemfish_rc.stimplot_clip,
                 rasterized=chemfish_rc.rasterize_traces,
                 marker=".",
-                facecolors=chemfish_rc.stimplot_audio_linecolor,
+                facecolors=chemfish_rc.stimplot_audio_point_color,
                 edgecolors="none",
             )
-            return ax, ValarTools.stimulus_display_name(c), chemfish_rc.stimplot_audio_linecolor
+            return ax, ValarTools.stimulus_display_name(c), chemfish_rc.stimplot_audio_point_color
         if chemfish_rc.stimplot_line_alpha > 0:
             ax.plot(
                 r,

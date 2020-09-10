@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from chemfish.calc.interpolation import *
+from chemfish.calc.feature_interpolation import *
 from chemfish.core.core_imports import *
 
 

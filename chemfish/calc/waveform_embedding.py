@@ -2,7 +2,7 @@ from chemfish.core.core_imports import *
 from chemfish.model.audio import Waveform
 
 
-class AudioExpansion:
+class WaveformEmbedding:
     """"""
 
     @classmethod
@@ -28,9 +28,9 @@ class AudioExpansion:
         stim = Stimuli.fetch(stim)
         logger.info(f"Expanding audio on {stim.name}{'(legacy)' if is_legacy else ''}")
         form = (
-            waveform.standardize_legacy(50.0, 200.0)
+            waveform.standardize(50.0, 200.0, ms_freq=ValarTools.LEGACY_STIM_FRAMERATE)
             if is_legacy
-            else waveform.standardize_sauronx(50.0, 200.0)
+            else waveform.standardize(50.0, 200.0, ms_freq=1000)
         )
         if isinstance(stimseries, pd.Series):
             # https://github.com/numpy/numpy/issues/15555
@@ -39,6 +39,7 @@ class AudioExpansion:
         # noinspection PyTypeChecker
         starts = np.argwhere(stimseries > 0)
         built = []
+        # TODO this could definitely be sped up
         i = 0
         for start in starts:
             # if the audio is a block format, start will often be less than i, which is OK
@@ -52,4 +53,4 @@ class AudioExpansion:
         return np.concatenate(built)
 
 
-__all__ = ["AudioExpansion"]
+__all__ = ["WaveformEmbedding"]

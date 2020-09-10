@@ -102,7 +102,9 @@ class VideoCache(AVideoCache):
                 logger.debug(f"Run {run.id} is already at {video_path}")
             else:
                 generation = ValarTools.generation_of(run)
-                logger.info(f"Downloading {generation.name} video of r{run.id} to {video_path} ...")
+                logger.minor(
+                    f"Downloading {generation.name} video of r{run.id} to {video_path} ..."
+                )
                 remote_path = self.shire_store / VideoCore.get_remote_path(run)
                 self._copy_from_shire(remote_path, video_path)
                 # TODO check for properties file

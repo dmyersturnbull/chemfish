@@ -91,40 +91,13 @@ class Waveform:
         """"""
         return len(self.data) / self.sampling_rate * 1000
 
-    def standardize_sauronx(self, minimum: float = 0, maximum: float = 255) -> Waveform:
-        """
-        Downsamples to **1000 Hz** and normalizes to between 0 and 255.
-        This is useful for various purposes in Chemfish, such as embedding into plots.
-
-        Args:
-            minimum: Normally 0
-            maximum: Normally 255
-
-        Returns:
-            The same Waveform as a copy
-
-        """
-        return self._standardize(minimum, maximum)
-
-    def standardize_legacy(self, minimum: float = 0, maximum: float = 255) -> Waveform:
-        """
-        Downsamples to **25 Hz** and normalizes to between 0 and 255.
-        This is useful for various purposes in Chemfish, such as embedding into plots.
-
-        Args:
-            minimum: Normally 0
-            maximum: Normally 255
-
-        Returns:
-            The same Waveform as a copy
-
-        """
-        return self._standardize(minimum, maximum, ms_freq=25)
-
-    def _standardize(
+    def standardize(
         self, minimum: float = 0, maximum: float = 255, ms_freq: int = 1000
     ) -> Waveform:
         """
+
+        Downsampling to **1000 Hz** and normalizes to between 0 and 255.
+        This is useful for various purposes in Chemfish, such as embedding into plots.
 
 
         Args:
@@ -137,7 +110,7 @@ class Waveform:
         """
         if minimum < 0 or maximum > 255:
             raise OutOfRangeError("Must be between 0 and 255")
-        y = self.downsample(ms_freq).data
+        y = self.downsample(ms_freq, resample=False).data
         y = (y - y.min()) * (maximum - minimum) / (y.max() - y.min()) + minimum
         y = y.round().astype(np.int32)
         s = Waveform(self.name, self.path, y, 1000, minimum, maximum, self.description)
@@ -159,13 +132,35 @@ class Waveform:
         y = (self.data - self.data.min()) * (maximum - minimum) / (
             self.data.max() - self.data.min()
         ) + minimum
+        logger.error(f"Normalized {self.name}. max={y.max()}, min={y.min()}")
         return Waveform(
             self.name, self.path, y, self.sampling_rate, minimum, maximum, self.description
         )
 
-    def ds_chunk_mean(self, new_sampling_hertz: float) -> Waveform:
+    def downsample(self, new_sampling_hertz: float, resample: bool = True) -> Waveform:
+        """
+        Downsamples to a new rate.
+
+        Args:
+            new_sampling_hertz: A float such as 44100
+            resample: Use ``librosa.resample``, which is more accurate but too slow for large audio files;
+                      otherwise splits into discrete chunks and calculates the mean for each chunk
+
+        Returns:
+            The same Waveform as a copy
+        """
+        t0 = time.monotonic()
+        if resample:
+            z = self._downsample(new_sampling_hertz)
+        else:
+            z = self._ds_chunk_mean(new_sampling_hertz)
+        logger.debug(f"Downsampling waveform ({self.name}) took {round(time.monotonic()-t0, 1)} s")
+        return z
+
+    def _ds_chunk_mean(self, new_sampling_hertz: float) -> Waveform:
         """
         Alternative to downsampling. Splits data into discrete chunks and then calculates mean for those chunks.
+        This is less accurate but much faster.
 
         Args:
             new_sampling_hertz: rate of sampling
@@ -191,7 +186,7 @@ class Waveform:
             self.description,
         )
 
-    def downsample(self, new_sampling_hertz: float) -> Waveform:
+    def _downsample(self, new_sampling_hertz: float) -> Waveform:
         """
         Downsamples to a new rate using librosa.resample.
 
@@ -213,34 +208,6 @@ class Waveform:
             self.path,
             y,
             new_sampling_hertz,
-            self.minimum,
-            self.maximum,
-            self.description,
-        )
-
-    def smooth(
-        self, window_size: int, function=lambda s: s.mean(), window_type: Optional[str] = "triang"
-    ) -> Waveform:
-        """
-        Smooths with a sliding window over time.
-
-        Args:
-            window_size: The number of elements in the window
-            function:
-            window_type: See Pandas pd.Series.rolling win_type
-
-        Returns:
-            The same Waveform as a copy
-
-        """
-        data = function(
-            pd.Series(self.data).rolling(window_size, min_periods=1, win_type=window_type)
-        ).values
-        return Waveform(
-            self.name,
-            self.path,
-            data,
-            self.sampling_rate,
             self.minimum,
             self.maximum,
             self.description,

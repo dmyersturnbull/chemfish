@@ -15,12 +15,6 @@ from chemfish.model.features import *
 from chemfish.model.sensors import *
 from chemfish.model.well_frames import *
 
-control_types = {c.name: c for c in ControlTypes.select()}
-TRASH_CONTROLS = {
-    c: control_types[c] for c in {"ignore", "near-WT (-)", "no drug transfer", "low drug transfer"}
-}
-DEFINITELY_BAD_CONTROLS = {c: control_types[c] for c in {"no drug transfer", "low drug transfer"}}
-
 
 class ConcernFrame(UntypedDf):
     """"""

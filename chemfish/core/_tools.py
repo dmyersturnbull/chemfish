@@ -1,3 +1,5 @@
+import h5py
+
 from chemfish.core._imports import *
 from chemfish.core.tools import *
 from chemfish.core.valar_singleton import *
@@ -15,6 +17,18 @@ class InternalTools:
         - Tools.runs: Delegates to Tools.run for either of the types accepted by Tools.run, or an iterable over them
 
     """
+
+    def _load_h5(self, path: Path) -> np.array:
+        with h5py.File(str(path)) as f:
+            return f["data"]
+
+    def _save_h5(self, data: np.array, path: Path) -> None:
+        try:
+            with h5py.File(str(path), "w") as f:
+                f.create_dataset("data", data=data)
+        except:
+            path.unlink(missing_ok=True)
+            raise
 
     @classmethod
     def verify_class_has_attrs(cls, class_, *attributes: Union[str, Iterable[str]]) -> None:

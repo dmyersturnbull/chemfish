@@ -1,6 +1,5 @@
 import soundfile
 from PIL import Image
-import pydub
 
 from chemfish.core.core_imports import *
 from chemfish.model.cache_interfaces import ASensorCache
@@ -27,8 +26,9 @@ class SensorCache(ASensorCache):
     A cache for sensor data from a given run.
     """
 
-    def __init__(self, cache_dir: PathLike = DEFAULT_CACHE_DIR):
+    def __init__(self, cache_dir: PathLike = DEFAULT_CACHE_DIR, cache_waveform: bool = True):
         self._cache_dir = Tools.prepped_dir(cache_dir)
+        self.cache_waveform: bool = cache_waveform
 
     @property
     def cache_dir(self) -> Path:
@@ -47,7 +47,7 @@ class SensorCache(ASensorCache):
 
         """
         sensor, run = tup
-        return self.cache_dir / str(run.id) / (sensor.name.lower() + sensor.extension)
+        return self.cache_dir / str(run.id) / (sensor.name.lower() + self._get_extension(sensor))
 
     @abcd.overrides
     def key_from_path(self, path: PathLike) -> Tup[SensorNames, RunLike]:
@@ -191,7 +191,7 @@ class SensorCache(ASensorCache):
         sensor_name, run = tup
         run = ValarTools.run(run)
         for component in sensor_name.components:
-            logger.debug(f"Finding {component} for {sensor_name}")
+            logger.debug(f"Finding component {component} for {sensor_name}, run {run.id}")
             self._download_raw(component, run)
         # okay, now fetch the real one
         if sensor_name.is_audio_waveform:
@@ -215,53 +215,47 @@ class SensorCache(ASensorCache):
 
     def _load_audio_waveform(self, run: Runs) -> MicrophoneWaveformSensor:
         path = self.path_of((SensorNames.MICROPHONE_WAVEFORM, run))
-        mic = self._load_audio(run).slice_ms(None, None)
         if path.exists():
-            logger.debug(f"Loading waveform from {path}")
-            vec = np.load(str(path))
-            waveform = MicrophoneWaveform(
-                name=run.name,
-                path=None,
-                data=vec,
-                sampling_rate=mic.samples_per_sec,
-                minimum=-1,
-                maximum=-1,
-                description=run.name,
-                start_ms=None,
-                end_ms=None,
-            )
-            return MicrophoneWaveformSensor(
-                run=run,
-                waveform=waveform,
-                timing_data=mic.timing_data,
-                battery_data=mic.bt_data,
-                samples_per_sec=1000,
-            )
-        else:
-            logger.debug(f"Making waveform fresh")
-            waveform_sensor = mic.waveform(1000)
-            np.save(str(path), waveform_sensor.waveform.data)
-            return waveform_sensor
+            return Tools.unpkl(path)
+        mic = self._load_audio(run)
+        t0 = time.monotonic()
+        logger.debug(f"Making the waveform for the microphone recording of {run.id}")
+        waveform_sensor = mic.waveform(1000)
+        if self.cache_waveform:
+            Tools.pkl(waveform_sensor, str(path))
+        logger.debug(f"Made the waveform for {run.id}. Took {round(time.monotonic()-t0, 1)} s.")
+        return waveform_sensor
 
     def _load_audio(self, run: Runs) -> MicrophoneSensor:
         self._download_raw(SensorNames.RAW_MICROPHONE_RECORDING, run)
-        # why 1024?
+        # TODO figure out why 1024
         millis = np.repeat(self._download_raw(SensorNames.RAW_MICROPHONE_MILLIS, run), 1024)
         data, sampling_rate = soundfile.read(
             self.path_of((SensorNames.RAW_MICROPHONE_RECORDING, run))
         )
-        return MicrophoneSensor(run, millis, data, self.bt_data(run), sampling_rate)
+        sensor = MicrophoneSensor(run, millis, data, self.bt_data(run), sampling_rate)
+        logger.debug(f"Trimming the microphone recording for run {run.id}")
+        t0 = time.monotonic()
+        sensor = sensor.slice_ms(None, None)
+        logger.debug(
+            f"Trimmed the microphone recording for r{run.id}. Took {round(time.monotonic()-t0, 1)} s."
+        )
+        return sensor
 
     def _load_time_dep(self, sensor_name: SensorNames, run: Runs) -> TimeDepChemfishSensor:
+        assert not sensor_name.is_raw, sensor_name.name
+        assert sensor_name.is_time_dependent, sensor_name.name
+        logger.debug(f"Downloading {sensor_name.name} for run {run.id}")
         # noinspection PyTypeChecker
         z: Type[TimeDepChemfishSensor] = name_to_sensor[sensor_name]
-        return z(
+        data = z(
             run,
             self._download_raw(sensor_name.millis_component, run),
             self._download_raw(sensor_name.values_component, run),
             self.bt_data(run),
             None,
         )
+        return data.slice_ms(None, None)
 
     def _download_raw(
         self, sensor_name: SensorNames, run: RunLike
@@ -277,12 +271,13 @@ class SensorCache(ASensorCache):
             Raw/Converted Sensor Data
 
         """
+        assert sensor_name.is_raw, sensor_name.name
         run = ValarTools.run(run)
         generation = ValarTools.generation_of(run)
         sensor = Sensors.fetch(ValarTools.standard_sensor(sensor_name, generation))
         path = self.path_of((sensor_name, run))
         if path.exists():
-            logger.debug(f"Loading {sensor.name} from {path}")
+            logger.debug(f"Loading {sensor.name} from {path}, r{run.id}")
             if sensor_name.is_image:
                 return Image.open(path)
             elif sensor_name == SensorNames.RAW_MICROPHONE_RECORDING:
@@ -303,10 +298,21 @@ class SensorCache(ASensorCache):
         converted = ValarTools.convert_sensor_data_from_bytes(sensor, data.floats)
         if sensor_name.is_image or sensor_name == SensorNames.RAW_MICROPHONE_RECORDING:
             path.write_bytes(converted)
+        elif sensor_name.is_timing:
+            np.save(str(path), converted.astype(np.int32))
         else:
-            # noinspection PyTypeChecker
             np.save(str(path), converted)
         return converted
+
+    def _get_extension(self, sensor: SensorNames) -> str:
+        if sensor.is_audio_composite or sensor is SensorNames.RAW_MICROPHONE_RECORDING:
+            return ".flac"
+        elif sensor == SensorNames.MICROPHONE_WAVEFORM:
+            return ".pkl"
+        elif sensor.is_image:
+            return ".jpg"
+        else:
+            return ".npy"
 
 
 __all__ = ["SensorCache"]

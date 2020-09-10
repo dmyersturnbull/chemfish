@@ -43,6 +43,7 @@ class ValarTools:
     MANUAL_HIGH_REF = Refs.fetch_or_none("manual:high")
     MANUAL_REF = Refs.fetch("manual")
     LEGACY_FRAMERATE = 25
+    LEGACY_STIM_FRAMERATE = 25
 
     @classmethod
     def required_sensors(cls, generation: DataGeneration) -> Mapping[SensorNames, Sensors]:
@@ -91,26 +92,31 @@ class ValarTools:
         dt = sensor.data_type
         if data is None:
             return None
+        # in case arithmetic is done on these
+        # we'll use a bigger dtype than necessary
+        # typically, longdouble is 64, 80, or 128 bits and longlong is just 64
         if dt == "byte":
-            return np.frombuffer(data, dtype=np.byte).astype(np.int32)
+            return np.frombuffer(data, dtype=np.byte).astype(np.int16)
         if dt == "unsigned_byte":
-            return np.frombuffer(data, dtype=np.byte).astype(np.int32) + 2 ** 7
+            return np.frombuffer(data, dtype=np.byte).astype(np.int16) + 2 ** 7
         if dt == "short":
-            return np.frombuffer(data, dtype=">i2").astype(np.int64)
+            return np.frombuffer(data, dtype=">i2").astype(np.int32)
         if dt == "unsigned_short":
-            return np.frombuffer(data, dtype=">i2").astype(np.int64) + 2 ** 15
+            return np.frombuffer(data, dtype=">i2").astype(np.int32) + 2 ** 15
         if dt == "int":
             return np.frombuffer(data, dtype=">i4").astype(np.int64)
         if dt == "unsigned_int":
             return np.frombuffer(data, dtype=">i4").astype(np.int64) + 2 ** 31
         if dt == "long":
-            return np.frombuffer(data, dtype=">i8").astype(np.int64)
+            return np.frombuffer(data, dtype=">i8").astype(np.longlong)
         if dt == "unsigned_long":
-            return np.frombuffer(data, dtype=">i8").astype(np.int64) + 2 ** 63
+            return np.frombuffer(data, dtype=">i8").astype(np.ulonglong) + 2 ** 63
         if dt == "float":
             return np.frombuffer(data, dtype=">f4").astype(np.float64)
         if dt == "double":
-            return np.frombuffer(data, dtype=">f8").astype(np.float64)
+            return np.frombuffer(data, dtype=">f8").astype(np.longdouble)
+        if dt == "unsigned_double":
+            return np.frombuffer(data, dtype=">f8").astype(np.ulongdouble)
         if dt == "string:utf8":
             return str(data, encoding="utf-8")
         if dt == "string:utf16":

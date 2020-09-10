@@ -102,8 +102,10 @@ class StimframeCache(AStimCache):
             battery = Batteries.fetch(battery)
             is_legacy = ValarTools.battery_is_legacy(battery)
             if battery not in self:
+                logger.minor(f"Downloading battery {battery.id} ({battery.name})")
                 stimframes = BatteryStimFrame.of(battery)
                 if self.is_expanded:
+                    logger.minor(f"Inserting waveform into battery {battery.id} ({battery.name})")
                     stimframes.expand_audio_inplace(self.waveform_loader, is_legacy=is_legacy)
                 # noinspection PyTypeChecker
                 self._save(battery, stimframes)
@@ -121,6 +123,7 @@ class StimframeCache(AStimCache):
         battery = Batteries.fetch(battery)
         with Tools.silenced(no_stderr=True, no_stdout=True):
             try:
+                logger.debug(f"Loading cached battery battery {battery.id}")
                 df = pd.read_hdf(self.path_of(battery.id), "df")
             except Exception as e:
                 raise CacheLoadError(f"Failed to load stimframes for battery {battery.id}") from e

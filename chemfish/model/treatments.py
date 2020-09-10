@@ -8,7 +8,7 @@ from chemfish.core.core_imports import *
 @dataclass(frozen=True, order=True)
 class Treatment:
     """
-    A drug (batch) and micromolar dose from a WellConditions with pretty printing.
+    A drug (batch) and micromolar dose from a ``WellTreatments`` row with pretty printing.
     Two Treatments are equal iff their ordered_compound IDs and doses are equal.
     Less than, greater than, etc. are implemented by comparing, in order:
         1. Compound ID

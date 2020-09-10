@@ -349,6 +349,10 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
         self._bt_data = battery_data
         self._timing_data = timing_data
         self._samples_per_sec = samples_per_sec
+        if len(self.timing_data) != len(self.data):
+            logger.error(
+                f"{self.__class__.__name__}: Millis length={len(self.timing_data)} but data length={len(self.data)} for r{run.id}"
+            )
 
     @property
     def samples_per_sec(self) -> int:
@@ -361,7 +365,7 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @property
-    def timing_data(self) -> SensorDataLike:
+    def timing_data(self) -> np.array:
         """ """
         return self._timing_data
 
@@ -391,44 +395,14 @@ class TimeDepChemfishSensor(ChemfishSensor, metaclass=abc.ABCMeta):
             A copy of this class
 
         """
-        started = (
-            self.bt_data.start_ms + start_ms if start_ms is not None else self.bt_data.start_ms
+        started = self.bt_data.start_ms if start_ms is None else self.bt_data.start_ms + start_ms
+        finished = self.bt_data.end_ms if end_ms is None else self.bt_data.end_ms + end_ms
+        msvals: np.array = self.timing_data
+        t0 = np.searchsorted(msvals, started, side="left")
+        t1 = np.searchsorted(msvals, finished, side="right")
+        return self.__class__(
+            self.run, msvals[t0:t1], self.data[t0:t1], copy(self.bt_data), self.samples_per_sec
         )
-        finished = self.bt_data.end_ms + end_ms if end_ms is not None else self.bt_data.end_ms
-        i0 = 0
-        i1 = len(self.timing_data)
-        for i, m in enumerate(self.timing_data):
-            # Change started to first timepoint in data greater than started
-            if m > started and i0 == 0:
-                i0 = i
-            # change finished to first timepoint in data that is greater than finished
-            if m > finished and i1 == len(self.timing_data):
-                i1 = i
-                break
-        sliced_time = [started, *self.timing_data[i0:i1], finished]
-        sliced_vals = [0, *self.data[i0:i1], 0]
-        millis, values = (
-            np.array(
-                sliced_time[
-                    None
-                    if start_ms is None
-                    else int(start_ms * self.values_per_ms) : None
-                    if end_ms is None
-                    else int(end_ms * self.values_per_ms)
-                ]
-            ),
-            np.array(
-                sliced_vals[
-                    None
-                    if start_ms is None
-                    else int(start_ms * self.values_per_ms) : None
-                    if end_ms is None
-                    else int(end_ms * self.values_per_ms)
-                ]
-            ),
-        )
-        # TODO document that it's always the original bt data
-        return self.__class__(self.run, millis, values, copy(self.bt_data), self.samples_per_sec)
 
     def __len__(self) -> int:
         return len(self.data)
@@ -498,7 +472,7 @@ class MicrophoneWaveformSensor(TimeDepChemfishSensor):
         battery_data: EmpiricalBatteryTimeData,
         samples_per_sec: int,
     ):
-        super().__init__(run, waveform.data, timing_data, battery_data, samples_per_sec)
+        super().__init__(run, timing_data, waveform.data, battery_data, samples_per_sec)
         self._waveform = waveform
 
     @property
@@ -507,7 +481,7 @@ class MicrophoneWaveformSensor(TimeDepChemfishSensor):
 
     @property
     def abbrev(self) -> str:
-        return "wav"
+        return "audio"
 
     @property
     def symbol(self) -> str:
@@ -535,41 +509,38 @@ class MicrophoneSensor(TimeDepChemfishSensor):
         """ """
         return 44.1  # TODO 44100 kHz
 
-    def waveform(
-        self, downsample_to_hertz: int, start_ms: Optional[int] = None, end_ms: Optional[int] = None
-    ) -> MicrophoneWaveformSensor:
+    def waveform(self, downsample_to_hertz: int) -> MicrophoneWaveformSensor:
         """
 
 
         Args:
-            downsample_to_hertz: int:
-            start_ms: Optional[int]:  (Default value = None)
-            end_ms: Optional[int]:  (Default value = None)
+            downsample_to_hertz:
 
         Returns:
 
         """
-        sliced_sensor = self.slice_ms(start_ms, end_ms)
         waveform = MicrophoneWaveform(
-            name=self.run.name,
+            name="r" + str(self.run.id),
             path=None,
-            data=sliced_sensor.data,
+            data=self.data,
             sampling_rate=self.samples_per_sec,
             minimum=None,
-            maximum=-1,
+            maximum=None,
             description=self.run.name,
             start_ms=None,
             end_ms=None,
         )
-        waveform = waveform.ds_chunk_mean(downsample_to_hertz).normalize()
-        n_ms = int(np.round(waveform.n_ms))
-        ideal_timing_data = np.linspace(self.timing_data[0], self.timing_data[-1], n_ms)
+        waveform = waveform.downsample(downsample_to_hertz, resample=False)
+        waveform = waveform.normalize()
+        # TODO /1000 / downsample_to_hertz
+        n_samples = int(np.round(waveform.n_ms))
+        ideal_timing_data = np.linspace(self.timing_data[0], self.timing_data[-1], n_samples)
         return MicrophoneWaveformSensor(
             run=self.run,
             waveform=waveform,
             timing_data=ideal_timing_data,
             battery_data=self.bt_data,
-            samples_per_sec=int(self.values_per_ms * 1000),
+            samples_per_sec=downsample_to_hertz,
         )
 
 

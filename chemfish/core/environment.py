@@ -64,7 +64,7 @@ class ChemfishEnvironment:
         if self.user_ref is None:
             logger.warning(f"manual:{self.username} is not in `refs`. Using 'manual'.")
         self.user_ref = Refs.fetch_or_none("manual")
-        self.chemfish_log_level = _try("chemfish_log_level", "INFO")
+        self.chemfish_log_level = _try("chemfish_log_level", "MINOR")
         self.global_log_level = _try("global_log_level", "INFO")
         self.cache_dir = _try("cache", Path.home() / "valar-cache")
         self.video_cache_dir = Path(

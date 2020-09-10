@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from binascii import hexlify
 
-from chemfish.calc.audio_expansion import *
+from chemfish.calc.waveform_embedding import *
 from chemfish.core.core_imports import *
 from chemfish.model.audio import Waveform
 
@@ -44,7 +44,7 @@ class StimFrame(TypedDf, metaclass=abc.ABCMeta):
                 self[stim.name] = 255 * (self[stim.name] > 0)
             if stim.audio_file is not None:
                 try:
-                    self[orig_stim_name] = AudioExpansion.expand(
+                    self[orig_stim_name] = WaveformEmbedding.expand(
                         self[orig_stim_name], stim, waveform_loader(stim.name), is_legacy=is_legacy
                     )
                 except Exception as e:

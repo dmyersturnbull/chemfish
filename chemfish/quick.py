@@ -602,8 +602,6 @@ class Quick:
     def sensor_plots(
         self,
         run: RunLike,
-        start_ms: Optional[int] = None,
-        end_ms: Optional[int] = None,
         sensors: Optional[Sequence[Union[SensorNames, str]]] = None,
     ) -> Figure:
         """
@@ -611,8 +609,6 @@ class Quick:
 
         Args:
             run:
-            start_ms:
-            end_ms:
             sensors:
 
         Returns:
@@ -622,7 +618,7 @@ class Quick:
         battery = run.experiment.battery
         if sensors is None:
             sensors = [SensorNames.PHOTOSENSOR, SensorNames.THERMOSENSOR, SensorNames.MICROPHONE]
-        stimframes = self.stimframes(run.experiment.battery, start_ms, end_ms, audio_waveform=True)
+        stimframes = self.stimframes(run.experiment.battery, None, None, audio_waveform=True)
         stimplotter = StimframesPlotter(audio_waveform=True)
         sensor_data = []
         for sensor in sensors:
@@ -630,15 +626,16 @@ class Quick:
                 sensor = SensorNames[sensor]
             if sensor == SensorNames.MICROPHONE or sensor == SensorNames.MICROPHONE_WAVEFORM:
                 waveform = self.sensor_cache.load_waveform(run)
+                # do NOT slice: already done in waveform
                 sensor_data.append(waveform)
             elif sensor.is_time_dependent:
-                sdata = self.sensor_cache.load((sensor, run)).slice_ms(start_ms, end_ms)
+                sdata = self.sensor_cache.load((sensor, run))
                 sensor_data.append(sdata)
             else:
                 raise TypeError(f"Sensor {sensor} is not time-dependent)")
         logger.error(f"Types are {[type(s) for s in sensor_data]}")
         return SensorPlotter(stimplotter=stimplotter, quantile=self.quantile).diagnostics(
-            run, stimframes, battery, sensor_data, start_ms=start_ms
+            run, stimframes, battery, sensor_data
         )
 
     def durations(self, runs: RunsLike, kind: DurationType) -> Figure:

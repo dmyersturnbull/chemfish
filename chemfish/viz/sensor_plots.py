@@ -12,7 +12,7 @@ from chemfish.viz.stim_plots import StimframesPlotter
 class SensorPlotter(CakeComponent, KvrcPlotting):
     """"""
 
-    def __init__(self, stimplotter: Optional[StimframesPlotter] = None, quantile: float = 0.9999):
+    def __init__(self, stimplotter: Optional[StimframesPlotter] = None, quantile: float = 1):
         self.stimplotter = StimframesPlotter() if stimplotter is None else stimplotter
         self.quantile = quantile
 
@@ -83,12 +83,15 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
             raise TypeError(f"Type {type(data)} is not a TimeDepChemfishSensor")
         x_vals, y_vals = data.timing_data, data.data
         if isinstance(data, MicrophoneWaveformSensor):
+            x_vals, y_vals = data.timing_data, data.waveform.data
             ax.scatter(
                 x_vals,
                 y_vals,
                 rasterized=chemfish_rc.sensor_rasterize,
                 s=chemfish_rc.sensor_mic_point_size,
                 c=chemfish_rc.sensor_mic_color,
+                marker=".",
+                edgecolors="none",
             )
             ax.set_ylim(ymin=-1, ymax=1)
         else:
@@ -105,7 +108,7 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
         ax.get_yaxis().set_ticks([])
         label = data.symbol if chemfish_rc.sensor_use_symbols else data.abbrev
         ax.set_ylabel(label, rotation=(0 if chemfish_rc.sensor_use_symbols else 90))
-        ax.set_xlim(data.bt_data.start_ms, data.bt_data.end_ms)
+        # ax.set_xlim(data.bt_data.start_ms, data.bt_data.end_ms)
 
 
 __all__ = ["SensorPlotter"]

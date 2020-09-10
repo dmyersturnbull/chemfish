@@ -1308,7 +1308,7 @@ class KvrcCore:
         """
         Looks up:
             1. `item` in the available chemfish_rc keys
-            2. `item` in maptlotlib rcParams
+            2. `item` in matplotlib rcParams
             3. `item.replace('_', '.', 1)`  in matplotlib rcParams
         """
         item = item.strip()

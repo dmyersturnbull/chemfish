@@ -125,9 +125,11 @@ class CachingWellFrameBuilder(WellFrameBuilder):
         for where in self._wheres:
             query = query.where(where)
         query = query.order_by(*WellFrameQuery.sort_order())
+        logger.debug(f"Running initial query in {self.__class__.__name__}")
         query = list(query)
         wells = {wt.well_id for wt in query}
         runs = {wt.well.run for wt in query}
+        logger.debug(f"Getting full cached WellFrame for {len(runs)} runs")
         df = self._cache.with_dtype(self._dtype).load_multiple(runs)
         if not self._include_full_runs:
             df = WellFrame.of(df[df["well"].isin(wells)])

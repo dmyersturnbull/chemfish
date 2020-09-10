@@ -77,6 +77,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
         for stimulus in keys:
             stimulus = Stimuli.fetch(stimulus)
             tmpfile = self.path_of(stimulus)
+            logger.minor(f"Downloading audio for stimulus {stimulus}")
             if tmpfile.exists():
                 return
             if stimulus.audio_file_id is None:
@@ -86,6 +87,7 @@ class AudioStimulusCache(AnAudioStimulusCache):
                 raise DataIntegrityError(f"Audio file for stimulus {stimulus.name} has no data")
             fmt_str = Path(audio_file.filename).suffix.lstrip(".")
             try:
+                # TODO constant framerate
                 song = pydub.AudioSegment(
                     data=audio_file.data, sample_width=2, frame_rate=44100, channels=1
                 )
