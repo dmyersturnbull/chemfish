@@ -1,6 +1,6 @@
 from chemfish.core.core_imports import *
 from chemfish.viz import CakeComponent
-from chemfish.viz._internal_viz import *
+from chemfish.viz.utils._internal_viz import *
 
 from pocketutils.plotting.color_schemes import FancyCmaps
 

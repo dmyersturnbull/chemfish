@@ -13,8 +13,8 @@ class InternalTools:
     A collection of utility functions for internal use in Chemfish.
     Equivalents of some of these functions are in the external-use Tools class, which delegates to this class.
     The most useful functions are:
-        - Tools.run: Gets a run from a run ID, tag, name, instance, or submission hash or instance
-        - Tools.runs: Delegates to Tools.run for either of the types accepted by Tools.run, or an iterable over them
+        - Runs.fetch: Gets a run from a run ID, tag, name, instance, or submission hash or instance
+        - Runs.fetch_all: Delegates to Runs.fetch for either of the types accepted by Runs.fetch, or an iterable over them
 
     """
 
@@ -46,23 +46,6 @@ class InternalTools:
         bad_attributes = [not hasattr(class_, k) for k in attributes]
         if any(bad_attributes):
             raise AttributeError(f"No {class_.__name__} attribute(s) {bad_attributes}")
-
-    @classmethod
-    def warn_overlap(cls, a: Collection[Any], b: Collection[Any]) -> Set[Any]:
-        """
-
-
-        Args:
-            a: Collection[Any]:
-            b: Collection[Any]:
-
-        Returns:
-
-        """
-        bad = set(a).intersection(set(b))
-        if len(bad) > 0:
-            logger.error(f"Values {', '.join(bad)} are present in both sets")
-        return bad
 
     @classmethod
     def load_resource(

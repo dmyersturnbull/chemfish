@@ -4,7 +4,7 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 from chemfish.core.core_imports import *
-from chemfish.model.compound_names import *
+from chemfish.namers.compound_namers import *
 from chemfish.viz.breakdown_plots import BreakdownBarPlotter, BreakdownPiePlotter
 
 

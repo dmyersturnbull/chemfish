@@ -1,11 +1,9 @@
-from chemfish.caches.caching_wfs import *
-from chemfish.caches.wf_caches import *
 from chemfish.core.core_imports import *
-from chemfish.model.compound_names import *
-from chemfish.model.treatment_names import *
+from chemfish.namers.compound_namers import *
+from chemfish.namers.treatment_namers import *
 from chemfish.model.well_frames import *
-from chemfish.model.well_names import *
-from chemfish.caches.sensor_caches import *
+from chemfish.namers.well_namers import *
+from chemfish.factories.caches.sensor_cache import *
 
 
 class ChemfishDatasetTools:

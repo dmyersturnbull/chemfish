@@ -2,13 +2,13 @@ import argparse
 import traceback
 
 from chemfish.core.core_imports import *
-from chemfish.model.concern_rules import *
+from chemfish.construction.concern_rules import *
 from chemfish.model.concerns import *
 from chemfish.model.sensors import *
 from chemfish.model.well_frames import *
-from chemfish.model.well_names import *
-from chemfish.quick import *
-from chemfish.viz.figures import *
+from chemfish.namers.well_namers import *
+from chemfish.analysis.quick import *
+from chemfish.viz.utils.figures import *
 
 
 @abcd.auto_repr_str()

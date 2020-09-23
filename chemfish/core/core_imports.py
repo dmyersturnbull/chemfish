@@ -22,5 +22,4 @@ from chemfish.core._tools import *
 from chemfish.core.data_generations import DataGeneration
 from chemfish.core.environment import *
 from chemfish.core.tools import *
-from chemfish.core.valar_singleton import *
 from chemfish.core.valar_tools import *

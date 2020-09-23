@@ -1,11 +1,9 @@
-from dataclasses import dataclass
-
 import matplotlib.ticker as ticker
 
 from chemfish.core.core_imports import *
 from chemfish.model.responses import *
-from chemfish.viz._internal_viz import *
-from chemfish.viz.figures import FigureTools
+from chemfish.viz.utils._internal_viz import *
+from chemfish.viz.utils.figures import FigureTools
 
 
 class UnsupportedPlotOption(UnsupportedOpError):

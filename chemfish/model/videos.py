@@ -5,12 +5,12 @@ from matplotlib.colors import to_rgb
 from moviepy.audio.AudioClip import CompositeAudioClip
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
-from chemfish.model.cache_interfaces import ASauronxVideo
+from chemfish.factories.caches import ASauronxVideo
 from chemfish.core.core_imports import *
 from chemfish.core.video_core import VideoCore
-from chemfish.model.roi_tools import *
-from chemfish.model.wf_builders import *
-from chemfish.viz.kvrc import *
+from chemfish.calc.roi_tools import *
+from chemfish.construction.wf_builders import *
+from chemfish.viz.utils.kale_rc import *
 
 stim_colors = {s.name: "#" + s.default_color for s in Stimuli.select()}
 
@@ -169,7 +169,7 @@ class SauronxVideo(ASauronxVideo):
             meta:
         """
         self.path = Path(path)
-        self.run = Tools.run(run, join=True)
+        self.run = Runs.fetch(run)
         self.generation = ValarTools.generation_of(self.run)
         self.wb1 = Tools.wb1_from_run(self.run)
         if not self.generation.is_sauronx():
@@ -771,7 +771,7 @@ class SauronxVideos:
         Returns:
 
         """
-        run = Tools.run(run, join=True)
+        run = Runs.fetch(run)
         generation = ValarTools.generation_of(run)
         roi_ref = "hardware:sauronx" if generation.is_sauronx() else "hardware:legacy"
         clip = VideoFileClip(str(path))

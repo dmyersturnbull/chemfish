@@ -4,7 +4,7 @@ from binascii import hexlify
 
 from chemfish.calc.waveform_embedding import *
 from chemfish.core.core_imports import *
-from chemfish.model.audio import Waveform
+from chemfish.model.waveforms import Waveform
 
 
 class StimFrame(TypedDf, metaclass=abc.ABCMeta):

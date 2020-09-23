@@ -4,7 +4,6 @@ import subprocess
 
 from natsort import natsorted
 from pocketutils.core.dot_dict import NestedDotDict
-import io
 from PIL import Image
 
 from chemfish.core._imports import *
@@ -269,7 +268,7 @@ class ValarTools:
             The wrapped text of the config file
 
         """
-        run = Tools.run(run)
+        run = Runs.fetch(run)
         if run.submission is None:
             raise SauronxOnlyError(f"No config files are stored for legacy data (run r{run.id})")
         t = ConfigFiles.fetch(run.config_file)
@@ -287,7 +286,7 @@ class ValarTools:
             The text of the log file, with proper (unescaped) newlines and tabs
 
         """
-        run = ValarTools.run(run)
+        run = ValarRuns.fetch(run)
         if run.submission is None:
             raise SauronxOnlyError(f"No log files are stored for legacy data (run r{run.id})")
         f = LogFiles.select().where(LogFiles.run == run).first()
@@ -323,7 +322,7 @@ class ValarTools:
 
         """
         # here just for consistency
-        run = Tools.run(run)
+        run = Runs.fetch(run)
         if run.acclimation_sec is None:
             return np.inf
         return run.acclimation_sec
@@ -343,7 +342,7 @@ class ValarTools:
         Returns:
 
         """
-        run = Tools.run(run)
+        run = Runs.fetch(run)
         plate = Plates.fetch(run.plate)  # type: Plates
         if run.plate.datetime_plated is None:
             return np.inf
@@ -605,7 +604,7 @@ class ValarTools:
             A DataGeneration instance
 
         """
-        run = ValarTools.run(run)
+        run = ValarRuns.fetch(run)
         sauronx = run.submission_id is not None
         generations: Sequence[Dict[str, Any]] = InternalTools.load_resource(
             "core", "generations.json"
@@ -644,7 +643,7 @@ class ValarTools:
             The set of features involved in a given run.
 
         """
-        run = ValarTools.run(run)
+        run = ValarRuns.fetch(run)
         pt = run.plate.plate_type
         n_wells = pt.n_rows * pt.n_columns
         features = set()
@@ -674,7 +673,7 @@ class ValarTools:
             The set of sensor names that have sensor data for a given run.
 
         """
-        run = ValarTools.run(run)
+        run = ValarRuns.fetch(run)
         return {
             sd.sensor
             for sd in SensorData.select(SensorData.sensor, SensorData.run, SensorData.id, Runs.id)
@@ -866,7 +865,7 @@ class ValarTools:
             The value as an str
 
         """
-        run = ValarTools.run(run)
+        run = ValarRuns.fetch(run)
         t = RunTags.select().where(RunTags.run_id == run.id).where(RunTags.name == tag_name).first()
         if t is None:
             raise ValarLookupError(f"No run_tags row for name {tag_name} on run {run.name}")
@@ -885,7 +884,7 @@ class ValarTools:
             The value as an str, or None if it doesn't exist
 
         """
-        run = ValarTools.run(run)
+        run = ValarRuns.fetch(run)
         t = RunTags.select().where(RunTags.run_id == run.id).where(RunTags.name == tag_name).first()
         return None if t is None else t.value
 
@@ -920,13 +919,13 @@ class ValarTools:
         Returns:
 
         """
-        run = Tools.run(run)
+        run = Runs.fetch(run)
         if run.submission is not None:
             raise SauronxOnlyError(
                 "Can't get datetime_capture_finished for a legacy run: It wasn't recorded."
             )
         return datetime.strptime(
-            ValarTools.run_tag(run, "datetime_capture_finished"), "%Y-%m-%dT%H:%M:%S.%f"
+            ValarRuns.fetch_tag(run, "datetime_capture_finished"), "%Y-%m-%dT%H:%M:%S.%f"
         )
 
     @classmethod
@@ -955,7 +954,7 @@ class ValarTools:
         Returns:
 
         """
-        run = ValarTools.run(run)
+        run = ValarRuns.fetch(run)
         sxt = ConfigFiles.fetch(run.config_file_id)
         return NestedDotDict.parse_toml(sxt.toml_text)
 
@@ -1009,7 +1008,7 @@ class ValarTools:
         Returns:
 
         """
-        run = Tools.run(run)
+        run = Runs.fetch(run)
         year = str(run.datetime_run.year).zfill(4)
         month = str(run.datetime_run.month).zfill(2)
         path = PurePath(shire_path, "store", year, month, str(run.tag))
@@ -1030,7 +1029,7 @@ class ValarTools:
             ValarTools.frames_per_second.
 
         """
-        run = ValarTools.run(run)
+        run = ValarRuns.fetch(run)
         run = (
             Runs.select(
                 Runs, Experiments.id, Experiments.battery_id, Batteries.id, Batteries.length
@@ -1119,7 +1118,7 @@ class ValarTools:
         Returns:
 
         """
-        run = ValarTools.run(run)
+        run = ValarRuns.fetch(run)
         t = ConfigFiles.fetch(run.config_file_id)
         return NestedDotDict.parse_toml(t.toml_text)
 
@@ -1154,7 +1153,7 @@ class ValarTools:
           A Python int
 
         """
-        run = Tools.run(run)
+        run = Runs.fetch(run)
         if run.submission is None:
             return 25
         t = ConfigFiles.fetch(run.config_file_id)
@@ -1198,7 +1197,7 @@ class ValarTools:
         Returns:
 
         """
-        run = ValarTools.run(run)
+        run = ValarRuns.fetch(run)
         if run.submission is None:
             return 1
         else:
@@ -1368,7 +1367,7 @@ class ValarTools:
             An iterable consisting of runs associated with given run identifiers.
 
         """
-        return Tools.runs(runs)
+        return Runs.fetch_all(runs)
 
     @classmethod
     def run(cls, run: Union[int, str, Runs, Submissions]) -> Runs:
@@ -1382,7 +1381,7 @@ class ValarTools:
           A run associated with the given ID, name, tag, instance, or submission hash or instance
 
         """
-        return Tools.run(run)
+        return Runs.fetch(run)
 
     @classmethod
     def assay_name_simplifier(cls) -> Callable[[str], str]:

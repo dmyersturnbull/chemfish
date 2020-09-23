@@ -1,8 +1,6 @@
-from dataclasses import dataclass
-
 from chemfish.core.core_imports import *
-from chemfish.viz._internal_viz import *
-from chemfish.viz.figures import FigureTools
+from chemfish.viz.utils._internal_viz import *
+from chemfish.viz.utils.figures import FigureTools
 
 
 @dataclass(frozen=True)

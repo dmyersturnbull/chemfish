@@ -4,8 +4,8 @@ from chemfish.core.core_imports import *
 from chemfish.ml import ClassifierPath
 from chemfish.ml.classifiers import *
 from chemfish.ml.decision_frames import *
-from chemfish.ml.spindles import SpindleFrame
-from chemfish.model.case_control_comparisons import *
+from chemfish.ml.dose_response_factory import SpindleFrame
+from chemfish.ml.comparisons import *
 from chemfish.model.well_frames import *
 
 

@@ -3,8 +3,8 @@ from natsort import natsorted
 from chemfish.core.core_imports import *
 from chemfish.core.tools import *
 from chemfish.model.responses import DoseResponseFrame2D
-from chemfish.viz._internal_viz import *
-from chemfish.viz.figures import *
+from chemfish.viz.utils._internal_viz import *
+from chemfish.viz.utils.figures import *
 
 
 @abcd.auto_repr_str()

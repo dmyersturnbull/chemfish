@@ -2,9 +2,9 @@ from chemfish.core.core_imports import *
 from chemfish.model.sensors import *
 from chemfish.model.stim_frames import *
 from chemfish.viz import CakeComponent
-from chemfish.viz._internal_viz import *
-from chemfish.viz.figures import *
-from chemfish.viz.stim_plots import StimframesPlotter
+from chemfish.viz.utils._internal_viz import *
+from chemfish.viz.utils.figures import *
+from chemfish.viz.stimframe_plots import StimframesPlotter
 
 
 @abcd.auto_eq()
@@ -37,7 +37,7 @@ class SensorPlotter(CakeComponent, KvrcPlotting):
         Returns:
 
         """
-        run = Tools.run(run, join=True)
+        run = Runs.fetch(run)
         t0 = time.monotonic()
         n = len(sensors)
         logger.info(f"Plotting {n} sensors for r{run.id}...")

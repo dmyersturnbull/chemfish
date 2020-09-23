@@ -1,10 +1,9 @@
-from dataclasses import dataclass
 from matplotlib import dates as mdates
 
 from chemfish.core.core_imports import *
 from chemfish.model.metrics import *
-from chemfish.viz._internal_viz import *
-from chemfish.viz.figures import *
+from chemfish.viz.utils._internal_viz import *
+from chemfish.viz.utils.figures import *
 
 
 class TimelineLabelType(SmartEnum):
@@ -27,7 +26,7 @@ class TimelineLabelType(SmartEnum):
         Returns:
 
         """
-        runs = Tools.runs(runs)
+        runs = Runs.fetch_all(runs)
         if self is TimelineLabelType.NONE:
             return ["" for _ in runs]
         elif self is TimelineLabelType.TIMES:
@@ -77,7 +76,7 @@ class DurationType(SmartEnum):
         Returns:
 
         """
-        run = Tools.run(run, join=True)
+        run = Runs.fetch(run)
         if self is DurationType.WAIT:
             return ValarTools.wait_sec(run)
         elif self is DurationType.TREATMENT:
@@ -235,7 +234,7 @@ class TimelinePlots:
         Returns:
 
         """
-        runs = Tools.runs(runs)
+        runs = Runs.fetch_all(runs)
         labels = TimelineLabelType.of(label_with).process(runs)
         experiments = [r.experiment.name for r in runs] if use_experiments else ["" for _ in runs]
         dates = [r.datetime_run for r in runs]
@@ -303,7 +302,7 @@ class RunDurationPlots:
 
         """
         t = DurationType.of(kind)
-        minutes = [t.get_seconds(r) for r in Tools.runs(runs)]
+        minutes = [t.get_seconds(r) for r in Runs.fetch_all(runs)]
         kde = KdeData.from_samples(minutes, **({} if kde_params is None else kde_params))
         return RunDurationPlotter(t.description).plot(kde)
 

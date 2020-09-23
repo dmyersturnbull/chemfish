@@ -6,14 +6,9 @@ They include run and batch annotations, number of features, and more.
 from __future__ import annotations
 
 # importing dataclass directly is necessary to fix pycharm warnings
-from dataclasses import dataclass
-from traceback import FrameSummary, StackSummary
+from traceback import FrameSummary
 
 from chemfish.core.core_imports import *
-from chemfish.model.cache_interfaces import ASensorCache
-from chemfish.model.features import *
-from chemfish.model.sensors import *
-from chemfish.model.well_frames import *
 
 
 class ConcernFrame(UntypedDf):

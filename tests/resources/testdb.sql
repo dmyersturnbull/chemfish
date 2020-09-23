@@ -1332,59 +1332,6 @@ INSERT INTO runs(
     'run:1', '20120101.11111111.Elephant', 1, NULL, 61, 60
 );
 
-INSERT INTO runs(
-    experiment_id, plate_id, description, experimentalist_id, submission_id, datetime_run, datetime_dosed,
-    name, tag, sauron_config_id, config_file_id, incubation_min, acclimation_sec
-) VALUES (
-    1, 1, 'Plate 1, run 2', 1, 2, '2012-01-01 12:12:12', '2012-01-01 10:10:10',
-    'run:2', '20120101.121212.Elephant', 1, NULL, 61, 60
-);
-
-INSERT INTO runs(
-    experiment_id, plate_id, description, experimentalist_id, submission_id, datetime_run, datetime_dosed,
-    name, tag, sauron_config_id, config_file_id, incubation_min, acclimation_sec
-) VALUES (
-    1, 2, 'Plate 2, run 1', 1, 2, '2012-01-01 12:12:12', '2012-01-01 10:10:10',
-    'run:3', '20120101.121212.Epsilon', 2, NULL, 61, 60
-);
-
--- drug (-) control
-INSERT INTO wells(
-    run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    1, 1, 1, 1, NULL, 10, 7
-);
--- drug (+) control, with drug
-INSERT INTO wells(
-    run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    1, 2, 2, 1, NULL, 10, 7
-);
--- different variant
-INSERT INTO wells(
-    run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    1, 3, NULL, 2, NULL, 10, 7
-);
--- single compound treatment
-INSERT INTO wells(
-    run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    1, 4, NULL, 1, NULL, 10, 7
-);
--- co-treatment, one without a compounds row
-INSERT INTO wells(
-    run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    1, 5, NULL, 1, NULL, 10, 7
-);
--- new well group
-INSERT INTO wells(
-    run_id, well_index, control_type_id, variant_id, well_group, n, age
-) VALUES (
-    1, 6, NULL, 1, 'a well group', 10, 7
-);
-
 INSERT INTO compounds(
     inchi, inchikey, inchikey_connectivity, chembl_id, chemspider_id, smiles
 ) VALUES (
@@ -1473,6 +1420,64 @@ INSERT INTO batches(
     'legacy-flu-30', 1, 2, 1, NULL,
     '1 mg', 10, 2, 345.8, 'flu.id1', 1, '2008-11-01 09:09:09'
 );
+
+INSERT INTO runs(
+    experiment_id, plate_id, description, experimentalist_id, submission_id, datetime_run, datetime_dosed,
+    name, tag, sauron_config_id, config_file_id, incubation_min, acclimation_sec
+) VALUES (
+    1, 1, 'Plate 1, run 2', 1, 2, '2012-01-01 12:12:12', '2012-01-01 10:10:10',
+    'run:2', '20120101.121212.Elephant', 1, NULL, 61, 60
+);
+
+INSERT INTO runs(
+    experiment_id, plate_id, description, experimentalist_id, submission_id, datetime_run, datetime_dosed,
+    name, tag, sauron_config_id, config_file_id, incubation_min, acclimation_sec
+) VALUES (
+    1, 2, 'Plate 2, run 1', 1, 2, '2012-01-01 12:12:12', '2012-01-01 10:10:10',
+    'run:3', '20120101.121212.Epsilon', 2, NULL, 61, 60
+);
+
+-- drug (-) control
+INSERT INTO wells(
+    run_id, well_index, control_type_id, variant_id, well_group, n, age
+) VALUES (
+    1, 1, 1, 1, NULL, 10, 7
+);
+-- drug (+) control, with drug
+INSERT INTO wells(
+    run_id, well_index, control_type_id, variant_id, well_group, n, age
+) VALUES (
+    1, 2, 2, 1, NULL, 10, 7
+);
+-- different variant
+INSERT INTO wells(
+    run_id, well_index, control_type_id, variant_id, well_group, n, age
+) VALUES (
+    1, 3, NULL, 2, NULL, 10, 7
+);
+-- single compound treatment
+INSERT INTO wells(
+    run_id, well_index, control_type_id, variant_id, well_group, n, age
+) VALUES (
+    1, 4, NULL, 1, NULL, 10, 7
+);
+-- co-treatment, one without a compounds row
+INSERT INTO wells(
+    run_id, well_index, control_type_id, variant_id, well_group, n, age
+) VALUES (
+    1, 5, NULL, 1, NULL, 10, 7
+);
+-- new well group
+INSERT INTO wells(
+    run_id, well_index, control_type_id, variant_id, well_group, n, age
+) VALUES (
+    1, 6, NULL, 1, 'a well group', 10, 7
+);
+
+INSERT INTO well_treatments(well_id, batch_id, micromolar_dose) VALUES (1, 1, 50.0);
+INSERT INTO well_treatments(well_id, batch_id, micromolar_dose) VALUES (2, 1, 50.0);
+INSERT INTO well_treatments(well_id, batch_id, micromolar_dose) VALUES (2, 2, 25.0);
+INSERT INTO well_treatments(well_id, batch_id, micromolar_dose) VALUES (1, 1, 50.0);
 
 INSERT INTO features (
     id, name, description, dimensions, data_type

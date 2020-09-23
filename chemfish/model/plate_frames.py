@@ -52,7 +52,7 @@ class PlateFrame(UntypedDf):
         Returns:
 
         """
-        run = Tools.run(run)
+        run = Runs.fetch(run)
         feature = FeatureTypes.of(feature)
         wb1 = Tools.wb1_from_run(run)
         data = {

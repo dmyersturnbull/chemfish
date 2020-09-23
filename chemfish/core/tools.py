@@ -149,64 +149,9 @@ class ChemfishValarTools:
             The Runs row instances in the same order
 
         """
-        runs = runs if Tools.is_true_iterable(runs) else [runs]
-        # make sure there aren't any weird types
-        bad_types = [r for r in runs if not isinstance(r, (int, float, str, Runs, Submissions))]
-        if len(bad_types) > 0:
-            raise IncompatibleDataError(f"Invalid type for run or list or runs {bad_types}")
-        # we'll build this up by setting individual indices
-        blanks = [None for _ in runs]  # type: List[Optional[Runs]]
-        # get by runs
-        if any([b is None for b in blanks]):
-            missing = [
-                (i, r)
-                for i, r in enumerate(runs)
-                if blanks[i] is None
-                and isinstance(
-                    r,
-                    (int, float, Runs)
-                    or isinstance(r, str)
-                    and not Tools.looks_like_submission_hash(r),
-                )
-            ]
-            try:
-                new = Runs.fetch_all_or_none([r for i, r in missing])
-            except AssertionError:
-                # TODO this shouldn't be raised
-                raise LookupFailedError(f"At least one run is missing in {runs}") from None
-            for i, n in Tools.zip_strict([i for i, r in missing], new):
-                blanks[i] = n
-        # get by submission objects
-        if any([b is None for b in blanks]):
-            missing = [
-                (i, r)
-                for i, r in enumerate(runs)
-                if blanks[i] is None and isinstance(r, Submissions)
-            ]
-            new = {
-                r.submission: r
-                for r in Runs.select(Runs).where(Runs.submission_id << [s.id for i, s in missing])
-            }
-            for i, r in missing:
-                blanks[i] = new.get(r)
-        # get by submission hash
-        if any([b is None for b in blanks]):
-            missing = [
-                (i, r) for i, r in enumerate(runs) if blanks[i] is None and isinstance(r, str)
-            ]
-            new = {
-                r.submission.lookup_hash: r
-                for r in Runs.select(Runs, Submissions)
-                .join(Submissions)
-                .where(Submissions.lookup_hash << [s for i, s in missing])
-            }
-            for i, r in missing:
-                blanks[i] = new.get(r)
-        # check that there are no missing items
-        missing = {i: r for i, r in enumerate(runs) if blanks[i] is None}
-        if len(missing) > 0:
-            raise ValarLookupError(f"Didn't find {missing}")
-        return blanks
+        if not Tools.is_true_iterable(runs):
+            runs = [runs]
+        return Runs.fetch_all(runs)
 
     @classmethod
     def run_ids_unchecked(cls, runs: RunsLike) -> Sequence[int]:
@@ -224,13 +169,13 @@ class ChemfishValarTools:
         if all([isinstance(r, int) for r in runs]):
             return runs
         else:
-            return [r.id for r in Tools.runs(runs)]
+            return [r.id for r in Runs.fetch_all(runs)]
 
     @classmethod
     def run(cls, run: RunLike, join: bool = False) -> Runs:
         """
         Fetches a run from a flexible format.
-        Fetches from Valar once. Use Tools.runs if you want to fetch multiple runs in a single query.
+        Fetches from Valar once. Use Runs.fetch_all if you want to fetch multiple runs in a single query.
 
         Args:
             run: A run from a run ID, tag, name, instance, or submission hash or instance
@@ -240,46 +185,6 @@ class ChemfishValarTools:
             The Runs row instance
 
         """
-        bq = lambda: (
-            Runs.select(Runs, Submissions, Experiments, Plates, PlateTypes)
-            .join(Submissions, JOIN.LEFT_OUTER)
-            .switch(Runs)
-            .join(Experiments)
-            .switch(Runs)
-            .join(SauronConfigs)
-            .join(Saurons)
-            .switch(Runs)
-            .join(Plates)
-            .join(PlateTypes, JOIN.LEFT_OUTER)
-        )
-        if isinstance(run, float):
-            run = int(run)
-        if (
-            isinstance(run, Submissions)
-            or isinstance(run, str)
-            and ChemfishValarTools.looks_like_submission_hash(run)
-        ):
-            sub = Submissions.fetch_or_none(run)
-            if sub is None:
-                raise ValarLookupError(f"No run {run}")
-            if join:
-                return bq().where(Submissions.id == sub.id).first()
-            else:
-                return Runs.get(Runs.submission_id == sub.id)
-        if isinstance(run, str) and run.isdigit():
-            run = int(run)
-        if join and isinstance(run, int):
-            return bq().where(Runs.id == run).first()
-        elif join and isinstance(run, Runs):
-            return bq().where(Runs.id == run.id).first()
-        elif join and isinstance(run, str):
-            attempt = bq().where(Runs.name == run).first()
-            if attempt is not None:
-                return attempt
-            attempt = bq().where(Runs.tag == run).first()
-            if attempt is not None:
-                return attempt
-            raise ValarLookupError(f"No run {run}")
         return Runs.fetch(run)
 
     @classmethod
@@ -293,7 +198,7 @@ class ChemfishValarTools:
         Returns:
 
         """
-        pt: PlateTypes = Tools.run(run, join=True).plate.plate_type
+        pt: PlateTypes = Runs.fetch(run).plate.plate_type
         return WB1(pt.n_rows, pt.n_columns)
 
     @classmethod

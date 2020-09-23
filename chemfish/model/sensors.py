@@ -6,7 +6,7 @@ import soundfile
 
 from chemfish.core.core_imports import *
 from chemfish.core.valar_singleton import *
-from chemfish.model.audio import *
+from chemfish.model.waveforms import *
 from chemfish.model.sensor_names import SensorNames
 
 
@@ -33,7 +33,7 @@ class _AbsBatteryTimeData(metaclass=abc.ABCMeta):
             start_ms: From the stimulus_millis sensor: specifically ``stimulus_millis[0]``
             end_ms:From the stimulus_millis sensor: specifically ``stimulus_millis[-1]``
         """
-        self.run, self.start_ms, self.end_ms = Tools.run(run), int(start_ms), int(end_ms)
+        self.run, self.start_ms, self.end_ms = Runs.fetch(run), int(start_ms), int(end_ms)
 
     @property
     def start_dt(self) -> datetime:
@@ -106,7 +106,7 @@ class ChemfishSensor:
 
         """
         self._sensor_data = sensor_data
-        self._run = ValarTools.run(run)
+        self._run = ValarRuns.fetch(run)
 
     @property
     def run(self) -> Runs:

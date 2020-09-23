@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from pandas.core.groupby import GroupBy
-from typeddfs.base_dfs import InvalidDfError, MissingColumnError
 
 from chemfish.core.core_imports import *
-from chemfish.model.compound_names import *
+from chemfish.namers.compound_namers import *
 from chemfish.model.treatments import *
-from chemfish.model.well_names import WellNamer
+from chemfish.namers.well_namers import WellNamer
 from chemfish.model.wf_tools import *
 
 
@@ -327,7 +326,7 @@ class AbsWellFrame(TypedDf):
             A modified copy of this WellFrame
 
         """
-        runs = set(Tools.run_ids_unchecked(runs))
+        runs = set(Runs.fetch_ids_unchecked(runs))
         return self.__class__.retype(self[self["run"].isin(runs)])
 
     def without_run(self, runs: Union[int, Set[int]]) -> __qualname__:
@@ -340,7 +339,7 @@ class AbsWellFrame(TypedDf):
         Returns:
 
         """
-        runs = set(Tools.run_ids_unchecked(runs))
+        runs = set(Runs.fetch_ids_unchecked(runs))
         return self.__class__.retype(self[~self["run"].isin(runs)])
 
     def apply_by_name(self, function) -> __qualname__:

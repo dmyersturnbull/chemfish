@@ -1,5 +1,5 @@
 from chemfish.core.core_imports import *
-from chemfish.model.audio import Waveform
+from chemfish.model.waveforms import Waveform
 
 
 class WaveformEmbedding:

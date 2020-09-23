@@ -128,8 +128,8 @@ decorateme                     = ">=0.1.1, <1.0"
 typeddfs                       = ">=0.3.0, <1.0"
 # we're actually using "biochem" too, but we don't need any extra dependencies
 #pocketutils                    = {version=">=0.3.1, <1.0", extras=["tools", "notebooks", "plotting"]}
-pocketutils                    = {version=">=0.3.1, <1.0"}
-valarpy                        = "^2.2"
+pocketutils                    = {version=">=0.3.2, <1.0"}
+valarpy                        = "^3.0"
 
 python-levenshtein             = {optional = true, version="^0.12"}
 

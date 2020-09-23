@@ -3,14 +3,9 @@
 
 import enum
 import logging
-from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 from pocketutils.core import SmartEnum
-from pocketutils.tools.call_tools import CallTools
-from pocketutils.tools.filesys_tools import FilesysTools
-from pocketutils.tools.string_tools import StringTools
 
 from chemfish.core import ChemfishResources, log_factory, logger
 
@@ -109,7 +104,7 @@ class ChemfishProcessor:
             args:
 
         """
-        from chemfish.caches.video_caches import VideoCache
+        from chemfish.factories.caches.video_cache import VideoCache
 
         cache = VideoCache()
         n_exists = sum([not cache.has_video(v) for v in args])

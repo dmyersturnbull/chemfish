@@ -4,11 +4,11 @@ from scipy.spatial import distance
 
 from chemfish.core.core_imports import *
 from chemfish.model.app_frames import *
-from chemfish.model.compound_names import *
+from chemfish.namers.compound_namers import *
 from chemfish.model.features import *
 from chemfish.model.stim_frames import *
-from chemfish.model.well_names import *
-from chemfish.model.wf_builders import *
+from chemfish.namers.well_namers import *
+from chemfish.construction.wf_builders import *
 
 
 class HitFrame(TypedDf):
@@ -29,7 +29,7 @@ class HitFrame(TypedDf):
         Returns:
 
         """
-        runs = [r.id for r in Tools.runs(runs)]
+        runs = [r.id for r in Runs.fetch_all(runs)]
         return HitFrame(self[self["run"].isin(runs)])
 
 
